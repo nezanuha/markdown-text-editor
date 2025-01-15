@@ -45,7 +45,7 @@ import { markdownEditor } from 'markdown-text-editor';
 
 const editor = new markdownEditor('editor-container', {
     placeholder: 'Write your markdown...',
-    toolbar: ['bold', 'italic'], // Define the tools you want in the toolbar
+    toolbar: ['preview', 'bold', 'italic'], // Define the tools you want in the toolbar
 });
 ```
 
@@ -84,7 +84,7 @@ Example:
 ```javascript
 const editor = new markdownEditor('editor-container', {
     placeholder: 'Your markdown here...',
-    toolbar: ['italic', 'bold'], // Shows italic first, then bold
+    toolbar: ['preview', 'italic', 'bold'], // Shows italic first, then bold
 });
 ```
 
@@ -124,7 +124,7 @@ import { markdownEditor } from 'markdown-editor';
 
 const editor = new markdownEditor('editor-container', {
     placeholder: 'Write markdown...',
-    toolbar: ['bold', 'italic'],  // Custom toolbar options
+    toolbar: ['preview', 'bold', 'italic'],  // Custom toolbar options
 });
 ```
 
