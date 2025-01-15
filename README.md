@@ -36,7 +36,7 @@ To initialize the Markdown editor, you need an empty container (like a `div`) in
 
 #### HTML:
 ```html
-<div id="editor-container"></div>
+<textarea class="editor-container"></textarea>
 ```
 
 #### JavaScript:
@@ -102,7 +102,7 @@ const editor = new markdownEditor('editor-container', {
     <link rel="stylesheet" href="dist/markdown-editor-plugin.css">
 </head>
 <body>
-    <div id="editor-container"></div>
+  <textarea class="editor"></textarea>
 
     <script src="dist/markdown-editor-plugin.js"></script>
     <script>
