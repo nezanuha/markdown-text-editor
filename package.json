@@ -9,8 +9,7 @@
   },
   "scripts": {
     "build": "webpack --mode=production",
-    "dev": "webpack --watch --mode=development",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "webpack --watch --mode=development"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
