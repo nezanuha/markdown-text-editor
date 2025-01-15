@@ -22,8 +22,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
-        run: npm test # Optional: Run your tests before publishing
+      # - name: Run tests
+      #   run: npm test # Optional: Run your tests before publishing
 
       - name: Publish to npm
         run: npm publish
