@@ -1,8 +1,8 @@
 {
   "name": "markdown-text-editor",
-  "version": "0.0.2-beta.1",
+  "version": "0.0.3-beta.1",
   "description": "A powerful, easy-to-use Markdown editor with a real-time preview, syntax highlighting. Ideal for developers, writers, and content creators who need a seamless, interactive writing experience with full Markdown support.",
-  "main": "dist/markdownEditor.js",
+  "main": "dist/markdown-text-editor.js",
   "repository": {
     "type": "github",
     "url": "git+https://github.com/nezanuha/markdown-text-editor.git"
@@ -11,6 +11,9 @@
     "build": "webpack --mode=production",
     "dev": "webpack --watch --mode=development",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   },
   "keywords": [
     "markdown-text-editor",
@@ -34,13 +37,17 @@
   ],
   "author": "Nezanuha",
   "license": "MIT",
-  "homepage": "https://markdown-writer.com",
+  "homepage": "",
   "bugs": {
-    "url": "https://github.com/nezanuha/markdown-writer/issues"
+    "url": "https://github.com/nezanuha/markdown-text-editor/issues"
   },
   "files": [
     "dist/**/*"
   ],
+  "dependencies": {
+    "marked": "^15.0.4",
+    "tailwindcss": "^3.4.13"
+  },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
@@ -48,12 +55,10 @@
     "autoprefixer": "^10.4.20",
     "babel-loader": "^9.2.1",
     "css-loader": "^7.1.2",
-    "marked": "^15.0.4",
     "mini-css-extract-plugin": "^2.9.1",
     "postcss": "^8.4.47",
     "postcss-loader": "^8.1.1",
     "style-loader": "^4.0.0",
-    "tailwindcss": "^3.4.13",
     "webpack": "^5.95.0",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.1.0"

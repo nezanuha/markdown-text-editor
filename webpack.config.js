@@ -3,8 +3,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     entry: {
-        "nezanuha/index":'./src/plugins/index.js',
-        "nezanuha/markdown-editor": './src/plugins/markdown/editor.js'
+        "index":'./src/plugins/index.js',
+        "markdown-text-editor": './src/plugins/markdown/editor.js'
     },
     output: {
         filename: '[name].js', // Output file name

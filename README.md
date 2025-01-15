@@ -23,11 +23,11 @@ To install the plugin in your project, you can include the plugin JavaScript fil
 ## Usage
 
 
-Import the `markdownEditor` class from nezanuha/markdown-editor:
+Import the `markdownEditor` class from markdown-text-editor:
 
 
 ```
-import { markdownEditor } from "nezanuha/markdown-editor";
+import { markdownEditor } from "markdown-text-editor";
 ```
 
 ### Basic Example:
@@ -41,7 +41,7 @@ To initialize the Markdown editor, you need an empty container (like a `div`) in
 
 #### JavaScript:
 ```javascript
-import { markdownEditor } from 'nezanuha/markdown-editor';
+import { markdownEditor } from 'markdown-text-editor';
 
 const editor = new markdownEditor('editor-container', {
     placeholder: 'Write your markdown...',
@@ -120,7 +120,7 @@ const editor = new markdownEditor('editor-container', {
 To use the plugin with Webpack, import the plugin and initialize it as shown below:
 
 ```javascript
-import { markdownEditor } from 'nezanuha/markdown-editor';
+import { markdownEditor } from 'markdown-editor';
 
 const editor = new markdownEditor('editor-container', {
     placeholder: 'Write markdown...',
