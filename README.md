@@ -108,7 +108,7 @@ const editor = new markdownEditor('editor-container', {
     <script>
         const editor = new markdownEditor('editor-container', {
             placeholder: 'Type some markdown...',
-            toolbar: ['bold', 'italic'] // Toolbar order: bold first, then italic
+            toolbar: ['preview', 'bold', 'italic'] // Toolbar order: bold first, then italic
         });
     </script>
 </body>

@@ -9,6 +9,7 @@ tsconfig.json
 # Ignore IDE/Editor configuration files
 .idea/
 .vscode/
+.github/
 
 # Ignore npm/yarn lock files
 package-lock.json
