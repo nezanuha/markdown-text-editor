@@ -1,11 +1,11 @@
 {
-  "name": "frutjam",
-  "version": "0.0.8-beta.0",
-  "description": "Frutjam includes prebuilt UI components and plugins that are completely open-source",
-  "main": "dist/frutjam.js",
+  "name": "markdown-text-editor",
+  "version": "0.0.2-beta.1",
+  "description": "A powerful, easy-to-use Markdown editor with a real-time preview, syntax highlighting. Ideal for developers, writers, and content creators who need a seamless, interactive writing experience with full Markdown support.",
+  "main": "dist/markdownEditor.js",
   "repository": {
     "type": "github",
-    "url": "git+https://github.com/nezanuha/frutjam.git"
+    "url": "git+https://github.com/nezanuha/markdown-text-editor.git"
   },
   "scripts": {
     "build": "webpack --mode=production",
@@ -13,28 +13,20 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "frutjam",
-    "Nezanuha",
-    "ui components",
-    "tailwind css",
-    "plugins",
-    "notification",
-    "tabs",
-    "popover",
-    "telephone",
-    "typescript",
-    "frontend",
-    "ui",
-    "packages",
-    "webpack",
-    "frontend development",
-    "web development",
-    "javascript",
-    "tailwind ui",
-    "alert",
-    "notification plugin",
+    "markdown-text-editor",
+    "markdown-text",
+    "mde",
+    "simple mde",
+    "markdown",
+    "editor",
+    "live preview",
+    "syntax highlighting",
+    "react",
+    "web app",
+    "developer tools",
+    "content creation",
+    "WYSIWYG",
     "plugin",
-    "prebuilt tailwind",
     "open source",
     "markdown",
     "markdown editor",
@@ -42,9 +34,9 @@
   ],
   "author": "Nezanuha",
   "license": "MIT",
-  "homepage": "https://frutjam.com",
+  "homepage": "https://markdown-writer.com",
   "bugs": {
-    "url": "https://github.com/nezanuha/frutjam/issues"
+    "url": "https://github.com/nezanuha/markdown-writer/issues"
   },
   "files": [
     "dist/**/*"

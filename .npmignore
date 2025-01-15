@@ -1,0 +1,36 @@
+index.html
+
+# Ignore development files and directories
+src/
+webpack.config.js
+tsconfig.json
+
+
+# Ignore IDE/Editor configuration files
+.idea/
+.vscode/
+
+# Ignore npm/yarn lock files
+package-lock.json
+yarn.lock
+
+# Ignore logs and debugging files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore TypeScript output
+*.tsbuildinfo
+
+# Ignore .DS_Store files on macOS
+.DS_Store
+
+# Ignore Jest snapshot directory
+__snapshots__/
+
+# Ignore Jest coverage directory
+coverage/
+
+# Ignore Next.js build output
+.next/
+out/
