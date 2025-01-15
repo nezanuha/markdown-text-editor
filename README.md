@@ -135,6 +135,8 @@ You can modify the appearance of the editor and toolbar using Tailwind utility c
 - The toolbar and editor area are styled with Tailwind by default.
 - You can override these classes in your custom Tailwind config to suit your design.
 
-## Conclusion
+## Contribute to the Project
 
-This **markdownEditor Plugin** allows easy setup of markdown editing with dynamic toolbar controls, making it flexible and reusable for various projects.
+If you're interested in improving this editor, I welcome contributions! Feel free to open issues or submit pull requests with bug fixes, features, or enhancements. Your contributions will help keep the project active and thriving.
+
+Thank you for your support and consideration. Let’s continue to improve Markdown editing together!
