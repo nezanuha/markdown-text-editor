@@ -32,7 +32,7 @@ import markdownEditor from "markdown-text-editor";
 
 ### Basic Example:
 
-To initialize the Markdown editor, you need an empty container (like a `div`) in your HTML and initialize the editor by passing the container's ID and options.
+To initialize the Markdown editor, you need to add `textarea` tag in your HTML and initialize the editor by passing the container's ID or class and options.
 
 #### HTML:
 ```html
@@ -43,7 +43,7 @@ To initialize the Markdown editor, you need an empty container (like a `div`) in
 ```javascript
 import markdownEditor from 'markdown-text-editor';
 
-const editor = new markdownEditor('editor-container', {
+const editor = new markdownEditor('.editor-container', {
     placeholder: 'Write your markdown...',
     toolbar: ['preview', 'bold', 'italic'], // Define the tools you want in the toolbar
 });
@@ -57,7 +57,7 @@ You can specify which formatting options you want in the toolbar. The plugin sup
 
 For example:
 ```javascript
-const editor = new markdownEditor('editor-container', {
+const editor = new markdownEditor('.editor-container', {
     placeholder: 'Start writing...',
     toolbar: ['bold', 'italic', 'strikethrough', 'preview'],
 });
@@ -82,7 +82,7 @@ The toolbar can be customized to include the following options (you can add more
 Example:
 
 ```javascript
-const editor = new markdownEditor('editor-container', {
+const editor = new markdownEditor('.editor-container', {
     placeholder: 'Your markdown here...',
     toolbar: ['preview', 'italic', 'bold'], // Shows italic first, then bold
 });
@@ -106,7 +106,7 @@ const editor = new markdownEditor('editor-container', {
 
     <script src="dist/markdown-editor-plugin.js"></script>
     <script>
-        const editor = new markdownEditor('editor-container', {
+        const editor = new markdownEditor('.editor-container', {
             placeholder: 'Type some markdown...',
             toolbar: ['preview', 'bold', 'italic'] // Toolbar order: bold first, then italic
         });
@@ -122,7 +122,7 @@ To use the plugin with Webpack, import the plugin and initialize it as shown bel
 ```javascript
 import markdownEditor from 'markdown-editor';
 
-const editor = new markdownEditor('editor-container', {
+const editor = new markdownEditor('.editor-container', {
     placeholder: 'Write markdown...',
     toolbar: ['preview', 'bold', 'italic'],  // Custom toolbar options
 });
@@ -140,3 +140,5 @@ You can modify the appearance of the editor and toolbar using Tailwind utility c
 If you're interested in improving this editor, I welcome contributions! Feel free to open issues or submit pull requests with bug fixes, features, or enhancements. Your contributions will help keep the project active and thriving.
 
 Thank you for your support and consideration. Let’s continue to improve Markdown editing together!
+
+## A Product of Nezanuha
