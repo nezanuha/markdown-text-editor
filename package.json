@@ -1,8 +1,8 @@
 {
   "name": "markdown-text-editor",
-  "version": "0.0.6-beta.1",
+  "version": "0.0.7-beta.1",
   "description": "A powerful, easy-to-use Markdown editor with a real-time preview, syntax highlighting. Ideal for developers, writers, and content creators who need a seamless, interactive writing experience with full Markdown support.",
-  "main": "dist/markdown-text-editor.min.js",
+  "main": "dist/markdown-text-editor.js",
   "repository": {
     "type": "github",
     "url": "git+https://github.com/nezanuha/markdown-text-editor.git"
