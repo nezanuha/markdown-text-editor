@@ -1,6 +1,6 @@
 {
   "name": "markdown-text-editor",
-  "version": "0.0.7-beta.1",
+  "version": "0.0.8-beta.1",
   "description": "A powerful, easy-to-use Markdown editor with a real-time preview, syntax highlighting. Ideal for developers, writers, and content creators who need a seamless, interactive writing experience with full Markdown support.",
   "main": "dist/markdown-text-editor.js",
   "repository": {
@@ -18,6 +18,7 @@
     "markdown-text-editor",
     "markdown-text",
     "mde",
+    "text-editor",
     "simple mde",
     "markdown",
     "editor",
@@ -41,7 +42,10 @@
     "url": "https://github.com/nezanuha/markdown-text-editor/issues"
   },
   "files": [
-    "dist/**/*"
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
   ],
   "dependencies": {
     "marked": "^15.0.4",
