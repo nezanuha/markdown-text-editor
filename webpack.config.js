@@ -51,7 +51,6 @@ module.exports = (env, argv) => {
             minimize: true, // Enable minimization
             minimizer: [
                 new TerserPlugin({
-                    extractComments: false, // Avoid creating separate LICENSE files
                     terserOptions: {
                         format: {
                             comments: false, // Remove comments
