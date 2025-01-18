@@ -3,9 +3,9 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (env, argv) => {
-    const isProd = process.env.NODE_ENV === 'production';
+    const isProd = argv.mode === 'production';
     return {
-        mode: isProd ? 'production' : 'development', // Set to 'production' for minified output
+        mode: isProd ? 'production' : 'development',
         stats: 'minimal',
         entry: {
             index: './src/plugins/index.js',
@@ -15,25 +15,28 @@ module.exports = (env, argv) => {
             extensions: ['.ts', '.js'],
         },
         output: {
-            filename: '[name].js', // Output file name
-            path: path.resolve(__dirname, 'dist'), // Output directory
-            library: '[name]', // Name of the library
-            libraryTarget: 'umd', // Universal Module Definition
-            libraryExport: 'default', // Use default export
-            globalObject: 'this', // Ensures compatibility
+            filename: '[name].js',
+            path: path.resolve(__dirname, 'dist'),
+            library: {
+                name: '[name]',
+                type: 'umd',
+                export: 'default',
+            },
+            globalObject: 'typeof self !== "undefined" ? self : this',
+            clean: true, // Ensures output directory is cleaned before each build
         },
         module: {
             rules: [
                 {
-                    test: /\.css$/, // Handle CSS files
+                    test: /\.css$/,
                     use: [
-                        'style-loader', // Extract CSS into separate files
-                        'css-loader', // Translates CSS into CommonJS
-                        'postcss-loader', // Processes CSS with PostCSS
+                        MiniCssExtractPlugin.loader,
+                        'css-loader',
+                        'postcss-loader',
                     ],
                 },
                 {
-                    test: /\.m?js$/, // Handle JavaScript files
+                    test: /\.m?js$/,
                     exclude: /node_modules/,
                     use: {
                         loader: 'babel-loader',
@@ -46,16 +49,17 @@ module.exports = (env, argv) => {
         },
         plugins: [
             new MiniCssExtractPlugin({
-                filename: 'styles.css', // Output CSS filename
+                filename: '[name].css',
             }),
         ],
         optimization: {
-            minimize: true,
+            minimize: isProd,
             minimizer: [
                 new TerserPlugin({
                     extractComments: false,
                 }),
             ],
-        }
+        },
+        devtool: isProd ? 'source-map' : 'eval-source-map',
     };
 };

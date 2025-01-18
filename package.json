@@ -1,8 +1,9 @@
 {
   "name": "markdown-text-editor",
-  "version": "0.0.16-beta.1",
+  "version": "0.0.18-beta.1",
   "description": "A powerful, easy-to-use Markdown editor with a real-time preview, syntax highlighting. Ideal for developers, writers, and content creators who need a seamless, interactive writing experience with full Markdown support.",
-  "main": "./src/plugins/markdown/editor.js",
+  "main": "./dist/markdown-text-editor.js",
+  "style": "./dist/markdown-text-editor.css",
   "files": [
     "dist/**/*",
     "src/**/*"
@@ -12,7 +13,9 @@
     "url": "https://github.com/nezanuha/markdown-text-editor"
   },
   "scripts": {
-    "build": "webpack --mode=production",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && webpack --mode=production",
+    "prepublishOnly": "npm run build",
     "dev": "webpack --watch --mode=development"
   },
   "publishConfig": {
@@ -20,28 +23,19 @@
   },
   "keywords": [
     "markdown-text-editor",
-    "markdown-text",
-    "mde",
-    "text-editor",
-    "simple mde",
     "markdown",
+    "text-editor",
     "editor",
     "live preview",
     "syntax highlighting",
-    "react",
-    "web app",
     "developer tools",
     "content creation",
-    "WYSIWYG",
     "plugin",
-    "open source",
-    "markdown",
-    "markdown editor",
-    "simple markdown"
+    "open source"
   ],
   "author": "Nezanuha",
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://github.com/nezanuha/markdown-text-editor",
   "bugs": {
     "url": "https://github.com/nezanuha/markdown-text-editor/issues"
   },
