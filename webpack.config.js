@@ -1,12 +1,18 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (env, argv) => {
     const isProd = process.env.NODE_ENV === 'production';
     return {
+        mode: isProd ? 'production' : 'development', // Set to 'production' for minified output
+        stats: 'minimal',
         entry: {
             index: './src/plugins/index.js',
             'markdown-text-editor': './src/plugins/markdown/editor.js',
+        },
+        resolve: {
+            extensions: ['.ts', '.js'],
         },
         output: {
             filename: '[name].js', // Output file name
@@ -43,11 +49,13 @@ module.exports = (env, argv) => {
                 filename: 'styles.css', // Output CSS filename
             }),
         ],
-        externals: {
-            react: 'React', // Avoid bundling React, assume global React
-            'react-dom': 'ReactDOM',
-        },
-        mode: 'development', // Set to 'production' for minified output
-        devtool: 'source-map', // Enable source maps for easier debugging
+        optimization: {
+            minimize: true,
+            minimizer: [
+                new TerserPlugin({
+                    extractComments: false,
+                }),
+            ],
+        }
     };
 };
