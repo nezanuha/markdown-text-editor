@@ -47,7 +47,7 @@ module.exports = (env, argv) => {
             react: 'React', // Avoid bundling React, assume global React
             'react-dom': 'ReactDOM',
         },
-        mode: isProd ? 'production' : 'development', // Set to 'production' for minified output
-        devtool: isProd ? false : 'source-map', // Enable source maps for easier debugging
+        mode: 'development', // Set to 'production' for minified output
+        devtool: 'source-map', // Enable source maps for easier debugging
     };
 };
