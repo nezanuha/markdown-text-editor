@@ -5,6 +5,7 @@ src/
 webpack.config.js
 tsconfig.json
 
+node_modules/
 
 # Ignore IDE/Editor configuration files
 .idea/
@@ -35,6 +36,3 @@ coverage/
 # Ignore Next.js build output
 .next/
 out/
-
-
-!dist/
