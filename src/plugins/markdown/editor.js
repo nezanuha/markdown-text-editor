@@ -8,7 +8,7 @@ marked.setOptions({
     breaks: true
 });
 
-class markdownEditor {
+class MarkdownEditor {
     constructor(selector, options = {}) {
         this.usertextarea = typeof selector === 'string' ? document.querySelector(selector) : selector;
         this.options = options;
@@ -137,4 +137,4 @@ class markdownEditor {
     }
 }
 
-export default markdownEditor;
+export default MarkdownEditor;
