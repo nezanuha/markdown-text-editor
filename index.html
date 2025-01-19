@@ -58,14 +58,14 @@
     
     <!-- <script src="./dist/markdown-text-editor.js"></script> -->
     <script type="module">
-        import markdownEditor from 'markdown-text-editor'
+        import MarkdownEditor from '@nezanuha/markdown-text-editor';
         const options = {
             placeholder: 'Start writing...',
             toolbar: ['bold', 'italic', 'strikethrough', 'preview'],
         }
 
         document.querySelectorAll(".editor").forEach(element => {
-            const editor = new markdownEditor(element, options); 
+            const editor = new MarkdownEditor(element, options); 
         });
 
         document.querySelector(".btn").addEventListener("click", function(e){
