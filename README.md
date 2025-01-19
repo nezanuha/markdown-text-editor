@@ -17,17 +17,17 @@ To install the plugin in your project, you can include the plugin JavaScript fil
 
 1. **Install via NPM** (for bundling tools like Webpack):
    ```
-   npm install @nezanuha/markdown-text-editor
+   npm install markdown-text-editor
    ```
 
 ## Usage
 
 
-Import the `MarkdownEditor` class from @nezanuha/markdown-text-editor:
+Import the `MarkdownEditor` class from markdown-text-editor:
 
 
 ```
-import MarkdownEditor from "@nezanuha/markdown-text-editor";
+import MarkdownEditor from "markdown-text-editor";
 ```
 
 ## Basic Example:
@@ -50,7 +50,7 @@ If you are using **TailwindCSS**, add the following configuration to your `tailw
 module.exports = {
   content: [
     // './src/**/*.{html,js}',
-    'node_modules/@nezanuha/**/*.js',
+    'node_modules/markdown-text-editor/**/*.js',
   ]
 }
 ```
@@ -59,7 +59,7 @@ module.exports = {
 If you are not using TailwindCSS, you can directly import the CSS file into your project:
 
 ```javascript
-import '@nezanuha/markdown-text-editor/dist/markdown-text-editor.css';
+import 'markdown-text-editor/dist/markdown-text-editor.css';
 ```
 
 #### Using CDN
@@ -78,7 +78,7 @@ For projects using a CDN, you can include the following links:
 
 #### Using a bundler e.g. Webpack:
 ```javascript
-import MarkdownEditor from '@nezanuha/markdown-text-editor';
+import MarkdownEditor from 'markdown-text-editor';
 
 const editor = new MarkdownEditor('.editor-container', {
     placeholder: 'Write your markdown...',
@@ -157,7 +157,7 @@ const editor = new MarkdownEditor('.editor-container', {
 To use the plugin with Webpack, import the plugin and initialize it as shown below:
 
 ```javascript
-import MarkdownEditor from '@nezanuha/markdown-text-editor';
+import MarkdownEditor from 'markdown-text-editor';
 
 const editor = new MarkdownEditor('.editor-container', {
     placeholder: 'Write markdown...',
