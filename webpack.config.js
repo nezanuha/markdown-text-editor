@@ -18,7 +18,7 @@ module.exports = (env, argv) => {
             filename: '[name].js',
             path: path.resolve(__dirname, 'dist'),
             library: {
-                name: '[name]',
+                name: 'MarkdownEditor',
                 type: 'umd',
                 export: 'default',
             },

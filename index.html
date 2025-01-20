@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Editor Example</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.min.css">
 </head>
 <body>
 
@@ -55,10 +56,8 @@
     </div>
 
     <button type="button" class="btn">btn</button>
-    
-    <!-- <script src="./dist/markdown-text-editor.js"></script> -->
-    <script type="module">
-        import MarkdownEditor from 'markdown-text-editor';
+    <script src="https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.js"></script>
+    <script>
         const options = {
             placeholder: 'Start writing...',
             toolbar: ['bold', 'italic', 'strikethrough', 'preview'],
