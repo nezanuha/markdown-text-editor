@@ -36,6 +36,8 @@ class MarkdownEditor {
 
     applyDefaultAttributes() {
         this.usertextarea.classList.add(
+            "focus:outline-0",
+            "border-0",
             "p-1.5",
             "max-w-full",
             "size-full",
@@ -63,6 +65,7 @@ class MarkdownEditor {
             dark:border-stone-700
             rounded-md
             overflow-hidden
+            z-[999]
         `;
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
 
