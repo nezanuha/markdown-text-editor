@@ -11,6 +11,7 @@ class MarkdownTool {
     createButton(iconHtml) {
         const button = document.createElement('button');
         button.innerHTML = iconHtml;  // Pass icon HTML from child classes
+        button.type='button';
         button.className = 'markdown-btn p-2 hover:bg-stone-200 dark:hover:bg-stone-600 rounded duration-300';
         button.addEventListener('click', () => this.applySyntax());
         return button;
