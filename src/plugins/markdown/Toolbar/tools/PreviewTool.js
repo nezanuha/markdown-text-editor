@@ -45,16 +45,19 @@ class PreviewTool extends MarkdownTool {
             'md:grid',
             'md:grid-cols-2',
             'md:divide-x',
+            'rtl:md:divide-x-reverse',
             'md:divide-stone-300',
             'dark:md:divide-stone-700'
         );
 
         editorDiv.querySelector(".textarea-wrapper").classList.remove(
-            'h-lvh',
+            'h-[90lvh]',
             'hidden',
             'md:block'
         );
         this.editor.render(); // Re-render content in the preview
+
+        editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.remove("!h-[90lvh]");
         
         document.querySelector("body").classList.remove('overflow-hidden');
     }
@@ -76,16 +79,17 @@ class PreviewTool extends MarkdownTool {
             'md:grid',
             'md:grid-cols-2',
             'md:divide-x',
+            'rtl:md:divide-x-reverse',
             'md:divide-stone-300',
             'dark:md:divide-stone-700'
         );
 
         editorDiv.querySelector(".textarea-wrapper").classList.add(
-            'h-lvh',
+            'h-[90lvh]',
             'hidden',
             'md:block'
         );
-        // editorDiv.closest(".textarea-wrapper>textarea").classList.add("h-lvh");
+        editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.add("!h-[90lvh]");
 
         document.querySelector("body").classList.add('overflow-hidden');
     }

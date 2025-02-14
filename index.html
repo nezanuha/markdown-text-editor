@@ -9,7 +9,7 @@
 </head>
 <body class="p-4 lg:p-12 ">
     <form method="post" class="flex flex-col gap-4">
-        <textarea class="editor" rows="5"></textarea>
+        <textarea class="editor h-48" rows="5"></textarea>
         <button type="button" class="btn self-end bg-violet-500 hover:bg-violet-600 focus:outline-2 focus:outline-offset-2 focus:outline-violet-500 active:bg-violet-700 inline-block rounded px-3 py-1 text-xs/6 font-semibold text-white cursor-pointer">
             Get Markdown
         </button>
@@ -31,9 +31,9 @@
 
         document.querySelector(".btn").addEventListener("click", function(e){
             const output = document.querySelector(".editor").value;
-            console.log(output)
-            document.querySelector(".output").innerHTML = output;
-        })
+            console.log(output);
+            document.querySelector(".output").innerHTML = `<pre>${output}</pre>`;
+        });
     </script>
 </body>
 </html>
