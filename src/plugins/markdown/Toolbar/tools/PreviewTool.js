@@ -36,6 +36,7 @@ class PreviewTool extends MarkdownTool {
         editorDiv.parentNode.classList.toggle('top-0');
         editorDiv.parentNode.classList.toggle('inset-x-0');
         editorDiv.parentNode.classList.toggle('rounded-md');
+        editorDiv.parentNode.classList.toggle('z-[999]');
     
         previewWrapper.classList.toggle('hidden');
 
@@ -67,6 +68,7 @@ class PreviewTool extends MarkdownTool {
         editorDiv.parentNode.classList.toggle('top-0');
         editorDiv.parentNode.classList.toggle('inset-x-0');
         editorDiv.parentNode.classList.toggle('rounded-md');
+        editorDiv.parentNode.classList.toggle('z-[999]');
 
         previewWrapper.classList.toggle('hidden');
         // Remove grid layout and divide classes from the editor div

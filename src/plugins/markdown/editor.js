@@ -36,6 +36,8 @@ class MarkdownEditor {
 
     applyDefaultAttributes() {
         this.usertextarea.classList.add(
+            "focus:outline-0",
+            "border-0",
             "p-1.5",
             "max-w-full",
             "size-full",
