@@ -65,7 +65,6 @@ class MarkdownEditor {
             dark:border-stone-700
             rounded-md
             overflow-hidden
-            z-[999]
         `;
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
 
