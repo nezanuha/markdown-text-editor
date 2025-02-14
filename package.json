@@ -14,7 +14,7 @@
     "url": "https://github.com/nezanuha/markdown-text-editor"
   },
   "scripts": {
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "build": "npm run clean && webpack --mode=production",
     "prepublishOnly": "npm run build",
     "dev": "webpack serve --mode=development"
@@ -55,6 +55,7 @@
     "mini-css-extract-plugin": "^2.9.1",
     "postcss": "^8.4.47",
     "postcss-loader": "^8.1.1",
+    "rimraf": "^6.0.1",
     "style-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.3.11",
     "webpack": "^5.95.0",

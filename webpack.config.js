@@ -52,11 +52,12 @@ module.exports = (env, argv) => {
             new MiniCssExtractPlugin({
                 filename: '[name].css',
             }),
-            new HtmlWebpackPlugin({
+            // Only add HtmlWebpackPlugin in development mode
+            !isProd && new HtmlWebpackPlugin({
                 template: 'index.html', // Path to your HTML file
                 filename: 'index.html', // Output file name
             }),
-        ],
+        ].filter(Boolean), // Filter out false values in production mode
         optimization: {
             minimize: isProd,
             minimizer: [
