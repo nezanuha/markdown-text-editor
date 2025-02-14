@@ -1,6 +1,6 @@
 {
   "name": "markdown-text-editor",
-  "version": "0.0.21-beta.2",
+  "version": "0.0.21-beta.3",
   "description": "A powerful, easy-to-use Markdown editor with a real-time preview, syntax highlighting. Ideal for developers, writers, and content creators who need a seamless, interactive writing experience with full Markdown support.",
   "main": "./dist/markdown-text-editor.js",
   "browser": "dist/markdown-text-editor.js",
