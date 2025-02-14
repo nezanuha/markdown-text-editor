@@ -1,6 +1,7 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (env, argv) => {
     const isProd = argv.mode === 'production';
@@ -51,7 +52,12 @@ module.exports = (env, argv) => {
             new MiniCssExtractPlugin({
                 filename: '[name].css',
             }),
-        ],
+            // Only add HtmlWebpackPlugin in development mode
+            !isProd && new HtmlWebpackPlugin({
+                template: 'index.html', // Path to your HTML file
+                filename: 'index.html', // Output file name
+            }),
+        ].filter(Boolean), // Filter out false values in production mode
         optimization: {
             minimize: isProd,
             minimizer: [
@@ -61,5 +67,18 @@ module.exports = (env, argv) => {
             ],
         },
         devtool: isProd ? 'source-map' : 'eval-source-map',
+        
+        // Updated devServer configuration
+        devServer: {
+            static: {
+                directory: path.resolve(__dirname, 'dist'), // Serve content from 'dist' directory
+            },
+            compress: true, // Enable gzip compression
+            port: 9000, // Set the port for the dev server
+            open: true, // Automatically open the browser
+            hot: true, // Enable hot module replacement
+            historyApiFallback: true, // Support for single-page applications
+            // You can add more configuration if needed
+        },
     };
 };
