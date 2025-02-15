@@ -5,6 +5,7 @@ import StrikethroughTool from './tools/StrikethroughTool.js';
 import ULTool from './tools/ULTool.js';
 import OLTool from './tools/OLTool.js';
 import PreviewTool from './tools/PreviewTool.js'
+import CheckListTool from './tools/CheckListTool.js';
 
 class Toolbar {
     constructor(editor, options) {
@@ -19,6 +20,7 @@ class Toolbar {
         const toolMapping = {
             ul: ULTool,
             ol: OLTool,
+            checklist: CheckListTool,
             bold: BoldTool,
             italic: ItalicTool,
             strikethrough: StrikethroughTool,

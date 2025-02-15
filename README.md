@@ -191,7 +191,7 @@ Customize your Markdown editor by passing an `options` object during initializat
 | Option        | Type     | Default                      | Description                                               |
 |---------------|----------|------------------------------|-----------------------------------------------------------|
 | `placeholder` | `string` | `'Write your markdown...'`   | Sets the placeholder text for the textarea (optional, as you can also use the standard HTML textarea attribute)            |
-| `toolbar`     | `array`  | `['bold', 'italic', 'strikethrough', 'ol', 'ul', 'preview']` | Determines which tools appear in the toolbar and their order. |
+| `toolbar`     | `array`  | `['bold', 'italic', 'strikethrough', 'ol', 'ul', 'checklist', 'preview']` | Determines which tools appear in the toolbar and their order. |
 
 ---
 
