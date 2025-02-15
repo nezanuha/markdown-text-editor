@@ -71,7 +71,7 @@ To get started, include a `<textarea>` element in your HTML and initialize the e
 ```javascript
 const editor = new MarkdownEditor('.editor-container', {
     placeholder: 'Write your markdown...',
-    toolbar: ['preview', 'bold', 'italic'], // Customize toolbar options as needed
+    toolbar: ['bold', 'italic', 'strikethrough', 'ul', 'ol', 'checklist', 'preview'],
 });
 ```
 
@@ -202,6 +202,9 @@ Tailor the toolbar to suit your needs by choosing which formatting options to in
 - **`bold`**: Enables bold text formatting.
 - **`italic`**: Enables italic text formatting.
 - **`strikethrough`**: Allows text to be struck through.
+- **`ol`**: (Ordered List): Converts text into a numbered list format.
+- **`ul`**: (Unordered List): Converts text into a bullet point list.
+ **`checklist`**: Adds checkboxes to your text, making it great for tasks, to-do lists, or tracking completion status.
 - **`preview`**: Toggles the real-time markdown preview.
 
 **Example:**
