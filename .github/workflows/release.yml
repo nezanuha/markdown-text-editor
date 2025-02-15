@@ -8,8 +8,10 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Grant write access to id-token permission
+
     env:
-      # Define the Node.js version as an environment variable
       NODE_VERSION: '20'  # Directly set to your current Node.js version
 
     steps:
