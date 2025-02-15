@@ -2,6 +2,8 @@
 import BoldTool from './tools/BoldTool.js';
 import ItalicTool from './tools/ItalicTool.js';
 import StrikethroughTool from './tools/StrikethroughTool.js';
+import ULTool from './tools/ULTool.js';
+import OLTool from './tools/OLTool.js';
 import PreviewTool from './tools/PreviewTool.js'
 
 class Toolbar {
@@ -15,6 +17,8 @@ class Toolbar {
 
     init() {
         const toolMapping = {
+            ul: ULTool,
+            ol: OLTool,
             bold: BoldTool,
             italic: ItalicTool,
             strikethrough: StrikethroughTool,

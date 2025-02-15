@@ -1,6 +1,6 @@
-import MarkdownTool from './MarkdownTool.js';
+import MakeTool from '../MakeTool.js';
 
-class ItalicTool extends MarkdownTool {
+class ItalicTool extends MakeTool {
     constructor(editor) {
         // Call the parent constructor with the markdown syntax for italic (*)
         super(editor, '*', 'italic text');

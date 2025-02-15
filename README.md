@@ -12,6 +12,7 @@ Welcome to the documentation for the **MarkdownEditor Plugin** – an **open sou
 - [Markdown Content Retrieval](#markdown-content-retrieval)
   - [JavaScript Value Retrieval](#javascript-value-retrieval)
   - [HTML Template Form Submission](#html-template-form-submission)
+- [Set Markdown Content to Editor](#set-markdown-content-to-editor)
 - [Configuration Options](#configuration-options)
 - [Toolbar Customization](#toolbar-customization)
 - [Example Implementations](#example-implementations)
@@ -129,7 +130,7 @@ In this method, you can access the markdown content entered into the editor dire
 
 ```html
 <form>
-  <textarea class="editor-container"></textarea>
+  <textarea class="editor-container h-48" rows="5"></textarea>
   <button type="button" id="submit-btn">Submit</button>
   <div class="output"></div>
 </form>
@@ -158,7 +159,7 @@ If you prefer a traditional form submission approach (for example, in server-sid
 
 ```html
 <form method="POST" action="/your-server-endpoint">
-    <textarea class="editor-container" name="markdown"></textarea>
+    <textarea class="editor-container h-48" rows="5" name="markdown"></textarea>
     <button type="submit">Submit</button>
 </form>
 ```
@@ -174,6 +175,14 @@ const editor = new MarkdownEditor('.editor-container', {
 });
 ```
 
+## Set Markdown Content to Editor
+
+```HTML
+<form method="POST" action="/your-server-endpoint">
+    <textarea class="editor-container h-48" rows="5" name="markdown">Add your markdown content here</textarea>
+    <button type="submit">Submit</button>
+</form>
+```
 
 ## Configuration Options
 
@@ -181,8 +190,8 @@ Customize your Markdown editor by passing an `options` object during initializat
 
 | Option        | Type     | Default                      | Description                                               |
 |---------------|----------|------------------------------|-----------------------------------------------------------|
-| `placeholder` | `string` | `'Write your markdown...'`   | Sets the placeholder text for the textarea.             |
-| `toolbar`     | `array`  | `['bold', 'italic', 'strikethrough']` | Determines which tools appear in the toolbar and their order. |
+| `placeholder` | `string` | `'Write your markdown...'`   | Sets the placeholder text for the textarea (optional, as you can also use the standard HTML textarea attribute)            |
+| `toolbar`     | `array`  | `['bold', 'italic', 'strikethrough', 'ol', 'ul', 'preview']` | Determines which tools appear in the toolbar and their order. |
 
 ---
 
@@ -222,7 +231,7 @@ Below is a complete HTML example demonstrating how to integrate the MarkdownEdit
   <link rel="stylesheet" href="dist/markdown-editor-plugin.css">
 </head>
 <body>
-  <textarea class="editor-container"></textarea>
+  <textarea class="editor-container h-56" rows="6"></textarea>
 
   <script src="dist/markdown-editor-plugin.js"></script>
   <script>

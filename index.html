@@ -9,7 +9,26 @@
 </head>
 <body class="p-4 lg:p-12 ">
     <form method="post" class="flex flex-col gap-4">
-        <textarea class="editor h-48" rows="5"></textarea>
+        <textarea class="editor h-48" rows="5">
+# Markdown Editor
+
+## Introduction
+
+Markdown is a lightweight markup language with plain-text formatting syntax. It is often used for writing documentation and creating content for web pages.
+
+### Features of Markdown:
+- Easy to learn and use
+- Can be converted to HTML
+- Supports basic text formatting
+
+## Code Example
+
+Here’s an example of a simple Python function:
+
+```python
+def greet(name):
+    return f"Hello, {name}!"
+</textarea>
         <button type="button" class="btn self-end bg-violet-500 hover:bg-violet-600 focus:outline-2 focus:outline-offset-2 focus:outline-violet-500 active:bg-violet-700 inline-block rounded px-3 py-1 text-xs/6 font-semibold text-white cursor-pointer">
             Get Markdown
         </button>
@@ -22,7 +41,7 @@
     <script>
         const options = {
             placeholder: 'Start writing...',
-            toolbar: ['bold', 'italic', 'strikethrough', 'preview'],
+            toolbar: ['bold', 'italic', 'strikethrough', 'ul', 'ol', 'preview'],
         }
 
         document.querySelectorAll(".editor").forEach(element => {

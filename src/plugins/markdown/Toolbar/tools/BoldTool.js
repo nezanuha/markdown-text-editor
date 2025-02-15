@@ -1,6 +1,6 @@
-import MarkdownTool from './MarkdownTool.js';
+import MakeTool from '../MakeTool.js';
 
-class BoldTool extends MarkdownTool {
+class BoldTool extends MakeTool {
     constructor(editor) {
         // Call the parent constructor with the markdown syntax for bold (**)
         super(editor, '**', 'bold text');

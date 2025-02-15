@@ -1,6 +1,6 @@
-import MarkdownTool from './MarkdownTool.js';
+import MakeTool from '../MakeTool.js';
 
-class StrikethroughTool extends MarkdownTool {
+class StrikethroughTool extends MakeTool {
     constructor(editor) {
         // Call the parent constructor with the markdown syntax for strikethrough (~~)
         super(editor, '~~', 'strikethrough text');
