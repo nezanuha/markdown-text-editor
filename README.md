@@ -11,6 +11,8 @@ Welcome to the documentation for the **MarkdownEditor Plugin** – an **open sou
 - [Usage](#usage)
 - [Markdown Content Retrieval](#markdown-content-retrieval)
 - [Configuration Options](#configuration-options)
+  - [JavaScript Value Retrieval](#javascript-value-retrieval)
+  - [HTML Template Form Submission](#html-template-form-submission)
 - [Toolbar Customization](#toolbar-customization)
 - [Example Implementations](#example-implementations)
 - [Contribution Guidelines](#contribute)
