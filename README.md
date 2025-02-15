@@ -9,6 +9,7 @@ Welcome to the documentation for the **MarkdownEditor Plugin** – an **open sou
 - [Overview](#overview)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Markdown Content Retrieval](#markdown-content-retrieval)
 - [Configuration Options](#configuration-options)
 - [Toolbar Customization](#toolbar-customization)
 - [Example Implementations](#example-implementations)
@@ -114,6 +115,63 @@ Alternatively, include the following CDN links in your HTML:
 ```
 
 ---
+
+## Markdown Content Retrieval
+
+### JavaScript Value Retrieval
+
+In this method, you can access the markdown content entered into the editor directly using JavaScript. This is helpful when you want to dynamically retrieve the value and process it in your application (e.g., displaying it elsewhere or sending it via AJAX).
+
+
+#### HTML
+
+```html
+<form>
+  <textarea class="editor-container"></textarea>
+  <button type="button" id="submit-btn">Submit</button>
+  <div class="output"></div>
+</form>
+```
+
+#### JavaScript
+
+```javascript
+const editor = new MarkdownEditor('.editor-container', {
+    placeholder: 'Start writing...',
+    toolbar: ['bold', 'italic', 'preview'],
+});
+
+document.getElementById('submit-btn').addEventListener('click', function() {
+    const markdownValue = document.querySelector('.editor-container').value;
+    console.log(markdownValue);
+    document.querySelector('.output').innerHTML = `<pre>${markdownValue}</pre>`;
+});
+```
+
+### HTML Template Form Submission
+
+If you prefer a traditional form submission approach (for example, in server-side applications like Django), you can integrate the markdown editor into a form that submits the value to the server for processing.
+
+#### HTML (Form Submission)
+
+```html
+<form method="POST" action="/your-server-endpoint">
+    <textarea class="editor-container" name="markdown"></textarea>
+    <button type="submit">Submit</button>
+</form>
+```
+
+you can retrieve the value from a traditional `<textarea>` in a form submission without any custom element. When the form is submitted, the content inside the `<textarea>` is automatically included as part of the form data, using the name attribute of the `<textarea>`. 
+
+#### JavaScript (MarkdownEditor Initialization)
+
+```javascript
+const editor = new MarkdownEditor('.editor-container', {
+    placeholder: 'Write your markdown...',
+    toolbar: ['preview', 'bold', 'italic'],
+});
+```
+
 
 ## Configuration Options
 
