@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # Define the Node.js version as an environment variable
-      NODE_VERSION: '16'  # Directly set to your current Node.js version
+      NODE_VERSION: '20'  # Directly set to your current Node.js version
 
     steps:
       - uses: actions/checkout@v2
