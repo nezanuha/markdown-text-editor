@@ -14,10 +14,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: ${{ env.NODE_VERSION }}  # Use the environment variable for the Node version
+
+      - name: Authenticate with npm
+        run: npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
 
       - name: Install dependencies
         run: npm install
