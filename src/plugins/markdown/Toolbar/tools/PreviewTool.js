@@ -60,6 +60,12 @@ class PreviewTool extends MakeTool {
         editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.remove("!h-[90lvh]");
         
         document.querySelector("body").classList.remove('overflow-hidden');
+
+        document.querySelectorAll('.markdown-btn').forEach(button => {
+            if (!button.classList.contains('preview-btn')) {
+                button.classList.remove('pointer-events-none', 'md:pointer-events-auto', 'opacity-25', 'md:opacity-100');
+            }
+        });
     }
 
     // Method to show the preview (enable it)
@@ -92,6 +98,12 @@ class PreviewTool extends MakeTool {
         editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.add("!h-[90lvh]");
 
         document.querySelector("body").classList.add('overflow-hidden');
+
+        document.querySelectorAll('.markdown-btn').forEach(button => {
+            if (!button.classList.contains('preview-btn')) {
+                button.classList.add('pointer-events-none', 'md:pointer-events-auto', 'opacity-25', 'md:opacity-100');
+            }
+        });
     }
 }
 

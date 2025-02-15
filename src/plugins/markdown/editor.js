@@ -130,8 +130,35 @@ class MarkdownEditor {
         this.usertextarea.value = `${value.substring(0, selectionStart)}${text}${value.substring(selectionEnd)}`;
         this.usertextarea.focus();
         this.usertextarea.setSelectionRange(selectionStart, selectionStart + text.length);
+
+        // Scroll the textarea to the inserted text
+        this.scrollToView();
+
         this.render();
     }
+
+    scrollToView() {
+        const textarea = this.usertextarea;
+    
+        // Calculate the position of the inserted text
+        const selectionStart = textarea.selectionStart;
+    
+        // Get the line height (height of each row of text)
+        const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
+        
+        // Get how many rows fit into the visible area of the textarea
+        const rowsInView = Math.floor(textarea.clientHeight / lineHeight);
+    
+        // Calculate the current line number of the selectionStart
+        const currentLine = Math.floor(selectionStart / textarea.cols);
+    
+        // Scroll to the line number that places the inserted text in the center
+        const targetScrollTop = (currentLine - Math.floor(rowsInView / 2)) * lineHeight;
+    
+        // Adjust scrollTop to center the cursor's line in the view
+        textarea.scrollTop = targetScrollTop;
+    }
+    
 
     render() {
         const html = marked(this.usertextarea.value);

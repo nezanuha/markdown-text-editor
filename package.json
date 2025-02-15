@@ -1,7 +1,7 @@
 {
   "name": "markdown-text-editor",
-  "version": "0.1.0",
-  "description": "A powerful, easy-to-use Markdown editor with a real-time preview, syntax highlighting. Ideal for developers, writers, and content creators who need a seamless, interactive writing experience with full Markdown support.",
+  "version": "0.1.1",
+  "description": "A simple JavaScript Markdown editor plugin with real-time preview, and easy integration.",
   "main": "./dist/markdown-text-editor.js",
   "browser": "dist/markdown-text-editor.js",
   "style": "./dist/markdown-text-editor.css",
@@ -20,21 +20,26 @@
     "dev": "webpack serve --mode=development"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "provenance": true,
+    "access": "public"
   },
   "keywords": [
-    "markdown-text-editor",
     "markdown",
     "mde",
-    "markdown editor",
-    "text-editor",
+    "markdown js library",
     "editor",
-    "live preview",
-    "syntax highlighting",
-    "library",
-    "content creation",
-    "plugin",
-    "open source"
+    "markdown editor",
+    "text editor",
+    "markdown preview",
+    "markdown syntax",
+    "markdown plugin",
+    "rich text editor",
+    "wysiwyg",
+    "markdown formatting",
+    "code editor",
+    "editor plugin",
+    "text formatting",
+    "markdown-text-editor"
   ],
   "author": "Nezanuha",
   "license": "MIT",
@@ -43,8 +48,8 @@
     "url": "https://github.com/nezanuha/markdown-text-editor/issues"
   },
   "dependencies": {
-    "marked": "^15.0.4",
-    "tailwindcss": "^3.4.13"
+    "marked": "~15.0.4",
+    "tailwindcss": "~3.4.13"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

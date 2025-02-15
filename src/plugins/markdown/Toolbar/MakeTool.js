@@ -1,17 +1,20 @@
 class MakeTool {
-    constructor(editor, syntax, defaultText) {
+    constructor(editor, syntax, title) {
         this.editor = editor;
         this.syntax = syntax; // Markdown syntax (e.g., ** for bold, * for italic)
-        this.defaultText = defaultText; // Default text if nothing is selected
+        this.defaultText = `${title} text`; // Default text if nothing is selected
         this.button = this.createButton();
+        this.title = title
     }
 
     // Create a button element (can be overridden in child classes)
     createButton(iconHtml) {
         const button = document.createElement('button');
+        const buttonClass = this.title ? `${this.title.replace(/ /g, '-')}-btn`.toLowerCase() : '';
         button.innerHTML = iconHtml;  // Pass icon HTML from child classes
         button.type = 'button';
-        button.className = 'markdown-btn p-2 hover:bg-stone-200 dark:hover:bg-stone-600 rounded duration-300';
+        button.title = this.title;
+        button.className = `markdown-btn ${buttonClass}${buttonClass == 'preview-btn' ? ' sticky right-0 bg-stone-100 dark:bg-stone-900 ' : ' ' }p-2 hover:bg-stone-200 dark:hover:bg-stone-600 rounded duration-300 text-stone-900 dark:text-stone-100`;
         button.addEventListener('click', () => this.applySyntax('both'));  // Default to 'both', can change in child
         return button;
     }
