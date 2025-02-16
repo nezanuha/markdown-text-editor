@@ -36,6 +36,7 @@ class MarkdownEditor {
 
     applyDefaultAttributes() {
         this.usertextarea.classList.add(
+            "focus:ring-0",
             "focus:outline-0",
             "border-0",
             "p-1.5",
@@ -50,7 +51,9 @@ class MarkdownEditor {
             "dark:prose-invert",
             "text-stone-700",
             "dark:text-stone-200",
-            "overflow-y-auto"
+            "overflow-y-auto",
+            "placeholder:text-stone-300",
+            "dark:placeholder:text-stone-700"
         );
         if (!this.usertextarea.hasAttribute('placeholder')) {
             this.usertextarea.placeholder = this.options.placeholder || 'Write your markdown...';
