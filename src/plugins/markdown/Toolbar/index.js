@@ -6,7 +6,7 @@ import ULTool from './tools/ULTool.js';
 import OLTool from './tools/OLTool.js';
 import PreviewTool from './tools/PreviewTool.js'
 import CheckListTool from './tools/CheckListTool.js';
-
+import BlockQuoteTool from './tools/BlockQuoteTool.js';
 class Toolbar {
     constructor(editor, options) {
         this.editor = editor;
@@ -23,7 +23,8 @@ class Toolbar {
             checklist: CheckListTool,
             bold: BoldTool,
             italic: ItalicTool,
-            strikethrough: StrikethroughTool
+            strikethrough: StrikethroughTool,
+            blockquote: BlockQuoteTool
         };
 
         // Append all tools except preview

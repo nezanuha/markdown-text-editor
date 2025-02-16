@@ -49,12 +49,12 @@
   },
   "dependencies": {
     "marked": "~15.0.4",
-    "tailwindcss": "~3.4.13"
+    "tailwindcss": "~3.4.13",
+    "@tailwindcss/typography": "~0.5.15"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
-    "@tailwindcss/typography": "^0.5.15",
     "autoprefixer": "^10.4.20",
     "babel-loader": "^9.2.1",
     "css-loader": "^7.1.2",
