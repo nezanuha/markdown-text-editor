@@ -13,14 +13,14 @@ class CheckListTool extends MakeTool {
         const { selectionStart, selectionEnd } = textarea;
         const selectedText = textarea.value.substring(selectionStart, selectionEnd);
 
-        const syntax = '- [x]';
+        const syntax = '- [x] ';
         let newText = '';
         if (selectedText.startsWith(syntax)) {
             // Remove the checklist syntax if it's already wrapped
             newText = selectedText.slice(syntax.length);
         } else {
             // Apply check list syntax
-            newText = `${syntax} ${selectedText || 'Check list text'}`;
+            newText = `${syntax}${selectedText || 'Check list'}`;
         }
 
         this.editor.insertText(newText);

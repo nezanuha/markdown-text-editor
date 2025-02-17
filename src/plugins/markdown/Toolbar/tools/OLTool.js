@@ -20,7 +20,7 @@ class OLTool extends MakeTool {
             newText = selectedText.slice(syntax.length);
         } else {
             // Apply ordered list syntax
-            newText = `${syntax} ${selectedText || 'Ordered list text'}`;
+            newText = `${syntax}${selectedText || 'Ordered list'}`;
         }
 
         this.editor.insertText(newText);

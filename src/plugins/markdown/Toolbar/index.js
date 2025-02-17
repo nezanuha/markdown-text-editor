@@ -7,6 +7,9 @@ import OLTool from './tools/OLTool.js';
 import PreviewTool from './tools/PreviewTool.js'
 import CheckListTool from './tools/CheckListTool.js';
 import BlockQuoteTool from './tools/BlockQuoteTool.js';
+import LinkTool from './tools/LinkTool.js'
+import HeadingTool from './tools/HeadingTool.js';
+
 class Toolbar {
     constructor(editor, options) {
         this.editor = editor;
@@ -18,13 +21,15 @@ class Toolbar {
 
     init() {
         const toolMapping = {
+            heading: HeadingTool,
             ul: ULTool,
             ol: OLTool,
             checklist: CheckListTool,
             bold: BoldTool,
             italic: ItalicTool,
             strikethrough: StrikethroughTool,
-            blockquote: BlockQuoteTool
+            blockquote: BlockQuoteTool,
+            link: LinkTool
         };
 
         // Append all tools except preview

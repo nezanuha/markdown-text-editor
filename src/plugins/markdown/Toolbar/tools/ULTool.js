@@ -20,7 +20,7 @@ class ULTool extends MakeTool {
             newText = selectedText.slice(syntax.length);
         } else {
             // Apply Unordered list syntax
-            newText = `${syntax} ${selectedText || 'Unordered list text'}`;
+            newText = `${syntax}${selectedText || 'Unordered list'}`;
         }
 
         this.editor.insertText(newText);

@@ -71,7 +71,7 @@ To get started, include a `<textarea>` element in your HTML and initialize the e
 ```javascript
 const editor = new MarkdownEditor('.editor-container', {
     placeholder: 'Write your markdown...',
-    toolbar: ['bold', 'italic', 'strikethrough', 'ul', 'ol', 'checklist', 'preview'],
+    toolbar: ['heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'checklist', 'blockquote', 'link', 'preview'],
 });
 ```
 
@@ -191,7 +191,7 @@ Customize your Markdown editor by passing an `options` object during initializat
 | Option        | Type     | Default                      | Description                                               |
 |---------------|----------|------------------------------|-----------------------------------------------------------|
 | `placeholder` | `string` | `'Write your markdown...'`   | Sets the placeholder text for the textarea (optional, as you can also use the standard HTML textarea attribute)            |
-| `toolbar`     | `array`  | `['bold', 'italic', 'strikethrough', 'ol', 'ul', 'checklist', 'preview']` | Determines which tools appear in the toolbar and their order. |
+| `toolbar`     | `array`  | `['heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'checklist', 'blockquote', 'link', 'preview']` | Determines which tools appear in the toolbar and their order. |
 
 ---
 
