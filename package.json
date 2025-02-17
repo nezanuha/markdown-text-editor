@@ -1,6 +1,6 @@
 {
   "name": "markdown-text-editor",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A simple JavaScript Markdown editor plugin with real-time preview, and easy integration.",
   "main": "./dist/markdown-text-editor.js",
   "browser": "dist/markdown-text-editor.js",
