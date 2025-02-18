@@ -48,9 +48,9 @@
     "url": "https://github.com/nezanuha/markdown-text-editor/issues"
   },
   "dependencies": {
+    "@tailwindcss/typography": "~0.5.15",
     "marked": "~15.0.4",
-    "tailwindcss": "~3.4.13",
-    "@tailwindcss/typography": "~0.5.15"
+    "tailwindcss": "~3.4.13"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -58,6 +58,7 @@
     "autoprefixer": "^10.4.20",
     "babel-loader": "^9.2.1",
     "css-loader": "^7.1.2",
+    "cssnano": "^7.0.6",
     "html-webpack-plugin": "^5.6.3",
     "mini-css-extract-plugin": "^2.9.1",
     "postcss": "^8.4.47",
