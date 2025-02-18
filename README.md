@@ -1,3 +1,10 @@
+[![Total Downloads](https://img.shields.io/npm/dt/markdown-text-editor.svg)](https://www.npmjs.com/package/markdown-text-editor)
+[![Latest Release](https://img.shields.io/npm/v/markdown-text-editor.svg)](https://github.com/nezanuha/markdown-text-editor/releases)
+[![License](https://img.shields.io/npm/l/markdown-text-editor.svg)](https://github.com/nezanuha/markdown-text-editor/blob/master/LICENSE)
+
+---
+
+
 ## MarkdownEditor Plugin Documentation
 
 Welcome to the documentation for the **MarkdownEditor Plugin** – an **open source project** offering the **best, simple, embeddable JavaScript Markdown editor plugin or library**. This powerful tool provides **real-time preview**, **syntax highlighting**, and **easy integration** into your projects. Whether you’re building a blog, note-taking app, or any content-rich website, this plugin delivers a robust and customizable markdown editing experience.
