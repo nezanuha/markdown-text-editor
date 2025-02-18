@@ -114,7 +114,7 @@ Alternatively, include the following CDN links in your HTML:
 #### CSS:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.css">
 ```
 
 ---
