@@ -6,7 +6,11 @@
 
 
 ## MarkdownEditor Plugin Documentation
+Transform textarea into powerful Markdown editor, and get/set value as standard HTML method.
 
+[**DEMO**](https://codepen.io/Mohammed-Rashad/pen/pvoyqPQ)
+
+---
 Welcome to the documentation for the **MarkdownEditor Plugin** – an **open source project** offering the **best, simple, embeddable JavaScript Markdown editor plugin or library**. This powerful tool provides **real-time preview**, **syntax highlighting**, and **easy integration** into your projects. Whether you’re building a blog, note-taking app, or any content-rich website, this plugin delivers a robust and customizable markdown editing experience.
 
 - ✅ **Actively Maintenaning**: The plugin receives regular updates to stay up to date. 
