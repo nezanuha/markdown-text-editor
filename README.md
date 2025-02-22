@@ -1,6 +1,28 @@
-## MarkdownEditor Plugin Documentation
+[![Total Downloads](https://img.shields.io/npm/dt/markdown-text-editor.svg)](https://www.npmjs.com/package/markdown-text-editor)
+[![Latest Release](https://img.shields.io/npm/v/markdown-text-editor.svg)](https://github.com/nezanuha/markdown-text-editor/releases)
+[![License](https://img.shields.io/npm/l/markdown-text-editor.svg)](https://github.com/nezanuha/markdown-text-editor/blob/master/LICENSE)
 
+---
+
+
+## MarkdownEditor Plugin Documentation
+Transform textarea into powerful Markdown editor, and get/set value as standard HTML method.
+
+[**DEMO**](https://codepen.io/Mohammed-Rashad/pen/pvoyqPQ)
+
+---
 Welcome to the documentation for the **MarkdownEditor Plugin** – an **open source project** offering the **best, simple, embeddable JavaScript Markdown editor plugin or library**. This powerful tool provides **real-time preview**, **syntax highlighting**, and **easy integration** into your projects. Whether you’re building a blog, note-taking app, or any content-rich website, this plugin delivers a robust and customizable markdown editing experience.
+
+- ✅ **Actively Maintenaning**: The plugin receives regular updates to stay up to date. 
+- ✅ **User-Friendly**: It offers a WYSIWYG-style interface, making it great for non-technical users.  
+- ✅ **Simple Markdown _Get/Set_**: No complicated techniques are required to get and set the markdown content. You can use the <textarea> value or name attribute to get and set markdown content.
+- ✅ **Tailwind CSS Support**: Built with TailwindCSS, and it will work with both Tailwind CSS and non-Tailwind CSS projects.  
+- ✅ **Responsive**: The editor is fully responsive, providing a seamless experience across all screen sizes.  
+- ✅ **RTL Support**: By default Right-to-Left (RTL) text is supported, making it ideal for languages like Arabic, Urdu, and Farsi.  
+- ✅ **Module Support**: Supports ESM, UMD, and CommonJS modules, making it easy to integrate with different module systems.
+- ✅ **Live Preview Mode**: Watch your markdown content render while you type, providing a real-time preview of formatting, links, images, and more.
+- ✅ **Automatic Dark Mode Support**: The editor follows your system's or website's dark mode settings, giving a seamless experience.
+
 
 ---
 
@@ -114,7 +136,7 @@ Alternatively, include the following CDN links in your HTML:
 #### CSS:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.css">
 ```
 
 ---
