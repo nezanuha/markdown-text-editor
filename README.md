@@ -20,6 +20,8 @@ Welcome to the documentation for the **MarkdownEditor Plugin** – an **open sou
 - ✅ **Responsive**: The editor is fully responsive, providing a seamless experience across all screen sizes.  
 - ✅ **RTL Support**: By default Right-to-Left (RTL) text is supported, making it ideal for languages like Arabic, Urdu, and Farsi.  
 - ✅ **Module Support**: Supports ESM, UMD, and CommonJS modules, making it easy to integrate with different module systems.
+- ✅ **Live Preview Mode**: Watch your markdown content render while you type, providing a real-time preview of formatting, links, images, and more.
+- ✅ **Automatic Dark Mode Support**: The editor follows your system's or website's dark mode settings, giving a seamless experience.
 
 
 ---
