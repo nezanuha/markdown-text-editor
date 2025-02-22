@@ -1,6 +1,6 @@
 {
   "name": "markdown-text-editor",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A simple JavaScript Markdown editor plugin with real-time preview, and easy integration.",
   "main": "./dist/markdown-text-editor.js",
   "browser": "dist/markdown-text-editor.js",
@@ -27,8 +27,10 @@
     "markdown",
     "mde",
     "markdown js library",
+    "markdown js plugin",
     "editor",
     "markdown editor",
+    "Simple Markdown editor js plugin",
     "text editor",
     "markdown preview",
     "markdown syntax",
@@ -39,7 +41,13 @@
     "code editor",
     "editor plugin",
     "text formatting",
-    "markdown-text-editor"
+    "markdown-text-editor",
+    "Tailwind css markdown editor",
+    "Tailwind css markdown",
+    "WYSIWYG-style markdown editor",
+    "Simple Markdown",
+    "Responsive markdown js editor",
+    "RTL Support markdown editor"
   ],
   "author": "Nezanuha",
   "license": "MIT",
@@ -48,13 +56,12 @@
     "url": "https://github.com/nezanuha/markdown-text-editor/issues"
   },
   "dependencies": {
-    "@tailwindcss/typography": "~0.5.15",
-    "marked": "~15.0.4",
-    "tailwindcss": "~3.4.13"
+    "marked": "~15.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
+    "@tailwindcss/typography": "^0.5.15",
     "autoprefixer": "^10.4.20",
     "babel-loader": "^9.2.1",
     "css-loader": "^7.1.2",
@@ -65,6 +72,7 @@
     "postcss-loader": "^8.1.1",
     "rimraf": "^6.0.1",
     "style-loader": "^4.0.0",
+    "tailwindcss": "^3.4.17",
     "terser-webpack-plugin": "^5.3.11",
     "webpack": "^5.95.0",
     "webpack-cli": "^6.0.1",
