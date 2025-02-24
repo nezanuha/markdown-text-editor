@@ -15,10 +15,10 @@ jobs:
       NODE_VERSION: '20'  # Directly set to your current Node.js version
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}  # Use the environment variable for the Node version
 
