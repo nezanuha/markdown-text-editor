@@ -34,7 +34,7 @@ class PreviewTool extends MakeTool {
         editorDiv.parentNode.classList.toggle('top-0');
         editorDiv.parentNode.classList.toggle('inset-x-0');
         editorDiv.parentNode.classList.toggle('rounded-md');
-        editorDiv.parentNode.classList.toggle('z-[999]');
+        editorDiv.parentNode.classList.toggle('z-999');
     
         previewWrapper.classList.toggle('hidden');
 
@@ -43,7 +43,7 @@ class PreviewTool extends MakeTool {
             'md:grid',
             'md:grid-cols-2',
             'md:divide-x',
-            'rtl:md:divide-x-reverse',
+            'md:rtl:divide-x-reverse',
             'md:divide-stone-300',
             'dark:md:divide-stone-700'
         );
@@ -55,7 +55,7 @@ class PreviewTool extends MakeTool {
         );
         this.editor.render(); // Re-render content in the preview
 
-        editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.remove("!h-[90lvh]");
+        editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.remove("h-[90lvh]!");
         
         document.querySelector("body").classList.remove('overflow-hidden');
 
@@ -75,7 +75,7 @@ class PreviewTool extends MakeTool {
         editorDiv.parentNode.classList.toggle('top-0');
         editorDiv.parentNode.classList.toggle('inset-x-0');
         editorDiv.parentNode.classList.toggle('rounded-md');
-        editorDiv.parentNode.classList.toggle('z-[999]');
+        editorDiv.parentNode.classList.toggle('z-999');
 
         previewWrapper.classList.toggle('hidden');
         // Remove grid layout and divide classes from the editor div
@@ -83,7 +83,7 @@ class PreviewTool extends MakeTool {
             'md:grid',
             'md:grid-cols-2',
             'md:divide-x',
-            'rtl:md:divide-x-reverse',
+            'md:rtl:divide-x-reverse',
             'md:divide-stone-300',
             'dark:md:divide-stone-700'
         );
@@ -93,7 +93,7 @@ class PreviewTool extends MakeTool {
             'hidden',
             'md:block'
         );
-        editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.add("!h-[90lvh]");
+        editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.add("h-[90lvh]!");
 
         document.querySelector("body").classList.add('overflow-hidden');
 
