@@ -36,6 +36,7 @@ class MarkdownEditor {
 
     applyDefaultAttributes() {
         this.usertextarea.classList.add(
+            "dark:[scrollbar-color:var(--color-stone-600)_transparent]",
             "focus:ring-0",
             "focus:outline-0",
             "border-0",
@@ -53,7 +54,7 @@ class MarkdownEditor {
             "dark:text-stone-200",
             "overflow-y-auto",
             "placeholder:text-stone-300",
-            "dark:placeholder:text-stone-700"
+            "dark:placeholder:text-stone-600"
         );
         if (!this.usertextarea.hasAttribute('placeholder')) {
             this.usertextarea.placeholder = this.options.placeholder || 'Write your markdown...';
@@ -83,6 +84,7 @@ class MarkdownEditor {
         const textareaContainer = document.createElement('div');
         textareaContainer.className = `
             textarea-wrapper
+            h-full
             p-2
             bg-white
             dark:bg-stone-800
