@@ -9,8 +9,8 @@ module.exports = (env, argv) => {
         mode: isProd ? 'production' : 'development',
         stats: 'minimal',
         entry: {
-            index: './src/plugins/index.js',
-            'markdown-text-editor': './src/plugins/markdown/editor.js',
+            index: './src/index.js',
+            'markdown-text-editor': './src/markdown/editor.js',
         },
         resolve: {
             extensions: ['.ts', '.js'],

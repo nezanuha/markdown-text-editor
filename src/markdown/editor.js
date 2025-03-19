@@ -3,6 +3,7 @@ import './styles/main.css';
 import { marked } from 'marked';
 import Toolbar from './Toolbar/index.js';
 import Preview from './preview.js';
+import { getTheme } from "./utils/getTheme";
 
 marked.setOptions({
     breaks: true
@@ -13,6 +14,7 @@ class MarkdownEditor {
         this.usertextarea = typeof selector === 'string' ? document.querySelector(selector) : selector;
         this.options = options;
         this.preview = this.options.toolbar.includes('preview');
+        this.theme = getTheme();
         this.init();
     }
 
@@ -70,10 +72,11 @@ class MarkdownEditor {
             rounded-md
             overflow-hidden
         `;
+        this.editorContainer.setAttribute("data-theme", this.theme);
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
 
         this.markdownEditorDiv = document.createElement('div');
-        this.markdownEditorDiv.className = `editor-layout`;
+        this.markdownEditorDiv.className = `editor-layout relative`;
         this.editorContainer.appendChild(this.markdownEditorDiv);
 
         this.addTextareaWrapper();

@@ -1,4 +1,5 @@
 import MakeTool from '../MakeTool.js';
+import { modal } from '../../components/modal.js';
 
 class LinkTool extends MakeTool {
     constructor(editor) {
@@ -11,7 +12,7 @@ class LinkTool extends MakeTool {
     }
 
     // Apply link syntax [text](url)
-    applySyntax() {
+    applySyntax(event) {
         const textarea = this.editor.usertextarea;
         const { selectionStart, selectionEnd } = textarea;
         const selectedText = textarea.value.substring(selectionStart, selectionEnd);
@@ -28,6 +29,7 @@ class LinkTool extends MakeTool {
             textarea.setRangeText(linkText, selectionStart, selectionEnd, 'select');
         } else {
             // If no link syntax, prompt for the URL and apply the syntax
+            modal(event);
             const url = prompt("Enter the URL:", "https://");
             if (url) {
                 let newText = '';

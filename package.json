@@ -6,8 +6,7 @@
   "browser": "dist/markdown-text-editor.js",
   "style": "./dist/markdown-text-editor.css",
   "files": [
-    "dist/**/*",
-    "src/**/*"
+    "dist/**/*"
   ],
   "repository": {
     "type": "git",
@@ -60,20 +59,21 @@
     "marked": "~15.0.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.9",
+    "@babel/core": "^7.26.10",
     "@babel/preset-env": "^7.26.9",
-    "@tailwindcss/postcss": "^4.0.12",
+    "@tailwindcss/postcss": "^4.0.14",
     "@tailwindcss/typography": "^0.5.16",
     "babel-loader": "^10.0.0",
     "css-loader": "^7.1.2",
     "cssnano": "^7.0.6",
+    "frutjam": "^0.3.0-alpha.2",
     "html-webpack-plugin": "^5.6.3",
     "mini-css-extract-plugin": "^2.9.2",
     "postcss": "^8.5.3",
     "postcss-loader": "^8.1.1",
     "rimraf": "^6.0.1",
     "style-loader": "^4.0.0",
-    "tailwindcss": "^4.0.12",
+    "tailwindcss": "^4.0.14",
     "terser-webpack-plugin": "^5.3.14",
     "webpack": "^5.98.0",
     "webpack-cli": "^6.0.1",
