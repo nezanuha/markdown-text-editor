@@ -13,9 +13,10 @@ class LinkTool extends MakeTool {
 
     // Apply link syntax [text](url)
     applySyntax(event) {
-        const textarea = this.editor.usertextarea;
-        const { selectionStart, selectionEnd } = textarea;
-        const selectedText = textarea.value.substring(selectionStart, selectionEnd);
+        let editor = this.editor;
+        let textarea = editor.usertextarea;
+        let { selectionStart, selectionEnd } = textarea;
+        let selectedText = textarea.value.substring(selectionStart, selectionEnd);
     
         // Check if the selected text contains a link syntax [text](url)
         const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/;
@@ -29,18 +30,56 @@ class LinkTool extends MakeTool {
             textarea.setRangeText(linkText, selectionStart, selectionEnd, 'select');
         } else {
             // If no link syntax, prompt for the URL and apply the syntax
-            modal(event);
-            const url = prompt("Enter the URL:", "https://");
-            if (url) {
-                let newText = '';
-                if (selectedText) {
-                    newText = `[${selectedText}](${url})`; // Insert the link with selected text
+            
+            const bodyHTML =`
+                <div class="flex justify-between items-center gap-3">
+                    <div class="heading-6">Link</div>
+                    <button type="button" class="btn btn-xs btn-full btn-secondary" onclick="toggleModal.remove()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+                <div class="divider"></div>
+                <form method="post">
+                    <div class="flex flex-col justify-center gap-y-4.5 mt-4">
+                        <input type="url" placeholder="URL" class="input-primary w-full link-input" required>
+                        <input type="text" placeholder="Alt text" class="input-primary w-full link-alt-input" value="${selectedText}" required>
+                        <button type="submit" class="btn-primary btn-sm submit-link self-end">Submit</button>
+                    </div>
+                </form>
+            `;
+
+            const modalElement = modal(event, 'max-w-sm', bodyHTML);
+
+            modalElement.querySelector(".submit-link").addEventListener("click", function(e){
+                e.preventDefault();
+                let linkInput = modalElement.querySelector(".link-input");
+                let linkAltInput = modalElement.querySelector(".link-alt-input");
+
+                if (!linkInput.validity.valid) {
+                    linkInput.reportValidity();
+                } else if (!linkAltInput.validity.valid) {
+                    linkAltInput.reportValidity();
                 } else {
-                    newText = `[Link text](${url})`; // Insert a placeholder text if nothing is selected
+                    const link = linkInput.value;
+                    let linkAlt = linkAltInput.value;
+
+                    if(linkAlt == ''){
+                        linkAlt = 'Link Text';
+                    }
+
+                    let newText = '';
+                    if (selectedText) {
+                        newText = `[${selectedText}](${link})`; // Insert the link with selected text
+                    } else {
+                        newText = `[${linkAlt}](${link})`; // Insert a placeholder text if nothing is selected
+                    }
+                    editor.insertText(newText); // Insert the constructed link markdown
+                    
+                    linkInput.value = '';
+                    linkAltInput.value = '';
+                    modalElement.close();
                 }
-    
-                this.editor.insertText(newText); // Insert the constructed link markdown
-            }
+            });
         }
     }
     
