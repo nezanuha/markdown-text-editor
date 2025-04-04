@@ -61,22 +61,22 @@
   "devDependencies": {
     "@babel/core": "^7.26.10",
     "@babel/preset-env": "^7.26.9",
-    "@tailwindcss/postcss": "^4.0.16",
+    "@tailwindcss/postcss": "^4.1.2",
     "@tailwindcss/typography": "^0.5.16",
     "babel-loader": "^10.0.0",
     "css-loader": "^7.1.2",
     "cssnano": "^7.0.6",
-    "frutjam": "^0.5.0-alpha.0",
+    "frutjam": "^0.5.0-alpha.1",
     "html-webpack-plugin": "^5.6.3",
     "mini-css-extract-plugin": "^2.9.2",
     "postcss": "^8.5.3",
     "postcss-loader": "^8.1.1",
     "rimraf": "^6.0.1",
     "style-loader": "^4.0.0",
-    "tailwindcss": "^4.0.16",
+    "tailwindcss": "^4.1.2",
     "terser-webpack-plugin": "^5.3.14",
     "webpack": "^5.98.0",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.0"
+    "webpack-dev-server": "^5.2.1"
   }
 }
