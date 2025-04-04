@@ -73,11 +73,7 @@ module.exports = (env, argv) => {
             static: {
                 directory: path.resolve(__dirname, 'dist'), // Serve content from 'dist' directory
             },
-            compress: true, // Enable gzip compression
-            port: 9000, // Set the port for the dev server
-            open: true, // Automatically open the browser
             hot: true, // Enable hot module replacement
-            historyApiFallback: true, // Support for single-page applications
             // You can add more configuration if needed
         },
     };
