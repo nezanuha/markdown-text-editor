@@ -9,6 +9,7 @@ import CheckListTool from './tools/CheckListTool.js';
 import BlockQuoteTool from './tools/BlockQuoteTool.js';
 import LinkTool from './tools/LinkTool.js'
 import HeadingTool from './tools/HeadingTool.js';
+import ImageTool from './tools/ImageTool.js';
 
 class Toolbar {
     constructor(editor, options) {
@@ -29,7 +30,8 @@ class Toolbar {
             italic: ItalicTool,
             strikethrough: StrikethroughTool,
             blockquote: BlockQuoteTool,
-            link: LinkTool
+            link: LinkTool,
+            image: ImageTool
         };
 
         // Append all tools except preview
