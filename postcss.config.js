@@ -1,6 +1,7 @@
 module.exports = {
     plugins: {
-      '@tailwindcss/postcss': {},
-      ...({  cssnano: {} })
+      '@tailwindcss/postcss': {
+        optimize: { minify: true }
+      },
     }
 }
