@@ -33,17 +33,16 @@ class LinkTool extends MakeTool {
             
             const bodyHTML =`
                 <div class="flex justify-between items-center gap-3">
-                    <div class="heading-6">Link</div>
-                    <button type="button" class="btn-secondary btn-xs btn-circle" onclick="toggleModal.remove()">
+                    <div class="font-medium">Link</div>
+                    <button type="button" class="btn btn-ghost btn-xs btn-circle" onclick="toggleModal.remove()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                 </div>
-                <div class="divider-base divider-x"></div>
                 <form method="post">
                     <div class="flex flex-col justify-center gap-y-4.5 mt-4">
-                        <input type="url" placeholder="URL" class="input-primary w-full link-input" required>
-                        <input type="text" placeholder="Link text" class="input-primary w-full link-text-input" value="${selectedText}" required>
-                        <button type="submit" class="btn-primary btn-sm submit-link self-end">Submit</button>
+                        <input type="url" placeholder="URL" class="input w-full link-input" required>
+                        <input type="text" placeholder="Link text" class="input w-full link-text-input" value="${selectedText}" required>
+                        <button type="submit" class="btn btn-sm submit-link self-end">Apply</button>
                     </div>
                 </form>`;
 
