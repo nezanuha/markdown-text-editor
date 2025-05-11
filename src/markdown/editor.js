@@ -168,7 +168,7 @@ class MarkdownEditor {
 
     render() {
         const html = marked(this.usertextarea.value);
-        this.previewContent.innerHTML = html;
+        if (this.preview) this.previewContent.innerHTML = html;
     }
 }
 
