@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,7 +30,7 @@ def greet(name):
     return f"Hello, {name}!"
 ```
 </textarea>
-<button type="button" class="btn-violet-500 btn-sm self-end">Get Markdown</button>
+<button type="button" class="get-markdown btn-primary btn-sm self-end">Get Markdown</button>
     </form>
     <div class="border-t mt-5 space-y-3">
         <strong class="font-medium text-zinc-800 mt-3 block">Output</strong>
@@ -38,16 +38,47 @@ def greet(name):
     </div>
     <script src="markdown-text-editor.js"></script>
     <script>
+        const imgOptions = {
+            'image': {
+                'fileInput': true,
+                'accept': [
+                    'webp',
+                    'png'
+                ]
+            }
+        }
         const options = {
             placeholder: 'Start writing...',
-            toolbar: ['heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'checklist', 'blockquote', 'link', 'image', 'preview'],
+            toolbar: [
+                'heading',
+                'bold',
+                'italic',
+                'strikethrough',
+                'ul',
+                'ol',
+                'checklist',
+                'blockquote',
+                'link', 
+                {
+                    image: {
+                        fileInput: {
+                            accept: [
+                                'webp',
+                                'avif'
+                            ],
+                            uploadUrl: '/api/upload' // <-- Your upload endpoint and uploaded path  
+                        },
+                    }
+                },
+                'preview'
+            ],
         }
 
         document.querySelectorAll(".editor").forEach(element => {
             const editor = new MarkdownEditor(element, options); 
         });
 
-        document.querySelector(".btn").addEventListener("click", function(e){
+        document.querySelector(".get-markdown").addEventListener("click", function(e){
             const output = document.querySelector(".editor").value;
             console.log(output);
             document.querySelector(".output").innerHTML = `<pre>${output}</pre>`;

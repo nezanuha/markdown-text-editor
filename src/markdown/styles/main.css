@@ -1,3 +1,4 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
+@source "../../../src/";
 @import 'frutjam';
 @plugin '@tailwindcss/typography';

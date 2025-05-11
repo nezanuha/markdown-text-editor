@@ -8,14 +8,22 @@ class MakeTool {
 
     // Create a button element (can be overridden in child classes)
     createButton(iconHtml) {
-        const button = document.createElement('button');
-        const buttonClass = this.title ? `${this.title.replace(/ /g, '-')}-btn`.toLowerCase() : '';
-        button.innerHTML = iconHtml;  // Pass icon HTML from child classes
-        button.type = 'button';
-        button.title = this.title;
-        button.className = `markdown-btn ${buttonClass}${buttonClass == 'preview-btn' ? ' sticky right-0 btn-active ' : ' ' }btn-primary btn-ghost btn-xs`;
-        button.addEventListener('click', (event) => this.applySyntax(event));  // Default to 'both', can change in child
-        return button;
+        const btn = document.createElement('button');
+        const btnClass = this.title ? `${this.title.replace(/ /g, '-')}-btn`.toLowerCase() : '';
+        btn.innerHTML = iconHtml;  // Pass icon HTML from child classes
+        btn.type = 'button';
+        btn.title = this.title;
+        btn.className = `markdown-btn ${btnClass} btn btn-sm btn-square btn-ghost`;
+        btn.addEventListener('click', (event) => this.applySyntax(event));  // Default to 'both', can change in child
+
+        if(btnClass == 'preview-btn') {
+            const btnWrapper = document.createElement('div');
+            btnWrapper.className = 'bg-stone-100 dark:bg-stone-900 sticky -right-2 border-l border-stone-200 dark:border-stone-700 px-1.5';
+            btnWrapper.appendChild(btn);
+            return btnWrapper;
+        }
+        
+        return btn;
     }
 }
 

@@ -54,7 +54,7 @@ module.exports = (env, argv) => {
             }),
             // Only add HtmlWebpackPlugin in development mode
             !isProd && new HtmlWebpackPlugin({
-                template: 'index.html', // Path to your HTML file
+                template: 'demo.html', // Path to your HTML file
                 filename: 'index.html', // Output file name
             }),
         ].filter(Boolean), // Filter out false values in production mode

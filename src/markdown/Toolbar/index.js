@@ -16,7 +16,7 @@ class Toolbar {
         this.editor = editor;
         this.options = options;
         this.toolbar = document.createElement('div');
-        this.toolbar.className = 'toolbar flex space-x-1.5 p-1.5 bg-stone-100 dark:bg-stone-900 dark:text-stone-200 border-b border-stone-200 dark:border-stone-700 overflow-x-auto';
+        this.toolbar.className = 'toolbar flex space-x-1.5 p-1.5 bg-stone-100 dark:bg-stone-800 dark:text-stone-200 border-b border-stone-200 dark:border-stone-700 overflow-x-auto';
         this.init();
     }
 
@@ -35,13 +35,30 @@ class Toolbar {
         };
 
         // Append all tools except preview
+        // this.options.forEach(tool => {
+        //     if (tool !== 'preview') {
+        //         const ToolClass = toolMapping[tool];
+        //         if (ToolClass) {
+        //             const toolInstance = new ToolClass(this.editor);
+        //             this.toolbar.appendChild(toolInstance.button); // Directly append to toolbar
+        //         }
+        //     }
+        // });
+
         this.options.forEach(tool => {
-            if (tool !== 'preview') {
-                const ToolClass = toolMapping[tool];
-                if (ToolClass) {
-                    const toolInstance = new ToolClass(this.editor);
-                    this.toolbar.appendChild(toolInstance.button); // Directly append to toolbar
-                }
+            let ToolClass, config;
+        
+            if (typeof tool === 'string') {
+                ToolClass = toolMapping[tool];
+            } else if (typeof tool === 'object') {
+                const toolName = Object.keys(tool)[0];
+                config = tool[toolName];
+                ToolClass = toolMapping[toolName];
+            }
+        
+            if (ToolClass) {
+                const toolInstance = new ToolClass(this.editor, config);
+                this.toolbar.appendChild(toolInstance.button);
             }
         });
 

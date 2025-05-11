@@ -62,6 +62,8 @@ class PreviewTool extends MakeTool {
         document.querySelectorAll('.markdown-btn').forEach(button => {
             if (!button.classList.contains('preview-btn')) {
                 button.classList.remove('pointer-events-none', 'md:pointer-events-auto', 'opacity-25', 'md:opacity-100');
+            }else{
+                button.classList.remove('btn-active');
             }
         });
     }
@@ -100,6 +102,8 @@ class PreviewTool extends MakeTool {
         document.querySelectorAll('.markdown-btn').forEach(button => {
             if (!button.classList.contains('preview-btn')) {
                 button.classList.add('pointer-events-none', 'md:pointer-events-auto', 'opacity-25', 'md:opacity-100');
+            }else{
+                button.classList.add('btn-active');
             }
         });
     }
