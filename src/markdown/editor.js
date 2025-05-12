@@ -108,8 +108,8 @@ class MarkdownEditor {
     
 
     addPreviewWrapper() {
-        const preview = new Preview(this.markdownEditorDiv);
-        this.previewContent = preview.getPreviewContent();
+        const previewInstance = new Preview(this.markdownEditorDiv);
+        this.previewContent = previewInstance.getPreviewContent();
     }
 
     addInputListener() {

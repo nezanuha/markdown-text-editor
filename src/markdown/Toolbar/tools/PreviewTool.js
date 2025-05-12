@@ -5,6 +5,7 @@ class PreviewTool extends MakeTool {
     constructor(editor) {
         // No markdown syntax for preview toggle, so we call the parent constructor with empty values
         super(editor, 'Preview');
+        this.preview = true;
         this.button = this.createButton(`
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M11 5H5V19H11V5ZM13 5V19H19V5H13ZM4 3H20C20.5523 3 21 3.44772 21 4V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3Z"></path></svg>
         `);
@@ -18,7 +19,7 @@ class PreviewTool extends MakeTool {
         if (!previewWrapper || !editorDiv) return;
 
         // Toggle the preview's visibility by switching between 'block' and 'hidden' classes
-        if (this.editor.preview) {
+        if (this.editor.preview && this.preview) {
             this.enablePreview(previewWrapper, editorDiv);
         } else {
             this.disablePreview(previewWrapper, editorDiv);
@@ -28,7 +29,7 @@ class PreviewTool extends MakeTool {
     // Method to hide the preview (disable it)
     disablePreview(previewWrapper, editorDiv) {
 
-        this.editor.preview = true;
+        this.preview = true;
 
         editorDiv.parentNode.classList.toggle('fixed');
         editorDiv.parentNode.classList.toggle('top-0');
@@ -71,7 +72,7 @@ class PreviewTool extends MakeTool {
     // Method to show the preview (enable it)
     enablePreview(previewWrapper, editorDiv) {
 
-        this.editor.preview = false;
+        this.preview = false;
 
         editorDiv.parentNode.classList.toggle('fixed');
         editorDiv.parentNode.classList.toggle('top-0');
