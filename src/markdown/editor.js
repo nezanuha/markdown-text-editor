@@ -70,7 +70,6 @@ class MarkdownEditor {
             rounded-md
             overflow-hidden
         `;
-        // this.editorContainer.setAttribute("data-theme", this.theme);
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
 
         this.markdownEditorDiv = document.createElement('div');
