@@ -6,6 +6,7 @@ class ImageTool extends MakeTool {
         super(editor, 'Image link');
         this.config = config;
         this.fileInputConfig = config.fileInput || false;
+        this.altInputConfig = config.altInput || true;
         this.button = this.createButton(`
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M16 5h6"/><path d="M19 2v6"/><path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"/>
@@ -24,6 +25,8 @@ class ImageTool extends MakeTool {
         const acceptFormats = this.fileInputConfig.accept
         ? this.fileInputConfig.accept.map(type => `image/${type}`).join(',')
         : 'image/*'; // Handle file formats
+
+        const altRequired = this.altInputConfig.required === undefined ? true : this.altInputConfig.required;
 
         const uploadUrl = this.fileInputConfig.uploadUrl || null;
 
@@ -57,7 +60,7 @@ class ImageTool extends MakeTool {
                     <div class="flex flex-col justify-center gap-y-4.5 mt-4">
                         ${fileInputTag}
                         <input type="url" placeholder="URL" class="input w-full img-link-input" required>
-                        <input type="text" placeholder="Alt text" class="input w-full img-link-alt-input" value="${selectedText}">
+                        <input type="text" placeholder="Alt text" class="input w-full img-link-alt-input" value="${selectedText}" ${(altRequired) && 'required'}>
                         <button type="submit" class="btn btn-sm submit-img-link self-end">Apply</button>
                     </div>
                 </form>`;

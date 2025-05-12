@@ -38,15 +38,6 @@ def greet(name):
     </div>
     <script src="markdown-text-editor.js"></script>
     <script>
-        const imgOptions = {
-            'image': {
-                'fileInput': true,
-                'accept': [
-                    'webp',
-                    'png'
-                ]
-            }
-        }
         const options = {
             placeholder: 'Start writing...',
             toolbar: [
@@ -68,6 +59,9 @@ def greet(name):
                             ],
                             uploadUrl: '/api/upload' // <-- Your upload endpoint and uploaded path  
                         },
+                        altInput: {
+                            required: false
+                        }
                     }
                 },
                 'preview'
