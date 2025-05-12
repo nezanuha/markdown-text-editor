@@ -1,32 +1,13 @@
+## MarkdownEditor – Best JavaScript Markdown Editor Plugin
+
 [![Total Downloads](https://img.shields.io/npm/dt/markdown-text-editor.svg)](https://www.npmjs.com/package/markdown-text-editor)
 [![Latest Release](https://img.shields.io/npm/v/markdown-text-editor.svg)](https://github.com/nezanuha/markdown-text-editor/releases)
 [![License](https://img.shields.io/npm/l/markdown-text-editor.svg)](https://github.com/nezanuha/markdown-text-editor/blob/master/LICENSE)
-[![Secured](https://img.shields.io/badge/Security-Passed-green)](https://snyk.io/test/github/nezanuha/checkpost)
+[![Secured](https://img.shields.io/badge/Security-Passed-green)](https://snyk.io/test/github/nezanuha/markdown-text-editor)
+
+Welcome to **MarkdownEditor**, the leading open source JavaScript markdown editor plugin. Enjoy a simple, powerful, and embeddable markdown editor with real-time preview, syntax highlighting, responsive design, and seamless integration for all web projects.
 
 ---
-
-
-## MarkdownEditor Plugin Documentation
-Transform textarea into powerful Markdown editor, and get/set value as standard HTML method.
-
-[**DEMO**](https://codepen.io/Mohammed-Rashad/pen/pvoyqPQ)
-
----
-Welcome to the documentation for the **MarkdownEditor Plugin** – an **open source project** offering the **best, simple, embeddable JavaScript Markdown editor plugin or library**. This powerful tool provides **real-time preview**, **syntax highlighting**, and **easy integration** into your projects. Whether you’re building a blog, note-taking app, or any content-rich website, this plugin delivers a robust and customizable markdown editing experience.
-
-- ✅ **Actively Maintenaning**: The plugin receives regular updates to stay up to date. 
-- ✅ **User-Friendly**: It offers a WYSIWYG-style interface, making it great for non-technical users.  
-- ✅ **Simple Markdown _Get/Set_**: No complicated techniques are required to get and set the markdown content. You can use the <textarea> value or name attribute to get and set markdown content.
-- ✅ **Tailwind CSS Support**: Built with TailwindCSS, and it will work with both Tailwind CSS and non-Tailwind CSS projects.  
-- ✅ **Responsive**: The editor is fully responsive, providing a seamless experience across all screen sizes.  
-- ✅ **RTL Support**: By default Right-to-Left (RTL) text is supported, making it ideal for languages like Arabic, Urdu, and Farsi.  
-- ✅ **Module Support**: Supports ESM, UMD, and CommonJS modules, making it easy to integrate with different module systems.
-- ✅ **Live Preview Mode**: Watch your markdown content render while you type, providing a real-time preview of formatting, links, images, and more.
-- ✅ **Automatic Dark Mode Support**: The editor follows your system's or website's dark mode settings, giving a seamless experience.
-
-
----
-
 ## Table of Contents
 
 - [Overview](#overview)
@@ -38,9 +19,21 @@ Welcome to the documentation for the **MarkdownEditor Plugin** – an **open sou
 - [Set Markdown Content to Editor](#set-markdown-content-to-editor)
 - [Configuration Options](#configuration-options)
 - [Toolbar Customization](#toolbar-customization)
-- [Example Implementations](#example-implementations)
+- [Example Implementations](#full-html-example-implementations)
 - [Contribution Guidelines](#contribute)
 - [License](#license)
+
+---
+## Features
+
+- ✅ **Actively Maintenaning**: The plugin receives regular updates to stay up to date. 
+- ✅ **User-Friendly**: It offers a WYSIWYG-style interface, making it great for non-technical users.  
+- ✅ **Simple Markdown _Get/Set_**: No complicated techniques are required to get and set the markdown content. You can use the <textarea> value or name attribute to get and set markdown content. 
+- ✅ **Responsive**: The editor is fully responsive, providing a seamless experience across all screen sizes.  
+- ✅ **RTL Support**: By default Right-to-Left (RTL) text is supported, making it ideal for languages like Arabic, Urdu, and Farsi.  
+- ✅ **Module Support**: Supports ESM, UMD, and CommonJS modules, making it easy to integrate with different module systems.
+- ✅ **Live Preview Mode**: Watch your markdown content render while you type, providing a real-time preview of formatting, links, images, and more.
+- ✅ **Automatic Dark Mode Support**: The editor follows your system's or website's dark mode settings, giving a seamless experience.
 
 ---
 
@@ -52,8 +45,6 @@ The MarkdownEditor Plugin is designed to be the **best, simple, and embeddable J
 - **Syntax Highlighting:** Enhanced readability with clear code and markdown formatting.
 - **Easy Integration:** Seamlessly integrate into any web project with minimal setup.
 - **Customizable Toolbar:** Dynamically configure and reorder toolbar options like **bold**, **italic**, and more.
-
-Built with **Tailwind CSS** for modern styling, this plugin is perfect for developers seeking a lightweight yet feature-rich markdown editor.
 
 ---
 
@@ -102,23 +93,7 @@ const editor = new MarkdownEditor('.editor-container', {
 
 ## CSS Setup
 
-### Using TailwindCSS
-
-If you’re leveraging **TailwindCSS**, add the following configuration to your `tailwind.config.js`:
-
-```javascript
-// tailwind.config.js
-module.exports = {
-  content: [
-    'node_modules/markdown-text-editor/**/*.js',
-    // Add your project paths here
-  ],
-};
-```
-
-### Without TailwindCSS
-
-For projects not using TailwindCSS, simply import the CSS file directly:
+import the CSS file directly in your js code:
 
 ```javascript
 import 'markdown-text-editor/dist/markdown-text-editor.css';
@@ -214,7 +189,7 @@ Customize your Markdown editor by passing an `options` object during initializat
 | Option        | Type     | Default                      | Description                                               |
 |---------------|----------|------------------------------|-----------------------------------------------------------|
 | `placeholder` | `string` | `'Write your markdown...'`   | Sets the placeholder text for the textarea (optional, as you can also use the standard HTML textarea attribute)            |
-| `toolbar`     | `array`  | `['heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'checklist', 'blockquote', 'link', 'preview']` | Determines which tools appear in the toolbar and their order. |
+| `toolbar`     | `array`  | `['heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'checklist', 'blockquote', 'link', 'image', 'preview']` | Determines which tools appear in the toolbar and their order. |
 
 ---
 
@@ -222,28 +197,82 @@ Customize your Markdown editor by passing an `options` object during initializat
 
 Tailor the toolbar to suit your needs by choosing which formatting options to include. The MarkdownEditor Plugin supports several tools, including:
 
-- **`bold`**: Enables bold text formatting.
-- **`italic`**: Enables italic text formatting.
-- **`strikethrough`**: Allows text to be struck through.
-- **`ol`**: (Ordered List): Converts text into a numbered list format.
-- **`ul`**: (Unordered List): Converts text into a bullet point list.
- **`checklist`**: Adds checkboxes to your text, making it great for tasks, to-do lists, or tracking completion status.
-- **`preview`**: Toggles the real-time markdown preview.
+- `bold`: Enables bold text formatting.
+- `italic`: Enables italic text formatting.
+- `strikethrough`: Allows text to be struck through.
+- `ol`: (Ordered List): Converts text into a numbered list format.
+- `ul`: (Unordered List): Converts text into a bullet point list.
+- `checklist`: Adds checkboxes to your text, making it great for tasks, to-do lists, or tracking completion status.
+- `image`: Allows you to insert images via markdown syntax.
+- `link`: Lets you add hyperlinks to your text.
+- `preview`: Toggles the real-time markdown preview.
 
 **Example:**
 
 ```javascript
 const editor = new MarkdownEditor('.editor-container', {
     placeholder: 'Start writing...',
-    toolbar: ['bold', 'italic', 'strikethrough', 'preview'],
+    toolbar: [
+      'bold',
+      'italic',
+      'strikethrough',
+      'ul',
+      'ol',
+      'checklist',
+      'image',
+      'link',
+      'preview'
+    ],
 });
 ```
+### Advanced Image Upload
 
+  * The image tool supports a `fileInput` configuration that allows:
+
+    * `accept`: Array of allowed image file types (e.g., `'webp'`, `'avif'`).
+    * `uploadUrl`: The endpoint where image files will be uploaded.
+  * After a successful upload, the server must return the image path, which will be automatically populated in the URL field.
+
+  **Usage example:**
+
+  ```js
+  const options = {
+      placeholder: 'Start writing...',
+      toolbar: [
+          'link',
+          {
+              image: {
+                  fileInput: {
+                      accept: ['webp', 'avif'],
+                      uploadUrl: '/api/upload', // Your upload endpoint
+                  },
+              }
+          },
+          'preview'
+      ],
+  }
+  const editor = new MarkdownEditor(element, options);
+  ```
+  * **If `fileInput` is not configured,** the image modal will default to only showing the `URL` and `alt text` fields.
+   
+     **Usage example:**
+    
+      ```js
+      const options = {
+          placeholder: 'Start writing...',
+          toolbar: [
+              'link',
+              'image',
+              'preview'
+          ],
+      }
+      const editor = new MarkdownEditor(element, options);
 ---
 
-## Example Implementations
+**Tip:**
+You can reorder or remove any toolbar buttons by modifying the toolbar array during initialization.
 
-### Full HTML Example
+## Full HTML Example Implementations
 
 Below is a complete HTML example demonstrating how to integrate the MarkdownEditor Plugin into your project:
 
@@ -263,7 +292,25 @@ Below is a complete HTML example demonstrating how to integrate the MarkdownEdit
   <script>
     const editor = new MarkdownEditor('.editor-container', {
       placeholder: 'Type your markdown...',
-      toolbar: ['preview', 'bold', 'italic']
+      toolbar: [
+        'bold',
+        'italic',
+        'strikethrough',
+        'ul',
+        'ol',
+        'checklist',
+        'image',
+        'link',
+         {
+              image: {
+                  fileInput: {
+                      accept: ['webp', 'avif'],
+                      uploadUrl: '/api/upload', // Your upload endpoint
+                  },
+              }
+         },
+        'preview'
+      ],
     });
   </script>
 </body>
@@ -279,14 +326,19 @@ import MarkdownEditor from 'markdown-text-editor';
 
 const editor = new MarkdownEditor('.editor-container', {
     placeholder: 'Write markdown...',
-    toolbar: ['preview', 'bold', 'italic'],
+    toolbar: [
+      'bold',
+      'italic',
+      'strikethrough',
+      'ul',
+      'ol',
+      'checklist',
+      'image',
+      'link',
+      'preview'
+    ],
 });
 ```
-
-### Customizing Styles with TailwindCSS
-
-Customize the appearance of the editor using Tailwind utility classes. The plugin’s default styling can be easily overridden in your custom Tailwind configuration.
-
 ---
 
 ## Contribute
