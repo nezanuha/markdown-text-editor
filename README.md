@@ -106,13 +106,13 @@ Alternatively, include the following CDN links in your HTML:
 #### JavaScript:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor@0.3.0/dist/markdown-text-editor.min.js"></script>
 ```
 
 #### CSS:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor@0.3.0/dist/markdown-text-editor.min.css">
 ```
 
 ---
@@ -267,6 +267,30 @@ const editor = new MarkdownEditor('.editor-container', {
           ],
       }
       const editor = new MarkdownEditor(element, options);
+
+### Image Alt Text Validation (`altInput`)
+
+You can configure whether the alt text input for images in the markdown editor is required.
+
+```js
+{
+  image: {
+    fileInput: {
+      accept: ['webp', 'avif'],
+      uploadUrl: '/api/upload' // Your upload endpoint
+    },
+    altInput: {
+      required: false // Optional: disables alt text validation (default is true)
+    }
+  }
+}
+```
+
+* `required: true` (default): Enforces alt text input for better SEO and accessibility.
+* `required: false`: Allows inserting images without alt text.
+
+This configuration helps developers control alt text validation for each markdown editor instance. For example, when using multiple editors in the same app, you can define different alt text rules per instance.
+
 ---
 
 **Tip:**
