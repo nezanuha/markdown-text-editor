@@ -5,7 +5,10 @@
 [![License](https://img.shields.io/npm/l/markdown-text-editor.svg)](https://github.com/nezanuha/markdown-text-editor/blob/master/LICENSE)
 [![Secured](https://img.shields.io/badge/Security-Passed-green)](https://snyk.io/test/github/nezanuha/markdown-text-editor)
 
+
 Welcome to **MarkdownEditor**, the leading open source JavaScript markdown editor plugin. Enjoy a simple, powerful, and embeddable markdown editor with real-time preview, syntax highlighting, responsive design, and seamless integration for all web projects.
+
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/nezanuha)
 
 ---
 ## Table of Contents
