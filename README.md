@@ -382,3 +382,5 @@ This project is released under the [MIT License](LICENSE).
 ---
 
 Thank you for choosing the MarkdownEditor Plugin – your reliable, feature-rich solution for seamless markdown editing and content creation with **easy integration**. Happy coding!
+
+## ⭐ Help us reach 100 stars!
