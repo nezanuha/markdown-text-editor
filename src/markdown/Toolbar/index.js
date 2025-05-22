@@ -10,6 +10,8 @@ import BlockQuoteTool from './tools/BlockQuoteTool.js';
 import LinkTool from './tools/LinkTool.js'
 import HeadingTool from './tools/HeadingTool.js';
 import ImageTool from './tools/ImageTool.js';
+import UndoTool from './tools/UndoTool.js';
+import RedoTool from './tools/RedoTool.js';
 
 class Toolbar {
     constructor(editor, options) {
@@ -31,7 +33,9 @@ class Toolbar {
             strikethrough: StrikethroughTool,
             blockquote: BlockQuoteTool,
             link: LinkTool,
-            image: ImageTool
+            image: ImageTool,
+            undo: UndoTool,
+            redo: RedoTool
         };
 
         // Append all tools except preview

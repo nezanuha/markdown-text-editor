@@ -3,6 +3,7 @@ import './styles/main.css';
 import { marked } from 'marked';
 import Toolbar from './Toolbar/index.js';
 import Preview from './preview.js';
+import UndoRedoManager from './UndoRedoManager.js';
 
 marked.setOptions({
     breaks: true
@@ -14,6 +15,11 @@ class MarkdownEditor {
         this.options = options;
         this.preview = this.options.toolbar.includes('preview');
         this.init();
+
+        // Initialize UndoRedoManager if 'undo' or 'redo' is in the toolbar
+        if (this.options.toolbar.includes('undo') || this.options.toolbar.includes('redo')) {
+            this.undoRedoManager = new UndoRedoManager(this);
+        }
     }
 
     init() {
