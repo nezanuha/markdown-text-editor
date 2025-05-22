@@ -1,4 +1,3 @@
-// markdown\preview.js
 class Preview {
     constructor(container) {
         this.previewContainer = document.createElement('div');

@@ -1,5 +1,5 @@
 import MakeTool from '../MakeTool.js';
-import { modal } from '../../components/modal.js';
+import { modal } from '../../modal.js';
 
 class LinkTool extends MakeTool {
     constructor(editor) {

@@ -1,9 +1,8 @@
-// #markdown\editor.js
-import './styles/main.css';
+import '../styles/main.css';
 import { marked } from 'marked';
-import Toolbar from './Toolbar/index.js';
-import Preview from './preview.js';
-import UndoRedoManager from './UndoRedoManager.js';
+import Toolbar from './toolbar/Toolbar.js';
+import Preview from './Preview.js';
+import UndoRedoManager from '../utils/UndoRedoManager.js';
 
 marked.setOptions({
     breaks: true

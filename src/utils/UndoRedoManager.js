@@ -1,5 +1,5 @@
-import UndoTool from './Toolbar/tools/UndoTool.js';
-import RedoTool from './Toolbar/tools/RedoTool.js';
+import UndoTool from '../components/toolbar/tools/UndoTool.js';
+import RedoTool from '../components/toolbar/tools/RedoTool.js';
 
 class UndoRedoManager {
     constructor(editor) {

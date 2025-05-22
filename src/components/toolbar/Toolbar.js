@@ -1,4 +1,3 @@
-// #markdown\Toolbar\index.js
 import BoldTool from './tools/BoldTool.js';
 import ItalicTool from './tools/ItalicTool.js';
 import StrikethroughTool from './tools/StrikethroughTool.js';

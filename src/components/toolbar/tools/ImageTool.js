@@ -1,5 +1,5 @@
 import MakeTool from '../MakeTool.js';
-import { modal } from '../../components/modal.js';
+import { modal } from '../../modal.js';
 
 class ImageTool extends MakeTool {
     constructor(editor, config = {}) {

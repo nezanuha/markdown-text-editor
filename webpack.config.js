@@ -10,7 +10,7 @@ module.exports = (env, argv) => {
         stats: 'minimal',
         entry: {
             index: './src/index.js',
-            'markdown-text-editor': './src/markdown/editor.js',
+            'markdown-text-editor': './src/components/Editor.js',
         },
         resolve: {
             extensions: ['.ts', '.js'],

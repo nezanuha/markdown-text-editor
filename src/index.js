@@ -1,2 +1,1 @@
-// main.js
-export { default as MarkdownEditor } from './markdown/editor';
+export { default as MarkdownEditor } from './components/Editor';
