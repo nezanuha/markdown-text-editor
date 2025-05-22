@@ -9,8 +9,6 @@
 
 Welcome to **MarkdownEditor**, the leading open source JavaScript markdown editor plugin. Enjoy a simple, powerful, and embeddable markdown editor with real-time preview, syntax highlighting, responsive design, and seamless integration for all web projects.
 
-[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/nezanuha)
-
 ---
 ## Table of Contents
 
@@ -383,4 +381,9 @@ This project is released under the [MIT License](LICENSE).
 
 Thank you for choosing the MarkdownEditor Plugin – your reliable, feature-rich solution for seamless markdown editing and content creation with **easy integration**. Happy coding!
 
-## ⭐ Help us reach 100 stars!
+## ⭐ Support
+
+If you like this project, consider giving it a star! 🌟
+
+[![GitHub stars](https://img.shields.io/github/stars/nezanuha/markdown-text-editor.svg?style=social&label=Star&maxAge=2592000)](https://github.com/nezanuha/markdown-text-editor/stargazers)
+
