@@ -30,15 +30,17 @@ export default class UndoRedoManager {
     }
 
     _onKeyDown(e) {
-        const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
-        const ctrlKey = isMac ? e.metaKey : e.ctrlKey;
-
-        if (ctrlKey && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        // Undo: Cmd+Z (Mac) or Ctrl+Z (others)
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
             e.preventDefault();
             this.undo();
             return;
         }
-        if (ctrlKey && ((e.key.toLowerCase() === 'y') || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
+        // Redo: Cmd+Shift+Z (Mac), Ctrl+Y or Ctrl+Shift+Z (others)
+        if (
+            (e.metaKey && e.key.toLowerCase() === 'z' && e.shiftKey) || // Cmd+Shift+Z (Mac)
+            (e.ctrlKey && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) // Ctrl+Y or Ctrl+Shift+Z (Win/Linux)
+        ) {
             e.preventDefault();
             this.redo();
             return;
