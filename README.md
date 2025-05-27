@@ -325,7 +325,6 @@ Below is a complete HTML example demonstrating how to integrate the MarkdownEdit
         'ul',
         'ol',
         'checklist',
-        'image',
         'link',
          {
               image: {
