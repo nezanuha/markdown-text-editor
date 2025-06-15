@@ -41,25 +41,25 @@ class MarkdownEditor {
 
     applyDefaultAttributes() {
         this.usertextarea.classList.add(
-            "dark:[scrollbar-color:var(--color-stone-600)_transparent]",
-            "focus:ring-0",
-            "focus:outline-0",
-            "border-0",
-            "p-1.5",
-            "max-w-full",
-            "size-full",
-            "bg-transparent",
-            "outline-0",
-            "appearance-none",
-            "prose",
-            "prose-sm",
-            "md:prose-base",
-            "dark:prose-invert",
-            "text-stone-700",
-            "dark:text-stone-200",
-            "overflow-y-auto",
-            "placeholder:text-stone-300",
-            "dark:placeholder:text-stone-600"
+            "fj:dark:[scrollbar-color:var(--color-stone-600)_transparent]",
+            "fj:focus:ring-0",
+            "fj:focus:outline-0",
+            "fj:border-0",
+            "fj:p-1.5",
+            "fj:max-w-full",
+            "fj:size-full",
+            "fj:bg-transparent",
+            "fj:outline-0",
+            "fj:appearance-none",
+            "fj:prose",
+            "fj:prose-sm",
+            "fj:md:prose-base",
+            "fj:dark:prose-invert",
+            "fj:text-stone-700",
+            "fj:dark:text-stone-200",
+            "fj:overflow-y-auto",
+            "fj:placeholder:text-stone-300",
+            "fj:dark:placeholder:text-stone-600"
         );
         if (!this.usertextarea.hasAttribute('placeholder')) {
             this.usertextarea.placeholder = this.options.placeholder || 'Write your markdown...';
@@ -70,10 +70,10 @@ class MarkdownEditor {
         this.editorContainer = document.createElement('div');
         this.editorContainer.className = `
             markdown-editor-wrapper
-            border border-stone-200
-            dark:border-stone-700
-            rounded-md
-            overflow-hidden
+            fj:border border-stone-200
+            fj:dark:border-stone-700
+            fj:rounded-md
+            fj:overflow-hidden
         `;
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
 
@@ -88,22 +88,22 @@ class MarkdownEditor {
     addTextareaWrapper() {
         const textareaContainer = document.createElement('div');
         textareaContainer.className = `
-            textarea-wrapper
-            h-full
-            p-2
-            bg-white
-            dark:bg-stone-900
-            grid
-            after:px-3.5
-            after:py-2.5
-            after:text-inherit
-            [&>textarea]:resize-none
-            [&>textarea]:[grid-area:1/1/2/2]
-            after:[grid-area:1/1/2/2]
-            after:whitespace-pre-wrap
-            after:invisible
-            after:content-[attr(data-cloned-val)_'_']
-            after:border
+            fj:textarea-wrapper
+            fj:h-full
+            fj:p-2
+            fj:bg-white
+            fj:dark:bg-stone-900
+            fj:grid
+            fj:after:px-3.5
+            fj:after:py-2.5
+            fj:after:text-inherit
+            fj:[&>textarea]:resize-none
+            fj:[&>textarea]:[grid-area:1/1/2/2]
+            fj:after:[grid-area:1/1/2/2]
+            fj:after:whitespace-pre-wrap
+            fj:after:invisible
+            fj:after:content-[attr(data-cloned-val)_'_']
+            fj:after:border
         `;
         textareaContainer.appendChild(this.usertextarea);
         this.markdownEditorDiv.appendChild(textareaContainer);
