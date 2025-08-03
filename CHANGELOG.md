@@ -5,7 +5,58 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] 
+## [Unreleased]
+
+### Added
+
+- Introduced beta support for undo/redo functionality using a granular diff-based system
+  - Built to handle large documents efficiently, with no impact on performance
+  - Tracks changes with smart save points on word boundaries, paste, enter, backspace, delete, blur, and debounce events
+  - Optimized for handling huge markdown content efficiently
+
+### Changed
+
+- Refactored folder hierarchy: reorganized the folder structure to separate files based on functionality
+
+
+## [0.3.0] - 2025-05-12
+
+### Added
+
+- Added `altInput` configuration to the `image` tool, allowing developers to customize the alt text input behavior in the markdown editor
+- Introduced a `required` option inside `altInput`:
+  - When `required` is `true` (default), alt text is mandatory, supporting better SEO and accessibility
+  - When set to `false`, validation for alt text is disabled
+- This configuration enables flexible validation rules across different editor instances
+
+### Fixed
+
+- Resolved an issue in the image modal where a `selectedText is not defined` error could occur when applying changes without selecting text
+
+## [0.2.1] - 2025-05-12
+
+### Fixed
+
+- Resolved an issue where the preview tool's background color did not render correctly in dark mode
+- Fixed a bug causing the preview pane to not update in response to user input, due to the this.preview reference being unintentionally overridden
+- Updated modal element ID selectors to avoid naming conflicts with other projects
+
+## [0.2.0] - 2025-05-12
+
+### Added
+
+- Integrated the [Fruitjam UI library](https://github.com/fruitjam/ui) for a cleaner, more modern, and intuitive user interface.
+- Updated the link tool to use the Fruitjam UI modal, providing a more intuitive and visually consistent user experience.
+- Introduced a fully configurable `image` tool with support for:
+  - `fileInput` configuration:
+    - `accept`: Array of allowed image file types (e.g., `'webp'`, `'avif'`)
+    - `uploadUrl`: Endpoint for uploading image files
+  - Automatic URL field population after successful upload
+  - Fallback to URL and alt text fields when `fileInput` is not configured
+
+### Fixed
+
+- Resolved a critical error where removing the `preview` option from the toolbar would crash the editor.
 
 ## [0.1.5] - 2025-03-03
 
@@ -95,4 +146,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.2-beta.1] - 2025-01-15
 
 ### Added
+
 - Initial release
