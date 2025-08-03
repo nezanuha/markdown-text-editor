@@ -17,7 +17,7 @@ class Toolbar {
         this.editor = editor;
         this.options = options;
         this.toolbar = document.createElement('div');
-        this.toolbar.className = 'toolbar flex space-x-1.5 p-1.5 bg-stone-100 dark:bg-stone-800 dark:text-stone-200 border-b border-stone-200 dark:border-stone-700 overflow-x-auto';
+        this.toolbar.className = 'toolbar surface surface-1 surface-outline border-0  border-b flex gap-x-1.5 p-1.5 overflow-x-auto';
         this.init();
     }
 

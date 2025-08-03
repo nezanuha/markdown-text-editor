@@ -18,7 +18,7 @@ class MakeTool {
 
         if(btnClass == 'preview-btn') {
             const btnWrapper = document.createElement('div');
-            btnWrapper.className = 'bg-stone-100 dark:bg-stone-800 sticky -right-2 border-l border-stone-200 dark:border-stone-700 px-1.5';
+            btnWrapper.className = 'surface surface-1 surface-outline border-0 border-l sticky -right-2 px-1.5';
             btnWrapper.appendChild(btn);
             return btnWrapper;
         }

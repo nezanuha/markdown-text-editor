@@ -41,7 +41,7 @@ class MarkdownEditor {
 
     applyDefaultAttributes() {
         this.usertextarea.classList.add(
-            "dark:[scrollbar-color:var(--color-stone-600)_transparent]",
+            "textarea",
             "focus:ring-0",
             "focus:outline-0",
             "border-0",
@@ -55,11 +55,7 @@ class MarkdownEditor {
             "prose-sm",
             "md:prose-base",
             "dark:prose-invert",
-            "text-stone-700",
-            "dark:text-stone-200",
             "overflow-y-auto",
-            "placeholder:text-stone-300",
-            "dark:placeholder:text-stone-600"
         );
         if (!this.usertextarea.hasAttribute('placeholder')) {
             this.usertextarea.placeholder = this.options.placeholder || 'Write your markdown...';
@@ -70,9 +66,7 @@ class MarkdownEditor {
         this.editorContainer = document.createElement('div');
         this.editorContainer.className = `
             markdown-editor-wrapper
-            border border-stone-200
-            dark:border-stone-700
-            rounded-md
+            surface surface-1 surface-outline surface-rounded
             overflow-hidden
         `;
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
@@ -91,8 +85,7 @@ class MarkdownEditor {
             textarea-wrapper
             h-full
             p-2
-            bg-white
-            dark:bg-stone-900
+            surface
             grid
             after:px-3.5
             after:py-2.5
