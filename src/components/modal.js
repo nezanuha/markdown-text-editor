@@ -6,8 +6,8 @@ export function modal(event, size, bodyHTML) {
     }
 
     const modalHTML = `
-        <dialog class="modal modal-y-top lg:modal-y-center modal-x-center markdown-modal" id="nezanuha_toggleModal">
-            <div class="modal-body ${size}">
+        <dialog class="markdown-modal fj:modal fj:modal-y-top fj:lg:modal-y-center fj:modal-x-center" id="nezanuha_toggleModal">
+            <div class="fj:modal-body ${size}">
                 ${bodyHTML}
             </div>
         </dialog>

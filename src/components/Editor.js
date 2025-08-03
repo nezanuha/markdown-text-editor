@@ -66,8 +66,11 @@ class MarkdownEditor {
         this.editorContainer = document.createElement('div');
         this.editorContainer.className = `
             markdown-editor-wrapper
-            surface surface-1 surface-outline surface-rounded
-            overflow-hidden
+            fj:surface
+            fj:surface-1
+            fj:surface-outline
+            fj:surface-rounded
+            fj:overflow-hidden
         `;
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
 
@@ -83,20 +86,20 @@ class MarkdownEditor {
         const textareaContainer = document.createElement('div');
         textareaContainer.className = `
             textarea-wrapper
-            h-full
-            p-2
-            surface
-            grid
-            after:px-3.5
-            after:py-2.5
-            after:text-inherit
-            [&>textarea]:resize-none
-            [&>textarea]:[grid-area:1/1/2/2]
-            after:[grid-area:1/1/2/2]
-            after:whitespace-pre-wrap
-            after:invisible
-            after:content-[attr(data-cloned-val)_'_']
-            after:border
+            fj:surface
+            fj:h-full
+            fj:p-2
+            fj:grid
+            fj:after:px-3.5
+            fj:after:py-2.5
+            fj:after:text-inherit
+            fj:[&>textarea]:resize-none
+            fj:[&>textarea]:[grid-area:1/1/2/2]
+            fj:after:[grid-area:1/1/2/2]
+            fj:after:whitespace-pre-wrap
+            fj:after:invisible
+            fj:after:content-[attr(data-cloned-val)_'_']
+            fj:after:border
         `;
         textareaContainer.appendChild(this.usertextarea);
         this.markdownEditorDiv.appendChild(textareaContainer);

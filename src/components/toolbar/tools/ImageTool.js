@@ -33,8 +33,8 @@ class ImageTool extends MakeTool {
         let fileInputTag = '';
         if(this.fileInputConfig){
             fileInputTag = `
-                <input type="file" accept="${acceptFormats}" class="input w-full img-file-input">
-                <div class="divider my-1">OR</div>
+                <input type="file" accept="${acceptFormats}" class="img-file-input fj:input fj:w-full">
+                <div class="fj:divider fj:my-1">OR</div>
             `;
         }
             // Check if the selected text contains an image markdown syntax ![alt text](url)
@@ -50,22 +50,22 @@ class ImageTool extends MakeTool {
             textarea.setRangeText(altText, selectionStart, selectionEnd, 'select');
         } else {
             const bodyHTML =`
-                <div class="flex justify-between items-center gap-3">
-                    <div class="font-medium">Image</div>
-                    <button type="button" class="btn btn-ghost btn-xs btn-circle" onclick="nezanuha_toggleModal.remove()">
+                <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
+                    <div class="fj:font-medium">Image</div>
+                    <button type="button" class="fj:btn fj:btn-ghost fj:btn-xs fj:btn-circle" onclick="nezanuha_toggleModal.remove()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                 </div>
                 <form method="post">
-                    <div class="flex flex-col justify-center gap-y-4.5 mt-4">
+                    <div class="fj:flex fj:flex-col fj:justify-center fj:gap-y-4.5 fj:mt-4">
                         ${fileInputTag}
-                        <input type="url" placeholder="URL" class="input w-full img-link-input" required>
-                        <input type="text" placeholder="Alt text" class="input w-full img-link-alt-input" value="${selectedText}" ${(altRequired) && 'required'}>
-                        <button type="submit" class="btn btn-sm submit-img-link self-end">Apply</button>
+                        <input type="url" placeholder="URL" class="img-link-input fj:input fj:w-full" required>
+                        <input type="text" placeholder="Alt text" class="img-link-alt-input fj:input fj:w-full" value="${selectedText}" ${(altRequired) && 'required'}>
+                        <button type="submit" class="submit-img-link fj:btn fj:btn-sm fj:self-end">Apply</button>
                     </div>
                 </form>`;
 
-            const modalElement = modal(event, 'max-w-sm', bodyHTML);
+            const modalElement = modal(event, 'fj:max-w-sm', bodyHTML);
 
             if(this.fileInputConfig){
                 const fileInputSelector = modalElement.querySelector(".img-file-input");

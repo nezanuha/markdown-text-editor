@@ -31,40 +31,37 @@ class PreviewTool extends MakeTool {
 
         this.preview = true;
 
-        editorDiv.parentNode.classList.toggle('fixed');
-        editorDiv.parentNode.classList.toggle('top-0');
-        editorDiv.parentNode.classList.toggle('inset-x-0');
-        editorDiv.parentNode.classList.toggle('rounded-md');
-        editorDiv.parentNode.classList.toggle('z-999');
+        editorDiv.parentNode.classList.toggle('fj:fixed');
+        editorDiv.parentNode.classList.toggle('fj:top-0');
+        editorDiv.parentNode.classList.toggle('fj:inset-x-0');
+        editorDiv.parentNode.classList.toggle('fj:rounded-md');
+        editorDiv.parentNode.classList.toggle('fj:z-999');
     
-        previewWrapper.classList.toggle('hidden');
+        editorDiv.parentNode.querySelector('.editor-preview-divider').classList.toggle('fj:hidden');
+        previewWrapper.classList.toggle('fj:hidden');
 
         // Add grid layout and divide classes to the editor div
         editorDiv.classList.remove(
-            'md:grid',
-            'md:grid-cols-2',
-            'md:divide-x',
-            'md:rtl:divide-x-reverse',
-            'md:divide-stone-300',
-            'dark:md:divide-stone-700'
+            'fj:md:grid',
+            'fj:md:grid-cols-2'
         );
 
         editorDiv.querySelector(".textarea-wrapper").classList.remove(
-            'h-[90lvh]',
-            'hidden',
-            'md:block'
+            'fj:h-[90lvh]',
+            'fj:hidden',
+            'fj:md:block'
         );
         this.editor.render(); // Re-render content in the preview
 
-        editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.remove("h-[90lvh]!");
+        editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.remove("fj:h-[90lvh]!");
         
-        document.querySelector("body").classList.remove('overflow-hidden');
+        document.querySelector("body").classList.remove('fj:overflow-hidden');
 
         document.querySelectorAll('.markdown-btn').forEach(button => {
             if (!button.classList.contains('preview-btn')) {
-                button.classList.remove('pointer-events-none', 'md:pointer-events-auto', 'opacity-25', 'md:opacity-100');
+                button.classList.remove('fj:pointer-events-none', 'fj:md:pointer-events-auto', 'fj:opacity-25', 'fj:md:opacity-100');
             }else{
-                button.classList.remove('btn-active');
+                button.classList.remove('fj:btn-active');
             }
         });
     }
@@ -74,37 +71,34 @@ class PreviewTool extends MakeTool {
 
         this.preview = false;
 
-        editorDiv.parentNode.classList.toggle('fixed');
-        editorDiv.parentNode.classList.toggle('top-0');
-        editorDiv.parentNode.classList.toggle('inset-x-0');
-        editorDiv.parentNode.classList.toggle('rounded-md');
-        editorDiv.parentNode.classList.toggle('z-999');
+        editorDiv.parentNode.classList.toggle('fj:fixed');
+        editorDiv.parentNode.classList.toggle('fj:top-0');
+        editorDiv.parentNode.classList.toggle('fj:inset-x-0');
+        editorDiv.parentNode.classList.toggle('fj:rounded-md');
+        editorDiv.parentNode.classList.toggle('fj:z-999');
 
-        previewWrapper.classList.toggle('hidden');
+        editorDiv.parentNode.querySelector('.editor-preview-divider').classList.toggle('fj:hidden');
+        previewWrapper.classList.toggle('fj:hidden');
         // Remove grid layout and divide classes from the editor div
         editorDiv.classList.add(
-            'md:grid',
-            'md:grid-cols-2',
-            'md:divide-x',
-            'md:rtl:divide-x-reverse',
-            'md:divide-stone-300',
-            'dark:md:divide-stone-700'
+            'fj:md:grid',
+            'fj:md:grid-cols-2'
         );
 
         editorDiv.querySelector(".textarea-wrapper").classList.add(
-            'h-[90lvh]',
-            'hidden',
-            'md:block'
+            'fj:h-[90lvh]',
+            'fj:hidden',
+            'fj:md:block'
         );
-        editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.add("h-[90lvh]!");
+        editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.add("fj:h-[90lvh]!");
 
-        document.querySelector("body").classList.add('overflow-hidden');
+        document.querySelector("body").classList.add('fj:overflow-hidden');
 
         document.querySelectorAll('.markdown-btn').forEach(button => {
             if (!button.classList.contains('preview-btn')) {
-                button.classList.add('pointer-events-none', 'md:pointer-events-auto', 'opacity-25', 'md:opacity-100');
+                button.classList.add('fj:pointer-events-none', 'fj:md:pointer-events-auto', 'fj:opacity-25', 'fj:md:opacity-100');
             }else{
-                button.classList.add('btn-active');
+                button.classList.add('fj:btn-active');
             }
         });
     }

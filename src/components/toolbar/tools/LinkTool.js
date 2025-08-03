@@ -32,21 +32,21 @@ class LinkTool extends MakeTool {
             // If no link syntax, prompt for the URL and apply the syntax
             
             const bodyHTML =`
-                <div class="flex justify-between items-center gap-3">
-                    <div class="font-medium">Link</div>
-                    <button type="button" class="btn btn-ghost btn-xs btn-circle" onclick="nezanuha_toggleModal.remove()">
+                <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
+                    <div class="fj:font-medium">Link</div>
+                    <button type="button" class="fj:btn fj:btn-ghost fj:btn-xs fj:btn-circle" onclick="nezanuha_toggleModal.remove()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                 </div>
                 <form method="post">
-                    <div class="flex flex-col justify-center gap-y-4.5 mt-4">
-                        <input type="url" placeholder="URL" class="input w-full link-input" required>
-                        <input type="text" placeholder="Link text" class="input w-full link-text-input" value="${selectedText}" required>
-                        <button type="submit" class="btn btn-sm submit-link self-end">Apply</button>
+                    <div class="fj:flex fj:flex-col fj:justify-center fj:gap-y-4.5 fj:mt-4">
+                        <input type="url" placeholder="URL" class="link-input fj:input fj:w-full" required>
+                        <input type="text" placeholder="Link text" class="link-text-input fj:input fj:w-full" value="${selectedText}" required>
+                        <button type="submit" class="submit-link fj:btn fj:btn-sm fj:self-end">Apply</button>
                     </div>
                 </form>`;
 
-            const modalElement = modal(event, 'max-w-sm', bodyHTML);
+            const modalElement = modal(event, 'fj:max-w-sm', bodyHTML);
 
             modalElement.querySelector(".submit-link").addEventListener("click", function(e){
                 e.preventDefault();

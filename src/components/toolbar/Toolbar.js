@@ -17,7 +17,7 @@ class Toolbar {
         this.editor = editor;
         this.options = options;
         this.toolbar = document.createElement('div');
-        this.toolbar.className = 'toolbar surface surface-1 surface-outline border-0  border-b flex gap-x-1.5 p-1.5 overflow-x-auto';
+        this.toolbar.className = 'toolbar fj:surface fj:surface-1 fj:surface-outline fj:border-0 fj:border-b fj:flex fj:gap-x-1.5 fj:p-1.5 fj:overflow-x-auto';
         this.init();
     }
 
