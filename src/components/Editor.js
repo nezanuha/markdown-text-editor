@@ -41,21 +41,21 @@ class MarkdownEditor {
 
     applyDefaultAttributes() {
         this.usertextarea.classList.add(
-            "textarea",
-            "focus:ring-0",
-            "focus:outline-0",
-            "border-0",
-            "p-1.5",
-            "max-w-full",
-            "size-full",
-            "bg-transparent",
-            "outline-0",
-            "appearance-none",
-            "prose",
-            "prose-sm",
-            "md:prose-base",
-            "dark:prose-invert",
-            "overflow-y-auto",
+            "fj:textarea",
+            "fj:focus:ring-0",
+            "fj:focus:outline-0",
+            "fj:border-0",
+            "fj:p-1.5",
+            "fj:max-w-full",
+            "fj:size-full",
+            "fj:bg-transparent",
+            "fj:outline-0",
+            "fj:appearance-none",
+            "fj:prose",
+            "fj:prose-sm",
+            "fj:md:prose-base",
+            "fj:dark:prose-invert",
+            "fj:overflow-y-auto",
         );
         if (!this.usertextarea.hasAttribute('placeholder')) {
             this.usertextarea.placeholder = this.options.placeholder || 'Write your markdown...';
@@ -75,7 +75,7 @@ class MarkdownEditor {
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
 
         this.markdownEditorDiv = document.createElement('div');
-        this.markdownEditorDiv.className = `editor-layout relative`;
+        this.markdownEditorDiv.className = `editor-layout fj:relative`;
         this.editorContainer.appendChild(this.markdownEditorDiv);
 
         this.addTextareaWrapper();
