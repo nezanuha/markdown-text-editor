@@ -168,4 +168,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v0.0.2-beta.1]: https://github.com/nezanuha/markdown-text-editor/compare/0.0.21-beta.3...v0.0.2-beta.1
 [0.0.21-beta.3]: https://github.com/nezanuha/markdown-text-editor/compare/0.0.21-beta.2...0.0.21-beta.3
 [0.0.21-beta.2]: https://github.com/nezanuha/markdown-text-editor/compare/0.0.20-beta.2...0.0.21-beta.2
-[0.0.20-beta.2]: https://github.com/nezanuha/markdown-text-editor/releases/tag/0.0.20-beta.2
+[0.0.20-beta.2]: https://github.com/nezanuha/markdown-text-editor/compare/0.0.2-beta.1...0.0.20-beta.2
+[0.0.2-beta.1]: https://github.com/nezanuha/markdown-text-editor/releases/tag/0.0.2-beta.1
