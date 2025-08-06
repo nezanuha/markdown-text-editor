@@ -37,7 +37,6 @@ class PreviewTool extends MakeTool {
         editorDiv.parentNode.classList.toggle('fj:rounded-md');
         editorDiv.parentNode.classList.toggle('fj:z-999');
     
-        editorDiv.parentNode.querySelector('.editor-preview-divider').classList.toggle('fj:hidden');
         previewWrapper.classList.toggle('fj:hidden');
 
         // Add grid layout and divide classes to the editor div
@@ -76,8 +75,7 @@ class PreviewTool extends MakeTool {
         editorDiv.parentNode.classList.toggle('fj:inset-x-0');
         editorDiv.parentNode.classList.toggle('fj:rounded-md');
         editorDiv.parentNode.classList.toggle('fj:z-999');
-
-        editorDiv.parentNode.querySelector('.editor-preview-divider').classList.toggle('fj:hidden');
+        
         previewWrapper.classList.toggle('fj:hidden');
         // Remove grid layout and divide classes from the editor div
         editorDiv.classList.add(
