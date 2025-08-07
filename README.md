@@ -27,7 +27,7 @@ Welcome to **MarkdownEditor**, the leading open source JavaScript markdown edito
 
 ---
 ## Features
-
+- ✅ **Effortless Frutjam UI Integration**: Easily integrate the Frutjam UI library with automatic editor theme adjustments based on the selected theme.
 - ✅ **Actively Maintenaning**: The plugin receives regular updates to stay up to date. 
 - ✅ **User-Friendly**: It offers a WYSIWYG-style interface, making it great for non-technical users.  
 - ✅ **Simple Markdown _Get/Set_**: No complicated techniques are required to get and set the markdown content. You can use the <textarea> value or name attribute to get and set markdown content. 
