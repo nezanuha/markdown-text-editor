@@ -1,6 +1,7 @@
 ## MarkdownEditor – Best JavaScript Markdown Editor Plugin
 
-[![Total Downloads](https://img.shields.io/npm/dt/markdown-text-editor.svg)](https://www.npmjs.com/package/markdown-text-editor)
+[![npm installs][npm_installs]](https://www.npmjs.com/package//markdown-text-editor)
+[![Jsdelivr hits][jsdelivr]](https://cdn.jsdelivr.net/npm/markdown-text-editor)
 [![Latest Release](https://img.shields.io/npm/v/markdown-text-editor.svg)](https://github.com/nezanuha/markdown-text-editor/releases)
 [![License](https://img.shields.io/npm/l/markdown-text-editor.svg)](https://github.com/nezanuha/markdown-text-editor/blob/master/LICENSE)
 [![Secured](https://img.shields.io/badge/Security-Passed-green)](https://snyk.io/test/github/nezanuha/markdown-text-editor)
@@ -388,3 +389,7 @@ If you like this project, consider giving it a star! 🌟
 
 [![GitHub stars](https://img.shields.io/github/stars/nezanuha/markdown-text-editor.svg?style=social&label=Star&maxAge=2592000)](https://github.com/nezanuha/markdown-text-editor/stargazers)
 
+---
+
+[jsdelivr]: https://badgen.net/jsdelivr/hits/npm/markdown-text-editor
+[npm_installs]: https://badgen.net/npm/dt/markdown-text-editor
