@@ -14,10 +14,10 @@
     "url": "git+https://github.com/nezanuha/markdown-text-editor.git"
   },
   "scripts": {
-    "clean": "rimraf dist",
-    "build": "npm run clean && webpack --mode=production",
+    "clean": "rimraf ./dist",
+    "build": "npm run clean && webpack --config scripts/webpack.config.prod.js --mode=production",
     "prepublishOnly": "npm run build",
-    "dev": "webpack serve --mode=development"
+    "dev": "webpack serve --config scripts/webpack.config.dev.js --mode=development"
   },
   "publishConfig": {
     "provenance": true,

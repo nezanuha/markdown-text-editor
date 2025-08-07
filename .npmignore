@@ -6,6 +6,7 @@ webpack.config.js
 tsconfig.json
 
 node_modules/
+scripts/
 
 # Ignore IDE/Editor configuration files
 .idea/

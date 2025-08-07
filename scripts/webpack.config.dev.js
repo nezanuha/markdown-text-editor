@@ -1,23 +1,25 @@
 const path = require('path');
+const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+
 module.exports = (env, argv) => {
-    const isProd = argv.mode === 'production';
     return {
-        mode: isProd ? 'production' : 'development',
+        mode: 'development',
+        devtool: 'eval-source-map',
         stats: 'minimal',
         entry: {
             index: './src/index.js',
             'markdown-text-editor': './src/components/Editor.js',
         },
         resolve: {
-            extensions: ['.ts', '.js'],
+            extensions: ['.ts', '.js', '.css'],
         },
         output: {
             filename: '[name].js',
-            path: path.resolve(__dirname, 'dist'),
+            path: path.resolve(process.cwd(), 'dist'),
             library: {
                 name: 'MarkdownEditor',
                 type: 'umd',
@@ -53,21 +55,28 @@ module.exports = (env, argv) => {
                 filename: '[name].css',
             }),
             // Only add HtmlWebpackPlugin in development mode
-            !isProd && new HtmlWebpackPlugin({
+            new HtmlWebpackPlugin({
                 template: 'demo.html', // Path to your HTML file
                 filename: 'index.html', // Output file name
-            }),
-        ].filter(Boolean), // Filter out false values in production mode
+            })
+        ],
+        cache: {
+            type: 'filesystem',
+        },
         optimization: {
-            minimize: isProd,
+            minimize: false,
             minimizer: [
                 new TerserPlugin({
-                    extractComments: false,
+                    extractComments: true,
+                    parallel: true,
+                    terserOptions: {
+                        format: {
+                            comments: false,
+                        },
+                    },
                 }),
             ],
         },
-        devtool: isProd ? 'source-map' : 'eval-source-map',
-        
         // Updated devServer configuration
         devServer: {
             static: {
