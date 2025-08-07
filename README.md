@@ -108,13 +108,13 @@ Alternatively, include the following CDN links in your HTML:
 #### JavaScript:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor@0.3.0/dist/markdown-text-editor.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor@0.4.0/dist/markdown-text-editor.min.js"></script>
 ```
 
 #### CSS:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor@0.3.0/dist/markdown-text-editor.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor@0.4.0/dist/markdown-text-editor.min.css">
 ```
 
 ---
@@ -191,7 +191,7 @@ Customize your Markdown editor by passing an `options` object during initializat
 | Option        | Type     | Default                      | Description                                               |
 |---------------|----------|------------------------------|-----------------------------------------------------------|
 | `placeholder` | `string` | `'Write your markdown...'`   | Sets the placeholder text for the textarea (optional, as you can also use the standard HTML textarea attribute)            |
-| `toolbar`     | `array`  | `['heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'checklist', 'blockquote', 'link', 'image', 'preview']` | Determines which tools appear in the toolbar and their order. |
+| `toolbar`     | `array`  | `['heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'checklist', 'blockquote', 'link', 'image', 'undo', 'redo', 'preview']` | Determines which tools appear in the toolbar and their order. |
 
 ---
 
@@ -207,6 +207,8 @@ Tailor the toolbar to suit your needs by choosing which formatting options to in
 - `checklist`: Adds checkboxes to your text, making it great for tasks, to-do lists, or tracking completion status.
 - `image`: Allows you to insert images via markdown syntax.
 - `link`: Lets you add hyperlinks to your text.
+- `undo (beta)`: To reverse the last changes
+- `redo (beta)`: To reapply the last undone changes 
 - `preview`: Toggles the real-time markdown preview.
 
 **Example:**
