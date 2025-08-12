@@ -10,6 +10,10 @@
 
 Welcome to **MarkdownEditor**, the leading open source JavaScript markdown editor plugin. Enjoy a simple, powerful, and embeddable markdown editor with real-time preview, syntax highlighting, responsive design, and seamless integration for all web projects.
 
+## Built With
+
+This Markdown editor is built using [frutjam](https://frutjam.com), a customizable Tailwind CSS UI library.
+
 ---
 ## Table of Contents
 
