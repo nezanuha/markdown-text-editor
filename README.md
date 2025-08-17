@@ -14,13 +14,6 @@ Welcome to **MarkdownEditor**, the leading open source JavaScript markdown edito
 
 This Markdown editor is built using [frutjam](https://frutjam.com), a customizable Tailwind CSS UI library.
 
----
-
-## Documentation
-
-For full documentation, visit [Markdown Editor](https://frutjam.com/plugins/markdown-editor).
-
----
 ## Features
 - ✅ **Effortless Frutjam UI Integration**: Easily integrate the Frutjam UI library with automatic editor theme adjustments based on the selected theme.
 - ✅ **Actively Maintenaning**: The plugin receives regular updates to stay up to date. 
@@ -31,6 +24,10 @@ For full documentation, visit [Markdown Editor](https://frutjam.com/plugins/mark
 - ✅ **Module Support**: Supports ESM, UMD, and CommonJS modules, making it easy to integrate with different module systems.
 - ✅ **Live Preview Mode**: Watch your markdown content render while you type, providing a real-time preview of formatting, links, images, and more.
 - ✅ **Automatic Dark Mode Support**: The editor follows your system's or website's dark mode settings, giving a seamless experience.
+
+## Documentation
+
+For full documentation, visit [Markdown Editor](https://frutjam.com/plugins/markdown-editor).
 
 ---
 
