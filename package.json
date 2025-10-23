@@ -57,26 +57,26 @@
     "url": "https://github.com/nezanuha/markdown-text-editor/issues"
   },
   "dependencies": {
-    "marked": "~16.1.2"
+    "marked": "~16.4.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.0",
-    "@babel/preset-env": "^7.28.0",
-    "@tailwindcss/postcss": "^4.1.11",
-    "@tailwindcss/typography": "^0.5.16",
+    "@babel/core": "^7.28.4",
+    "@babel/preset-env": "^7.28.3",
+    "@tailwindcss/postcss": "^4.1.15",
+    "@tailwindcss/typography": "^0.5.19",
     "babel-loader": "^10.0.0",
     "css-loader": "^7.1.2",
     "diff": "^8.0.2",
-    "frutjam": "^2.5.0-beta.7",
-    "html-webpack-plugin": "^5.6.3",
+    "frutjam": "^2.7.1-beta.1",
+    "html-webpack-plugin": "^5.6.4",
     "mini-css-extract-plugin": "^2.9.4",
     "postcss": "^8.5.6",
-    "postcss-loader": "^8.1.1",
+    "postcss-loader": "^8.2.0",
     "rimraf": "^6.0.1",
     "style-loader": "^4.0.0",
-    "tailwindcss": "^4.1.11",
+    "tailwindcss": "^4.1.15",
     "terser-webpack-plugin": "^5.3.14",
-    "webpack": "^5.101.0",
+    "webpack": "^5.102.1",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2"
   }
