@@ -3,6 +3,7 @@ import { marked } from 'marked';
 import Toolbar from './toolbar/Toolbar.js';
 import Preview from './Preview.js';
 import UndoRedoManager from '../utils/UndoRedoManager.js';
+import IndentManager from '../utils/IndentManager.js';
 
 marked.setOptions({
     breaks: true
@@ -14,9 +15,8 @@ class MarkdownEditor {
         this.options = options;
         this.preview = this.options.toolbar.includes('preview');
         this.init();
-
-        // Initialize UndoRedoManager if 'undo' or 'redo' is in the toolbar
         this.undoRedoManager = new UndoRedoManager(this);
+        this.indentManager = new IndentManager(this.usertextarea, () => this.render());
     }
 
     init() {
@@ -112,59 +112,6 @@ class MarkdownEditor {
 
     addInputListener() {
         this.usertextarea.addEventListener('input', () => this.render());
-
-
-        this.usertextarea.addEventListener('keydown', (e) => {
-            const textarea = this.usertextarea;
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const value = textarea.value;
-            const selectedText = value.substring(start, end);
-            const lines = selectedText.split('\n');
-
-            let newValue;
-
-            if (e.key === 'Tab') {
-                e.preventDefault();
-
-                if (!e.shiftKey) {
-                    // Insert tab at the beginning of each selected line
-                    const indentedText = lines.map(line => '\t' + line).join('\n');
-                    newValue = value.substring(0, start) + indentedText + value.substring(end);
-
-                    // Adjust cursor position after insertion
-                    textarea.selectionStart = start + '\t'.length;
-                    textarea.selectionEnd = start + '\t'.length + selectedText.length;
-                } else {
-                    // Handle Shift+Tab (unindent): Remove leading tab if present
-                    const unindentedText = lines.map(line => {
-                        return line.startsWith('\t') ? line.substring(1) : line;
-                    }).join('\n');
-
-                    const removedTabsCount = selectedText.length - unindentedText.length;
-
-                    newValue = value.substring(0, start) + unindentedText + value.substring(end);
-
-                    // Adjust cursor position after un-indentation
-                    textarea.selectionStart = start;
-                    textarea.selectionEnd = start + unindentedText.length;
-                }
-
-                // Step 1: Temporarily hold the selection range.
-                const selectionStart = textarea.selectionStart;
-                const selectionEnd = textarea.selectionEnd;
-
-                // Step 2: Update textarea value (this is what caused the issue before).
-                textarea.value = newValue;
-
-                // Step 3: Restore the selection after modifying the value.
-                textarea.setSelectionRange(selectionStart, selectionEnd);
-
-                // Rerender the markdown (if needed).
-                this.render();
-            }
-        });
-
 
         this.usertextarea.addEventListener('scroll', () => {
             const textarea = this.usertextarea;

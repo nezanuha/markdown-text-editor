@@ -9,7 +9,10 @@ class IndentTool extends MakeTool {
     }
     
     applySyntax() {
-        
+        const indentManager = this.editor.indentManager;
+        if (indentManager) {
+            indentManager.indent();
+        }    
     }
 }
 

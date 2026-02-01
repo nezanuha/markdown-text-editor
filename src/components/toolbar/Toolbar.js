@@ -11,7 +11,8 @@ import HeadingTool from './tools/HeadingTool.js';
 import ImageTool from './tools/ImageTool.js';
 import UndoTool from './tools/UndoTool.js';
 import RedoTool from './tools/RedoTool.js';
-import IndentTool from './tools/IndentTool.js'
+import IndentTool from './tools/IndentTool.js';
+import OutdentTool from './tools/OutdentTool.js';
 
 class Toolbar {
     constructor(editor, options) {
@@ -36,7 +37,8 @@ class Toolbar {
             image: ImageTool,
             undo: UndoTool,
             redo: RedoTool,
-            indent: IndentTool
+            indent: IndentTool,
+            outdent: OutdentTool
         };
 
         // Append all tools except preview
