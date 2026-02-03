@@ -17,9 +17,10 @@
   },
   "scripts": {
     "clean": "rimraf ./dist",
+    "dev": "webpack serve --config scripts/webpack.config.dev.js --mode=development",
     "build": "npm run clean && webpack --config scripts/webpack.config.prod.js --mode=production",
     "prepublishOnly": "npm run build",
-    "dev": "webpack serve --config scripts/webpack.config.dev.js --mode=development"
+    "postversion": "git push origin main --tags"
   },
   "publishConfig": {
     "provenance": true,
