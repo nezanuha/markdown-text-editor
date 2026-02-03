@@ -7,35 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.4.0] - 2025-08-06
+## [0.5.0] - 2026-02-04
 
 ### Added
 
 - Added copyright notice to output files
-- Implemented a complete history system using `diff-chars` to minimize memory usage by storing only changes rather than full-text snapshots.
-- Added automatic insertion of closing pairs `{}`, `[]`, `()`, `<>`, `""`, and `''`.
-- Typing a pair character while text is selected now wraps the text instead of replacing it.
-- If a user types a closing character that is already present at the cursor, the cursor simply jumps forward.
-- Hitting `Enter` between `{}` now creates a triple-line expansion with a nested indent. Standard `Enter` now carries over the indentation level of the previous line.
-- Deleting an opening bracket also removes the adjacent closing bracket.
+- Official stable support for the undo/redo tools
+- New `indent` and `outdent` tools
+- Implemented a complete history system using `diff-chars` to minimize memory usage by storing only changes rather than full-text snapshots
+- Added automatic insertion of closing pairs `{}`, `[]`, `()`, `<>`, `""`, and `''`
+- Typing a pair character while text is selected now wraps the text instead of replacing it
+- If a user types a closing character that is already present at the cursor, the cursor simply jumps forward
+- Hitting `Enter` between `{}` now creates a triple-line expansion with a nested indent. Standard `Enter` now carries over the indentation level of the previous line
+- Deleting an opening bracket also removes the adjacent closing bracket
 
 ### Changed
 
 - Disabled Tailwind css Preflight
 - Created separate Webpack build files for development and production
-- Added a `1000ms` debounce for standard typing and immediate saving for "boundary" characters (spaces, punctuation, etc.).
-- Refactored to handle both `\t` and `4-space` indentation patterns during the outdent process.
-- Undo and Redo now perfectly restore both the text content and the exact selection range/cursor position.
-- Integrated `Ctrl+Z`, `Ctrl+Y`, and `Ctrl+Shift+Z` to trigger the custom history manager.
+- Added a `1000ms` debounce for standard typing and immediate saving for "boundary" characters (spaces, punctuation, etc.)
+- Refactored to handle both `\t` and `4-space` indentation patterns during the outdent process
+- Undo and Redo now perfectly restore both the text content and the exact selection range/cursor position
+- Integrated `Ctrl+Z`, `Ctrl+Y`, and `Ctrl+Shift+Z` to trigger the custom history manager
 
 ### Fixed
 
 - Fix keyboard undo/redo to follow the same behavior as the undo/redo tools
-- Resolved an issue where highlighted text was not saved to the undo stack before being replaced.
-- Fixed potential state corruption by ensuring `_restoreState` correctly updates the `lastValue` reference.
-- Ensured the textarea regains focus immediately after undo/redo operations for a seamless typing experience.
-- Implemented `maxStackSize: 100` to prevent memory leaks during long editing sessions.
-- The manager now skips processing if the text value has not changed between saves.
+- Resolved an issue where highlighted text was not saved to the undo stack before being replaced
+- Fixed potential state corruption by ensuring `_restoreState` correctly updates the `lastValue` reference
+- Ensured the textarea regains focus immediately after undo/redo operations for a seamless typing experience
+- Implemented `maxStackSize: 100` to prevent memory leaks during long editing sessions
+- The manager now skips processing if the text value has not changed between saves
 
 ## [0.4.0] - 2025-08-06
 
@@ -48,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Prefixed all Tailwind CSS and Frutjam classes by utilizing Frutjam’s new component prefixing support (e.g., for components like `.modal`), to avoid design conflicts with other frameworks such as Bootstrap.
+- Prefixed all Tailwind CSS and Frutjam classes by utilizing Frutjam’s new component prefixing support (e.g., for components like `.modal`), to avoid design conflicts with other frameworks such as Bootstrap
 - Refactored folder hierarchy: reorganized the folder structure to separate files based on functionality
 - Replaced fixed Tailwind background and text color classes with Frutjam Surface component to ensure theme consistency across all Frutjam themes 
 
@@ -184,7 +186,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/nezanuha/markdown-text-editor/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/nezanuha/markdown-text-editor/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/nezanuha/markdown-text-editor/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/nezanuha/markdown-text-editor/compare/v0.2.0...v0.2.1
