@@ -7,35 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2025-08-06
+
 ### Added
 
 - Added copyright notice to output files
-- **Undo/Redo Manager**: Implemented a complete history system using `diff-chars` to minimize memory usage by storing only changes rather than full-text snapshots.
-- **Smart Pair Handling**: Added automatic insertion of closing pairs `{}`, `[]`, `()`, `<>`, `""`, and `''`.
-- **Selection Wrapping**: Typing a pair character while text is selected now wraps the text instead of replacing it.
-- **Overtyping Support**: If a user types a closing character that is already present at the cursor, the cursor simply jumps forward.
-- **Enhanced Auto-Indent**: 
-  - Hitting `Enter` between `{}` now creates a triple-line expansion with a nested indent.
-  - Standard `Enter` now carries over the indentation level of the previous line.
-- **Pair-Aware Backspace**: Deleting an opening bracket also removes the adjacent closing bracket.
+- Implemented a complete history system using `diff-chars` to minimize memory usage by storing only changes rather than full-text snapshots.
+- Added automatic insertion of closing pairs `{}`, `[]`, `()`, `<>`, `""`, and `''`.
+- Typing a pair character while text is selected now wraps the text instead of replacing it.
+- If a user types a closing character that is already present at the cursor, the cursor simply jumps forward.
+- Hitting `Enter` between `{}` now creates a triple-line expansion with a nested indent. Standard `Enter` now carries over the indentation level of the previous line.
+- Deleting an opening bracket also removes the adjacent closing bracket.
 
 ### Changed
 
 - Disabled Tailwind css Preflight
 - Created separate Webpack build files for development and production
-- **Optimized History Saving**: Added a `1000ms` debounce for standard typing and immediate saving for "boundary" characters (spaces, punctuation, etc.).
-- **Smart Outdent**: Refactored to handle both `\t` and `4-space` indentation patterns during the outdent process.
-- **State Restoration**: Undo and Redo now perfectly restore both the text content and the exact selection range/cursor position.
-- **Native Shortcut Support**: Integrated `Ctrl+Z`, `Ctrl+Y`, and `Ctrl+Shift+Z` to trigger the custom history manager.
+- Added a `1000ms` debounce for standard typing and immediate saving for "boundary" characters (spaces, punctuation, etc.).
+- Refactored to handle both `\t` and `4-space` indentation patterns during the outdent process.
+- Undo and Redo now perfectly restore both the text content and the exact selection range/cursor position.
+- Integrated `Ctrl+Z`, `Ctrl+Y`, and `Ctrl+Shift+Z` to trigger the custom history manager.
 
 ### Fixed
 
 - Fix keyboard undo/redo to follow the same behavior as the undo/redo tools
-- **Selection Overwrite Protection**: Resolved an issue where highlighted text was not saved to the undo stack before being replaced.
-- **Undo Redo Loops**: Fixed potential state corruption by ensuring `_restoreState` correctly updates the `lastValue` reference.
-- **Focus Persistence**: Ensured the textarea regains focus immediately after undo/redo operations for a seamless typing experience.
-- **Max Stack Limit**: Implemented `maxStackSize: 100` to prevent memory leaks during long editing sessions.
-- **Diff Exit Guard**: The manager now skips processing if the text value has not changed between saves.
+- Resolved an issue where highlighted text was not saved to the undo stack before being replaced.
+- Fixed potential state corruption by ensuring `_restoreState` correctly updates the `lastValue` reference.
+- Ensured the textarea regains focus immediately after undo/redo operations for a seamless typing experience.
+- Implemented `maxStackSize: 100` to prevent memory leaks during long editing sessions.
+- The manager now skips processing if the text value has not changed between saves.
 
 ## [0.4.0] - 2025-08-06
 
