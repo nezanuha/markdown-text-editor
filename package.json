@@ -7,7 +7,9 @@
   "browser": "dist/markdown-text-editor.js",
   "style": "./dist/markdown-text-editor.css",
   "files": [
-    "dist/**/*"
+    "dist/",
+    "README.md",
+    "LICENSE"
   ],
   "repository": {
     "type": "git",
