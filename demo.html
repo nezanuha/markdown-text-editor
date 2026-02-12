@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Editor Example</title>
-    <link rel="stylesheet" href="markdown-text-editor.css">
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
-<body class="p-4 lg:p-12 ">
+<body class="p-4 lg:p-12">
     <form method="post" class="flex flex-col gap-4">
         <textarea class="editor h-48" rows="5">
 # Markdown Editor
@@ -29,15 +28,18 @@ Here’s an example of a simple Python function:
 def greet(name):
     return f"Hello, {name}!"
 ```
-</textarea>
-<button type="button" class="get-markdown btn-primary btn-sm self-end">Get Markdown</button>
+        </textarea>
+        <button type="button" class="get-markdown btn-primary btn-sm self-end">Get Markdown</button>
     </form>
+    
     <div class="border-t mt-5 space-y-3">
         <strong class="font-medium text-zinc-800 mt-3 block">Output</strong>
         <div class="output"></div>
     </div>
-    <script src="markdown-text-editor.js"></script>
+
     <script>
+        // Use DOMContentLoaded to ensure the injected script has loaded
+        window.addEventListener('DOMContentLoaded', () => {
         const options = {
             placeholder: 'Start writing...',
             // indent: {
@@ -75,16 +77,18 @@ def greet(name):
                 'redo',
                 'preview'
             ],
-        }
+        };
 
-        document.querySelectorAll(".editor").forEach(element => {
-            const editor = new MarkdownEditor(element, options); 
-        });
+            // Now 'MarkdownEditor' is a constructor thanks to library.export: 'default'
+            document.querySelectorAll(".editor").forEach(element => {
+                const editor = new MarkdownEditor(element, options); 
+            });
 
-        document.querySelector(".get-markdown").addEventListener("click", function(e){
-            const output = document.querySelector(".editor").value;
-            console.log(output);
-            document.querySelector(".output").innerHTML = `<pre>${output}</pre>`;
+            document.querySelector(".get-markdown").addEventListener("click", function(e){
+                const output = document.querySelector(".editor").value;
+                console.log(output);
+                document.querySelector(".output").innerHTML = `<pre>${output}</pre>`;
+            });
         });
     </script>
 </body>

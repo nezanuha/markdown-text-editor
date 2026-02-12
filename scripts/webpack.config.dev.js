@@ -1,9 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // Optional in dev
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
 
 module.exports = (env, argv) => {
     return {
@@ -19,23 +17,29 @@ module.exports = (env, argv) => {
         },
         output: {
             filename: '[name].js',
-            path: path.resolve(process.cwd(), 'dist'),
+            path: path.resolve(__dirname, '../dist'),
             library: {
                 name: 'MarkdownEditor',
                 type: 'umd',
                 export: 'default',
             },
             globalObject: 'typeof self !== "undefined" ? self : this',
-            clean: true, // Ensures output directory is cleaned before each build
+            clean: true,
         },
         module: {
             rules: [
                 {
                     test: /\.css$/,
                     use: [
-                        MiniCssExtractPlugin.loader,
-                        'css-loader',
-                        'postcss-loader',
+                        'style-loader', 
+                        {
+                            loader: 'css-loader',
+                            options: { sourceMap: true }
+                        },
+                        {
+                            loader: 'postcss-loader',
+                            options: { sourceMap: true }
+                        },
                     ],
                 },
                 {
@@ -54,36 +58,31 @@ module.exports = (env, argv) => {
             new MiniCssExtractPlugin({
                 filename: '[name].css',
             }),
-            // Only add HtmlWebpackPlugin in development mode
             new HtmlWebpackPlugin({
-                template: 'demo.html', // Path to your HTML file
-                filename: 'index.html', // Output file name
-            })
+                template: 'demo.html',
+                filename: 'index.html',
+                inject: 'body',
+            }),
+            new webpack.HotModuleReplacementPlugin(),
         ],
         cache: {
             type: 'filesystem',
         },
         optimization: {
             minimize: false,
-            minimizer: [
-                new TerserPlugin({
-                    extractComments: true,
-                    parallel: true,
-                    terserOptions: {
-                        format: {
-                            comments: false,
-                        },
-                    },
-                }),
-            ],
+            runtimeChunk: 'single',
         },
-        // Updated devServer configuration
         devServer: {
             static: {
-                directory: path.resolve(__dirname, 'dist'), // Serve content from 'dist' directory
+                directory: path.resolve(__dirname, '../dist'),
             },
-            hot: true, // Enable hot module replacement
-            // You can add more configuration if needed
+            hot: true,
+            port: 3000,
+            open: true,
+            historyApiFallback: true,
+            client: {
+                overlay: true,
+            },
         },
     };
 };
