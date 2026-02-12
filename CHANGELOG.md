@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- HMR: Integrated `style-loader` in `webpack.dev.js` for instant CSS updates without page refreshes.
+- Dev DX: Enabled `client.overlay` to show build errors directly in the browser.
+
+### Fixed
+
+- Build (Production): Added `sourceMap: true` to CSS loaders to ensure `.map` files are generated, preventing deployment crashes
+- Build Paths: Standardized output paths using `__dirname` for cross-environment stability.
+
 ## [0.5.0] - 2026-02-04
 
 ### Added
