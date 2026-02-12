@@ -3,7 +3,8 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const pkg = require(path.resolve(process.cwd(), './package.json'));
+
+const pkg = require(path.resolve(__dirname, '../package.json'));
 
 const copyrightText = `${pkg.name} v${pkg.version} (c) ${(new Date()).getFullYear()} ${pkg.author} | Released under the ${pkg.license} License | ${pkg.homepage}`;
 
@@ -21,14 +22,14 @@ module.exports = (env, argv) => {
         },
         output: {
             filename: '[name].js',
-            path: path.resolve(process.cwd(), 'dist'),
+            path: path.resolve(__dirname, '../dist'),
             library: {
                 name: 'MarkdownEditor',
                 type: 'umd',
                 export: 'default',
             },
             globalObject: 'typeof self !== "undefined" ? self : this',
-            clean: true, // Ensures output directory is cleaned before each build
+            clean: true,
         },
         module: {
             rules: [
@@ -36,8 +37,18 @@ module.exports = (env, argv) => {
                     test: /\.css$/,
                     use: [
                         MiniCssExtractPlugin.loader,
-                        'css-loader',
-                        'postcss-loader',
+                        {
+                            loader: 'css-loader',
+                            options: { 
+                                sourceMap: true
+                            }
+                        },
+                        {
+                            loader: 'postcss-loader',
+                            options: { 
+                                sourceMap: true
+                            }
+                        },
                     ],
                 },
                 {
@@ -71,6 +82,7 @@ module.exports = (env, argv) => {
                     extractComments: true,
                     parallel: true,
                     terserOptions: {
+                        sourceMap: true, 
                         format: {
                             comments: false,
                         },
@@ -78,13 +90,11 @@ module.exports = (env, argv) => {
                 }),
             ],
         },
-        // Updated devServer configuration
         devServer: {
             static: {
-                directory: path.resolve(__dirname, 'dist'), // Serve content from 'dist' directory
+                directory: path.resolve(__dirname, '../dist'),
             },
-            hot: true, // Enable hot module replacement
-            // You can add more configuration if needed
+            hot: true,
         },
     };
 };
