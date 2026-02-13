@@ -13,7 +13,7 @@ class MarkdownEditor {
     constructor(selector, options = {}) {
         this.usertextarea = typeof selector === 'string' ? document.querySelector(selector) : selector;
         this.options = options;
-        this.preview = this.options.toolbar.includes('preview');
+        this.preview = (this.options.toolbar) ? this.options.toolbar.includes('preview') : true;
         this.init();
         this.undoRedoManager = new UndoRedoManager(this);
         this.indentManager = new IndentManager(this.usertextarea, () => this.render());
@@ -21,7 +21,7 @@ class MarkdownEditor {
 
     init() {
         this.createEditor();
-        if (this.options.toolbar) this.addToolbar();
+        this.addToolbar();
     }
 
     createEditor() {
@@ -126,7 +126,27 @@ class MarkdownEditor {
     }
 
     addToolbar() {
-        new Toolbar(this, this.options.toolbar || ['bold', 'italic', 'strikethrough']);
+        new Toolbar(
+            this,
+            this.options.toolbar ||
+            [
+                'heading',
+                'ul',
+                'ol',
+                'checklist',
+                'bold',
+                'italic',
+                'strikethrough',
+                'blockquote',
+                'link',
+                'image',
+                'undo',
+                'redo',
+                'indent',
+                'outdent',
+                'preview'
+            ]
+        );
     }
 
     insertText(text) {
