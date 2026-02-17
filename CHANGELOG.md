@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **HMR**: Integrated `style-loader` in `webpack.dev.js` for instant CSS updates without page refreshes
 - **Dev DX**: Enabled `client.overlay` to show build errors directly in the browser
+- **List Continuity**: Added ListManager to handle automatic continuation of ordered lists (`1.`), unordered lists (`-`, `*`), and task lists (`[x]`)
 
 ### Changed
 
