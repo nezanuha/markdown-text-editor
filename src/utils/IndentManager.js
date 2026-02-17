@@ -1,6 +1,7 @@
 export default class IndentManager {
-    constructor(textarea, renderCallback) {
-        this.textarea = textarea;
+    constructor(editor, renderCallback) {
+        this.editor = editor;
+        this.textarea = editor.usertextarea;
         this.renderCallback = renderCallback;
         this.pairs = {
             '{': '}',
