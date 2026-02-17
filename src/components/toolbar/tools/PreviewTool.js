@@ -7,7 +7,7 @@ class PreviewTool extends MakeTool {
         super(editor, 'Preview');
         this.preview = true;
         this.button = this.createButton(`
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M11 5H5V19H11V5ZM13 5V19H19V5H13ZM4 3H20C20.5523 3 21 3.44772 21 4V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3Z"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 4v16" /><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14" /><path d="M12 13l7.5 -7.5" /><path d="M12 18l8 -8" /><path d="M15 20l5 -5" /><path d="M12 8l4 -4" /></svg>
         `);
     }
 
@@ -31,28 +31,31 @@ class PreviewTool extends MakeTool {
 
         this.preview = true;
 
+        const textareaWrapper = editorDiv.querySelector(".textarea-wrapper");
+
         editorDiv.parentNode.classList.toggle('fj:fixed');
         editorDiv.parentNode.classList.toggle('fj:top-0');
         editorDiv.parentNode.classList.toggle('fj:inset-x-0');
         editorDiv.parentNode.classList.toggle('fj:rounded-md');
         editorDiv.parentNode.classList.toggle('fj:z-999');
     
-        previewWrapper.classList.toggle('fj:hidden');
-
         // Add grid layout and divide classes to the editor div
         editorDiv.classList.remove(
-            'fj:md:grid',
             'fj:md:grid-cols-2'
         );
+        previewWrapper.classList.add('fj:hidden');
+        textareaWrapper.classList.remove("fj:hidden", "md:grid");
 
-        editorDiv.querySelector(".textarea-wrapper").classList.remove(
+        textareaWrapper.classList.remove(
             'fj:h-[90lvh]',
-            'fj:hidden',
-            'fj:md:block'
         );
         this.editor.render(); // Re-render content in the preview
 
-        editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.remove("fj:h-[90lvh]!");
+        textareaWrapper.querySelector("textarea").classList.remove("fj:h-[90lvh]!");
+
+        if(textareaWrapper.querySelector(".display-layer")){
+            textareaWrapper.querySelector(".display-layer").classList.remove("fj:h-[90lvh]!");
+        }
         
         document.querySelector("body").classList.remove('fj:overflow-hidden');
 
@@ -69,26 +72,31 @@ class PreviewTool extends MakeTool {
     enablePreview(previewWrapper, editorDiv) {
 
         this.preview = false;
+    
+        const textareaWrapper = editorDiv.querySelector(".textarea-wrapper");
 
         editorDiv.parentNode.classList.toggle('fj:fixed');
         editorDiv.parentNode.classList.toggle('fj:top-0');
         editorDiv.parentNode.classList.toggle('fj:inset-x-0');
         editorDiv.parentNode.classList.toggle('fj:rounded-md');
         editorDiv.parentNode.classList.toggle('fj:z-999');
-        
-        previewWrapper.classList.toggle('fj:hidden');
+
         // Remove grid layout and divide classes from the editor div
         editorDiv.classList.add(
-            'fj:md:grid',
             'fj:md:grid-cols-2'
         );
+        previewWrapper.classList.remove('fj:hidden');
+        textareaWrapper.classList.add("fj:hidden", "fj:md:grid");
 
-        editorDiv.querySelector(".textarea-wrapper").classList.add(
+        textareaWrapper.classList.add(
             'fj:h-[90lvh]',
-            'fj:hidden',
-            'fj:md:block'
         );
-        editorDiv.querySelector(".textarea-wrapper").querySelector("textarea").classList.add("fj:h-[90lvh]!");
+
+        textareaWrapper.querySelector("textarea").classList.add("fj:h-[90lvh]!");
+
+        if(textareaWrapper.querySelector(".display-layer")){
+            textareaWrapper.querySelector(".display-layer").classList.add("fj:h-[90lvh]!");
+        }
 
         document.querySelector("body").classList.add('fj:overflow-hidden');
 

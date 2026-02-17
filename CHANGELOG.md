@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Config**: The `options` object now ships with a fully pre-defined default configuration for a faster, zero-config setup. The `toolbar` array specifically now defaults to a "Minimal Essentials" set, removing the requirement to manually define tools or other option keys unless you want to customize the behavior. You can just do this `const editor = new MarkdownEditor('#editor');`
+- Refreshed Markdown editor toolbar icons for improved design and consistency
 
 ### Fixed
 
