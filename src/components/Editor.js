@@ -98,7 +98,7 @@ class MarkdownEditor {
                 display-layer
                 fj:px-4
                 fj:py-2
-                fj:whitespace-pre-wrap fj:break-words 
+                fj:whitespace-pre-wrap fj:wrap-break-word 
                 fj:pointer-events-none 
                 fj:[grid-area:1/1/2/2]
                 fj:size-full
