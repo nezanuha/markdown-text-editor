@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Added ListManager to handle automatic continuation of ordered lists (`1.`), unordered lists (`-`, `*`), and task lists (`[x]`)
 - Added hybrid (rendered styles) and plain (raw text) modes; plain remains the default
 
@@ -15,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The `options` object now ships with a fully pre-defined default configuration for a faster, zero-config setup. The `toolbar` array specifically now defaults to a "Minimal Essentials" set, removing the requirement to manually define tools or other option keys unless you want to customize the behavior. You can just do this `const editor = new MarkdownEditor('#editor');`
 - Refreshed Markdown editor toolbar icons for improved design and consistency
-- IndentManager now initialized by passing the editor instance (this) instead of separate arguments
+- `IndentManager` now initialized by passing the editor instance (this) instead of separate arguments
 - Updated the toolbar and preview pane to dynamically support current and custom themes by removing hard-coded backgrounds in favor of theme-defined color inheritance
 
 ### Fixed
@@ -37,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - If a user types a closing character that is already present at the cursor, the cursor simply jumps forward
 - Hitting `Enter` between `{}` now creates a triple-line expansion with a nested indent. Standard `Enter` now carries over the indentation level of the previous line
 - Deleting an opening bracket also removes the adjacent closing bracket
+- Support for custom upload parameters in ImageTool via the fileInput.params configuration object. This allows passing additional data like CSRF tokens, user IDs, or folder destinations during the upload request
 
 ### Changed
 
@@ -46,6 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored to handle both `\t` and `4-space` indentation patterns during the outdent process
 - Undo and Redo now perfectly restore both the text content and the exact selection range/cursor position
 - Integrated `Ctrl+Z`, `Ctrl+Y`, and `Ctrl+Shift+Z` to trigger the custom history manager
+- [Breaking] Renamed the upload request parameter from `image` to `image_file` for better clarity and to avoid naming collisions.
+- [Breaking] Renamed the response parameter `path` to `image_path` to align with standardized naming conventions.
 
 ### Fixed
 

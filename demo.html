@@ -69,7 +69,13 @@ def greet(name):
                                 'webp',
                                 'avif'
                             ],
-                            uploadUrl: '/api/upload' // <-- Your upload endpoint and uploaded path  
+                            uploadUrl: '/api/upload', // <-- Your upload endpoint and uploaded path  
+                            // ADD CUSTOM DATA HERE (Optional):
+                            params: {
+                                _token: 'your_csrf_token_here',
+                                user_id: 123,
+                                folder: 'blog_posts'
+                            }
                         },
                         altInput: {
                             required: false

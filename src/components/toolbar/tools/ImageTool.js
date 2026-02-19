@@ -12,7 +12,6 @@ class ImageTool extends MakeTool {
         `);
     }
 
-    // Apply link syntax [text](url)
     applySyntax(event) {
         let editor = this.editor;
         let textarea = editor.usertextarea;
@@ -20,12 +19,13 @@ class ImageTool extends MakeTool {
         let selectedText = textarea.value.substring(selectionStart, selectionEnd);
         
         const acceptFormats = this.fileInputConfig.accept
-        ? this.fileInputConfig.accept.map(type => `image/${type}`).join(',')
-        : 'image/*'; // Handle file formats
+            ? this.fileInputConfig.accept.map(type => `image/${type}`).join(',')
+            : 'image/*';
 
         const altRequired = this.altInputConfig.required === undefined ? true : this.altInputConfig.required;
-
         const uploadUrl = this.fileInputConfig.uploadUrl || null;
+        // Get custom params from config
+        const customParams = this.fileInputConfig.params || {}; 
 
         let fileInputTag = '';
         if(this.fileInputConfig){
@@ -34,16 +34,12 @@ class ImageTool extends MakeTool {
                 <div class="fj:divider fj:my-1">OR</div>
             `;
         }
-            // Check if the selected text contains an image markdown syntax ![alt text](url)
+
         const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/;
 
         if (selectedText && imageRegex.test(selectedText)) {
-            // If the selected text is already an image markdown, extract the alt text and URL
             const match = selectedText.match(imageRegex);
-            const altText = match[1];  // Alt text inside the square brackets
-            // const imageUrl = match[2]; // URL inside the parentheses
-
-            // Replace the selected text with just the text
+            const altText = match[1];
             textarea.setRangeText(altText, selectionStart, selectionEnd, 'select');
         } else {
             const bodyHTML =`
@@ -67,6 +63,7 @@ class ImageTool extends MakeTool {
             if(this.fileInputConfig){
                 const fileInputSelector = modalElement.querySelector(".img-file-input");
                 const urlInputSelector = modalElement.querySelector(".img-link-input");
+                const imgFileAltInput = modalElement.querySelector(".img-link-alt-input");
                 const submitBtnSelector = modalElement.querySelector(".submit-img-link");
 
                 fileInputSelector.addEventListener("change", async () => {
@@ -77,35 +74,45 @@ class ImageTool extends MakeTool {
                     submitBtnSelector.textContent = 'Uploading...';
                 
                     const formData = new FormData();
-                    formData.append('image', file);
+                    formData.append('image_file', file);
+                    const altValue = imgFileAltInput ? imgFileAltInput.value : '';
+                    formData.append('image_alt', altValue);
+
+
+                    if (this.fileInputConfig.params) {
+                        Object.keys(customParams).forEach(key => {
+                            formData.append(key, customParams[key]);
+                        });
+                    }
                 
                     try {
                         const res = await fetch(uploadUrl, {
                             method: 'POST',
                             body: formData
+                            // Note: Do NOT set Content-Type header manually when sending FormData
                         });
                         const result = await res.json();
                 
-                        if (result.success && result.path) {
-                            urlInputSelector.value = result.path;
+                        if (result.success && result.image_path) {
+                            urlInputSelector.value = result.image_path;
+                            imgFileAltInput.value = result.image_alt || imgFileAltInput.value;
                             submitBtnSelector.disabled = false;
                             submitBtnSelector.textContent = 'Apply';
                         } else {
-                            alert('Image upload failed.');
-                            fileInputSelector.value = ''; // ✅ Reset file input
+                            alert(result.message || 'Image upload failed.');
+                            fileInputSelector.value = '';
                             submitBtnSelector.disabled = false;
                             submitBtnSelector.textContent = 'Apply';
                         }
                     } catch (err) {
                         console.error(err);
                         alert('Upload error.');
-                        fileInputSelector.value = ''; // ✅ Reset file input
+                        fileInputSelector.value = '';
                         submitBtnSelector.disabled = false;
                         submitBtnSelector.textContent = 'Apply';
                     }
                 });
             }
-            
 
             modalElement.querySelector(".submit-img-link").addEventListener("click", function(e){
                 e.preventDefault();
@@ -119,7 +126,6 @@ class ImageTool extends MakeTool {
                 } else {
                     const imgLink = imgLinkInput.value;
                     let imgLinkAlt = imgLinkAltInput.value;
-
                     if(imgLinkAlt == ''){
                         imgLinkAlt = '';
                     }
@@ -139,6 +145,5 @@ class ImageTool extends MakeTool {
             });
         }
     }
-    
 }
 export default ImageTool;
