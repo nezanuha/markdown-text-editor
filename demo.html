@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +8,10 @@
 </head>
 <body class="p-4 lg:p-12">
     <form method="post" class="flex flex-col gap-4">
-        <textarea class="editor h-48" rows="5">
+        <textarea class="editor h-48" rows="5" placeholder="Enter your text">
 # Markdown Editor
+
+[link](http://localhost:3000/)
 
 ## Introduction
 
@@ -42,6 +44,7 @@ def greet(name):
         window.addEventListener('DOMContentLoaded', () => {
         const options = {
             placeholder: 'Start writing...',
+            mode: 'hybrid', // default plain
             // indent: {
             //     useTabs: false, // ❌ no tabs — use spaces
             //     tabSize: 2,     // number of spaces per indent
