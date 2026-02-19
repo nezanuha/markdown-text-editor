@@ -13,12 +13,12 @@ class MakeTool {
         btn.innerHTML = iconHtml;  // Pass icon HTML from child classes
         btn.type = 'button';
         btn.title = this.title;
-        btn.className = `markdown-btn ${btnClass} fj:btn fj:btn-sm fj:btn-square fj:btn-ghost`;
+        btn.className = `markdown-btn ${btnClass} fj:btn fj:btn-xs fj:btn-square fj:btn-ghost`;
         btn.addEventListener('click', (event) => this.applySyntax(event));  // Default to 'both', can change in child
 
         if(btnClass == 'preview-btn') {
             const btnWrapper = document.createElement('div');
-            btnWrapper.className = 'fj:surface fj:surface-1 fj:surface-outline fj:border-0 fj:border-l fj:sticky fj:-right-2 fj:px-1.5';
+            btnWrapper.className = 'fj:surface fj:surface-outline fj:border-0 fj:border-l fj:sticky fj:-right-2 fj:px-1.5';
             btnWrapper.appendChild(btn);
             return btnWrapper;
         }

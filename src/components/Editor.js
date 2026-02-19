@@ -4,6 +4,7 @@ import Toolbar from './toolbar/Toolbar.js';
 import Preview from './Preview.js';
 import UndoRedoManager from '../utils/UndoRedoManager.js';
 import IndentManager from '../utils/IndentManager.js';
+import ListManager from '../utils/ListManager.js';
 
 marked.setOptions({
     breaks: true
@@ -13,10 +14,13 @@ class MarkdownEditor {
     constructor(selector, options = {}) {
         this.usertextarea = typeof selector === 'string' ? document.querySelector(selector) : selector;
         this.options = options;
+        this.mode = options.mode || 'plain';
         this.preview = (this.options.toolbar) ? this.options.toolbar.includes('preview') : true;
+        this.previewTimer = null;
         this.init();
         this.undoRedoManager = new UndoRedoManager(this);
-        this.indentManager = new IndentManager(this.usertextarea, () => this.render());
+        this.listManager = new ListManager(this);
+        this.indentManager = new IndentManager(this);
     }
 
     init() {
@@ -39,20 +43,17 @@ class MarkdownEditor {
 
     applyDefaultAttributes() {
         this.usertextarea.classList.add(
-            "fj:textarea",
+            "textarea",
             "fj:focus:ring-0",
             "fj:focus:outline-0",
             "fj:border-0",
-            "fj:p-1.5",
+            "fj:px-4",
+            "fj:py-2",
             "fj:max-w-full",
             "fj:size-full",
             "fj:bg-transparent",
             "fj:outline-0",
             "fj:appearance-none",
-            "fj:prose",
-            "fj:prose-sm",
-            "fj:md:prose-base",
-            "fj:dark:prose-invert",
             "fj:overflow-y-auto",
         );
         if (!this.usertextarea.hasAttribute('placeholder')) {
@@ -65,7 +66,6 @@ class MarkdownEditor {
         this.editorContainer.className = `
             markdown-editor-wrapper
             fj:surface
-            fj:surface-1
             fj:surface-outline
             fj:surface-rounded
             fj:overflow-hidden
@@ -73,7 +73,7 @@ class MarkdownEditor {
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
 
         this.markdownEditorDiv = document.createElement('div');
-        this.markdownEditorDiv.className = `editor-layout fj:relative`;
+        this.markdownEditorDiv.className = `editor-layout fj:relative fj:grid fj:grid-cols-1`;
         this.editorContainer.appendChild(this.markdownEditorDiv);
 
         this.addTextareaWrapper();
@@ -84,21 +84,52 @@ class MarkdownEditor {
         const textareaContainer = document.createElement('div');
         textareaContainer.className = `
             textarea-wrapper
+            not-prose
             fj:surface
             fj:h-full
-            fj:p-2
             fj:grid
-            fj:after:px-3.5
-            fj:after:py-2.5
-            fj:after:text-inherit
-            fj:[&>textarea]:resize-none
-            fj:[&>textarea]:[grid-area:1/1/2/2]
-            fj:after:[grid-area:1/1/2/2]
-            fj:after:whitespace-pre-wrap
-            fj:after:invisible
-            fj:after:content-[attr(data-cloned-val)_'_']
-            fj:after:border
         `;
+
+        if(this.mode == 'hybrid'){
+            this.displayLayer = document.createElement('div');
+            this.displayLayer.setAttribute('data-placeholder', this.usertextarea.placeholder);
+            this.displayLayer.setAttribute("aria-hidden", true);
+            this.displayLayer.className = `
+                display-layer
+                fj:px-4
+                fj:py-2
+                fj:whitespace-pre-wrap fj:break-words 
+                fj:pointer-events-none 
+                fj:[grid-area:1/1/2/2]
+                fj:size-full
+                fj:m-0
+                fj:box-border
+                fj:z-0
+                fj:overflow-y-auto
+                fj:empty:after:content-[attr(data-placeholder)]
+                fj:empty:after:absolute
+                fj:empty:after:inset-0
+                fj:empty:after:px-4
+                fj:empty:after:py-2
+                fj:empty:after:text-[CanvasText]
+                fj:empty:after:opacity-50
+            `;
+
+            this.usertextarea.className += `
+                fj:text-transparent 
+                fj:caret-primary
+                fj:resize-none
+                fj:outline-none
+                fj:[grid-area:1/1/2/2]
+                fj:m-0
+                fj:box-border
+                fj:relative
+                fj:z-10 
+            `;
+
+            textareaContainer.appendChild(this.displayLayer);
+        }
+
         textareaContainer.appendChild(this.usertextarea);
         this.markdownEditorDiv.appendChild(textareaContainer);
     }
@@ -111,18 +142,33 @@ class MarkdownEditor {
     }
 
     addInputListener() {
-        this.usertextarea.addEventListener('input', () => this.render());
+        this.usertextarea.addEventListener('input', () => {
+            this.renderHybrid(); // Fast: Only Regex
+            this.debouncedPreview(); // Slow: Heavy Markdown Parse
+        });
 
         this.usertextarea.addEventListener('scroll', () => {
-            const textarea = this.usertextarea;
-            const previewPane = this.previewContent;
-        
-            // Calculate the proportion of the textarea that has been scrolled
-            const textareaScrollRatio = textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight);
-        
-            // Apply the same scroll ratio to the preview pane
-            previewPane.scrollTop = textareaScrollRatio * (previewPane.scrollHeight - previewPane.clientHeight);
+            if (this.mode === 'hybrid') {
+                // PIXEL PERFECT SYNC: Do not use ratios for the hybrid layer
+                this.displayLayer.scrollTop = this.usertextarea.scrollTop;
+                this.displayLayer.scrollLeft = this.usertextarea.scrollLeft;
+            }
+
+            if (this.preview && this.previewContent) {
+                // RATIO SYNC: Use ratio only for the fully rendered preview
+                const textarea = this.usertextarea;
+                const ratio = textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight);
+                this.previewContent.scrollTop = ratio * (this.previewContent.scrollHeight - this.previewContent.clientHeight);
+            }
         });
+    }
+
+    debouncedPreview() {
+        if (!this.preview) return;
+        clearTimeout(this.previewTimer);
+        this.previewTimer = setTimeout(() => {
+            this.previewContent.innerHTML = marked(this.usertextarea.value);
+        }, 150); // 150ms delay feels instant but saves CPU
     }
 
     addToolbar() {
@@ -130,20 +176,31 @@ class MarkdownEditor {
             this,
             this.options.toolbar ||
             [
-                'heading',
-                'ul',
-                'ol',
-                'checklist',
-                'bold',
-                'italic',
-                'strikethrough',
-                'blockquote',
-                'link',
-                'image',
-                'undo',
+                // History/System (Usually far left)
+                'undo', 
                 'redo',
-                'indent',
-                'outdent',
+                
+                // Block Structure
+                'heading', 
+                'blockquote', 
+                
+                // Lists & Indentation
+                'ul', 
+                'ol', 
+                'checklist', 
+                'outdent', 
+                'indent', 
+                
+                // Inline Formatting
+                'bold', 
+                'italic', 
+                'strikethrough', 
+                
+                // Rich Media/Links
+                'link', 
+                'image',
+                
+                // View/Preview (Usually far right)
                 'preview'
             ]
         );
@@ -185,9 +242,71 @@ class MarkdownEditor {
     }
     
 
+    renderHybrid() {
+        if (this.mode !== 'hybrid') return;
+
+        const rawValue = this.usertextarea.value;
+        let highlighted = rawValue
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+
+        // SYNTAX HIGHLIGHTING CHAIN
+        highlighted = highlighted
+
+            // code block
+            .replace(/```(\w+)?\n([\s\S]*?)```/g, 
+                '<span class="fj:opacity-30">```$1</span>\n$2<span class="fj:opacity-30">```</span>')
+
+            // 2. Inline Code (Single Backtick)
+            .replace(/`([^`\n]+)`/g, 
+                '<code class="fj:bg-surface">$1</code>')
+
+            // 2. Headers
+            .replace(/^(#+ )(.*)$/gm, 
+                '<span class="fj:text-primary"><span class="fj:opacity-40">$1</span><span class="fj:font-bold fj:tracking-[-0.040em]">$2</span></span>')
+        
+            // 3. Bold 
+            .replace(/\*\*(.*?)\*\*/g, 
+                '<span class="fj:text-secondary"><span class="fj:opacity-40">**</span><span class="fj:font-bold fj:tracking-[-0.040em]">$1</span><span class="fj:opacity-40">**</span></span>')
+
+             // 3. Lists (UL, OL, Checklist)
+            // Matches: "- ", "* ", "1. ", "[ ] ", "[x] "
+            .replace(/^([\s]*)([\-\*] |[\d]+\. |\[[\s xX]\] )(.*)$/gm, 
+                '$1<span class="fj:text-primary fj:font-medium">$2</span>$3')
+
+            // 5. Inline Italic (Supports both *italic* and _italic_)
+            .replace(/(\*|_)(.*?)\1/g, 
+                '<span class="fj:text-accent"><span class="fj:opacity-40">$1</span><span class="fj:italic">$2</span><span class="fj:opacity-40">$1</span></span>')
+
+            // 6. Strikethrough
+            // Double ~~text~~
+            .replace(/~~(.*?)~~/g, 
+                '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-40">~~</span>$1<span class="fj:opacity-40">~~</span></span>')
+            
+            // Single ~text~ (Optional, only if you want to support both)
+            // We use a negative lookbehind/lookahead logic or simply run it after the double replace
+            .replace(/(?<!~)(~)([^~]+)\1(?!~)/g, 
+                '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-40">$1</span>$2<span class="fj:opacity-40">$1</span></span>')
+    
+            // 7. Links & Images
+            // Matches ![alt](src) and [text](url)
+            .replace(/(!?\[)(.*?)(\]\()(.*?)(\))/g, 
+                '<span class="fj:opacity-40">$1</span><span class="fj:text-primary">$2</span><span class="fj:opacity-40">$3</span><span class="fj:underline fj:opacity-50">$4</span><span class="fj:opacity-50">$5</span>');
+            
+
+        // Ensure height sync when ending with newline
+        if (rawValue.length > 0 && rawValue.endsWith('\n')) {
+            highlighted += ' '; 
+        }
+
+        this.displayLayer.innerHTML = highlighted;
+    }
+
     render() {
-        const html = marked(this.usertextarea.value);
-        if (this.preview) this.previewContent.innerHTML = html;
+        // Initial render or manual trigger
+        this.renderHybrid();
+        if (this.preview) this.previewContent.innerHTML = marked(this.usertextarea.value);
     }
 }
 

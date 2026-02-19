@@ -8,21 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
-- **HMR**: Integrated `style-loader` in `webpack.dev.js` for instant CSS updates without page refreshes
-- **Dev DX**: Enabled `client.overlay` to show build errors directly in the browser
-- **List Continuity**: Added ListManager to handle automatic continuation of ordered lists (`1.`), unordered lists (`-`, `*`), and task lists (`[x]`)
+- Added ListManager to handle automatic continuation of ordered lists (`1.`), unordered lists (`-`, `*`), and task lists (`[x]`)
+- Added hybrid (rendered styles) and plain (raw text) modes; plain remains the default
 
 ### Changed
 
-- **Config**: The `options` object now ships with a fully pre-defined default configuration for a faster, zero-config setup. The `toolbar` array specifically now defaults to a "Minimal Essentials" set, removing the requirement to manually define tools or other option keys unless you want to customize the behavior. You can just do this `const editor = new MarkdownEditor('#editor');`
+- The `options` object now ships with a fully pre-defined default configuration for a faster, zero-config setup. The `toolbar` array specifically now defaults to a "Minimal Essentials" set, removing the requirement to manually define tools or other option keys unless you want to customize the behavior. You can just do this `const editor = new MarkdownEditor('#editor');`
 - Refreshed Markdown editor toolbar icons for improved design and consistency
-- IndentManager: Now initialized by passing the editor instance (this) instead of separate arguments
+- IndentManager now initialized by passing the editor instance (this) instead of separate arguments
+- Updated the toolbar and preview pane to dynamically support current and custom themes by removing hard-coded backgrounds in favor of theme-defined color inheritance
 
 ### Fixed
 
 - Build (Production): Added `sourceMap: true` to CSS loaders to ensure `.map` files are generated, preventing deployment crashes
 - Build Paths: Standardized output paths using `__dirname` for cross-environment stability
+- Aligned Tailwind CSS prose colors in the preview to match the selected editor theme palette
 
 ## [0.5.0] - 2026-02-04
 
