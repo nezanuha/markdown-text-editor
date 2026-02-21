@@ -10,7 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added ListManager to handle automatic continuation of ordered lists (`1.`), unordered lists (`-`, `*`), and task lists (`[x]`)
-- Added hybrid (rendered styles) and plain (raw text) modes; plain remains the default
+- **`mode`**: Added hybrid (rendered styles) and plain (raw text) modes; plain remains the default
+- **`image tool`**: Added client-side validation to ensure required Alt text is provided before initiating server requests
+
 
 ### Changed
 
@@ -18,12 +20,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refreshed Markdown editor toolbar icons for improved design and consistency
 - `IndentManager` now initialized by passing the editor instance (this) instead of separate arguments
 - Updated the toolbar and preview pane to dynamically support current and custom themes by removing hard-coded backgrounds in favor of theme-defined color inheritance
+- **`image tool`**: Moved file uploading from the `change` event to the "Apply" button click for a unified `async` flow
+- **`image tool`**: Improved `altInput` to support both boolean and object-based (`{ required: true }`) configurations
+- **`image tool`**: Standardized response handling to require `{ success: true }` for successful uploads.
+- **`image tool`**: Improved error reporting by standardizing alert handling to support error responses with either `{ error: "..." }` or `{ message: "..." }` object keys
 
 ### Fixed
 
 - Build (Production): Added `sourceMap: true` to CSS loaders to ensure `.map` files are generated, preventing deployment crashes
 - Build Paths: Standardized output paths using `__dirname` for cross-environment stability
-- Aligned Tailwind CSS prose colors in the preview to match the selected editor theme palette
+- **`theme`**: Aligned Tailwind CSS prose colors in the preview to match the selected editor theme palette
+- **`image tool`**: Resolved issue where files would upload even if mandatory Alt text was missing
 
 ## [0.5.0] - 2026-02-04
 
