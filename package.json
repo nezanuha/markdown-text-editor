@@ -70,7 +70,7 @@
     "babel-loader": "^10.0.0",
     "css-loader": "^7.1.4",
     "diff": "^8.0.3",
-    "frutjam": "^1.8.0",
+    "frutjam": "^1.9.1",
     "html-webpack-plugin": "^5.6.6",
     "mini-css-extract-plugin": "^2.10.0",
     "postcss": "^8.5.6",
