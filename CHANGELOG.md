@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix bug where selected text becomes invisible in textarea when plain mode is enabled
+
 ## [1.0.0] - 2026-02-21
 
 ### Added
@@ -14,7 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ListManager to handle automatic continuation of ordered lists (`1.`), unordered lists (`-`, `*`), and task lists (`[x]`)
 - **`mode`**: Introduced hybrid (rendered styles) and plain (raw text) modes; plain remains the default
 - **`image tool`**: Added client-side validation to ensure required Alt text is provided before initiating server requests
-
 
 ### Changed
 

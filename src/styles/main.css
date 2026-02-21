@@ -2,7 +2,7 @@
 @import "frutjam";
 @plugin "@tailwindcss/typography";
 
-.textarea::selection {
+.textarea-wrapper:has(.display-layer) .textarea::selection {
     background: color-mix(in oklch, var(--color-primary), transparent 80%);
     color: transparent;
     caret-color: var(--color-primary);
