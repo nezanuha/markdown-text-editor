@@ -258,28 +258,28 @@ class MarkdownEditor {
             .replace(/```(\w+)?\n([\s\S]*?)```/g, 
                 '<span class="fj:opacity-30">```$1</span>\n$2<span class="fj:opacity-30">```</span>')
 
-            // 2. Inline Code (Single Backtick)
+            // Inline Code (Single Backtick)
             .replace(/`([^`\n]+)`/g, 
-                '<code class="fj:bg-surface">$1</code>')
+                '<span class="fj:bg-surface">$1</span>')
 
-            // 2. Headers
+            // Headers
             .replace(/^(#+ )(.*)$/gm, 
                 '<span class="fj:text-primary"><span class="fj:opacity-40">$1</span><span class="fj:font-bold fj:tracking-[-0.040em]">$2</span></span>')
         
-            // 3. Bold 
+            // Bold 
             .replace(/\*\*(.*?)\*\*/g, 
                 '<span class="fj:text-secondary"><span class="fj:opacity-40">**</span><span class="fj:font-bold fj:tracking-[-0.040em]">$1</span><span class="fj:opacity-40">**</span></span>')
 
-             // 3. Lists (UL, OL, Checklist)
+             // Lists (UL, OL, Checklist)
             // Matches: "- ", "* ", "1. ", "[ ] ", "[x] "
             .replace(/^([\s]*)([\-\*] |[\d]+\. |\[[\s xX]\] )(.*)$/gm, 
                 '$1<span class="fj:text-primary fj:font-medium">$2</span>$3')
 
-            // 5. Inline Italic (Supports both *italic* and _italic_)
+            // Inline Italic (Supports both *italic* and _italic_)
             .replace(/(\*|_)(.*?)\1/g, 
                 '<span class="fj:text-accent"><span class="fj:opacity-40">$1</span><span class="fj:italic">$2</span><span class="fj:opacity-40">$1</span></span>')
 
-            // 6. Strikethrough
+            // Strikethrough
             // Double ~~text~~
             .replace(/~~(.*?)~~/g, 
                 '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-40">~~</span>$1<span class="fj:opacity-40">~~</span></span>')
@@ -289,11 +289,10 @@ class MarkdownEditor {
             .replace(/(?<!~)(~)([^~]+)\1(?!~)/g, 
                 '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-40">$1</span>$2<span class="fj:opacity-40">$1</span></span>')
     
-            // 7. Links & Images
+            // Links & Images
             // Matches ![alt](src) and [text](url)
             .replace(/(!?\[)(.*?)(\]\()(.*?)(\))/g, 
-                '<span class="fj:opacity-40">$1</span><span class="fj:text-primary">$2</span><span class="fj:opacity-40">$3</span><span class="fj:underline fj:opacity-50">$4</span><span class="fj:opacity-50">$5</span>');
-            
+                '<span class="fj:opacity-40">$1</span><span class="fj:text-primary">$2</span><span class="fj:opacity-40">$3</span><span class="fj:underline fj:opacity-50">$4</span><span class="fj:opacity-50">$5</span>')
 
         // Ensure height sync when ending with newline
         if (rawValue.length > 0 && rawValue.endsWith('\n')) {
