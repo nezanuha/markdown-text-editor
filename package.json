@@ -1,6 +1,6 @@
 {
   "name": "markdown-text-editor",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "description": "A simple JavaScript Markdown editor plugin with real-time preview, and easy integration.",
   "funding": "https://ko-fi.com/nezanuha",
   "main": "./dist/markdown-text-editor.js",
