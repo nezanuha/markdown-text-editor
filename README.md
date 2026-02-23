@@ -10,24 +10,40 @@
 
 Welcome to **MarkdownEditor**, the leading open source JavaScript markdown editor plugin. Enjoy a simple, powerful, and embeddable markdown editor with real-time preview, syntax highlighting, responsive design, and seamless integration for all web projects.
 
-## Built With
+> Get and set the Markdown content using a native &lt;textarea&gt;, just as you would with a standard textarea. Works seamlessly with traditional form submissions, without requiring JavaScript-based value handling.
 
-This Markdown editor is built using [frutjam](https://frutjam.com), a customizable Tailwind CSS UI library.
+A lightweight (~116 KB) Markdown editor offering advanced features and a powerful WYSIWYG editing experience
 
 ## Features
-- ✅ **Effortless Frutjam UI Integration**: Easily integrate the Frutjam UI library with automatic editor theme adjustments based on the selected theme.
-- ✅ **Actively Maintenaning**: The plugin receives regular updates to stay up to date. 
-- ✅ **User-Friendly**: It offers a WYSIWYG-style interface, making it great for non-technical users.  
-- ✅ **Simple Markdown _Get/Set_**: No complicated techniques are required to get and set the markdown content. You can use the <textarea> value or name attribute to get and set markdown content. 
-- ✅ **Responsive**: The editor is fully responsive, providing a seamless experience across all screen sizes.  
-- ✅ **RTL Support**: By default Right-to-Left (RTL) text is supported, making it ideal for languages like Arabic, Urdu, and Farsi.  
-- ✅ **Module Support**: Supports ESM, UMD, and CommonJS modules, making it easy to integrate with different module systems.
-- ✅ **Live Preview Mode**: Watch your markdown content render while you type, providing a real-time preview of formatting, links, images, and more.
-- ✅ **Automatic Dark Mode Support**: The editor follows your system's or website's dark mode settings, giving a seamless experience.
+
+- ✍️ **Simple Markdown _Get/Set_**: No complicated techniques are required to get and set the markdown content. You can use the &lt;textarea&gt; value or name attribute to get and set markdown content
+- 📱 **Responsive**: The editor is fully responsive, providing a seamless experience across all screen sizes
+- 🎛️ **Easy UI Customization**: Quickly customize the UI using CSS variables to match your brand and preferences
+- 🔀 **Hybrid and Plain Markdown Editing**: Supports both WYSIWYG (hybrid) and plain Markdown modes for flexible content creation
+- 🌍 **RTL Support**: By default Right-to-Left (RTL) text is supported, making it ideal for languages like Arabic, Urdu, and Farsi
+- 🚀 **Lightweight**: Tiny bundle size - ~116KB minified
+- 🏋️‍♂️ **Heavy Content Support**: Handles long or large Markdown content smoothly without degrading performance
+- 📝 **Smart list continuation**: GitHub-style automatic list continuation on Enter
+- ⚡ **Live Preview Mode**: Watch your markdown content render while you type, providing a real-time preview of formatting, links, images, and more
+- 📦 **Module Support**: Supports ESM, UMD, and CommonJS modules, making it easy to integrate with different module systems
+- 🌙 **Automatic Dark Mode Support**: The editor follows your system's or website's dark mode settings, giving a seamless experience
+- 👌 **User-Friendly**: It offers a WYSIWYG-style interface, making it great for non-technical users.  
+- 🎨 **Effortless Frutjam UI Integration**: Easily integrate the Frutjam UI library with automatic editor theme adjustments based on the selected theme
+- 🔄 **Actively Maintenaning**: The plugin receives regular updates to stay up to date
 
 ## Documentation
 
 For full documentation, visit [Markdown Editor](https://frutjam.com/plugins/markdown-editor).
+
+## WYSIWYG (Hybrid) & Plain Mode Markdown Editing Experience
+
+### Hybrid Mode (WYSIWYG + Markdown): See how the editor combines WYSIWYG and Markdown editing in one interface
+
+![Hybrid mode WYSIWYG styled markdown editor](https://cdn.frutjam.com/media/plugins/hybrid-mode-markdown-editor.webp)
+
+### Plain Markdown Mode: Experience editing Markdown directly with full control over formatting
+
+![Plain mode markdown editor](https://cdn.frutjam.com/media/plugins/plain-mode-markdown-editor.webp)
 
 ---
 
