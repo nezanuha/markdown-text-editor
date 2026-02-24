@@ -1,4 +1,8 @@
-## MarkdownEditor – Best JavaScript Markdown Editor Plugin
+## Markdown Text Editor
+
+A lightweight, developer-friendly Markdown editor that transforms a standard HTML `<textarea>` into a feature-rich editing experience without breaking native form submission.
+
+> A native `<textarea>` can be enhanced into an advanced Markdown editor while still functioning like a standard textarea, allowing developers to submit its content through a normal form, retrieve the Markdown value using JavaScript via `id`, `name`, or any selector, and set the content programmatically with the editor automatically reflecting the changes.
 
 [![npm installs][npm_installs]](https://www.npmjs.com/package/markdown-text-editor)
 [![Jsdelivr hits][jsdelivr]](https://cdn.jsdelivr.net/npm/markdown-text-editor)
@@ -7,33 +11,85 @@
 [![Secured](https://img.shields.io/badge/Security-Passed-green)](https://snyk.io/test/github/nezanuha/markdown-text-editor)
 ![GitHub Repo stars](https://img.shields.io/github/stars/nezanuha/markdown-text-editor?style=flat)
 
+## 💡 The Concept: Native Power
 
-Welcome to **MarkdownEditor**, the leading open source JavaScript markdown editor plugin. Enjoy a simple, powerful, and embeddable markdown editor with real-time preview, syntax highlighting, responsive design, and seamless integration for all web projects.
+Most advanced editors require complex APIs to get or set data. This editor stays true to the web: **if you know how to use a `<textarea>`, you know how to use this editor**.
 
-> Get and set the Markdown content using a native &lt;textarea&gt;, just as you would with a standard textarea. Works seamlessly with traditional form submissions, without requiring JavaScript-based value handling.
+It acts as a transparent layer over your native element. This means:
+
+- **Automatic Form Submission**: Since it's a `<textarea>`, the content is automatically included in your POST requests
+- **No New Syntax**: Use standard JavaScript to get or set values
+- **Seamless Integration**: Works with any backend (Node, PHP, Python, etc.) just like a normal form field
+
+## 🚀 Quick Start
+
+### 1. The HTML Structure
+
+Simply place a `<textarea>` inside your standard form. No special wrappers required.
+
+```html
+<form method="post" action="api/submit-form">
+  <input type="text" name="title" placeholder="Article Title">
+
+  <textarea id="markdown-editor" name="content"># Heading level 1</textarea>
+
+  <button type="submit">Submit Post</button>
+</form>
+```
+
+### 2. Initialization
+
+```javascript
+import 'markdown-text-editor/dist/markdown-text-editor.css';
+import MarkdownEditor from "markdown-text-editor";
+
+const editor = new MarkdownEditor('#markdown-editor');
+```
+
+## 🛠 Developer Workflow
+
+### Getting Content
+
+You don't need a custom library method to get the text. Just target the ID:
+
+```javascript
+const markdown = document.getElementById('markdown-editor').value;
+console.log(markdown);
+```
+
+### Setting Content
+
+The editor listens for changes. When you update the textarea value via JavaScript, the preview/editor UI updates automatically:
+
+```javascript
+const textarea = document.getElementById('markdown-editor');
+textarea.value = "## New Content Loaded via JS";
+
+// The editor UI reflects this immediately
+```
 
 A lightweight (~116 KB) Markdown editor offering advanced features and a powerful WYSIWYG editing experience
 
-## Features
+## ✨ Features
 
-- ✍️ **Simple Markdown _Get/Set_**: No complicated techniques are required to get and set the markdown content. You can use the &lt;textarea&gt; value or name attribute to get and set markdown content
-- 📱 **Responsive**: The editor is fully responsive, providing a seamless experience across all screen sizes
-- 🎛️ **Easy UI Customization**: Quickly customize the UI using CSS variables to match your brand and preferences
-- 🔀 **Hybrid and Plain Markdown Editing**: Supports both WYSIWYG (hybrid) and plain Markdown modes for flexible content creation
-- 🌍 **RTL Support**: By default Right-to-Left (RTL) text is supported, making it ideal for languages like Arabic, Urdu, and Farsi
-- 🚀 **Lightweight**: Tiny bundle size - ~116KB minified
-- 🏋️‍♂️ **Heavy Content Support**: Handles long or large Markdown content smoothly without degrading performance
-- 📝 **Smart list continuation**: GitHub-style automatic list continuation on Enter
-- ⚡ **Live Preview Mode**: Watch your markdown content render while you type, providing a real-time preview of formatting, links, images, and more
-- 📦 **Module Support**: Supports ESM, UMD, and CommonJS modules, making it easy to integrate with different module systems
-- 🌙 **Automatic Dark Mode Support**: The editor follows your system's or website's dark mode settings, giving a seamless experience
-- 👌 **User-Friendly**: It offers a WYSIWYG-style interface, making it great for non-technical users.  
-- 🎨 **Effortless Frutjam UI Integration**: Easily integrate the Frutjam UI library with automatic editor theme adjustments based on the selected theme
-- 🔄 **Actively Maintenaning**: The plugin receives regular updates to stay up to date
+- 🔌 **Native Form Integration**: Works exactly like a standard `<textarea>`. No complex APIs—just use the `value` or `name` attribute to get or set content. It "just works" with standard HTML form submissions
+- 🔀 **Hybrid & Plain Modes**: Choose between a **Hybrid (WYSIWYG)** experience for visual editing or a Plain Markdown mode for a traditional coding feel
+- ⚡ **Real-time Live Preview:** Watch your Markdown render instantly as you type, including support for links, images, and complex formatting
+- 🌍 **Built-in RTL Support**: Native support for Right-to-Left (RTL) languages like Arabic, Urdu, and Farsi, making it globally accessible
+- 🌙 **Adaptive Theming**: Features automatic Dark Mode support that follows your system or website settings for a seamless visual experience
+- 🎨 **Frutjam UI Ready**: Effortless integration with the **Frutjam** UI library, including automatic theme adjustments to match your UI components
+- 🚀 **High Performance**:
+ - **Lightweight**: Tiny bundle size (~116KB minified)
+ - **Heavy Content**: Optimized to handle long documents and large files without performance lag
+- 📱 **Fully Responsive**: A fluid UI that adapts perfectly to desktops, tablets, and smartphones
+- 📝 **Smart Editing**: GitHub-style automatic list continuation—press `Enter` and the editor handles the bullets/numbers for you
+- 🎛️ **Effortless Customization**: Quickly match your brand’s look and feel using simple CSS variables
+- 📦 **Universal Module Support**: Compatible with **ESM**, **UMD**, and **CommonJS**, ensuring it fits into any modern or legacy JavaScript workflow
+- 🔄 **Actively Maintained**: Regularly updated with new features, optimizations, and community-driven improvements
 
-## Documentation
+## 📖 Documentation
 
-For full documentation, visit [Markdown Editor](https://frutjam.com/plugins/markdown-editor).
+For the complete API reference, advanced configuration, and styling guides, visit the official [Markdown Editor Documentation](https://frutjam.com/plugins/markdown-editor).
 
 ## WYSIWYG (Hybrid) & Plain Mode Markdown Editing Experience
 
