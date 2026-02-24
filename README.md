@@ -23,7 +23,21 @@ It acts as a transparent layer over your native element. This means:
 
 ## 🚀 Quick Start
 
-### 1. The HTML Structure
+### 1. Installation
+
+#### NPM
+
+```bash
+npm install markdown-text-editor
+```
+
+#### CDN
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor@latest/dist/markdown-text-editor.min.js"></script>
+```
+
+### 2. The HTML Structure
 
 Simply place a `<textarea>` inside your standard form. No special wrappers required.
 
@@ -37,7 +51,7 @@ Simply place a `<textarea>` inside your standard form. No special wrappers requi
 </form>
 ```
 
-### 2. Initialization
+### 3. Initialization
 
 ```javascript
 import 'markdown-text-editor/dist/markdown-text-editor.css';
