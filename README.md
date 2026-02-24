@@ -1,8 +1,4 @@
-## Markdown Text Editor
-
-A lightweight, developer-friendly Markdown editor that transforms a standard HTML `<textarea>` into a feature-rich editing experience without breaking native form submission.
-
-> A native `<textarea>` can be enhanced into an advanced Markdown editor while still functioning like a standard textarea, allowing developers to submit its content through a normal form, retrieve the Markdown value using JavaScript via `id`, `name`, or any selector, and set the content programmatically with the editor automatically reflecting the changes.
+# MarkdownEditor — The Native-First JavaScript Markdown Editor
 
 [![npm installs][npm_installs]](https://www.npmjs.com/package/markdown-text-editor)
 [![Jsdelivr hits][jsdelivr]](https://cdn.jsdelivr.net/npm/markdown-text-editor)
@@ -10,6 +6,10 @@ A lightweight, developer-friendly Markdown editor that transforms a standard HTM
 [![License](https://img.shields.io/npm/l/markdown-text-editor.svg)](https://github.com/nezanuha/markdown-text-editor/blob/master/LICENSE)
 [![Secured](https://img.shields.io/badge/Security-Passed-green)](https://snyk.io/test/github/nezanuha/markdown-text-editor)
 ![GitHub Repo stars](https://img.shields.io/github/stars/nezanuha/markdown-text-editor?style=flat)
+
+A lightweight, developer-friendly Markdown editor that transforms a standard HTML `<textarea>` into a feature-rich editing experience without breaking native form submission.
+
+> A native `<textarea>` can be enhanced into an advanced Markdown editor while still functioning like a standard textarea, allowing developers to submit its content through a normal form, retrieve the Markdown value using JavaScript via `id`, `name`, or any selector, and set the content programmatically with the editor automatically reflecting the changes.
 
 ## 💡 The Concept: Native Power
 
