@@ -79,8 +79,8 @@ A lightweight (~116 KB) Markdown editor offering advanced features and a powerfu
 - 🌙 **Adaptive Theming**: Features automatic Dark Mode support that follows your system or website settings for a seamless visual experience
 - 🎨 **Frutjam UI Ready**: Effortless integration with the **Frutjam** UI library, including automatic theme adjustments to match your UI components
 - 🚀 **High Performance**:
- - **Lightweight**: Tiny bundle size (~116KB minified)
- - **Heavy Content**: Optimized to handle long documents and large files without performance lag
+    - **Lightweight**: Tiny bundle size (~116KB minified)
+    - **Heavy Content**: Optimized to handle long documents and large files without performance lag
 - 📱 **Fully Responsive**: A fluid UI that adapts perfectly to desktops, tablets, and smartphones
 - 📝 **Smart Editing**: GitHub-style automatic list continuation—press `Enter` and the editor handles the bullets/numbers for you
 - 🎛️ **Effortless Customization**: Quickly match your brand’s look and feel using simple CSS variables
