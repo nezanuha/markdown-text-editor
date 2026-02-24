@@ -73,6 +73,7 @@ A lightweight (~116 KB) Markdown editor offering advanced features and a powerfu
 ## ✨ Features
 
 - 🔌 **Native Form Integration**: Works exactly like a standard `<textarea>`. No complex APIs—just use the `value` or `name` attribute to get or set content. It "just works" with standard HTML form submissions
+- 🖼️ **Advanced Image Upload**: Easily configure image uploads to your own server. Set your custom image paths via an API to ensure faster page loads and better SEO by avoiding heavy Base64 strings
 - 🔀 **Hybrid & Plain Modes**: Choose between a **Hybrid (WYSIWYG)** experience for visual editing or a Plain Markdown mode for a traditional coding feel
 - ⚡ **Real-time Live Preview:** Watch your Markdown render instantly as you type, including support for links, images, and complex formatting
 - 🌍 **Built-in RTL Support**: Native support for Right-to-Left (RTL) languages like Arabic, Urdu, and Farsi, making it globally accessible
