@@ -31,10 +31,16 @@ It acts as a transparent layer over your native element. This means:
 npm install markdown-text-editor
 ```
 
+——— OR ———
+
 #### CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor@latest/dist/markdown-text-editor.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor@1.0.1/dist/markdown-text-editor.min.css">
+```
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor@1.0.1/dist/markdown-text-editor.min.js"></script>
 ```
 
 ### 2. The HTML Structure
