@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ListManager to handle automatic continuation of ordered lists (`1.`), unordered lists (`-`, `*`), and task lists (`[x]`)
 - **`mode`**: Introduced hybrid (rendered styles) and plain (raw text) modes; plain remains the default
 - **`image tool`**: Added client-side validation to ensure required Alt text is provided before initiating server requests
-- Added support for custom upload parameters in `image.fileInput.params` (e.g., `_token`, `user_id`, `folder`).
+- Added support for custom upload parameters in `image.fileInput.params` (e.g., `_token`, `user_id`, `folder`)
 
 ### Changed
 
