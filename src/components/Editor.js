@@ -17,6 +17,10 @@ class MarkdownEditor {
         this.mode = options.mode || 'plain';
         this.preview = (this.options.toolbar) ? this.options.toolbar.includes('preview') : true;
         this.previewTimer = null;
+
+        // A marked instance with custom options and plugins
+        this.mdRender = options.renderer || marked;
+        this.sanitizeHTML = options.sanitizer || function(html) { return html};
         this.init();
         this.undoRedoManager = new UndoRedoManager(this);
         this.listManager = new ListManager(this);
@@ -34,7 +38,8 @@ class MarkdownEditor {
         this.applyDefaultAttributes();
         this.buildEditorLayout();
         this.addInputListener();
-        this.render();
+        this.renderHybrid();
+        this.renderPreview();
     }
 
     isTextareaValid() {
@@ -167,7 +172,7 @@ class MarkdownEditor {
         if (!this.preview) return;
         clearTimeout(this.previewTimer);
         this.previewTimer = setTimeout(() => {
-            this.previewContent.innerHTML = marked(this.usertextarea.value);
+            this.renderPreview(this.usertextarea.value);
         }, 150); // 150ms delay feels instant but saves CPU
     }
 
@@ -216,7 +221,8 @@ class MarkdownEditor {
         // Scroll the textarea to the inserted text
         this.scrollToView();
 
-        this.render();
+        this.renderHybrid();
+        this.renderPreview();
     }
 
     scrollToView() {
@@ -302,10 +308,8 @@ class MarkdownEditor {
         this.displayLayer.innerHTML = highlighted;
     }
 
-    render() {
-        // Initial render or manual trigger
-        this.renderHybrid();
-        if (this.preview) this.previewContent.innerHTML = marked(this.usertextarea.value);
+    renderPreview() {
+        if (this.preview) this.previewContent.innerHTML = this.sanitizeHTML(this.mdRender(this.usertextarea.value));
     }
 }
 
