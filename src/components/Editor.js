@@ -34,7 +34,8 @@ class MarkdownEditor {
         this.applyDefaultAttributes();
         this.buildEditorLayout();
         this.addInputListener();
-        this.render();
+        this.renderHybrid();
+        this.renderPreview();
     }
 
     isTextareaValid() {
@@ -167,7 +168,7 @@ class MarkdownEditor {
         if (!this.preview) return;
         clearTimeout(this.previewTimer);
         this.previewTimer = setTimeout(() => {
-            this.previewContent.innerHTML = marked(this.usertextarea.value);
+            this.renderPreview(this.usertextarea.value);
         }, 150); // 150ms delay feels instant but saves CPU
     }
 
@@ -216,7 +217,8 @@ class MarkdownEditor {
         // Scroll the textarea to the inserted text
         this.scrollToView();
 
-        this.render();
+        this.renderHybrid();
+        this.renderPreview();
     }
 
     scrollToView() {
@@ -302,9 +304,7 @@ class MarkdownEditor {
         this.displayLayer.innerHTML = highlighted;
     }
 
-    render() {
-        // Initial render or manual trigger
-        this.renderHybrid();
+    renderPreview() {
         if (this.preview) this.previewContent.innerHTML = marked(this.usertextarea.value);
     }
 }
