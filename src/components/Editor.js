@@ -20,6 +20,7 @@ class MarkdownEditor {
 
         // A marked instance with custom options and plugins
         this.mdRender = options.renderer || marked;
+        this.sanitizeHTML = options.sanitizer || function(html) { return html};
         this.init();
         this.undoRedoManager = new UndoRedoManager(this);
         this.listManager = new ListManager(this);
@@ -308,7 +309,7 @@ class MarkdownEditor {
     }
 
     renderPreview() {
-        if (this.preview) this.previewContent.innerHTML = this.mdRender(this.usertextarea.value);
+        if (this.preview) this.previewContent.innerHTML = this.sanitizeHTML(this.mdRender(this.usertextarea.value));
     }
 }
 
