@@ -17,6 +17,9 @@ class MarkdownEditor {
         this.mode = options.mode || 'plain';
         this.preview = (this.options.toolbar) ? this.options.toolbar.includes('preview') : true;
         this.previewTimer = null;
+
+        // A marked instance with custom options and plugins
+        this.mdRender = options.renderer || marked;
         this.init();
         this.undoRedoManager = new UndoRedoManager(this);
         this.listManager = new ListManager(this);
@@ -305,7 +308,7 @@ class MarkdownEditor {
     }
 
     renderPreview() {
-        if (this.preview) this.previewContent.innerHTML = marked(this.usertextarea.value);
+        if (this.preview) this.previewContent.innerHTML = this.mdRender(this.usertextarea.value);
     }
 }
 
