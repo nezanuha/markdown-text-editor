@@ -32,8 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`image tool`**: Improved `altInput` to support both boolean and object-based (`{ required: true }`) configurations
 - **`image tool`**: Standardized response handling to require `{ success: true }` for successful uploads.
 - **`image tool`**: Improved error reporting by standardizing alert handling to support error responses with either `{ error: "..." }` or `{ message: "..." }` object keys
-- [Breaking] Renamed request field `image` to `image_file`
-- [Breaking] Renamed response field `path` to `image_path`
+- [Breaking]: Renamed request field `image` to `image_file`
+- [Breaking]: Renamed response field `path` to `image_path`
 
 ### Fixed
 
