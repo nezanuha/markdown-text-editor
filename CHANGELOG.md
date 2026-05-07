@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - The editor now works out of the box via CDN, npm, or any bundler (Vite, webpack, Rollup) with no extra configuration
-- **`preview`**: Checkboxes in the preview pane are now clickable — toggling them updates the markdown source instantly without leaving preview mode
+- **`preview`**: Checkboxes in the preview pane are now clickable — toggling them updates the markdown source instantly without leaving preview mode ([#27](https://github.com/nezanuha/markdown-text-editor/discussions/27))
 
 ### Fixed
 
