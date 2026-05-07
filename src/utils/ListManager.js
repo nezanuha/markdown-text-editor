@@ -20,9 +20,9 @@ class ListManager {
 
         // Patterns
         const olMatch = currentLine.match(/^(\s*)(\d+)\.\s/);
+        const taskMatch = currentLine.match(/^(\s*)([\-\*] )\[[\s xX]\] /);
         const ulMatch = currentLine.match(/^(\s*)([\-\*] )\s*/);
-        const taskMatch = currentLine.match(/^(\s*)(\[[\s xX]\] )\s*/);
-        const isEmptyList = currentLine.match(/^(\s*)(\d+\.\s|[\-\*]\s|\[[\s xX]\]\s)$/);
+        const isEmptyList = currentLine.match(/^(\s*)(\d+\.\s|[\-\*] \[[\s xX]\] |[\-\*]\s)$/);
 
         // Exit list if line is empty
         if (isEmptyList) {
@@ -39,7 +39,7 @@ class ListManager {
         if (olMatch) {
             continuation = `${olMatch[1]}${parseInt(olMatch[2]) + 1}. `;
         } else if (taskMatch) {
-            continuation = `${taskMatch[1]}[ ] `;
+            continuation = `${taskMatch[1]}${taskMatch[2]}[ ] `;
         } else if (ulMatch) {
             continuation = `${ulMatch[1]}${ulMatch[2]}`;
         }
