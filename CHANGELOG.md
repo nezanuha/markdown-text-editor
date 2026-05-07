@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`image tool`**: Upload error no longer throws an uncaught exception when the server returns an unexpected response
 - **`preview tool`**: Toggling preview on a page with multiple editor instances no longer disables toolbar buttons in all other instances
 - **`checklist`**: Pressing Enter after a checklist item now correctly continues with `- [ ] ` instead of just `- ` ([#23](https://github.com/nezanuha/markdown-text-editor/issues/23))
+- **`lists`**: Pressing Enter to continue a list no longer selects the inserted prefix — the cursor now lands ready to type
 
 ## [1.0.1] - 2026-02-21
 
