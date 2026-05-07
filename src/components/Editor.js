@@ -249,24 +249,16 @@ class MarkdownEditor {
 
     scrollToView() {
         const textarea = this.usertextarea;
-    
-        // Calculate the position of the inserted text
         const selectionStart = textarea.selectionStart;
-    
-        // Get the line height (height of each row of text)
-        const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
-        
-        // Get how many rows fit into the visible area of the textarea
+
+        if (!this._lineHeight) {
+            this._lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
+        }
+
+        const lineHeight = this._lineHeight;
         const rowsInView = Math.floor(textarea.clientHeight / lineHeight);
-    
-        // Calculate the current line number of the selectionStart
         const currentLine = Math.floor(selectionStart / textarea.cols);
-    
-        // Scroll to the line number that places the inserted text in the center
-        const targetScrollTop = (currentLine - Math.floor(rowsInView / 2)) * lineHeight;
-    
-        // Adjust scrollTop to center the cursor's line in the view
-        textarea.scrollTop = targetScrollTop;
+        textarea.scrollTop = (currentLine - Math.floor(rowsInView / 2)) * lineHeight;
     }
     
 

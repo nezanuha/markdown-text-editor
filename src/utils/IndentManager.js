@@ -106,6 +106,10 @@ export default class IndentManager {
 
         const lastNewline = value.lastIndexOf('\n', selectionStart - 1);
         const currentLine = value.substring(lastNewline + 1, selectionStart);
+
+        // Let ListManager handle list continuation
+        if (/^(\s*)([\-\*] |\d+\. )/.test(currentLine)) return;
+
         const indent = (currentLine.match(/^[ \t]*/) || [''])[0];
 
         // EXTRA: If user hits Enter between { and }, add an extra indent level
@@ -153,15 +157,12 @@ export default class IndentManager {
         const targetText = value.substring(startPos, endPos);
         const lines = targetText.split('\n');
         const indentedText = lines.map(line => '\t' + line).join('\n');
-        
+
         this._applyChange(
             value.substring(0, startPos) + indentedText + value.substring(endPos),
             selectionStart + 1,
             selectionEnd + lines.length
         );
-        
-        // Add this so external calls auto-update
-        this._triggerUpdate(); 
     }
 
     outdent() {
@@ -199,9 +200,6 @@ export default class IndentManager {
             Math.max(startPos, selectionStart - removedFromFirst),
             Math.max(startPos, selectionEnd - totalRemoved)
         );
-
-        // 4. Trigger the undo stack and re-render
-        this._triggerUpdate();
     }
 
     _applyChange(newValue, newStart, newEnd) {
