@@ -41,7 +41,7 @@ class HeadingTool extends MakeTool {
         }
 
         // Insert the new heading text and replace any selected text
-        this.editor.insertText(newText, true);
+        this.editor.insertText(newText);
 
         // Cycle heading levels after applying the heading
         if (this.currentHeading === 6) {
