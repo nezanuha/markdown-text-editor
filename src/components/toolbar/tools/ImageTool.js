@@ -41,23 +41,23 @@ class ImageTool extends MakeTool {
         let fileInputTag = '';
         if (this.fileInputConfig) {
             fileInputTag = `
-                <input type="file" accept="${acceptFormats}" class="img-file-input fj:input fj:w-full">
-                <div class="fj:divider fj:my-1">OR</div>
+                <input type="file" accept="${acceptFormats}" class="img-file-input fj:me-input fj:w-full">
+                <div class="fj:me-divider fj:my-1">OR</div>
             `;
         }
 
         const bodyHTML = `
             <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
                 <div class="fj:font-medium">Image</div>
-                <button type="button" class="fj:btn fj:btn-ghost fj:btn-xs fj:btn-circle" onclick="nezanuha_toggleModal.remove()">
+                <button type="button" class="fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" onclick="nezanuha_toggleModal.remove()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
             <div class="fj:mt-4 fj:flex fj:flex-col fj:gap-y-4">
                 ${fileInputTag}
-                <input type="url" placeholder="URL" class="img-link-input fj:input fj:w-full" required>
-                <input type="text" placeholder="Alt text" class="img-link-alt-input fj:input fj:w-full" value="${selectedText}" ${isAltRequired ? 'required' : ''}>
-                <button type="button" class="submit-img-link fj:btn fj:btn-sm fj:self-end">Apply</button>
+                <input type="url" placeholder="URL" class="img-link-input fj:me-input fj:w-full" required>
+                <input type="text" placeholder="Alt text" class="img-link-alt-input fj:me-input fj:w-full" value="${selectedText}" ${isAltRequired ? 'required' : ''}>
+                <button type="button" class="submit-img-link fj:me-btn fj:me-btn-sm fj:self-end">Apply</button>
             </div>`;
 
         const modalElement = modal(event, 'fj:max-w-sm', bodyHTML);
@@ -120,7 +120,7 @@ class ImageTool extends MakeTool {
                         return;
                     }
                 } catch (err) {
-                    alert(result.error || result.message || 'Upload failed.');
+                    alert('Upload failed.');
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Apply';
                     urlInputSelector.required = true; // Restore

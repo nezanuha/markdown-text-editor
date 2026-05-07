@@ -1,5 +1,9 @@
 @import "tailwindcss" prefix(fj);
-@import "frutjam";
+@plugin "frutjam" {
+    prefix: me;
+    reset: false;
+    root: .markdown-editor-wrapper;
+};
 @plugin "@tailwindcss/typography";
 
 .textarea-wrapper:has(.display-layer) .textarea::selection {

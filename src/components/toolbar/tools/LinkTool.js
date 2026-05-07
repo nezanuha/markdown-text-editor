@@ -32,15 +32,15 @@ class LinkTool extends MakeTool {
             const bodyHTML =`
                 <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
                     <div class="fj:font-medium">Link</div>
-                    <button type="button" class="fj:btn fj:btn-ghost fj:btn-xs fj:btn-circle" onclick="nezanuha_toggleModal.remove()">
+                    <button type="button" class="fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" onclick="nezanuha_toggleModal.remove()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                 </div>
                 <form method="post">
                     <div class="fj:flex fj:flex-col fj:justify-center fj:gap-y-4.5 fj:mt-4">
-                        <input type="url" placeholder="URL" class="link-input fj:input fj:w-full" required>
-                        <input type="text" placeholder="Link text" class="link-text-input fj:input fj:w-full" value="${selectedText}" required>
-                        <button type="submit" class="submit-link fj:btn fj:btn-sm fj:self-end">Apply</button>
+                        <input type="url" placeholder="URL" class="link-input fj:me-input fj:w-full" required>
+                        <input type="text" placeholder="Link text" class="link-text-input fj:me-input fj:w-full" value="${selectedText}" required>
+                        <button type="submit" class="submit-link fj:me-btn fj:me-btn-sm fj:self-end">Apply</button>
                     </div>
                 </form>`;
 

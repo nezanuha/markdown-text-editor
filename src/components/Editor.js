@@ -65,9 +65,9 @@ class MarkdownEditor {
         this.editorContainer = document.createElement('div');
         this.editorContainer.className = `
             markdown-editor-wrapper
-            fj:surface
-            fj:surface-outline
-            fj:surface-rounded
+            fj:me-surface
+            fj:me-surface-outline
+            fj:me-surface-rounded
             fj:overflow-hidden
         `;
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
@@ -85,7 +85,7 @@ class MarkdownEditor {
         textareaContainer.className = `
             textarea-wrapper
             not-prose
-            fj:surface
+            fj:me-surface
             fj:h-full
             fj:grid
         `;

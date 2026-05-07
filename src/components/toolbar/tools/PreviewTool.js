@@ -59,11 +59,11 @@ class PreviewTool extends MakeTool {
         
         document.querySelector("body").classList.remove('fj:overflow-hidden');
 
-        document.querySelectorAll('.markdown-btn').forEach(button => {
+        this.editor.editorContainer.querySelectorAll('.markdown-btn').forEach(button => {
             if (!button.classList.contains('preview-btn')) {
                 button.classList.remove('fj:pointer-events-none', 'fj:md:pointer-events-auto', 'fj:opacity-25', 'fj:md:opacity-100');
             }else{
-                button.classList.remove('fj:btn-active');
+                button.classList.remove('fj:me-btn-active');
             }
         });
     }
@@ -100,11 +100,11 @@ class PreviewTool extends MakeTool {
 
         document.querySelector("body").classList.add('fj:overflow-hidden');
 
-        document.querySelectorAll('.markdown-btn').forEach(button => {
+        this.editor.editorContainer.querySelectorAll('.markdown-btn').forEach(button => {
             if (!button.classList.contains('preview-btn')) {
                 button.classList.add('fj:pointer-events-none', 'fj:md:pointer-events-auto', 'fj:opacity-25', 'fj:md:opacity-100');
             }else{
-                button.classList.add('fj:btn-active');
+                button.classList.add('fj:me-btn-active');
             }
         });
     }
