@@ -168,7 +168,35 @@ class MarkdownEditor {
         clearTimeout(this.previewTimer);
         this.previewTimer = setTimeout(() => {
             this.previewContent.innerHTML = marked(this.usertextarea.value);
+            this.wirePreviewCheckboxes();
         }, 150); // 150ms delay feels instant but saves CPU
+    }
+
+    wirePreviewCheckboxes() {
+        const checkboxes = this.previewContent.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach((checkbox, index) => {
+            checkbox.removeAttribute('disabled');
+            checkbox.addEventListener('click', (e) => {
+                e.preventDefault();
+                const lines = this.usertextarea.value.split('\n');
+                let count = 0;
+                for (let i = 0; i < lines.length; i++) {
+                    if (/^(\s*)([-*] \[[ xX]\] )/.test(lines[i])) {
+                        if (count === index) {
+                            if (checkbox.checked) {
+                                lines[i] = lines[i].replace(/\[[xX]\]/, '[ ]');
+                            } else {
+                                lines[i] = lines[i].replace(/\[ \]/, '[x]');
+                            }
+                            break;
+                        }
+                        count++;
+                    }
+                }
+                this.usertextarea.value = lines.join('\n');
+                this.render();
+            });
+        });
     }
 
     addToolbar() {
@@ -303,9 +331,11 @@ class MarkdownEditor {
     }
 
     render() {
-        // Initial render or manual trigger
         this.renderHybrid();
-        if (this.preview) this.previewContent.innerHTML = marked(this.usertextarea.value);
+        if (this.preview) {
+            this.previewContent.innerHTML = marked(this.usertextarea.value);
+            this.wirePreviewCheckboxes();
+        }
     }
 }
 
