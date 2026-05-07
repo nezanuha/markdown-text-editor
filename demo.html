@@ -37,8 +37,9 @@ def greet(name):
         <div class="output"></div>
     </div>
 
-    <script>
-        // Use DOMContentLoaded to ensure the injected script has loaded
+    <script type="module">
+        import MarkdownEditor from '/src/components/Editor.js';
+
         window.addEventListener('DOMContentLoaded', () => {
         const options = {
             placeholder: 'Start writing...',
