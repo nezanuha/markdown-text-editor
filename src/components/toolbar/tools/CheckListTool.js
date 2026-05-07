@@ -11,14 +11,23 @@ class CheckListTool extends MakeTool {
     applySyntax() {
         const textarea = this.editor.usertextarea;
         const { selectionStart, selectionEnd } = textarea;
-        const selectedText = textarea.value.substring(selectionStart, selectionEnd);
+        const value = textarea.value;
+        const selectedText = value.substring(selectionStart, selectionEnd);
 
         const syntax = '- [x] ';
+        const syntaxUnchecked = '- [ ] ';
         let newText = '';
         let offset = 0;
-        if (selectedText.startsWith(syntax)) {
+
+        if (selectedText.startsWith(syntax) || selectedText.startsWith(syntaxUnchecked)) {
             newText = selectedText.slice(syntax.length);
         } else {
+            const before = value.substring(selectionStart - syntax.length, selectionStart);
+            if (before === syntax || before === syntaxUnchecked) {
+                textarea.setSelectionRange(selectionStart - syntax.length, selectionEnd);
+                this.editor.insertText(selectedText, 0, 0);
+                return;
+            }
             newText = `${syntax}${selectedText || 'Check list'}`;
             offset = syntax.length;
         }
