@@ -162,16 +162,16 @@ const markdown = document.getElementById('markdown-editor').value;
 document.getElementById('markdown-editor').value = "# New Heading Content";
 </c-snippet>
 
-<h4>2. The Editor API Way</h4>
-<p>If you prefer working directly with the library instance, you can access the content through the <code>value</code> property of the editor object.</p>
+<h4>2. Using a Variable Reference</h4>
+<p>If you have a reference to the textarea element, you can use it directly — no library-specific API needed.</p>
 <c-snippet lang="javascript" view="code">
-const editor = new MarkdownEditor('#markdown-editor');
+const textarea = document.getElementById('markdown-editor');
 
 // Retrieve content
-const markdown = editor.value;
+const markdown = textarea.value;
 
-// Set content
-editor.value = "## Updated via API";
+// Set content (the editor UI reflects this immediately)
+textarea.value = "## Updated via JS";
 </c-snippet>
 
 <h4>3. Effortless Automatic Form Submission</h4>
@@ -323,7 +323,7 @@ image: {
 <c-snippet lang="javascript" view="code">
 image: {
     altInput: {
-        required: false // Enforces SEO/Accessibility compliance
+        required: false // Disables alt text validation — users can skip the alt field
     }
 }
 </c-snippet>
@@ -400,14 +400,14 @@ This shows the raw **syntax**.</textarea>
             </tr>
             <tr>
                 <td></td>
-                <td><code>mode:hybrid</code></td>
-                <td><code></code></td>
+                <td><code>mode: 'hybrid'</code></td>
+                <td>Enables a WYSIWYG-inspired experience that renders formatting (bold, italic, headings) in real-time as you type</td>
             </tr>
             <tr>
                 <td rowspan="15" class="text-balance"><code>toolbar</code>: Determines which tools<br> appear in the toolbar and their order.
                 </td>
                 <td><code>heading</code></td>
-                <td>Structure text with titles and subtitles</td>
+                <td>Opens a dropdown to select heading level H1–H6</td>
             </tr>
             <tr>
                 <td><code>bold</code></td>
@@ -469,8 +469,9 @@ This shows the raw **syntax**.</textarea>
                 <td rowspan="2" class="text-balance"><a href="#advanced-image-upload" class="underline underline-offset-2"><strong>Advanced image upload feature</strong></a>:<br> Enables configuring image uploads to <br> your own server and setting the image <br> path via an API. This improves performance and SEO.</td>
                 <td><code>fileInput</code></td>
                 <td>
-                    <code>accept</code>: To set the accept image file types in array.<br>
-                    <code>uploadUrl</code>: Set the URL for image file uploads
+                    <code>accept</code>: Array of allowed image file types (e.g. <code>'webp'</code>, <code>'avif'</code>).<br>
+                    <code>uploadUrl</code>: Backend endpoint where the file is sent via <code>POST</code>.<br>
+                    <code>params</code>: Optional object for extra data (CSRF tokens, user IDs, folder names)
                 </td>
             </tr>
             <tr>
