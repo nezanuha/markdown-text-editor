@@ -1,0 +1,599 @@
+<h2>The Philosophy: "Native-First"</h2>  
+<p>Most editors break the standard web workflow. <strong>MarkdownEditor</strong> embraces it.
+Because it sits directly on top of a <code>&lt;textarea&gt;</code>, you don't need to learn a new way to handle data.</p>
+<ul>
+    <li><strong>No Data Binding Needed: </strong>Works with <form method="POST"> out of the box</li>
+    <li><strong>Standard Access:</strong> Use document.getElementById('editor').value just like a normal input.</li>
+    <li><strong>Backend Agnostic:</strong> Works with any backend (Python, Node.js, PHP, etc.) just like a normal form field</li>
+</ul>
+
+<h2>Key Features</h2>
+<h3>🖼️ Advanced Image Upload (SEO Optimized)</h3>
+<p>Don't bloat your database with heavy Base64 strings. Configure our API to upload images directly to your server or S3 bucket. The editor receives the URL, keeping your Markdown files light and your site's SEO ranking high.</p>
+<h3>🔀 Hybrid & Plain Modes</h3>
+<p>Give your users the best of both worlds. Switch between a <strong>Visual (WYSIWYG) Hybrid mode</strong> for easy formatting and a <strong>Plain Markdown mode</strong> for distraction-free, raw syntax editing.</p>
+<h3>🌍 Global-Ready with RTL Support</h3>
+<p>Full native support for Right-to-Left (RTL) languages. Perfect for projects requiring <strong>Arabic, Urdu, or Farsi</strong> support with automatic text-direction alignment.</p>
+<h3>⚡ Performance at Scale</h3>
+<ul>
+    <li><strong>Lightweight</strong>: A tiny ~116KB footprint that won't slow down your page load</li>
+    <li><strong>Large Document Support</strong>: Optimized to handle thousands of lines of text without input lag or browser freezing</li>
+    <li><strong>Smart Rendering</strong>: Debounced preview updates, cached style calculations, and conflict-free keyboard handling between list continuation and indentation — so Tab and Enter always do exactly one thing</li>
+</ul>
+<h3>♿ Accessible by Default</h3>
+<p>Full ARIA support is built in and requires no extra configuration. The toolbar is a proper <code>role="toolbar"</code> landmark, the preview pane is a labelled <code>role="region"</code>, all SVG icons are hidden from screen readers, the preview toggle exposes its on/off state via <code>aria-pressed</code>, and disabled toolbar buttons use <code>aria-disabled</code> so assistive technology is never misled. Modals return focus to the triggering button when closed.</p>
+<h3>🛡️ Zero CSS Conflicts</h3>
+<p>All editor styles are fully scoped to the <code>.markdown-editor-wrapper</code> element. Tailwind's global preflight (element resets for <code>h1</code>–<code>h6</code>, <code>a</code>, <code>button</code>, etc.) is excluded, so the editor can live alongside Bootstrap, Tailwind, or any other CSS framework on the same page without breaking a single style.</p>
+
+<h2>Markdown Editor Demo</h2>
+<textarea class="hybrid-editor" rows="5" placeholder="Start writing..."># Markdown Editor</textarea>
+
+<h2>Quick Implementation</h2>
+
+<h3>1. Installation</h3>
+<p>You can install it using NPM, import the JavaScript file directly, or use a CDN for rapid deployment.</p>
+
+<h4>Install via NPM</h4>
+<c-snippet lang="bash" view="code">
+npm install markdown-text-editor
+</c-snippet>
+
+<div class="divider divider-x mt-10">OR</div>
+
+<h4>Using a CDN</h4>
+<p>Alternatively, include the following CDN links in your HTML</p>
+
+<h5>CSS</h5>
+<c-snippet lang="css" view="code">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor@{{ VERSION.MARKDOWN_EDITOR }}/dist/markdown-text-editor.min.css">
+</c-snippet>
+
+<h5>JavaScript</h5>
+<c-snippet view="code">
+<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor@{{ VERSION.MARKDOWN_EDITOR }}/dist/markdown-text-editor.min.js"></script>
+</c-snippet>
+
+<h3>2. The HTML Structure</h3>
+<p>Simply place a <code>&lt;textarea&gt;</code> inside your standard form. No special wrappers required.</p>
+<c-snippet view="code">
+<form action="/api/save" method="POST">
+  <textarea id="markdown-editor" name="content"># Hello World</textarea>
+  <button type="submit">Save Content</button>
+</form>
+</c-snippet>
+
+<h3>3. Import JS and CSS and initialise the plugin on your textarea element</h3>
+
+<c-snippet lang="javascript" view="code">
+// Only include this import when using an npm installation (not needed for CDN usage)
+import 'markdown-text-editor/dist/markdown-text-editor.css';
+import MarkdownEditor from "markdown-text-editor";
+
+const editor = new MarkdownEditor('#markdown-editor', {
+  placeholder: 'Write your markdown...',
+  toolbar: ['heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'checklist', 'blockquote', 'link', 'preview'],
+});
+</c-snippet>
+
+<h3>4. Configuration & Customization</h3>
+
+<p>You can fully customize the editor's behavior and interface by passing an <code>options</code> object. If you omit an option, the <strong>default</strong> value is used.</p>
+
+<div class="overflow-x-auto w-full not-prose">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>mode</code></td>
+                <td><code>string</code></td>
+                <td><code>'plain'</code></td>
+                <td>Sets the initial view. Use <code>'hybrid'</code> for a WYSIWYG experience or <code>'plain'</code> for raw syntax.</td>
+            </tr>
+            <tr>
+                <td><code>placeholder</code></td>
+                <td><code>string</code></td>
+                <td><code>'Write...'</code></td>
+                <td>Text shown when the editor is empty.</td>
+            </tr>
+            <tr>
+                <td><code>toolbar</code></td>
+                <td><code>array</code></td>
+                <td><code>[...]</code></td>
+                <td>Defines which tools appear and in what order.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h4>🛠 Toolbar Customization</h4>
+<p>The toolbar is modular. You can create a minimal experience or a full-featured power suite by modifying the array.</p>
+<h5>Available Tools</h5>
+
+<div class="overflow-x-auto w-full not-prose">
+    <table class="table">
+    <thead>
+        <tr>
+        <th>Category</th>
+        <th>Tool Keys</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td>Typography</td>
+        <td><code>heading</code>, <code>bold</code>, <code>italic</code>, <code>strikethrough</code>, <code>blockquote</code></td>
+        </tr>
+        <tr>
+        <td>Lists</td>
+        <td><code>ul</code> (bullet), <code>ol</code> (numbered), <code>checklist</code></td>
+        </tr>
+        <tr>
+        <td>Media</td>
+        <td><code>link</code>, <code>image</code></td>
+        </tr>
+        <tr>
+        <td>Editing</td>
+        <td><code>undo</code>, <code>redo</code>, <code>indent</code>, <code>outdent</code></td>
+        </tr>
+        <tr>
+        <td>View</td>
+        <td><code>preview</code></td>
+        </tr>
+    </tbody>
+    </table>
+</div>
+
+<h6>💡 Implementation Tips:</h6>
+<ul>
+    <li><strong>Reordering</strong>: The buttons appear in the exact order you list them in the array</li>
+    <li><strong>Removing</strong>: Simply omit any key (like <code>image</code>) from the array to disable that feature entirely for the user</li>
+    <li><strong>Native Fallback</strong>: If you don't provide a <code>placeholder</code> in JS, the plugin will automatically use the <code>placeholder</code> attribute from your HTML <code>&lt;textarea&gt;</code></li>
+</ul>
+
+<h3>5. Getting, Setting, and Submitting Content</h3>
+<p>One of the core strengths of <strong>MarkdownEditor</strong> is that it keeps the underlying <code>&lt;textarea&gt;</code> perfectly synchronized. Whether you are using a modern JavaScript framework or a traditional backend like <strong>Django, PHP, or Laravel</strong>, the workflow remains simple and native.</p>
+
+<h4>1. The Native Way (Recommended)</h4>
+<p>Because the editor enhances a standard textarea, you can use familiar DOM methods. This is the fastest way to interact with your data without learning a new API.</p>
+
+<c-snippet lang="javascript" view="code">
+// Retrieve content via ID
+const markdown = document.getElementById('markdown-editor').value;
+
+// Set content via ID (The editor UI updates automatically)
+document.getElementById('markdown-editor').value = "# New Heading Content";
+</c-snippet>
+
+<h4>2. The Editor API Way</h4>
+<p>If you prefer working directly with the library instance, you can access the content through the <code>value</code> property of the editor object.</p>
+<c-snippet lang="javascript" view="code">
+const editor = new MarkdownEditor('#markdown-editor');
+
+// Retrieve content
+const markdown = editor.value;
+
+// Set content
+editor.value = "## Updated via API";
+</c-snippet>
+
+<h4>3. Effortless Automatic Form Submission</h4>
+<p>Because <strong>MarkdownEditor</strong> is built directly on the native <code>&lt;textarea&gt;</code>, it is compatible with every backend framework (Django, Laravel, PHP, Ruby on Rails, etc.) right out of the box.</p>
+<p>This is where the "Native-First" philosophy shines. You don't need to manually sync data before submitting a form. The browser treats the editor exactly like a standard input field.</p>
+<c-snippet view="code">
+<form method="POST" action="/api/submit">
+  <textarea id="markdown-editor" name="content" class="h-48" rows="5">
+    # Initial Content
+  </textarea>
+  
+  <button type="submit">Submit to Server</button>
+</form>
+
+<script>
+  // Just initialize it. That's it.
+  new MarkdownEditor('#markdown-editor');
+</script>
+</c-snippet>
+<p class="text-sm">
+  <strong>Note:</strong> MarkdownEditor plugin initialization mandatory
+</p>
+
+<p>Just use a standard HTML <code>&lt;form&gt;</code>. The <code>name</code> attribute on the textarea is what your server will use to identify the content.</p>
+
+<h5>🚀 Why it's a Game-Changer for Backends</h5>
+<p>Since the editor preserves the native <code>&lt;textarea&gt;</code> behavior, your server handles the data as a standard string. There is zero extra logic required—no <code>preventDefault()</code> and no manual <code>FormData</code> construction.</p>
+
+<h5>💡 Why this is a "Killer Feature":</h5>
+<p>Most editors (like Quill, Editor.js, simpleMDE, easyMDE) save data in complex JSON structures. If a developer uses those, they have to rewrite their database schema and their rendering logic.</p>
+<p>With <strong>MarkdownEditor</strong>, a developer can take an old website, replace a plain <code>&lt;textarea&gt;</code> with your editor, and the <strong>backend doesn't even know it changed</strong>. It just receives the same raw text it always did, but the user gets a 10x better experience.</p>
+
+<div class="overflow-x-auto w-full">
+    <table class="table table-xs not-prose">
+    <thead>
+        <tr>
+        <th>Framework / Language</th>
+        <th>How to access the Markdown content</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td>PHP</td>
+        <td>$_POST['content']</td>
+        </tr>
+        <tr>
+        <td>Django</td>
+        <td>request.POST.get('content')</td>
+        </tr>
+        <tr>
+        <td>Node.js (Express)</td>
+        <td>req.body.content</td>
+        </tr>
+        <tr>
+        <td>Laravel</td>
+        <td>$request->input('content')</td>
+        </tr>
+        <tr>
+        <td>Ruby on Rails</td>
+        <td>params[:content]</td>
+        </tr>
+    </tbody>
+    </table>
+</div>
+
+<h2>Configuration Options</h2>
+
+<h3>🖼️ Advanced image upload</h3>
+<p>Handling image uploads natively—rather than relying on slow, memory-heavy Base64 strings—is a significant win for both performance and SEO.</p>
+<h4>Configuration Options</h4>
+<p>The image tool supports a <code>fileInput</code> configuration to handle direct server uploads.</p>
+<ul>
+    <li><code>accept</code>: Define an array of allowed image formats (e.g., 'webp', 'avif')</li>
+    <li><code>uploadUrl</code>: Specify the backend endpoint where the <code>File</code> object will be sent via <code>POST</code></li>
+    <li><code>params</code>: Optional object to send additional data (like CSRF tokens, user IDs, or folder names) alongside the image file</li>
+</ul>
+<!-- <p>After a successful upload, the server must return the image path, which will be automatically populated in the URL field</p> -->
+<h4>Usage example (Full Config)</h4>
+<c-snippet lang="javascript" view="code">
+const options = {
+  placeholder: 'Start writing...',
+  toolbar: [
+    'link',
+    {
+      image: {
+        fileInput: {
+            accept: ['webp', 'avif'], // restrict the image upload format
+            uploadUrl: '/api/upload', // Your upload endpoint
+            params: {
+                _token: 'your_csrf_token_here', // Essential for Laravel/Django
+                folder: 'blog_posts'
+            }
+        },
+        // Supports boolean: true/false OR object: { required: true }
+        altInput: { required: true }
+      }
+    },
+    'preview'
+  ],
+}
+const editor = new MarkdownEditor('#markdown-editor', options);
+</c-snippet>
+<h4>📡 Server Integration Details</h4>
+<h5>1. The Request</h5>
+<p>The editor sends a <code>POST</code> request as <code>multipart/form-data</code>. By default, it includes:</p>
+<ul>
+    <li><code>image_file</code>: The actual file object</li>
+    <li><code>image_alt</code>: The alt text entered by the user</li>
+    <li>...plus any custom data defined in the <code>params</code> object</li>
+</ul>
+
+<h5>2. The Required Response</h5>
+<p>To confirm a successful upload and insert the image into the editor, your server <strong>must</strong> return the following JSON structure:</p>
+
+<c-snippet lang="json" view="code">
+{
+  "success": true,
+  "image_path": "https://cdn.yourdomain.com/uploads/image.webp"
+}
+</c-snippet>
+<p><strong>Note</strong>: Ensure you use the key <code>image_path</code> for the URL of the uploaded image.</p>
+
+<h4>Image Alt Text Validation (<code>altInput</code>)</h4>
+<p>To ensure your content remains accessible and SEO-friendly, <code>MarkdownEditor</code> enforces alt text validation by default. You can configure this behavior using either a boolean shorthand or a detailed object.</p>
+
+<ul>
+    <li><strong>Default Behavior</strong>: If <code>altInput</code> is not defined, it defaults to <code>{ required: true }</code></li>
+    <li><strong>Enforce Accessibility</strong>: Users will be prevented from inserting an image until an alt description is provided</li>
+</ul>
+
+<h5>Configuration Examples:</h5>
+
+<h6>1. Default (No configuration needed)</h6>
+<c-snippet lang="javascript" view="code">
+// Alt text is REQUIRED by default
+image: { 
+  fileInput: { uploadUrl: '/api/upload' } 
+}
+</c-snippet>
+<h6>2. Shorthand (Disable Validation)</h6>
+<p>If you want to allow images without descriptions, simply set the boolean to <code>false</code>.</p>
+<c-snippet lang="javascript" view="code">
+image: { 
+  altInput: false // Users can now skip the alt text field
+}
+</c-snippet>
+
+<h6>3. Object-based (Explicit)</h6>
+<c-snippet lang="javascript" view="code">
+image: {
+    altInput: {
+        required: false // Enforces SEO/Accessibility compliance
+    }
+}
+</c-snippet>
+
+<h4>Standard Image Usage (No <code>fileInput</code>):</h4>
+<p>If <code>fileInput</code> is not configured, the editor defaults to a simple URL-based modal. This is ideal if your users are mostly linking to external image hosts.</p>
+<c-snippet lang="javascript" view="code">
+const options = {
+  toolbar: [
+    'link',
+    'image',
+    'preview'
+  ],
+}
+const editor = new MarkdownEditor('#markdown-editor', options);
+</c-snippet>
+
+<h5>💡 Why use params?</h5>
+<p>In frameworks like Laravel or Django, you cannot upload files without a CSRF token. By adding <code>_token</code> to the <code>params</code> object, your request will pass through the backend's security middleware seamlessly, maintaining the "Zero Logic" philosophy for your server-side controllers.</p>
+
+
+<h3>🔀 Editing Modes</h3>
+<p><strong>MarkdownEditor</strong> offers two distinct ways to write and format your content. You can toggle between a traditional syntax-focused view or a modern, visual-first experience.</p>
+
+<h4>Configuration</h4>
+<p>You can define the starting mode using the <code>mode</code> property during initialization.</p>
+<ul>
+    <li><code>plain</code> (<strong>Default</strong>): A clean, high-performance Markdown environment where syntax (like <code>**bold**</code> or <code># heading</code>) is visible. Ideal for developers and Markdown purists</li>
+    <li><code>hybrid</code>: A WYSIWYG-inspired experience that renders formatting (Bold, Italics, Headings) in real-time as you type, while still maintaining the underlying Markdown structure.</li>
+</ul>
+
+<h5>Implementation:</h5>
+<c-snippet lang="javascript" view="code">
+// Default initialization (Plain Mode)
+new MarkdownEditor('#markdown-editor');
+
+// Explicit Plain Mode
+new MarkdownEditor('#markdown-editor', {
+    mode: 'plain'
+});
+
+// Hybrid (Visual) Mode
+new MarkdownEditor('#markdown-editor', {
+    mode: 'hybrid'
+});
+</c-snippet>
+
+<h5>Hybrid and Plain Mode Preview:</h5>
+
+<h6>Hybrid Mode</h6>
+<p>Visual formatting is rendered in real-time while you type.</p>
+<textarea class="plain-editor mb-4" rows="5" placeholder="Start writing..."># Hybrid mode markdown editor
+This will render visual styles immediately.</textarea>
+
+<h6>Plain Mode (Default)</h6>
+<p>Focuses on raw Markdown syntax for a lightweight experience.</p>
+<textarea class="hybrid-editor mb-4" rows="5" placeholder="Start writing..."># Plain mode markdown editor
+This shows the raw **syntax**.</textarea>
+
+<div class="overflow-x-auto w-full not-prose">
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Config</th>
+                <th>Property / Tool</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan="1">Options object</td>
+                <td><code>placeholder</code></td>
+                <td>Sets the placeholder text for the textarea (optional, as you can also use the standard HTML textarea attribute)</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><code>mode:hybrid</code></td>
+                <td><code></code></td>
+            </tr>
+            <tr>
+                <td rowspan="15" class="text-balance"><code>toolbar</code>: Determines which tools<br> appear in the toolbar and their order.
+                </td>
+                <td><code>heading</code></td>
+                <td>Structure text with titles and subtitles</td>
+            </tr>
+            <tr>
+                <td><code>bold</code></td>
+                <td>Enables bold text formatting.</td>
+            </tr>
+            <tr>
+                <td><code>italic</code></td>
+                <td>Enables italic text formatting.</td>
+            </tr>
+            <tr>
+                <td><code>strikethrough</code></td>
+                <td>Allows for text strikethrough.</td>
+            </tr>
+            <tr>
+                <td><code>ol</code></td>
+                <td>(Ordered List): Converts text into a numbered list format.</td>
+            </tr>
+            <tr>
+                <td><code>ul</code></td>
+                <td>(Unordered List): Converts text into a bullet point list.</td>
+            </tr>
+            <tr>
+                <td><code>checklist</code></td>
+                <td>Adds checkboxes to your text, making it great for tasks, to-do lists, or tracking completion status.</td>
+            </tr>
+            <tr>
+                <td><code>blockquote</code></td>
+                <td>Highlight quoted or emphasized text.</td>
+            </tr>
+            <tr>
+                <td><code>image</code></td>
+                <td>Allows you to insert images via markdown syntax.</td>
+            </tr>
+            <tr>
+                <td><code>link</code></td>
+                <td>Lets you add hyperlinks to your text.</td>
+            </tr>
+            <tr>
+                <td><code>undo</code></td>
+                <td>To reverse the last changes.</td>
+            </tr>
+            <tr>
+                <td><code>redo</code></td>
+                <td>To reapply the last undone changes.</td>
+            </tr>
+            <tr>
+                <td><code>indent</code></td>
+                <td>To increase the indentation level.</td>
+            </tr>
+            <tr>
+                <td><code>outdent</code></td>
+                <td>To decrease the indentation level.</td>
+            </tr>
+            <tr>
+                <td><code>preview</code></td>
+                <td>Toggles the real-time markdown preview. Checkboxes in the preview pane are clickable and update the markdown source instantly.</td>
+            </tr>
+            <tr>
+                <td rowspan="2" class="text-balance"><a href="#advanced-image-upload" class="underline underline-offset-2"><strong>Advanced image upload feature</strong></a>:<br> Enables configuring image uploads to <br> your own server and setting the image <br> path via an API. This improves performance and SEO.</td>
+                <td><code>fileInput</code></td>
+                <td>
+                    <code>accept</code>: To set the accept image file types in array.<br>
+                    <code>uploadUrl</code>: Set the URL for image file uploads
+                </td>
+            </tr>
+            <tr>
+                <td><code>altInput</code></td>
+                <td><code>required: false</code>: Disables alt-text input validation (default is true)</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<ul>
+    <li><strong>Real-time Preview:</strong> See your markdown rendered instantly as you type.</li>
+    <li><strong>Syntax Highlighting:</strong> Enhanced readability with clear code and markdown formatting.</li>
+    <li><strong>Easy Integration</strong>: Seamlessly integrate into any web project with minimal setup.</li>
+    <li><strong>Customizable Toolbar:</strong> Dynamically configure and reorder toolbar options like bold, italic, and more.</li>
+</ul>
+
+<h2>Features</h2>
+<div class="grid lg:grid-cols-3 gap-4 not-prose">
+    <div class="card card-sm card-outline">
+        <div class="card-body">
+            <h2 class="card-title">🔌 Native Form Integration</h2>
+            <p class="para-sm">Works exactly like a standard <code>&lt;textarea&gt;</code>. No complex APIs—just use the <code>value</code> or <code>name</code> attribute. It "just works" with standard HTML form submissions in PHP, Django, or Node.js.</p>
+        </div>
+    </div>
+
+    <div class="card card-sm card-outline">
+        <div class="card-body">
+            <h2 class="card-title">🖼️ Advanced Image Upload</h2>
+            <p class="para-sm">Configure native server uploads via API. Avoid heavy Base64 strings to ensure faster page loads and superior SEO by hosting images on your own CDN.</p>
+        </div>
+    </div>
+
+    <div class="card card-sm card-outline">
+        <div class="card-body">
+            <h2 class="card-title">🔀 Hybrid & Plain Modes</h2>
+            <p class="para-sm">Switch between a <strong>Hybrid (WYSIWYG)</strong> experience for visual editing or <strong>Plain Markdown</strong> mode for a traditional coding feel.</p>
+        </div>
+    </div>
+
+    <div class="card card-sm card-outline">
+        <div class="card-body">
+            <h2 class="card-title">🚀 High Performance</h2>
+            <p class="para-sm">A tiny <strong>~116KB</strong> bundle optimized for "Heavy Content." Handles massive documents and large files without any input lag or performance drop.</p>
+        </div>
+    </div>
+
+    <div class="card card-sm card-outline">
+        <div class="card-body">
+            <h2 class="card-title">🌍 Built-in RTL Support</h2>
+            <p class="para-sm">Native support for Right-to-Left languages like Arabic, Urdu, and Farsi. Perfect for building globally accessible applications.</p>
+        </div>
+    </div>
+
+    <div class="card card-sm card-outline">
+        <div class="card-body">
+            <h2 class="card-title">🌙 Adaptive Theming</h2>
+            <p class="para-sm">Includes automatic Dark Mode support. It syncs with your system settings or the <strong>Frutjam UI</strong> library for a seamless visual experience.</p>
+        </div>
+    </div>
+
+    <div class="card card-sm card-outline">
+        <div class="card-body">
+            <h2 class="card-title">📝 Smart Editing</h2>
+            <p class="para-sm">GitHub-style automatic list continuation for ordered lists, unordered lists, and checklists — press <code>Enter</code> and the editor continues the pattern. Checkboxes in the preview pane are clickable and sync back to the markdown source instantly.</p>
+        </div>
+    </div>
+
+    <div class="card card-sm card-outline">
+        <div class="card-body">
+            <h2 class="card-title">📱 Fully Responsive</h2>
+            <p class="para-sm">A fluid, mobile-first UI that adapts perfectly to desktops, tablets, and smartphones for editing on the go.</p>
+        </div>
+    </div>
+
+    <div class="card card-sm card-outline">
+        <div class="card-body">
+            <h2 class="card-title">📦 Universal Support</h2>
+            <p class="para-sm">Compatible with <strong>ESM, UMD, and CommonJS</strong>. Works out of the box via CDN, npm, or any bundler (Vite, webpack, Rollup) — no extra configuration needed.</p>
+        </div>
+    </div>
+
+    <div class="card card-sm card-outline">
+        <div class="card-body">
+            <h2 class="card-title">♿ Accessible by Default</h2>
+            <p class="para-sm">Full ARIA support built in — toolbar landmark, labelled preview region, screen-reader-friendly buttons, <code>aria-pressed</code> on the preview toggle, <code>aria-disabled</code> on inactive tools, and correct focus restoration when modals close.</p>
+        </div>
+    </div>
+
+    <div class="card card-sm card-outline">
+        <div class="card-body">
+            <h2 class="card-title">🛡️ Zero CSS Conflicts</h2>
+            <p class="para-sm">Editor styles are fully scoped to <code>.markdown-editor-wrapper</code>. Tailwind's global preflight is excluded so the editor lives safely alongside Bootstrap, Tailwind, or any other framework without breaking their styles.</p>
+        </div>
+    </div>
+</div>
+
+<h2>Full Configuration Example</h2>
+<p>Use this comprehensive example to initialize <strong>MarkdownEditor</strong> with all primary features, including custom toolbar ordering and advanced image upload handling.</p>
+<c-snippet lang="javascript" view="code">
+const editor = new MarkdownEditor('#markdown-editor', {
+    mode: 'hybrid',
+    placeholder: 'Start writing...',
+    toolbar: [
+        'heading', 'bold', 'italic', 'strikethrough', 'blockquote',
+        'ul', 'ol', 'checklist',
+        {
+            image: {
+                fileInput: {
+                    accept: ['webp', 'avif', 'png'],
+                    uploadUrl: '/api/upload'
+                }
+            }
+        },
+        'link', 'undo', 'redo', 'indent', 'outdent', 'preview'
+    ],
+});
+</c-snippet>
