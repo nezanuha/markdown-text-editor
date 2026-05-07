@@ -64,15 +64,19 @@ class HeadingTool extends MakeTool {
         const lineEnd = lineEndRaw === -1 ? value.length : lineEndRaw;
 
         const lineText = value.substring(lineStart, lineEnd);
+        const existingLevel = (lineText.match(/^(#+)\s/) || [])[1];
         const cleanText = lineText.replace(/^#+\s*/, '');
         const prefix = `${'#'.repeat(level)} `;
-        const newText = cleanText ? `${prefix}${cleanText}` : `${prefix}Heading`;
+
+        // Same level clicked again → remove heading
+        const newText = (existingLevel && existingLevel.length === level)
+            ? (cleanText || 'Heading')
+            : (cleanText ? `${prefix}${cleanText}` : `${prefix}Heading`);
 
         textarea.value = `${value.substring(0, lineStart)}${newText}${value.substring(lineEnd)}`;
         textarea.focus();
 
-        // Select only the text portion, not the prefix
-        const textStart = lineStart + prefix.length;
+        const textStart = lineStart + (newText === cleanText || newText === 'Heading' ? 0 : prefix.length);
         const textEnd = lineStart + newText.length;
         textarea.setSelectionRange(textStart, textEnd);
 

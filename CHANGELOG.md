@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **`heading` tool**: Replaced the hidden cycle-through-H1–H6 click behaviour with a popover dropdown — users can now explicitly pick H1–H6 from a visible menu
+- **`heading` tool**: Replaced the hidden cycle-through-H1–H6 click behaviour with a popover dropdown — users can now explicitly pick H1–H6 from a visible menu; selecting the same level a second time removes the heading, restoring plain text
 - **Docs**: Corrected get/set content section — removed non-existent `editor.value` API and replaced with the correct native DOM approach; fixed wrong `altInput` comment, filled empty `mode: 'hybrid'` description, added `params` to `fileInput` docs, updated `heading` tool description to reflect the new dropdown
 - The editor now works out of the box via CDN, npm, or any bundler (Vite, webpack, Rollup) with no extra configuration
 - **CSS auto-injection**: CSS is now bundled into the JavaScript output via `vite-plugin-css-injected-by-js`. A single `import MarkdownEditor from 'markdown-text-editor'` is all that is needed — no separate stylesheet import or `<link>` tag required
