@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- The editor can now be loaded via CDN `<script>` tag, npm ESM import, or CommonJS `require` — no bundler configuration required
+- The editor now works out of the box via CDN, npm, or any bundler (Vite, webpack, Rollup) with no extra configuration
 
 ### Fixed
 
