@@ -59,6 +59,8 @@ Simply place a `<textarea>` inside your standard form. No special wrappers requi
 
 ### 3. Initialization
 
+Works out of the box with any bundler (Vite, webpack, Rollup) or via CDN — no extra configuration needed.
+
 ```javascript
 import 'markdown-text-editor/dist/markdown-text-editor.css';
 import MarkdownEditor from "markdown-text-editor";
@@ -88,24 +90,26 @@ textarea.value = "## New Content Loaded via JS";
 // The editor UI reflects this immediately
 ```
 
-A lightweight (~116 KB) Markdown editor offering advanced features and a powerful WYSIWYG editing experience
-
 ## ✨ Features
 
 - 🔌 **Native Form Integration**: Works exactly like a standard `<textarea>`. No complex APIs—just use the `value` or `name` attribute to get or set content. It "just works" with standard HTML form submissions
 - 🖼️ **Advanced Image Upload**: Easily configure image uploads to your own server. Set your custom image paths via an API to ensure faster page loads and better SEO by avoiding heavy Base64 strings
 - 🔀 **Hybrid & Plain Modes**: Choose between a **Hybrid (WYSIWYG)** experience for visual editing or a Plain Markdown mode for a traditional coding feel
-- ⚡ **Real-time Live Preview:** Watch your Markdown render instantly as you type, including support for links, images, and complex formatting
+- ⚡ **Real-time Live Preview**: Watch your Markdown render instantly as you type, including support for links, images, and complex formatting. Task list checkboxes in the preview pane are clickable and sync back to the markdown source instantly
+- ♿ **Accessible by Default**: Full ARIA support out of the box — toolbar landmark (`role="toolbar"`), labelled preview region, screen-reader-friendly tool buttons (SVGs marked `aria-hidden`), `aria-pressed` on the preview toggle, `aria-disabled` on inactive buttons, and correct focus restoration when modals close
+- 🛡️ **Zero CSS Conflicts**: Editor styles are fully scoped to the `.markdown-editor-wrapper` element and Tailwind's global preflight is excluded — no bleed into Bootstrap, Tailwind, or any other CSS framework on the same page
 - 🌍 **Built-in RTL Support**: Native support for Right-to-Left (RTL) languages like Arabic, Urdu, and Farsi, making it globally accessible
 - 🌙 **Adaptive Theming**: Features automatic Dark Mode support that follows your system or website settings for a seamless visual experience
 - 🎨 **Frutjam UI Ready**: Effortless integration with the **Frutjam** UI library, including automatic theme adjustments to match your UI components
 - 🚀 **High Performance**:
     - **Lightweight**: Tiny bundle size (~116KB minified)
     - **Heavy Content**: Optimized to handle long documents and large files without performance lag
+    - **Smart rendering**: Debounced preview updates, cached style calculations, and conflict-free keyboard handling between list continuation and indentation
 - 📱 **Fully Responsive**: A fluid UI that adapts perfectly to desktops, tablets, and smartphones
-- 📝 **Smart Editing**: GitHub-style automatic list continuation—press `Enter` and the editor handles the bullets/numbers for you
-- 🎛️ **Effortless Customization**: Quickly match your brand’s look and feel using simple CSS variables
-- 📦 **Universal Module Support**: Compatible with **ESM**, **UMD**, and **CommonJS**, ensuring it fits into any modern or legacy JavaScript workflow
+- 📝 **Smart Editing**: GitHub-style automatic list continuation—press `Enter` and the editor handles the bullets/numbers for you. Supports ordered lists, unordered lists, and checklists
+- 🔄 **Undo / Redo**: Full history system using granular diffs — restores both text content and exact cursor position. Integrated with `Ctrl+Z`, `Ctrl+Y`, and `Ctrl+Shift+Z`
+- 🎛️ **Effortless Customization**: Quickly match your brand's look and feel using simple CSS variables
+- 📦 **Universal Module Support**: Compatible with **ESM**, **UMD**, and **CommonJS** — works with Vite, webpack, Rollup, or directly via CDN with no extra configuration
 - 🔄 **Actively Maintained**: Regularly updated with new features, optimizations, and community-driven improvements
 
 ## 📖 Documentation
