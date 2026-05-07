@@ -25,7 +25,7 @@ class BoldTool extends MakeTool {
             if (!selectedText) offset = 2;
         }
 
-        this.editor.insertText(newText, offset);
+        this.editor.insertText(newText, offset, offset);
     }
 }
 

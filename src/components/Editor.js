@@ -241,12 +241,12 @@ class MarkdownEditor {
         );
     }
 
-    insertText(text, selectionOffset = 0) {
+    insertText(text, selectionOffset = 0, trailingLength = 0) {
         const { selectionStart, selectionEnd } = this.usertextarea;
         const value = this.usertextarea.value;
         this.usertextarea.value = `${value.substring(0, selectionStart)}${text}${value.substring(selectionEnd)}`;
         this.usertextarea.focus();
-        this.usertextarea.setSelectionRange(selectionStart + selectionOffset, selectionStart + text.length);
+        this.usertextarea.setSelectionRange(selectionStart + selectionOffset, selectionStart + text.length - trailingLength);
 
         // Scroll the textarea to the inserted text
         this.scrollToView();

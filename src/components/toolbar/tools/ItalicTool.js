@@ -25,7 +25,7 @@ class ItalicTool extends MakeTool {
             if (!selectedText) offset = 1;
         }
 
-        this.editor.insertText(newText, offset);
+        this.editor.insertText(newText, offset, offset);
     }
 }
 

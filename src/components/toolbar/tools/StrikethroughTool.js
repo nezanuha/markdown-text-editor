@@ -24,7 +24,7 @@ class StrikethroughTool extends MakeTool {
             offset = syntax.length;
         }
 
-        this.editor.insertText(newText, offset);
+        this.editor.insertText(newText, offset, offset);
     }
 }
 
