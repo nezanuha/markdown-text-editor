@@ -100,6 +100,8 @@ class PreviewTool extends MakeTool {
 
         document.querySelector("body").classList.add('fj:overflow-hidden');
 
+        this.editor.render();
+
         this.editor.editorContainer.querySelectorAll('.markdown-btn').forEach(button => {
             if (!button.classList.contains('preview-btn')) {
                 button.classList.add('fj:pointer-events-none', 'fj:md:pointer-events-auto', 'fj:opacity-25', 'fj:md:opacity-100');

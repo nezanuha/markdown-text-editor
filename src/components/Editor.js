@@ -184,9 +184,9 @@ class MarkdownEditor {
                     if (/^(\s*)([-*] \[[ xX]\] )/.test(lines[i])) {
                         if (count === index) {
                             if (checkbox.checked) {
-                                lines[i] = lines[i].replace(/\[[xX]\]/, '[ ]');
-                            } else {
                                 lines[i] = lines[i].replace(/\[ \]/, '[x]');
+                            } else {
+                                lines[i] = lines[i].replace(/\[[xX]\]/, '[ ]');
                             }
                             break;
                         }
