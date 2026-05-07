@@ -20,7 +20,7 @@ class MakeTool {
 
         if(btnClass == 'preview-btn') {
             const btnWrapper = document.createElement('div');
-            btnWrapper.className = 'fj:me-surface fj:me-surface-outline fj:border-0 fj:border-l fj:sticky fj:-right-2 fj:px-1.5';
+            btnWrapper.className = 'fj:me-surface fj:me-surface-outline fj:border-base-soft fj:border-0 fj:border-l fj:sticky fj:-right-2 fj:px-1.5';
             btnWrapper.appendChild(btn);
             return btnWrapper;
         }

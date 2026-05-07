@@ -54,6 +54,7 @@ class MarkdownEditor {
             "fj:focus:ring-0",
             "fj:focus:outline-0",
             "fj:border-0",
+            "fj:border-base-soft",
             "fj:px-4",
             "fj:py-2",
             "fj:max-w-full",

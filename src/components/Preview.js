@@ -1,7 +1,7 @@
 class Preview {
     constructor(container) {
         this.previewContainer = document.createElement('div');
-        this.previewContainer.className = 'preview-wrapper fj:p-2 fj:hidden fj:me-surface fj:me-surface-outline fj:border-0 fj:border-l';
+        this.previewContainer.className = 'preview-wrapper fj:p-2 fj:hidden fj:me-surface fj:me-surface-outline fj:border-base-soft fj:border-0 fj:border-l';
         this.previewContainer.setAttribute('role', 'region');
         this.previewContainer.setAttribute('aria-label', 'Preview');
         this.previewContent = document.createElement('div');
