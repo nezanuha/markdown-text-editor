@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`bold` / `italic` tools**: Applying italic to bold text (or vice versa) now correctly produces bold+italic (`***text***`) instead of overwriting the existing style ([#22](https://github.com/nezanuha/markdown-text-editor/issues/22))
 - **Style conflicts with other CSS frameworks**: The editor's styles no longer bleed into Bootstrap, Tailwind, or any other framework on the same page. All editor styles are now fully scoped to the `.markdown-editor-wrapper` element — made possible by the new scoping capabilities introduced in [frutjam v2](https://github.com/nezanuha/frutjam) ([#26](https://github.com/nezanuha/markdown-text-editor/discussions/26))
 - **`image tool`**: Upload error no longer throws an uncaught exception when the server returns an unexpected response
 - **`preview tool`**: Toggling preview on a page with multiple editor instances no longer disables toolbar buttons in all other instances
