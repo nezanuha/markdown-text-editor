@@ -46,11 +46,13 @@ class ListManager {
 
         if (continuation) {
             event.preventDefault();
-            // Use the editor's existing helper
-            this.editor.insertText(`\n${continuation}`); 
-            // editor.insertText usually calls render(), 
-            // but we call it again to be safe if it doesn't
-            this.editor.render(); 
+            const insert = `\n${continuation}`;
+            const before = value.substring(0, selectionStart);
+            const after = value.substring(selectionStart);
+            this.textarea.value = before + insert + after;
+            const cursor = selectionStart + insert.length;
+            this.textarea.setSelectionRange(cursor, cursor);
+            this.editor.render();
         }
     }
 }
