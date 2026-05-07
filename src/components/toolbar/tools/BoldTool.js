@@ -14,14 +14,15 @@ class BoldTool extends MakeTool {
         const { selectionStart, selectionEnd } = textarea;
         const selectedText = textarea.value.substring(selectionStart, selectionEnd);
 
-        const syntax = '**';
         let newText = '';
-        if (selectedText.startsWith(syntax) && selectedText.endsWith(syntax)) {
-            // Remove the bold syntax if it's already wrapped
-            newText = selectedText.slice(syntax.length, -syntax.length);
+        if (selectedText.startsWith('***') && selectedText.endsWith('***')) {
+            // Bold+italic → remove bold, keep italic
+            newText = '*' + selectedText.slice(3, -3) + '*';
+        } else if (selectedText.startsWith('**') && selectedText.endsWith('**')) {
+            // Bold only → remove bold
+            newText = selectedText.slice(2, -2);
         } else {
-            // Apply bold syntax
-            newText = `${syntax}${selectedText || 'Bold text'}${syntax}`;
+            newText = `**${selectedText || 'Bold text'}**`;
         }
 
         this.editor.insertText(newText);

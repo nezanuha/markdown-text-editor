@@ -14,14 +14,15 @@ class ItalicTool extends MakeTool {
         const { selectionStart, selectionEnd } = textarea;
         const selectedText = textarea.value.substring(selectionStart, selectionEnd);
 
-        const syntax = '*';
         let newText = '';
-        if (selectedText.startsWith(syntax) && selectedText.endsWith(syntax)) {
-            // Remove the italic syntax if it's already wrapped
-            newText = selectedText.slice(syntax.length, -syntax.length);
+        if (selectedText.startsWith('***') && selectedText.endsWith('***')) {
+            // Bold+italic → remove italic, keep bold
+            newText = '**' + selectedText.slice(3, -3) + '**';
+        } else if (selectedText.startsWith('*') && selectedText.endsWith('*') && !selectedText.startsWith('**')) {
+            // Italic only → remove italic
+            newText = selectedText.slice(1, -1);
         } else {
-            // Apply italic syntax
-            newText = `${syntax}${selectedText || 'Italic text'}${syntax}`;
+            newText = `*${selectedText || 'Italic text'}*`;
         }
 
         this.editor.insertText(newText);
