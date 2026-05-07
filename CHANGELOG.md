@@ -10,10 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - The editor now works out of the box via CDN, npm, or any bundler (Vite, webpack, Rollup) with no extra configuration
+- **Accessibility**: The toolbar now has a proper `role="toolbar"` landmark and `aria-label` so screen readers can identify and navigate it
+- **Accessibility**: The preview pane is now a `role="region"` landmark labelled "Preview"
+- **Accessibility**: The editor textarea is automatically given `aria-label="Markdown editor"` when no label is associated, ensuring it always has an accessible name
+- **Accessibility**: The Link and Image modals are now announced with their name ("Link" / "Image") by screen readers via `aria-label` on the `<dialog>` element
 - **`preview`**: Checkboxes in the preview pane are now clickable — toggling them updates the markdown source instantly without leaving preview mode ([#27](https://github.com/nezanuha/markdown-text-editor/discussions/27))
 
 ### Fixed
 
+- **Accessibility**: All toolbar SVG icons are now marked `aria-hidden` so screen readers use the button label instead of the raw SVG path data
+- **Accessibility**: The preview toggle button now exposes its on/off state via `aria-pressed`
+- **Accessibility**: Toolbar buttons are now marked `aria-disabled` when preview is active, not just visually dimmed
+- **Accessibility**: The modal close button has an `aria-label="Close"` and now uses the native `dialog.close()` so focus is correctly returned to the triggering button when dismissed
 - **`bold` / `italic` / `strikethrough` / `blockquote` / `heading` tools**: Clicking a tool with no text selected now selects only the placeholder text, not the surrounding syntax markers — consistent with the list tools fix
 - **`strikethrough` tool**: Now correctly inserts `~~double tildes~~` instead of `~single~`, matching the standard markdown spec and rendering correctly in the preview pane
 - **`indent` / `outdent`**: Pressing Tab no longer triggers two renders — the duplicate internal `_triggerUpdate()` call has been removed
