@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - The editor now works out of the box via CDN, npm, or any bundler (Vite, webpack, Rollup) with no extra configuration
+- **CSS auto-injection**: CSS is now bundled into the JavaScript output via `vite-plugin-css-injected-by-js`. A single `import MarkdownEditor from 'markdown-text-editor'` is all that is needed — no separate stylesheet import or `<link>` tag required
 - **Accessibility**: The toolbar now has a proper `role="toolbar"` landmark and `aria-label` so screen readers can identify and navigate it
 - **Accessibility**: The preview pane is now a `role="region"` landmark labelled "Preview"
 - **Accessibility**: The editor textarea is automatically given `aria-label="Markdown editor"` when no label is associated, ensuring it always has an accessible name

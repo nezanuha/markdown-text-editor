@@ -36,10 +36,6 @@ npm install markdown-text-editor
 #### CDN
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor@1.0.1/dist/markdown-text-editor.min.css">
-```
-
-```html
 <script src="https://cdn.jsdelivr.net/npm/markdown-text-editor@1.0.1/dist/markdown-text-editor.min.js"></script>
 ```
 
@@ -59,10 +55,9 @@ Simply place a `<textarea>` inside your standard form. No special wrappers requi
 
 ### 3. Initialization
 
-Works out of the box with any bundler (Vite, webpack, Rollup) or via CDN — no extra configuration needed.
+Works out of the box with any bundler (Vite, webpack, Rollup) or via CDN — no extra configuration needed. CSS is injected automatically, so a single import is all you need.
 
 ```javascript
-import 'markdown-text-editor/dist/markdown-text-editor.css';
 import MarkdownEditor from "markdown-text-editor";
 
 const editor = new MarkdownEditor('#markdown-editor');

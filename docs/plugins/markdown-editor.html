@@ -43,12 +43,6 @@ npm install markdown-text-editor
 <h4>Using a CDN</h4>
 <p>Alternatively, include the following CDN links in your HTML</p>
 
-<h5>CSS</h5>
-<c-snippet lang="css" view="code">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor@{{ VERSION.MARKDOWN_EDITOR }}/dist/markdown-text-editor.min.css">
-</c-snippet>
-
-<h5>JavaScript</h5>
 <c-snippet view="code">
 <script src="https://cdn.jsdelivr.net/npm/markdown-text-editor@{{ VERSION.MARKDOWN_EDITOR }}/dist/markdown-text-editor.min.js"></script>
 </c-snippet>
@@ -65,8 +59,6 @@ npm install markdown-text-editor
 <h3>3. Import JS and CSS and initialise the plugin on your textarea element</h3>
 
 <c-snippet lang="javascript" view="code">
-// Only include this import when using an npm installation (not needed for CDN usage)
-import 'markdown-text-editor/dist/markdown-text-editor.css';
 import MarkdownEditor from "markdown-text-editor";
 
 const editor = new MarkdownEditor('#markdown-editor', {
