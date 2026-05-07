@@ -12,13 +12,24 @@ class StrikethroughTool extends MakeTool {
     applySyntax() {
         const textarea = this.editor.usertextarea;
         const { selectionStart, selectionEnd } = textarea;
-        const selectedText = textarea.value.substring(selectionStart, selectionEnd);
+        const value = textarea.value;
+        const selectedText = value.substring(selectionStart, selectionEnd);
 
         const syntax = '~~';
         let newText = '';
         let offset = 0;
+
         if (selectedText.startsWith(syntax) && selectedText.endsWith(syntax)) {
+            // full ~~text~~ selected → remove
             newText = selectedText.slice(syntax.length, -syntax.length);
+        } else if (
+            value.substring(selectionStart - 2, selectionStart) === syntax &&
+            value.substring(selectionEnd, selectionEnd + 2) === syntax
+        ) {
+            // cursor inside ~~text~~ → remove
+            textarea.setSelectionRange(selectionStart - 2, selectionEnd + 2);
+            this.editor.insertText(selectedText, 0, 0);
+            return;
         } else {
             newText = `${syntax}${selectedText || 'Strikethrough text'}${syntax}`;
             offset = syntax.length;

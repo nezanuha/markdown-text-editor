@@ -8,18 +8,39 @@ class BoldTool extends MakeTool {
         `)
     }
 
-    // Apply bold syntax (**bold**)
     applySyntax() {
         const textarea = this.editor.usertextarea;
         const { selectionStart, selectionEnd } = textarea;
-        const selectedText = textarea.value.substring(selectionStart, selectionEnd);
+        const value = textarea.value;
+        const selectedText = value.substring(selectionStart, selectionEnd);
 
         let newText = '';
         let offset = 0;
+
         if (selectedText.startsWith('***') && selectedText.endsWith('***')) {
+            // bold+italic selected → remove bold, keep italic
             newText = '*' + selectedText.slice(3, -3) + '*';
         } else if (selectedText.startsWith('**') && selectedText.endsWith('**')) {
+            // full **text** selected → remove bold
             newText = selectedText.slice(2, -2);
+        } else if (
+            value.substring(selectionStart - 3, selectionStart) === '***' &&
+            value.substring(selectionEnd, selectionEnd + 3) === '***'
+        ) {
+            // cursor inside ***text*** → remove bold, keep italic
+            textarea.setSelectionRange(selectionStart - 3, selectionEnd + 3);
+            this.editor.insertText(`*${selectedText}*`, 1, 1);
+            return;
+        } else if (
+            value.substring(selectionStart - 2, selectionStart) === '**' &&
+            value.substring(selectionEnd, selectionEnd + 2) === '**' &&
+            value[selectionStart - 3] !== '*' &&
+            value[selectionEnd + 2] !== '*'
+        ) {
+            // cursor inside **text** → remove bold
+            textarea.setSelectionRange(selectionStart - 2, selectionEnd + 2);
+            this.editor.insertText(selectedText, 0, 0);
+            return;
         } else {
             newText = `**${selectedText || 'Bold text'}**`;
             if (!selectedText) offset = 2;

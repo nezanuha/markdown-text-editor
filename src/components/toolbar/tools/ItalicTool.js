@@ -12,14 +12,36 @@ class ItalicTool extends MakeTool {
     applySyntax() {
         const textarea = this.editor.usertextarea;
         const { selectionStart, selectionEnd } = textarea;
-        const selectedText = textarea.value.substring(selectionStart, selectionEnd);
+        const value = textarea.value;
+        const selectedText = value.substring(selectionStart, selectionEnd);
 
         let newText = '';
         let offset = 0;
+
         if (selectedText.startsWith('***') && selectedText.endsWith('***')) {
+            // bold+italic selected → remove italic, keep bold
             newText = '**' + selectedText.slice(3, -3) + '**';
         } else if (selectedText.startsWith('*') && selectedText.endsWith('*') && !selectedText.startsWith('**')) {
+            // full *text* selected → remove italic
             newText = selectedText.slice(1, -1);
+        } else if (
+            value.substring(selectionStart - 3, selectionStart) === '***' &&
+            value.substring(selectionEnd, selectionEnd + 3) === '***'
+        ) {
+            // cursor inside ***text*** → remove italic, keep bold
+            textarea.setSelectionRange(selectionStart - 3, selectionEnd + 3);
+            this.editor.insertText(`**${selectedText}**`, 2, 2);
+            return;
+        } else if (
+            value[selectionStart - 1] === '*' &&
+            value[selectionEnd] === '*' &&
+            value[selectionStart - 2] !== '*' &&
+            value[selectionEnd + 1] !== '*'
+        ) {
+            // cursor inside *text* → remove italic
+            textarea.setSelectionRange(selectionStart - 1, selectionEnd + 1);
+            this.editor.insertText(selectedText, 0, 0);
+            return;
         } else {
             newText = `*${selectedText || 'Italic text'}*`;
             if (!selectedText) offset = 1;
