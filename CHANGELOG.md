@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ESM and UMD build outputs via Vite library mode, enabling use via CDN (`<script>`), npm ESM import, and CommonJS `require`
+- `exports` field in `package.json` for proper module resolution across bundlers
+
+### Changed
+
+- Replaced webpack build system with Vite — drops ~480 devDependencies, adds 11
+- Migrated to frutjam v2: configured `@plugin "frutjam"` with `prefix: me` and `root: .markdown-editor-wrapper`; all frutjam component classes now use `fj:me-*` prefix (e.g. `fj:me-btn`, `fj:me-surface`, `fj:me-modal`)
+- Updated modal positioning classes to frutjam v2 names: `modal-y-top` → `modal-top`, `modal-y-center` → `modal-middle`, `modal-x-center` → `modal-center`, `modal-body` → `modal-content`
+- Updated `marked` from v17 to v18
+- Updated `diff` from v8 to v9
+
+### Fixed
+
+- **`image tool`**: Fixed `ReferenceError` in upload catch block where `result` was referenced outside its `try` scope
+- **`preview tool`**: Fixed bug where toggling preview on a page with multiple editor instances would affect toolbar buttons in all instances; scoped `querySelectorAll` to `editorContainer`
+- **`heading tool`**: Removed invalid second argument passed to `insertText`
+
+### Removed
+
+- Unused `renderMarkdown` export from `markdownUtils.js`
+
 ## [1.0.1] - 2026-02-21
 
 ### Fixed
