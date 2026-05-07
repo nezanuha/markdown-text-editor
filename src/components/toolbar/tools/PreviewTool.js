@@ -9,6 +9,8 @@ class PreviewTool extends MakeTool {
         this.button = this.createButton(`
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 4v16" /><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14" /><path d="M12 13l7.5 -7.5" /><path d="M12 18l8 -8" /><path d="M15 20l5 -5" /><path d="M12 8l4 -4" /></svg>
         `);
+        const btn = this.button.querySelector('button');
+        if (btn) btn.setAttribute('aria-pressed', 'false');
     }
 
     // Override applySyntax to handle preview toggling
@@ -62,8 +64,10 @@ class PreviewTool extends MakeTool {
         this.editor.editorContainer.querySelectorAll('.markdown-btn').forEach(button => {
             if (!button.classList.contains('preview-btn')) {
                 button.classList.remove('fj:pointer-events-none', 'fj:md:pointer-events-auto', 'fj:opacity-25', 'fj:md:opacity-100');
-            }else{
+                button.removeAttribute('aria-disabled');
+            } else {
                 button.classList.remove('fj:me-btn-active');
+                button.setAttribute('aria-pressed', 'false');
             }
         });
     }
@@ -105,8 +109,10 @@ class PreviewTool extends MakeTool {
         this.editor.editorContainer.querySelectorAll('.markdown-btn').forEach(button => {
             if (!button.classList.contains('preview-btn')) {
                 button.classList.add('fj:pointer-events-none', 'fj:md:pointer-events-auto', 'fj:opacity-25', 'fj:md:opacity-100');
-            }else{
+                button.setAttribute('aria-disabled', 'true');
+            } else {
                 button.classList.add('fj:me-btn-active');
+                button.setAttribute('aria-pressed', 'true');
             }
         });
     }

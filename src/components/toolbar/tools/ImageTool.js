@@ -49,7 +49,7 @@ class ImageTool extends MakeTool {
         const bodyHTML = `
             <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
                 <div class="fj:font-medium">Image</div>
-                <button type="button" class="fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" onclick="nezanuha_toggleModal.remove()">
+                <button type="button" class="fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="Close" onclick="nezanuha_toggleModal.close()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
@@ -60,7 +60,7 @@ class ImageTool extends MakeTool {
                 <button type="button" class="submit-img-link fj:me-btn fj:me-btn-sm fj:self-end">Apply</button>
             </div>`;
 
-        const modalElement = modal(event, 'fj:max-w-sm', bodyHTML);
+        const modalElement = modal(event, 'fj:max-w-sm', bodyHTML, 'Image');
         const submitBtn = modalElement.querySelector(".submit-img-link");
 
         submitBtn.addEventListener("click", async (e) => {

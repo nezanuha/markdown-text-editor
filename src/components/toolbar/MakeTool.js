@@ -10,7 +10,9 @@ class MakeTool {
     createButton(iconHtml) {
         const btn = document.createElement('button');
         const btnClass = this.title ? `${this.title.replace(/ /g, '-')}-btn`.toLowerCase() : '';
-        btn.innerHTML = iconHtml;  // Pass icon HTML from child classes
+        btn.innerHTML = iconHtml;
+        const svg = btn.querySelector('svg');
+        if (svg) svg.setAttribute('aria-hidden', 'true');
         btn.type = 'button';
         btn.title = this.title;
         btn.className = `markdown-btn ${btnClass} fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost`;

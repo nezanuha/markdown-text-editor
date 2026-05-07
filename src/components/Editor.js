@@ -42,6 +42,13 @@ class MarkdownEditor {
     }
 
     applyDefaultAttributes() {
+        const hasLabel = (this.usertextarea.id && document.querySelector(`label[for="${this.usertextarea.id}"]`))
+            || this.usertextarea.getAttribute('aria-label')
+            || this.usertextarea.getAttribute('aria-labelledby');
+        if (!hasLabel) {
+            this.usertextarea.setAttribute('aria-label', this.options.label || 'Markdown editor');
+        }
+
         this.usertextarea.classList.add(
             "textarea",
             "fj:focus:ring-0",
