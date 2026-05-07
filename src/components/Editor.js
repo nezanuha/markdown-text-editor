@@ -228,12 +228,18 @@ class MarkdownEditor {
                 'indent', 
                 
                 // Inline Formatting
-                'bold', 
-                'italic', 
-                'strikethrough', 
-                
+                'bold',
+                'italic',
+                'strikethrough',
+                'code',
+
+                // Block Formatting
+                'codeblock',
+                'hr',
+                'table',
+
                 // Rich Media/Links
-                'link', 
+                'link',
                 'image',
                 
                 // View/Preview (Usually far right)
@@ -287,8 +293,8 @@ class MarkdownEditor {
                 '<span class="fj:opacity-30">```$1</span>\n$2<span class="fj:opacity-30">```</span>')
 
             // Inline Code (Single Backtick)
-            .replace(/`([^`\n]+)`/g, 
-                '<span class="fj:bg-surface">$1</span>')
+            .replace(/`([^`\n]+)`/g,
+                '<span class="fj:opacity-40">`</span><span class="fj:text-accent">$1</span><span class="fj:opacity-40">`</span>')
 
             // Headers
             .replace(/^(#+ )(.*)$/gm, 

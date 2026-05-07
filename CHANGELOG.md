@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`code` tool**: New inline code tool — wraps selected text (or inserts a `code` placeholder) in single backticks; clicking a second time removes the backticks
+- **`codeblock` tool**: New fenced code block tool — inserts a triple-backtick block around selected text (or a `code` placeholder); clicking on an existing fenced block removes the fences
+- **`hr` tool**: New horizontal rule tool — inserts a `---` divider at the cursor position on its own line
+- **`table` tool**: New table tool — inserts a starter 2×3 markdown table template at the cursor position
 - **`heading` tool**: Replaced the hidden cycle-through-H1–H6 click behaviour with a popover dropdown — users can now explicitly pick H1–H6 from a visible menu; selecting the same level a second time removes the heading, restoring plain text
 - **Docs**: Corrected get/set content section — removed non-existent `editor.value` API and replaced with the correct native DOM approach; fixed wrong `altInput` comment, filled empty `mode: 'hybrid'` description, added `params` to `fileInput` docs, updated `heading` tool description to reflect the new dropdown
 - The editor now works out of the box via CDN, npm, or any bundler (Vite, webpack, Rollup) with no extra configuration

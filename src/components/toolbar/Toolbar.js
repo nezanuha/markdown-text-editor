@@ -13,6 +13,10 @@ import UndoTool from './tools/UndoTool.js';
 import RedoTool from './tools/RedoTool.js';
 import IndentTool from './tools/IndentTool.js';
 import OutdentTool from './tools/OutdentTool.js';
+import CodeTool from './tools/CodeTool.js';
+import CodeBlockTool from './tools/CodeBlockTool.js';
+import HrTool from './tools/HrTool.js';
+import TableTool from './tools/TableTool.js';
 
 class Toolbar {
     constructor(editor, options) {
@@ -35,6 +39,10 @@ class Toolbar {
             italic: ItalicTool,
             strikethrough: StrikethroughTool,
             blockquote: BlockQuoteTool,
+            code: CodeTool,
+            codeblock: CodeBlockTool,
+            hr: HrTool,
+            table: TableTool,
             link: LinkTool,
             image: ImageTool,
             undo: UndoTool,
