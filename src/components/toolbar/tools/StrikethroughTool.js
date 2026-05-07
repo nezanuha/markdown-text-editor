@@ -14,17 +14,17 @@ class StrikethroughTool extends MakeTool {
         const { selectionStart, selectionEnd } = textarea;
         const selectedText = textarea.value.substring(selectionStart, selectionEnd);
 
-        const syntax = '~';
+        const syntax = '~~';
         let newText = '';
+        let offset = 0;
         if (selectedText.startsWith(syntax) && selectedText.endsWith(syntax)) {
-            // Remove the strikethrough syntax if it's already wrapped
             newText = selectedText.slice(syntax.length, -syntax.length);
         } else {
-            // Apply strikethrough syntax
             newText = `${syntax}${selectedText || 'Strikethrough text'}${syntax}`;
+            offset = syntax.length;
         }
 
-        this.editor.insertText(newText);
+        this.editor.insertText(newText, offset);
     }
 }
 

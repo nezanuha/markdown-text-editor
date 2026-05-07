@@ -15,17 +15,17 @@ class BoldTool extends MakeTool {
         const selectedText = textarea.value.substring(selectionStart, selectionEnd);
 
         let newText = '';
+        let offset = 0;
         if (selectedText.startsWith('***') && selectedText.endsWith('***')) {
-            // Bold+italic → remove bold, keep italic
             newText = '*' + selectedText.slice(3, -3) + '*';
         } else if (selectedText.startsWith('**') && selectedText.endsWith('**')) {
-            // Bold only → remove bold
             newText = selectedText.slice(2, -2);
         } else {
             newText = `**${selectedText || 'Bold text'}**`;
+            if (!selectedText) offset = 2;
         }
 
-        this.editor.insertText(newText);
+        this.editor.insertText(newText, offset);
     }
 }
 

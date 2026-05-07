@@ -16,15 +16,15 @@ class BlockQuoteTool extends MakeTool {
 
         const syntax = '>';
         let newText = '';
+        let offset = 0;
         if (selectedText.startsWith(syntax)) {
-            // Remove the blockquote syntax if it's already wrapped
             newText = selectedText.slice(syntax.length);
         } else {
-            // Apply blockquote syntax
             newText = `${syntax}${selectedText || 'Blockquote text'}`;
+            if (!selectedText) offset = syntax.length;
         }
 
-        this.editor.insertText(newText);
+        this.editor.insertText(newText, offset);
     }
 }
 

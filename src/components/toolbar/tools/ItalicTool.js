@@ -15,17 +15,17 @@ class ItalicTool extends MakeTool {
         const selectedText = textarea.value.substring(selectionStart, selectionEnd);
 
         let newText = '';
+        let offset = 0;
         if (selectedText.startsWith('***') && selectedText.endsWith('***')) {
-            // Bold+italic → remove italic, keep bold
             newText = '**' + selectedText.slice(3, -3) + '**';
         } else if (selectedText.startsWith('*') && selectedText.endsWith('*') && !selectedText.startsWith('**')) {
-            // Italic only → remove italic
             newText = selectedText.slice(1, -1);
         } else {
             newText = `*${selectedText || 'Italic text'}*`;
+            if (!selectedText) offset = 1;
         }
 
-        this.editor.insertText(newText);
+        this.editor.insertText(newText, offset);
     }
 }
 

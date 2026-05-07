@@ -20,28 +20,28 @@ class HeadingTool extends MakeTool {
         let cleanText = selectedText.replace(headingRegex, '');  // Remove existing heading
 
         let newText = '';
+        let offset = 0;
 
         // If there is a heading, continue from the current level
         if (selectedText) {
-            const currentLevel = selectedText.match(/^#+/);  // Match the number of # symbols at the start
+            const currentLevel = selectedText.match(/^#+/);
             if (currentLevel) {
                 let headingCount = currentLevel[0].length;
                 if (headingCount === 6) {
-                    newText = cleanText;  // Just plain text
+                    newText = cleanText;
                 } else {
                     newText = `${'#'.repeat(headingCount + 1)} ${cleanText}`;
                 }
             } else {
-                // If no # symbol, start from # (Heading 1)
                 newText = `# ${cleanText}`;
             }
         } else {
-            // If no text is selected, use default "Heading"
-            newText = `${'#'.repeat(this.currentHeading)} Heading`;
+            const prefix = `${'#'.repeat(this.currentHeading)} `;
+            newText = `${prefix}Heading`;
+            offset = prefix.length;
         }
 
-        // Insert the new heading text and replace any selected text
-        this.editor.insertText(newText);
+        this.editor.insertText(newText, offset);
 
         // Cycle heading levels after applying the heading
         if (this.currentHeading === 6) {
