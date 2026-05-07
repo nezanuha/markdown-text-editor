@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`heading` tool**: Replaced the hidden cycle-through-H1–H6 click behaviour with a popover dropdown — users can now explicitly pick H1–H6 from a visible menu
 - The editor now works out of the box via CDN, npm, or any bundler (Vite, webpack, Rollup) with no extra configuration
 - **CSS auto-injection**: CSS is now bundled into the JavaScript output via `vite-plugin-css-injected-by-js`. A single `import MarkdownEditor from 'markdown-text-editor'` is all that is needed — no separate stylesheet import or `<link>` tag required
 - **Accessibility**: The toolbar now has a proper `role="toolbar"` landmark and `aria-label` so screen readers can identify and navigate it
@@ -23,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Accessibility**: The preview toggle button now exposes its on/off state via `aria-pressed`
 - **Accessibility**: Toolbar buttons are now marked `aria-disabled` when preview is active, not just visually dimmed
 - **Accessibility**: The modal close button has an `aria-label="Close"` and now uses the native `dialog.close()` so focus is correctly returned to the triggering button when dismissed
-- **`bold` / `italic` / `strikethrough` / `blockquote` / `heading` tools**: Clicking a tool with no text selected now selects only the placeholder text, not the surrounding syntax markers — consistent with the list tools fix. For inline tools (`bold`, `italic`, `strikethrough`), the trailing closing markers are also excluded from the selection (e.g. selects `Bold text`, not `Bold text**`)
+- **`bold` / `italic` / `strikethrough` / `blockquote` tools**: Clicking a tool with no text selected now selects only the placeholder text, not the surrounding syntax markers — consistent with the list tools fix. For inline tools (`bold`, `italic`, `strikethrough`), the trailing closing markers are also excluded from the selection (e.g. selects `Bold text`, not `Bold text**`)
 - **`strikethrough` tool**: Now correctly inserts `~~double tildes~~` instead of `~single~`, matching the standard markdown spec and rendering correctly in the preview pane
 - **`indent` / `outdent`**: Pressing Tab no longer triggers two renders — the duplicate internal `_triggerUpdate()` call has been removed
 - **`lists` + `indent`**: Pressing Enter on an indented list item no longer inserts a double newline — the indent manager now defers to the list manager for all list continuation

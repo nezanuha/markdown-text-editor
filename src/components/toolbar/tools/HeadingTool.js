@@ -3,53 +3,84 @@ import MakeTool from '../MakeTool.js';
 class HeadingTool extends MakeTool {
     constructor(editor) {
         super(editor, 'Heading');
-        this.currentHeading = 1;  // Start with Heading 1
         this.button = this.createButton(`
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 12h10" /><path d="M7 5v14" /><path d="M17 5v14" /><path d="M15 19h4" /><path d="M15 5h4" /><path d="M5 19h4" /><path d="M5 5h4" /></svg>
         `);
     }
 
-    // Apply heading syntax (e.g., # sample text for h1, ## sample text for h2, etc.)
-    applySyntax() {
+    createButton(iconHtml) {
+        const popoverId = `heading-popover-${Math.random().toString(36).slice(2, 7)}`;
+
+        const btn = document.createElement('button');
+        btn.innerHTML = iconHtml;
+        const svg = btn.querySelector('svg');
+        if (svg) svg.setAttribute('aria-hidden', 'true');
+        btn.type = 'button';
+        btn.title = 'Heading';
+        btn.className = 'markdown-btn heading-btn fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost fj:me-popover-toggle';
+        btn.setAttribute('popovertarget', popoverId);
+
+        const popoverContent = document.createElement('div');
+        popoverContent.id = popoverId;
+        popoverContent.tabIndex = 0;
+        popoverContent.className = 'fj:me-popover-content';
+        popoverContent.setAttribute('popover', '');
+
+        const menu = document.createElement('ul');
+        menu.className = 'fj:me-menu';
+
+        for (let level = 1; level <= 6; level++) {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.className = 'fj:me-menu-item';
+            a.textContent = `Heading ${level}`;
+            a.style.cssText = `font-size: ${1.4 - (level - 1) * 0.1}rem; font-weight: bold;`;
+            a.addEventListener('click', () => {
+                this.applyHeading(level);
+                popoverContent.hidePopover();
+            });
+            li.appendChild(a);
+            menu.appendChild(li);
+        }
+
+        popoverContent.appendChild(menu);
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'fj:me-popover';
+        wrapper.appendChild(btn);
+        wrapper.appendChild(popoverContent);
+
+        return wrapper;
+    }
+
+    applyHeading(level) {
         const textarea = this.editor.usertextarea;
         const { selectionStart, selectionEnd } = textarea;
-        const selectedText = textarea.value.substring(selectionStart, selectionEnd);
+        const value = textarea.value;
 
-        // Strip any existing heading symbols (i.e., # or ##) from the selected text
-        const headingRegex = /^#+\s*/; // Regex to match any # followed by space
-        let cleanText = selectedText.replace(headingRegex, '');  // Remove existing heading
+        // Always work on the full current line so existing heading prefixes are included
+        const lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
+        const lineEndRaw = value.indexOf('\n', selectionEnd);
+        const lineEnd = lineEndRaw === -1 ? value.length : lineEndRaw;
 
-        let newText = '';
-        let offset = 0;
+        const lineText = value.substring(lineStart, lineEnd);
+        const cleanText = lineText.replace(/^#+\s*/, '');
+        const prefix = `${'#'.repeat(level)} `;
+        const newText = cleanText ? `${prefix}${cleanText}` : `${prefix}Heading`;
 
-        // If there is a heading, continue from the current level
-        if (selectedText) {
-            const currentLevel = selectedText.match(/^#+/);
-            if (currentLevel) {
-                let headingCount = currentLevel[0].length;
-                if (headingCount === 6) {
-                    newText = cleanText;
-                } else {
-                    newText = `${'#'.repeat(headingCount + 1)} ${cleanText}`;
-                }
-            } else {
-                newText = `# ${cleanText}`;
-            }
-        } else {
-            const prefix = `${'#'.repeat(this.currentHeading)} `;
-            newText = `${prefix}Heading`;
-            offset = prefix.length;
-        }
+        textarea.value = `${value.substring(0, lineStart)}${newText}${value.substring(lineEnd)}`;
+        textarea.focus();
 
-        this.editor.insertText(newText, offset);
+        // Select only the text portion, not the prefix
+        const textStart = lineStart + prefix.length;
+        const textEnd = lineStart + newText.length;
+        textarea.setSelectionRange(textStart, textEnd);
 
-        // Cycle heading levels after applying the heading
-        if (this.currentHeading === 6) {
-            this.currentHeading = 1;  // Reset to # for Heading 1 after reaching Heading 6
-        } else {
-            this.currentHeading++;  // Increment the heading level
-        }
+        this.editor.scrollToView();
+        this.editor.render();
     }
+
+    applySyntax() {}
 }
 
 export default HeadingTool;
