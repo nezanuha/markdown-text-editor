@@ -15,15 +15,15 @@ class ULTool extends MakeTool {
 
         const syntax = '- ';
         let newText = '';
+        let offset = 0;
         if (selectedText.startsWith(syntax)) {
-            // Remove the Unordered syntax if it's already wrapped
             newText = selectedText.slice(syntax.length);
         } else {
-            // Apply Unordered list syntax
             newText = `${syntax}${selectedText || 'Unordered list'}`;
+            offset = syntax.length;
         }
 
-        this.editor.insertText(newText);
+        this.editor.insertText(newText, offset);
     }
 }
 

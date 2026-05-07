@@ -15,15 +15,15 @@ class OLTool extends MakeTool {
 
         const syntax = '1. ';
         let newText = '';
+        let offset = 0;
         if (selectedText.startsWith(syntax)) {
-            // Remove the ordered syntax if it's already wrapped
             newText = selectedText.slice(syntax.length);
         } else {
-            // Apply ordered list syntax
             newText = `${syntax}${selectedText || 'Ordered list'}`;
+            offset = syntax.length;
         }
 
-        this.editor.insertText(newText);
+        this.editor.insertText(newText, offset);
     }
 }
 

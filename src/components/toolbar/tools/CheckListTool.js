@@ -15,15 +15,15 @@ class CheckListTool extends MakeTool {
 
         const syntax = '- [x] ';
         let newText = '';
+        let offset = 0;
         if (selectedText.startsWith(syntax)) {
-            // Remove the checklist syntax if it's already wrapped
             newText = selectedText.slice(syntax.length);
         } else {
-            // Apply check list syntax
             newText = `${syntax}${selectedText || 'Check list'}`;
+            offset = syntax.length;
         }
 
-        this.editor.insertText(newText);
+        this.editor.insertText(newText, offset);
     }
 }
 
