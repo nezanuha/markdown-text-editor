@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`bold` / `italic` / `strikethrough` / `blockquote` tools**: Clicking a tool with no text selected now selects only the placeholder text, not the surrounding syntax markers — consistent with the list tools fix. For inline tools (`bold`, `italic`, `strikethrough`), the trailing closing markers are also excluded from the selection (e.g. selects `Bold text`, not `Bold text**`)
 - **`strikethrough` tool**: Now correctly inserts `~~double tildes~~` instead of `~single~`, matching the standard markdown spec and rendering correctly in the preview pane
 - **`indent` / `outdent`**: Pressing Tab no longer triggers two renders — the duplicate internal `_triggerUpdate()` call has been removed
+- **`indent` / `outdent`**: Clicking the toolbar buttons in hybrid mode now correctly refreshes the display layer — the styled text now shifts immediately instead of staying stale until the next keystroke
 - **`lists` + `indent`**: Pressing Enter on an indented list item no longer inserts a double newline — the indent manager now defers to the list manager for all list continuation
 - **Performance**: `scrollToView` now caches the computed line height instead of recalculating it on every toolbar insert
 - **`bold` / `italic` tools**: Applying italic to bold text (or vice versa) now correctly produces bold+italic (`***text***`) instead of overwriting the existing style ([#22](https://github.com/nezanuha/markdown-text-editor/issues/22))

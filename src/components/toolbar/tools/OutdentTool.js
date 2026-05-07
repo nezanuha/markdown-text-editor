@@ -12,7 +12,8 @@ class OutdentTool extends MakeTool {
         const indentManager = this.editor.indentManager;
         if (indentManager) {
             indentManager.outdent();
-        }    
+            this.editor.render();
+        }
     }
 }
 
