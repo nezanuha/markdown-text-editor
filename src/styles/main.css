@@ -1,4 +1,5 @@
-@import "tailwindcss" prefix(fj);
+@import "tailwindcss/theme" prefix(fj);
+@import "tailwindcss/utilities" prefix(fj);
 @plugin "frutjam" {
     prefix: me;
     reset: false;
