@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-05-08
+
 ### Added
 
 - **`footer` option**: New status bar displayed below the editor showing the cursor's line number, column number, and total character count — all updated in real time. Visible by default; set `footer: false` to hide entirely, or pass `footer: { line: false, col: false, chars: false }` to toggle individual stats
@@ -263,7 +265,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/nezanuha/markdown-text-editor/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/nezanuha/markdown-text-editor/compare/v0.5.0...v1.0.0
 [0.5.0]: https://github.com/nezanuha/markdown-text-editor/compare/v0.4.0...v0.5.0
