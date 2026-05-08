@@ -5,7 +5,7 @@ class Preview {
         this.previewContainer.setAttribute('role', 'region');
         this.previewContainer.setAttribute('aria-label', 'Preview');
         this.previewContent = document.createElement('div');
-        this.previewContent.className = 'preview-content fj:prose fj:prose-sm fj:md:prose-base fj:me-prose-frutjam fj:p-1.5 fj:overflow-y-auto fj:h-[90lvh] fj:max-w-full';
+        this.previewContent.className = 'preview-content fj:prose fj:prose-sm fj:md:prose-base fj:me-prose-frutjam fj:p-1.5 fj:overflow-y-auto fj:h-full fj:max-w-full';
         this.previewContainer.appendChild(this.previewContent);
         container.appendChild(this.previewContainer);
     }

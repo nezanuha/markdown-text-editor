@@ -48,18 +48,19 @@ class PreviewTool extends MakeTool {
         previewWrapper.classList.add('fj:hidden');
         textareaWrapper.classList.remove("fj:hidden", "md:grid");
 
-        textareaWrapper.classList.remove(
-            'fj:h-[90lvh]',
-        );
-        this.editor.render(); // Re-render content in the preview
+        textareaWrapper.classList.remove('fj:h-full');
+        this.editor.render();
 
-        textareaWrapper.querySelector("textarea").classList.remove("fj:h-[90lvh]!");
+        textareaWrapper.querySelector("textarea").classList.remove("fj:h-full!");
 
         if(textareaWrapper.querySelector(".display-layer")){
-            textareaWrapper.querySelector(".display-layer").classList.remove("fj:h-[90lvh]!");
+            textareaWrapper.querySelector(".display-layer").classList.remove("fj:h-full!");
         }
         
         document.querySelector("body").classList.remove('fj:overflow-hidden');
+
+        editorDiv.parentNode.classList.remove('fj:flex', 'fj:flex-col', 'fj:h-dvh');
+        editorDiv.classList.remove('fj:flex-1', 'fj:min-h-0');
 
         this.editor.editorContainer.querySelectorAll('.markdown-btn').forEach(button => {
             if (!button.classList.contains('preview-btn')) {
@@ -92,17 +93,17 @@ class PreviewTool extends MakeTool {
         previewWrapper.classList.remove('fj:hidden');
         textareaWrapper.classList.add("fj:hidden", "fj:md:grid");
 
-        textareaWrapper.classList.add(
-            'fj:h-[90lvh]',
-        );
-
-        textareaWrapper.querySelector("textarea").classList.add("fj:h-[90lvh]!");
+        textareaWrapper.classList.add('fj:h-full');
+        textareaWrapper.querySelector("textarea").classList.add("fj:h-full!");
 
         if(textareaWrapper.querySelector(".display-layer")){
-            textareaWrapper.querySelector(".display-layer").classList.add("fj:h-[90lvh]!");
+            textareaWrapper.querySelector(".display-layer").classList.add("fj:h-full!");
         }
 
         document.querySelector("body").classList.add('fj:overflow-hidden');
+
+        editorDiv.parentNode.classList.add('fj:flex', 'fj:flex-col', 'fj:h-dvh');
+        editorDiv.classList.add('fj:flex-1', 'fj:min-h-0');
 
         this.editor.render();
 
