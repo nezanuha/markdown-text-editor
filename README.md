@@ -60,7 +60,11 @@ Works out of the box with any bundler (Vite, webpack, Rollup) or via CDN — no 
 ```javascript
 import MarkdownEditor from "markdown-text-editor";
 
+// Plain mode (default) — raw Markdown syntax
 const editor = new MarkdownEditor('#markdown-editor');
+
+// Hybrid mode — WYSIWYG-inspired, renders formatting live as you type
+const editor = new MarkdownEditor('#markdown-editor', { mode: 'hybrid' });
 ```
 
 ## 🛠 Developer Workflow

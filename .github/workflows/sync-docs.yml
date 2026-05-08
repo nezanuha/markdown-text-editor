@@ -1,0 +1,65 @@
+name: Sync Content to Website
+on:
+  push:
+    paths:
+      - 'docs/**'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - name: Checkout Public Repo
+        uses: actions/checkout@v4
+
+      - name: Sync to Private Website Repo
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SYNC_DEPLOY_KEY }}
+
+      - name: Push to Private Repo
+        env:
+          PRIVATE_REPO: ${{ secrets.FRUTJAM_PRIVATE_REPO_URL }}
+          SYNC_TARGET: ${{ secrets.SYNC_TARGET_PATH }}
+          ALLOWED_PREFIX: ${{ secrets.ALLOWED_SYNC_PATH }}
+        run: |
+          # --- SECURITY GUARDRAIL ---
+          if [[ "$SYNC_TARGET" != "$ALLOWED_PREFIX"* ]]; then
+            echo "Security Error: SYNC_TARGET path '$SYNC_TARGET' is unauthorized!"
+            exit 1
+          fi
+
+          echo "::add-mask::${SYNC_TARGET}"
+          # --------------------------
+
+          # Clone the private repo
+          mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git clone $PRIVATE_REPO private-repo
+
+          # 1. Remove only the specific directories you want to replace
+          rm -rf "private-repo/$SYNC_TARGET/docs" "private-repo/$SYNC_TARGET/blocks" "private-repo/$SYNC_TARGET/components" "private-repo/$SYNC_TARGET/assets"
+
+          # 2. Recreate them to ensure a clean state
+          mkdir -p "private-repo/$SYNC_TARGET/docs" "private-repo/$SYNC_TARGET/blocks" "private-repo/$SYNC_TARGET/components" "private-repo/$SYNC_TARGET/assets"
+
+          # 3. Copy only the docs from those specific folders
+          for dir in docs blocks components assets; do
+            if [ -d "docs/$dir" ]; then
+              cp -r "docs/$dir/"* "private-repo/$SYNC_TARGET/$dir/"
+            fi
+          done
+
+          # Commit and Push
+          cd private-repo
+          git config user.name "Docs Sync Bot"
+          git config user.email "bot@github.com"
+
+          # Only commit if there are actual changes
+          if [[ -n $(git status -s) ]]; then
+            git add .
+            git commit -m "chore: auto-update docs from Frutjam Library"
+            git push
+          else
+            echo "No changes detected, skipping push."
+          fi
