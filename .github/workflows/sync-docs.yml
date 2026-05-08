@@ -56,7 +56,7 @@ jobs:
           # Only commit if there are actual changes
           if [[ -n $(git status -s) ]]; then
             git add .
-            git commit -m "chore: auto-update docs from Frutjam Library"
+            git commit -m "chore: auto-update docs from MarkdownEditor Plugin"
             git push
           else
             echo "No changes detected, skipping push."
