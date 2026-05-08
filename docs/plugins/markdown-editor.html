@@ -100,6 +100,12 @@ const editor = new MarkdownEditor('#markdown-editor', {
                 <td><code>[...]</code></td>
                 <td>Defines which tools appear and in what order.</td>
             </tr>
+            <tr>
+                <td><code>footer</code></td>
+                <td><code>false | object</code></td>
+                <td><code>{}</code></td>
+                <td>Controls the status bar shown below the editor. Set to <code>false</code> to hide it entirely, or pass an object to toggle individual stats.</td>
+            </tr>
         </tbody>
     </table>
 </div>
@@ -155,6 +161,60 @@ const editor = new MarkdownEditor('#markdown-editor', {
     <li><strong>Removing</strong>: Simply omit any key (like <code>image</code>) from the array to disable that feature entirely for the user</li>
     <li><strong>Native Fallback</strong>: If you don't provide a <code>placeholder</code> in JS, the plugin will automatically use the <code>placeholder</code> attribute from your HTML <code>&lt;textarea&gt;</code></li>
 </ul>
+
+<h4>📊 Footer (Status Bar)</h4>
+<p>The footer sits below the editor and shows the cursor's <strong>line</strong>, <strong>column</strong>, and the document's <strong>character count</strong> — all updated in real time. It is visible by default and each stat can be toggled independently.</p>
+
+<div class="overflow-x-auto w-full not-prose">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>line</code></td>
+                <td><code>boolean</code></td>
+                <td><code>true</code></td>
+                <td>Show the current line number.</td>
+            </tr>
+            <tr>
+                <td><code>col</code></td>
+                <td><code>boolean</code></td>
+                <td><code>true</code></td>
+                <td>Show the current column number.</td>
+            </tr>
+            <tr>
+                <td><code>chars</code></td>
+                <td><code>boolean</code></td>
+                <td><code>true</code></td>
+                <td>Show the total character count.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h5>Usage Examples</h5>
+<c-snippet lang="javascript" view="code">
+// Default — all stats visible
+new MarkdownEditor('#editor');
+
+// Disable the footer entirely
+new MarkdownEditor('#editor', { footer: false });
+
+// Hide only character count
+new MarkdownEditor('#editor', { footer: { chars: false } });
+
+// Hide line and column, keep character count
+new MarkdownEditor('#editor', { footer: { line: false, col: false } });
+
+// Show only line number
+new MarkdownEditor('#editor', { footer: { col: false, chars: false } });
+</c-snippet>
 
 <h3>5. Getting, Setting, and Submitting Content</h3>
 <p>One of the core strengths of <strong>MarkdownEditor</strong> is that it keeps the underlying <code>&lt;textarea&gt;</code> perfectly synchronized. Whether you are using a modern JavaScript framework or a traditional backend like <strong>Django, PHP, or Laravel</strong>, the workflow remains simple and native.</p>

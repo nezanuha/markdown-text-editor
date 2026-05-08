@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`footer` option**: New status bar displayed below the editor showing the cursor's line number, column number, and total character count — all updated in real time. Visible by default; set `footer: false` to hide entirely, or pass `footer: { line: false, col: false, chars: false }` to toggle individual stats
 - **`code` tool**: New inline code tool — wraps selected text (or inserts a `code` placeholder) in single backticks; clicking a second time removes the backticks
 - **`codeblock` tool**: New fenced code block tool — inserts a triple-backtick block around selected text (or a `code` placeholder); clicking on an existing fenced block removes the fences
 - **`hr` tool**: New horizontal rule tool — inserts a `---` divider at the cursor position on its own line

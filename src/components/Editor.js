@@ -2,6 +2,7 @@ import '../styles/main.css';
 import { marked } from 'marked';
 import Toolbar from './toolbar/Toolbar.js';
 import Preview from './Preview.js';
+import Footer from './Footer.js';
 import UndoRedoManager from '../utils/UndoRedoManager.js';
 import IndentManager from '../utils/IndentManager.js';
 import ListManager from '../utils/ListManager.js';
@@ -16,6 +17,7 @@ class MarkdownEditor {
         this.options = options;
         this.mode = options.mode || 'plain';
         this.preview = (this.options.toolbar) ? this.options.toolbar.includes('preview') : true;
+        this.footerOptions = this._parseFooterOptions(options.footer);
         this.previewTimer = null;
         this.init();
         this.undoRedoManager = new UndoRedoManager(this);
@@ -23,9 +25,20 @@ class MarkdownEditor {
         this.indentManager = new IndentManager(this);
     }
 
+    _parseFooterOptions(footer) {
+        if (footer === false) return null;
+        const opts = footer ?? {};
+        return {
+            line:  opts.line  !== false,
+            col:   opts.col   !== false,
+            chars: opts.chars !== false,
+        };
+    }
+
     init() {
         this.createEditor();
         this.addToolbar();
+        this.addFooter();
     }
 
     createEditor() {
@@ -205,6 +218,20 @@ class MarkdownEditor {
                 this.render();
             });
         });
+    }
+
+    addFooter() {
+        if (!this.footerOptions) return;
+        const { line, col, chars } = this.footerOptions;
+        if (!line && !col && !chars) return;
+        this.footer = new Footer(this.editorContainer, this.footerOptions);
+        this.footer.update(this.usertextarea);
+
+        const update = () => this.footer.update(this.usertextarea);
+        this.usertextarea.addEventListener('input', update);
+        this.usertextarea.addEventListener('click', update);
+        this.usertextarea.addEventListener('keyup', update);
+        this.usertextarea.addEventListener('focus', update);
     }
 
     addToolbar() {
