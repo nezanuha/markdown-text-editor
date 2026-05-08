@@ -103,7 +103,7 @@ const editor = new MarkdownEditor('#markdown-editor', {
             <tr>
                 <td><code>footer</code></td>
                 <td><code>false | object</code></td>
-                <td><code>{}</code></td>
+                <td>all visible</td>
                 <td>Controls the status bar shown below the editor. Set to <code>false</code> to hide it entirely, or pass an object to toggle individual stats.</td>
             </tr>
         </tbody>
@@ -506,6 +506,22 @@ This shows the raw **syntax**.</textarea>
                 <td>Highlight quoted or emphasized text.</td>
             </tr>
             <tr>
+                <td><code>code</code></td>
+                <td>Wraps selected text in single backticks for inline code. Clicking again removes the backticks.</td>
+            </tr>
+            <tr>
+                <td><code>codeblock</code></td>
+                <td>Wraps selected text in a triple-backtick fenced code block. Clicking again removes the fences.</td>
+            </tr>
+            <tr>
+                <td><code>hr</code></td>
+                <td>Inserts a <code>---</code> horizontal rule at the cursor position on its own line.</td>
+            </tr>
+            <tr>
+                <td><code>table</code></td>
+                <td>Inserts a starter 2×3 markdown table template at the cursor position.</td>
+            </tr>
+            <tr>
                 <td><code>image</code></td>
                 <td>Allows you to insert images via markdown syntax.</td>
             </tr>
@@ -643,9 +659,15 @@ This shows the raw **syntax**.</textarea>
 const editor = new MarkdownEditor('#markdown-editor', {
     mode: 'hybrid',
     placeholder: 'Start writing...',
+    footer: {
+        line: true,
+        col: true,
+        chars: true,
+    },
     toolbar: [
         'heading', 'bold', 'italic', 'strikethrough', 'blockquote',
         'ul', 'ol', 'checklist',
+        'code', 'codeblock', 'hr', 'table',
         {
             image: {
                 fileInput: {
