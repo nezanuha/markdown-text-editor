@@ -37,18 +37,16 @@ jobs:
           mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
           git clone $PRIVATE_REPO private-repo
 
-          # 1. Remove only the specific directories you want to replace
-          rm -rf "private-repo/$SYNC_TARGET/docs" "private-repo/$SYNC_TARGET/blocks" "private-repo/$SYNC_TARGET/components" "private-repo/$SYNC_TARGET/assets"
+          # 1. Remove the plugins directory
+          rm -rf "private-repo/$SYNC_TARGET/plugins"
 
-          # 2. Recreate them to ensure a clean state
-          mkdir -p "private-repo/$SYNC_TARGET/docs" "private-repo/$SYNC_TARGET/blocks" "private-repo/$SYNC_TARGET/components" "private-repo/$SYNC_TARGET/assets"
+          # 2. Recreate it for a clean state
+          mkdir -p "private-repo/$SYNC_TARGET/plugins"
 
-          # 3. Copy only the docs from those specific folders
-          for dir in docs blocks components assets; do
-            if [ -d "docs/$dir" ]; then
-              cp -r "docs/$dir/"* "private-repo/$SYNC_TARGET/$dir/"
-            fi
-          done
+          # 3. Copy only the plugins folder
+          if [ -d "docs/plugins" ]; then
+            cp -r "docs/plugins/"* "private-repo/$SYNC_TARGET/"
+          fi
 
           # Commit and Push
           cd private-repo
