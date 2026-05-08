@@ -29,12 +29,13 @@ class HeadingTool extends MakeTool {
         const menu = document.createElement('ul');
         menu.className = 'fj:me-menu';
 
+        const headingClasses = ['fj:me-heading-xl', 'fj:me-heading-lg', 'fj:me-heading-md', 'fj:me-heading-sm', 'fj:me-heading-xs', 'fj:me-heading-xs'];
+
         for (let level = 1; level <= 6; level++) {
             const li = document.createElement('li');
             const a = document.createElement('a');
-            a.className = 'fj:me-menu-item';
+            a.className = `fj:me-menu-item ${headingClasses[level - 1]}`;
             a.textContent = `Heading ${level}`;
-            a.style.cssText = `font-size: ${1.4 - (level - 1) * 0.1}rem; font-weight: bold;`;
             a.addEventListener('click', () => {
                 this.applyHeading(level);
                 popoverContent.hidePopover();
