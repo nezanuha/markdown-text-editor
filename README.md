@@ -36,7 +36,7 @@ npm install markdown-text-editor
 #### CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor@1.1.0/dist/markdown-text-editor.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor@1.1.2/dist/markdown-text-editor.min.js"></script>
 ```
 
 ### 2. The HTML Structure
@@ -108,7 +108,7 @@ textarea.value = "## New Content Loaded via JS";
 - 📝 **Smart Editing**: GitHub-style automatic list continuation—press `Enter` and the editor handles the bullets/numbers for you. Supports ordered lists, unordered lists, and checklists
 - 🔄 **Undo / Redo**: Full history system using granular diffs — restores both text content and exact cursor position. Integrated with `Ctrl+Z`, `Ctrl+Y`, and `Ctrl+Shift+Z`
 - 🎛️ **Effortless Customization**: Quickly match your brand's look and feel using simple CSS variables
-- 📦 **Universal Module Support**: Compatible with **ESM**, **UMD**, and **CommonJS** — works with Vite, webpack, Rollup, or directly via CDN with no extra configuration
+- 📦 **Universal Module Support**: Compatible with **ESM**, **UMD**, **CommonJS**, and **IIFE** — works with Vite, webpack, Rollup, or directly via CDN (`<script src>`) with no extra configuration
 - 🔄 **Actively Maintained**: Regularly updated with new features, optimizations, and community-driven improvements
 
 ## 📖 Documentation

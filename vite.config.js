@@ -50,8 +50,8 @@ export default defineConfig({
         lib: {
             entry: 'src/components/Editor.js',
             name: 'MarkdownEditor',
-            formats: ['es', 'umd'],
-            fileName: (format) => `markdown-text-editor.${format}.js`,
+            formats: ['es', 'umd', 'iife'],
+            fileName: (format) => format === 'iife' ? 'markdown-text-editor.min.js' : `markdown-text-editor.${format}.js`,
         },
         cssCodeSplit: false,
         sourcemap: true,
