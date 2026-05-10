@@ -3,7 +3,7 @@ class Footer {
         this.options = options;
 
         this.footer = document.createElement('div');
-        this.footer.className = 'editor-footer fj:me-surface fj:me-surface-outline fj:border-base-soft fj:border-0 fj:border-t fj:flex fj:justify-between fj:items-center fj:px-3 fj:py-1 fj:text-xs fj:opacity-60 fj:select-none';
+        this.footer.className = 'editor-footer not-prose fj:me-surface fj:me-surface-outline fj:border-base-soft fj:border-0 fj:border-t fj:flex fj:justify-between fj:items-center fj:px-3 fj:py-1 fj:text-xs fj:opacity-60 fj:select-none';
         this.footer.setAttribute('aria-hidden', 'true');
 
         this.positionEl = document.createElement('span');

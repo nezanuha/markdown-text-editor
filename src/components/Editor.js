@@ -91,6 +91,9 @@ class MarkdownEditor {
             fj:me-surface-rounded
             fj:overflow-hidden
         `;
+        const theme = this.options.theme
+            ?? this.usertextarea.closest('[data-theme]')?.getAttribute('data-theme');
+        if (theme) this.editorContainer.setAttribute('data-theme', theme);
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
 
         this.markdownEditorDiv = document.createElement('div');
@@ -303,64 +306,65 @@ class MarkdownEditor {
     }
     
 
-    renderHybrid() {
-        if (this.mode !== 'hybrid') return;
-
-        const rawValue = this.usertextarea.value;
-        let highlighted = rawValue
+    _highlight(rawValue) {
+        let out = rawValue
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
 
-        // SYNTAX HIGHLIGHTING CHAIN
-        highlighted = highlighted
-
-            // code block
-            .replace(/```(\w+)?\n([\s\S]*?)```/g, 
+        out = out
+            .replace(/```(\w+)?\n([\s\S]*?)```/g,
                 '<span class="fj:opacity-30">```$1</span>\n$2<span class="fj:opacity-30">```</span>')
-
-            // Inline Code (Single Backtick)
             .replace(/`([^`\n]+)`/g,
                 '<span class="fj:opacity-40">`</span><span class="fj:text-accent">$1</span><span class="fj:opacity-40">`</span>')
-
-            // Headers
-            .replace(/^(#+ )(.*)$/gm, 
-                '<span class="fj:text-primary"><span class="fj:opacity-40">$1</span><span class="fj:font-bold fj:tracking-[-0.040em]">$2</span></span>')
-        
-            // Bold 
-            .replace(/\*\*(.*?)\*\*/g, 
-                '<span class="fj:text-secondary"><span class="fj:opacity-40">**</span><span class="fj:font-bold fj:tracking-[-0.040em]">$1</span><span class="fj:opacity-40">**</span></span>')
-
-             // Lists (UL, OL, Checklist)
-            // Matches: "- ", "* ", "1. ", "[ ] ", "[x] "
-            .replace(/^([\s]*)([\-\*] |[\d]+\. |\[[\s xX]\] )(.*)$/gm, 
+            .replace(/^(#+ )(.*)$/gm,
+                '<span class="fj:text-primary"><span class="fj:opacity-40">$1</span><span class="faux-bold">$2</span></span>')
+            .replace(/\*\*(.*?)\*\*/g,
+                '<span class="fj:text-secondary"><span class="fj:opacity-40">**</span><span class="fj:font-bold">$1</span><span class="fj:opacity-40">**</span></span>')
+            .replace(/^([\s]*)([\-\*] |[\d]+\. |\[[\s xX]\] )(.*)$/gm,
                 '$1<span class="fj:text-primary fj:font-medium">$2</span>$3')
-
-            // Inline Italic (Supports both *italic* and _italic_)
-            .replace(/(\*|_)(.*?)\1/g, 
+            .replace(/(\*|_)(.*?)\1/g,
                 '<span class="fj:text-accent"><span class="fj:opacity-40">$1</span><span class="fj:italic">$2</span><span class="fj:opacity-40">$1</span></span>')
-
-            // Strikethrough
-            // Double ~~text~~
-            .replace(/~~(.*?)~~/g, 
+            .replace(/~~(.*?)~~/g,
                 '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-40">~~</span>$1<span class="fj:opacity-40">~~</span></span>')
-            
-            // Single ~text~ (Optional, only if you want to support both)
-            // We use a negative lookbehind/lookahead logic or simply run it after the double replace
-            .replace(/(?<!~)(~)([^~]+)\1(?!~)/g, 
+            .replace(/(?<!~)(~)([^~]+)\1(?!~)/g,
                 '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-40">$1</span>$2<span class="fj:opacity-40">$1</span></span>')
-    
-            // Links & Images
-            // Matches ![alt](src) and [text](url)
-            .replace(/(!?\[)(.*?)(\]\()(.*?)(\))/g, 
-                '<span class="fj:opacity-40">$1</span><span class="fj:text-primary">$2</span><span class="fj:opacity-40">$3</span><span class="fj:underline fj:opacity-50">$4</span><span class="fj:opacity-50">$5</span>')
+            .replace(/(!?\[)(.*?)(\]\()(.*?)(\))/g,
+                '<span class="fj:opacity-40">$1</span><span class="fj:text-primary">$2</span><span class="fj:opacity-40">$3</span><span class="fj:underline fj:opacity-50">$4</span><span class="fj:opacity-50">$5</span>');
 
-        // Ensure height sync when ending with newline
-        if (rawValue.length > 0 && rawValue.endsWith('\n')) {
-            highlighted += ' '; 
+        if (rawValue.endsWith('\n')) out += ' ';
+        return out;
+    }
+
+    renderHybrid() {
+        if (this.mode !== 'hybrid') return;
+
+        const rawValue = this.usertextarea.value;
+        if (rawValue === this._lastRaw) return;
+        this._lastRaw = rawValue;
+
+        const highlighted = this._highlight(rawValue);
+        const newLines = highlighted.split('\n');
+        const lastLines = this._lastLines;
+
+        if (!lastLines || lastLines.length !== newLines.length) {
+            this.displayLayer.innerHTML = '';
+            this._lineNodes = newLines.map((line, i) => {
+                const node = document.createElement('span');
+                node.innerHTML = line + (i < newLines.length - 1 ? '\n' : '');
+                this.displayLayer.appendChild(node);
+                return node;
+            });
+            this._lastLines = newLines.slice();
+            return;
         }
 
-        this.displayLayer.innerHTML = highlighted;
+        for (let i = 0; i < newLines.length; i++) {
+            if (newLines[i] !== lastLines[i]) {
+                this._lineNodes[i].innerHTML = newLines[i] + (i < newLines.length - 1 ? '\n' : '');
+                lastLines[i] = newLines[i];
+            }
+        }
     }
 
     render() {

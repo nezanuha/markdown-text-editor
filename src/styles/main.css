@@ -7,8 +7,40 @@
 };
 @plugin "@tailwindcss/typography";
 
+/*
+  @tailwindcss/node hardcodes Safari 16.4 as its LightningCSS target, which
+  transforms light-dark() into var(--lightningcss-light/dark) but omits the
+  supporting :root definitions from its output. We define them here so the
+  polyfill resolves correctly inside the editor.
+*/
+.markdown-editor-wrapper {
+    --lightningcss-light: initial;
+    --lightningcss-dark: ;
+}
+@media (prefers-color-scheme: dark) {
+    .markdown-editor-wrapper {
+        --lightningcss-light: ;
+        --lightningcss-dark: initial;
+    }
+}
+.markdown-editor-wrapper[data-theme="dark"],
+.markdown-editor-wrapper[data-theme="darkberry"] {
+    --lightningcss-light: ;
+    --lightningcss-dark: initial;
+}
+.markdown-editor-wrapper[data-theme="light"],
+.markdown-editor-wrapper[data-theme="snowberry"] {
+    --lightningcss-light: initial;
+    --lightningcss-dark: ;
+}
+
+.display-layer .faux-bold {
+    text-shadow: 0 0 0.5px currentColor, 0 0 0.5px currentColor;
+}
+
 .textarea-wrapper:has(.display-layer) .textarea::selection {
     background: color-mix(in oklch, var(--color-primary), transparent 80%);
     color: transparent;
     caret-color: var(--color-primary);
 }
+

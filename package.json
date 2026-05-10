@@ -2,19 +2,17 @@
   "name": "markdown-text-editor",
   "version": "1.1.1",
   "type": "module",
-  "description": "A simple JavaScript Markdown editor plugin with real-time preview, and easy integration.",
+  "description": "Lightweight Markdown editor with hybrid WYSIWYG mode, real-time preview, and zero-config setup. Works with any backend via native textarea.",
   "funding": "https://ko-fi.com/nezanuha",
   "main": "./dist/markdown-text-editor.umd.js",
   "module": "./dist/markdown-text-editor.es.js",
   "browser": "./dist/markdown-text-editor.umd.js",
-  "style": "./dist/markdown-text-editor.css",
   "exports": {
     ".": {
       "import": "./dist/markdown-text-editor.es.js",
       "require": "./dist/markdown-text-editor.umd.js",
       "default": "./dist/markdown-text-editor.umd.js"
-    },
-    "./dist/markdown-text-editor.css": "./dist/markdown-text-editor.css"
+    }
   },
   "files": [
     "dist/",
@@ -65,7 +63,7 @@
   ],
   "author": "Nezanuha",
   "license": "MIT",
-  "homepage": "https://github.com/nezanuha/markdown-text-editor",
+  "homepage": "https://frutjam.com/plugins/markdown-editor",
   "bugs": {
     "url": "https://github.com/nezanuha/markdown-text-editor/issues"
   },
@@ -77,7 +75,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.3.0",
     "diff": "^9.0.0",
-    "frutjam": "^2.0.1",
+    "frutjam": "^2.0.2",
     "postcss": "^8.5.14",
     "tailwindcss": "^4.3.0",
     "vite": "^8.0.11",

@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-05-10
+
+### Added
+
+- **Theme inheritance**: The editor now automatically inherits `data-theme` from the nearest ancestor element at initialisation via `closest('[data-theme]')`. Placing `data-theme="dark"` on `<html>`, `<body>`, or any parent container correctly themes the editor with zero runtime overhead — no observers, no polling
+- **`theme` option**: Pass `theme: 'dark'` (or any frutjam theme name) in the options object to explicitly set the editor's theme, overriding ancestor inheritance
+
+### Fixed
+
+- **Theme `light-dark()` derived colors**: `--lightningcss-light` / `--lightningcss-dark` polyfill variables are now correctly scoped to each `data-theme` value, so soft and active color variants switch correctly when the theme is set via `data-theme` on the wrapper or an ancestor — not just via `prefers-color-scheme`
+- **Toolbar and footer prose isolation**: Added `not-prose` to the toolbar and footer elements to prevent `@tailwindcss/typography` styles from leaking into the toolbar icons and status bar when the editor is placed inside a `prose`-classed container
+
+### Changed
+
+- Removed the separate `style` export and `./dist/markdown-text-editor.css` package export — CSS has been injected by JS since v1.1.0 and no standalone stylesheet exists
+- Updated package description and homepage URL
+- Updated `frutjam` to 2.0.2
+- **Docs**: Added theming section documenting all three ways to set the theme (`theme` option, `data-theme` on the `<textarea>`, `data-theme` on any ancestor) with priority order and examples
+- **Docs**: Added CSS variables reference table so users can build custom themes by overriding `--color-base`, `--color-primary`, `--border-radius`, and other design tokens scoped to `.markdown-editor-wrapper`
+
 ## [1.1.1] - 2026-05-09
 
 ### Changed
@@ -271,7 +291,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/nezanuha/markdown-text-editor/compare/v1.0.0...v1.0.1

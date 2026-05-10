@@ -106,6 +106,12 @@ const editor = new MarkdownEditor('#markdown-editor', {
                 <td>all visible</td>
                 <td>Controls the status bar shown below the editor. Set to <code>false</code> to hide it entirely, or pass an object to toggle individual stats.</td>
             </tr>
+            <tr>
+                <td><code>theme</code></td>
+                <td><code>string</code></td>
+                <td>inherited</td>
+                <td>Explicitly sets the editor theme (<code>'light'</code>, <code>'dark'</code>, <code>'snowberry'</code>, <code>'darkberry'</code>). If omitted, the editor inherits <code>data-theme</code> from the nearest ancestor element or the <code>&lt;textarea&gt;</code> itself.</td>
+            </tr>
         </tbody>
     </table>
 </div>
@@ -565,6 +571,140 @@ This shows the raw **syntax**.</textarea>
         </tbody>
     </table>
 </div>
+
+<h3>🌙 Theming</h3>
+<p><strong>MarkdownEditor</strong> automatically inherits its theme from the surrounding page — no configuration required. The editor reads <code>data-theme</code> from the nearest ancestor at initialisation, so it stays in sync with your site's theme out of the box.</p>
+
+<h4>How theme is resolved (priority order)</h4>
+<ol>
+    <li><strong><code>theme</code> option</strong> — explicit override passed in the options object</li>
+    <li><strong><code>data-theme</code> on the <code>&lt;textarea&gt;</code></strong> — set directly on the element</li>
+    <li><strong><code>data-theme</code> on any ancestor</strong> — e.g. <code>&lt;html&gt;</code>, <code>&lt;body&gt;</code>, or a wrapper <code>&lt;div&gt;</code></li>
+</ol>
+
+<h4>Available themes</h4>
+<p><code>'light'</code> (default), <code>'dark'</code>, <code>'snowberry'</code>, <code>'darkberry'</code></p>
+
+<h5>Option 1 — inherit from <code>&lt;html&gt;</code> or any ancestor (zero config)</h5>
+<c-snippet view="code">
+<html data-theme="dark">
+  ...
+  <textarea id="markdown-editor"></textarea>
+  <script>
+    new MarkdownEditor('#markdown-editor'); // picks up dark automatically
+  </script>
+</c-snippet>
+
+<h5>Option 2 — set <code>data-theme</code> directly on the <code>&lt;textarea&gt;</code></h5>
+<c-snippet view="code">
+<textarea id="markdown-editor" data-theme="dark"></textarea>
+<script>
+  new MarkdownEditor('#markdown-editor');
+</script>
+</c-snippet>
+
+<h5>Option 3 — explicit <code>theme</code> option (overrides everything)</h5>
+<c-snippet lang="javascript" view="code">
+new MarkdownEditor('#markdown-editor', {
+    theme: 'dark'
+});
+</c-snippet>
+
+<h4>🎨 Custom Theme via CSS Variables</h4>
+<p>You can fully customize the editor's look by overriding its CSS variables on the <code>.markdown-editor-wrapper</code> element or any <code>[data-theme]</code> selector. All colors use the <a href="https://oklch.com" target="_blank">OKLCH color space</a> for perceptually uniform results.</p>
+
+<div class="overflow-x-auto w-full not-prose">
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Variable</th>
+                <th>Purpose</th>
+                <th>Light default</th>
+                <th>Dark default</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>--color-base</code></td>
+                <td>Editor background</td>
+                <td><code>oklch(100% 0 0)</code></td>
+                <td><code>oklch(10.9% 0 0)</code></td>
+            </tr>
+            <tr>
+                <td><code>--color-on-base</code></td>
+                <td>Primary text color</td>
+                <td><code>oklch(22% 0 0)</code></td>
+                <td><code>oklch(98% 0 0)</code></td>
+            </tr>
+            <tr>
+                <td><code>--color-primary</code></td>
+                <td>Primary accent (toolbar active, links)</td>
+                <td><code>oklch(51.1% .262 277)</code></td>
+                <td><code>oklch(66.4% .184 286)</code></td>
+            </tr>
+            <tr>
+                <td><code>--color-on-primary</code></td>
+                <td>Text on primary-colored surfaces</td>
+                <td><code>oklch(96.2% .018 272)</code></td>
+                <td><code>oklch(10% .01 270)</code></td>
+            </tr>
+            <tr>
+                <td><code>--color-secondary</code></td>
+                <td>Secondary accent</td>
+                <td><code>oklch(59.1% .293 323)</code></td>
+                <td><code>oklch(65% .18 220)</code></td>
+            </tr>
+            <tr>
+                <td><code>--color-accent</code></td>
+                <td>Highlight accent (inline code, italic)</td>
+                <td><code>oklch(54.1% .281 293)</code></td>
+                <td><code>oklch(75% .18 50)</code></td>
+            </tr>
+            <tr>
+                <td><code>--color-neutral</code></td>
+                <td>Neutral surfaces (borders, dividers)</td>
+                <td><code>oklch(15% 0 0)</code></td>
+                <td><code>oklch(85% 0 0)</code></td>
+            </tr>
+            <tr>
+                <td><code>--color-error</code></td>
+                <td>Error state color</td>
+                <td><code>oklch(57.7% .245 27)</code></td>
+                <td><code>oklch(60% .22 30)</code></td>
+            </tr>
+            <tr>
+                <td><code>--border-radius</code></td>
+                <td>Corner rounding of the editor frame</td>
+                <td colspan="2"><code>0.25rem</code></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h5>Custom theme example</h5>
+<p>Override any variable on <code>.markdown-editor-wrapper</code> after the editor initialises, or define a custom <code>[data-theme]</code> block in your stylesheet:</p>
+<c-snippet lang="css" view="code">
+/* Override individual variables */
+.markdown-editor-wrapper {
+    --color-primary: oklch(60% 0.2 30);   /* orange accent */
+    --border-radius: 0.5rem;
+}
+
+/* Or define a full custom theme */
+[data-theme="brand"] .markdown-editor-wrapper,
+.markdown-editor-wrapper[data-theme="brand"] {
+    --color-base:       oklch(15% 0.01 250);
+    --color-on-base:    oklch(95% 0 0);
+    --color-primary:    oklch(65% 0.22 145);   /* green */
+    --color-on-primary: oklch(10% 0 0);
+    --color-accent:     oklch(75% 0.18 60);
+    --color-neutral:    oklch(80% 0 0);
+    --border-radius:    0.75rem;
+}
+</c-snippet>
+<c-snippet lang="javascript" view="code">
+new MarkdownEditor('#markdown-editor', { theme: 'brand' });
+</c-snippet>
 
 <ul>
     <li><strong>Real-time Preview:</strong> See your markdown rendered instantly as you type.</li>
