@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `iife` build format output as `dist/markdown-text-editor.min.js` for direct CDN `<script src>` use — no module bundler required
 - Added `jsdelivr`, `unpkg`, and updated `browser` fields in `package.json` to point to the IIFE build, so bare CDN URLs (without a file path) automatically serve the correct file
 
+## [1.1.4] - 2026-05-10
+
 ### Changed
 
 - Updated `frutjam` to 2.0.4
@@ -301,7 +303,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.3...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.4...HEAD
+[1.1.4]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.0...v1.1.1
