@@ -22,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Removed the separate `style` export and `./dist/markdown-text-editor.css` package export — CSS has been injected by JS since v1.1.0 and no standalone stylesheet exists
-- Updated package description and homepage URL
 - Updated `frutjam` to 2.0.2
 - **Docs**: Added theming section documenting all three ways to set the theme (`theme` option, `data-theme` on the `<textarea>`, `data-theme` on any ancestor) with priority order and examples
 - **Docs**: Added CSS variables reference table so users can build custom themes by overriding `--color-base`, `--color-primary`, `--border-radius`, and other design tokens scoped to `.markdown-editor-wrapper`
