@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-05-10
+
+### Added
+
+- Added `iife` build format output as `dist/markdown-text-editor.min.js` for direct CDN `<script src>` use — no module bundler required
+- Added `jsdelivr`, `unpkg`, and updated `browser` fields in `package.json` to point to the IIFE build, so bare CDN URLs (without a file path) automatically serve the correct file
+
 ## [1.1.2] - 2026-05-10
 
 ### Added
@@ -25,8 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `frutjam` to 2.0.2
 - **Docs**: Added theming section documenting all three ways to set the theme (`theme` option, `data-theme` on the `<textarea>`, `data-theme` on any ancestor) with priority order and examples
 - **Docs**: Added CSS variables reference table so users can build custom themes by overriding `--color-base`, `--color-primary`, `--border-radius`, and other design tokens scoped to `.markdown-editor-wrapper`
-- Added `iife` build format output as `dist/markdown-text-editor.min.js` for direct CDN `<script src>` use — no module bundler required
-- Added `jsdelivr`, `unpkg`, and updated `browser` fields in `package.json` to point to the IIFE build, so bare CDN URLs (without a file path) automatically serve the correct file
 
 ## [1.1.1] - 2026-05-09
 
@@ -292,7 +297,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.2...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.3...HEAD
+[1.1.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.0.1...v1.1.0
