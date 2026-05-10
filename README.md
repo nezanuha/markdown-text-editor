@@ -36,7 +36,7 @@ npm install markdown-text-editor
 #### CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor@1.1.2/dist/markdown-text-editor.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor@1.1.3/dist/markdown-text-editor.min.js"></script>
 ```
 
 ### 2. The HTML Structure
