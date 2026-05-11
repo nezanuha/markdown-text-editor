@@ -26,7 +26,7 @@ Because it sits directly on top of a <code>&lt;textarea&gt;</code>, you don't ne
 <p>All editor styles are fully scoped to the <code>.markdown-editor-wrapper</code> element. Tailwind's global preflight (element resets for <code>h1</code>–<code>h6</code>, <code>a</code>, <code>button</code>, etc.) is excluded, so the editor can live alongside Bootstrap, Tailwind, or any other CSS framework on the same page without breaking a single style.</p>
 
 <h2>Markdown Editor Demo</h2>
-<textarea class="hybrid-editor" rows="5" placeholder="Start writing..."># Markdown Editor</textarea>
+<textarea class="hybrid-markdown-editor" rows="5" placeholder="Start writing..."># Markdown Editor</textarea>
 
 <h2>Quick Implementation</h2>
 
@@ -449,12 +449,12 @@ new MarkdownEditor('#markdown-editor', {
 
 <h6>Hybrid Mode</h6>
 <p>Visual formatting is rendered in real-time while you type.</p>
-<textarea class="hybrid-editor mb-4" rows="5" placeholder="Start writing..."># Hybrid mode markdown editor
+<textarea class="hybrid-markdown-editor mb-4" rows="5" placeholder="Start writing..."># Hybrid mode markdown editor
 This will render visual styles immediately.</textarea>
 
 <h6>Plain Mode (Default)</h6>
 <p>Focuses on raw Markdown syntax for a lightweight experience.</p>
-<textarea class="plain-editor mb-4" rows="5" placeholder="Start writing..."># Plain mode markdown editor
+<textarea class="plain-markdown-editor mb-4" rows="5" placeholder="Start writing..."># Plain mode markdown editor
 This shows the raw **syntax**.</textarea>
 
 <div class="overflow-x-auto w-full not-prose">
