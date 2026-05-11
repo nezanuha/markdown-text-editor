@@ -7,11 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.5] - 2026-05-11
+
+### Changed
+
+- Renamed internal CSS class `textarea` to `editor-textarea` to avoid conflicts with third-party stylesheets targeting generic class names
+- Added `font: inherit` reset to `.editor-textarea` so the editor inherits the page font instead of defaulting to the browser's monospace fallback
+
 ## [1.1.4] - 2026-05-10
 
 ### Changed
 
-- Updated `frutjam` to 2.0.4
+- **devDependencies:** Updated `frutjam` to 2.0.4
 
 ## [1.1.3] - 2026-05-10
 
@@ -303,7 +310,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.4...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.5...HEAD
+[1.1.5]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.1...v1.1.2

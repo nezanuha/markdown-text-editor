@@ -63,7 +63,7 @@ class MarkdownEditor {
         }
 
         this.usertextarea.classList.add(
-            "textarea",
+            "editor-textarea",
             "fj:focus:ring-0",
             "fj:focus:outline-0",
             "fj:border-0",

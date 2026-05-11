@@ -38,7 +38,11 @@
     text-shadow: 0 0 0.5px currentColor, 0 0 0.5px currentColor;
 }
 
-.textarea-wrapper:has(.display-layer) .textarea::selection {
+.editor-textarea {
+    font: inherit;
+}
+
+.textarea-wrapper:has(.display-layer) .editor-textarea::selection {
     background: color-mix(in oklch, var(--color-primary), transparent 80%);
     color: transparent;
     caret-color: var(--color-primary);
