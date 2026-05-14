@@ -17,30 +17,37 @@ class HeadingTool extends MakeTool {
         if (svg) svg.setAttribute('aria-hidden', 'true');
         btn.type = 'button';
         btn.title = 'Heading';
-        btn.className = 'markdown-btn heading-btn fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost fj:me-popover-toggle';
+        btn.setAttribute('aria-label', 'Heading');
+        btn.setAttribute('aria-haspopup', 'menu');
+        btn.className = 'markdown-btn heading-btn fj:me-btn fj:me-btn-square fj:me-btn-ghost fj:me-popover-toggle';
         btn.setAttribute('popovertarget', popoverId);
 
         const popoverContent = document.createElement('div');
         popoverContent.id = popoverId;
-        popoverContent.tabIndex = 0;
+        popoverContent.setAttribute('role', 'menu');
+        popoverContent.setAttribute('aria-label', 'Heading level');
         popoverContent.className = 'fj:me-popover-content';
         popoverContent.setAttribute('popover', '');
 
         const menu = document.createElement('ul');
         menu.className = 'fj:me-menu';
+        menu.setAttribute('role', 'presentation');
 
         const headingClasses = ['fj:me-heading-xl', 'fj:me-heading-lg', 'fj:me-heading-md', 'fj:me-heading-sm', 'fj:me-heading-xs', 'fj:me-heading-xs'];
 
         for (let level = 1; level <= 6; level++) {
             const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.className = `fj:me-menu-item ${headingClasses[level - 1]}`;
-            a.textContent = `Heading ${level}`;
-            a.addEventListener('click', () => {
+            li.setAttribute('role', 'none');
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.setAttribute('role', 'menuitem');
+            btn.className = `fj:me-menu-item ${headingClasses[level - 1]}`;
+            btn.textContent = `Heading ${level}`;
+            btn.addEventListener('click', () => {
                 this.applyHeading(level);
                 popoverContent.hidePopover();
             });
-            li.appendChild(a);
+            li.appendChild(btn);
             menu.appendChild(li);
         }
 
