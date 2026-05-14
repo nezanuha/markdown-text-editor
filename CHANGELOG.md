@@ -16,7 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Crawlable links**: Replaced `<a>` elements without `href` in the heading dropdown with `<button>` elements — fixes the "Links are not crawlable" PageSpeed audit
 - **Accessibility**: Added `role="menu"`, `role="menuitem"`, `role="none"`, `aria-haspopup="menu"`, and `aria-label` attributes to the heading popover for correct screen reader semantics
-- **Touch targets**: Toolbar buttons no longer shrink below their declared size in narrow containers, resolving the Lighthouse "Touch targets do not have sufficient size or spacing" audit
 
 ## [1.1.5] - 2026-05-11
 
