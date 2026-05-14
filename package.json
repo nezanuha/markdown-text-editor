@@ -77,10 +77,10 @@
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.3.0",
     "diff": "^9.0.0",
-    "frutjam": "^2.0.4",
+    "frutjam": "^2.1.1",
     "postcss": "^8.5.14",
     "tailwindcss": "^4.3.0",
-    "vite": "^8.0.11",
+    "vite": "^8.0.12",
     "vite-plugin-css-injected-by-js": "^5.0.1"
   }
 }
