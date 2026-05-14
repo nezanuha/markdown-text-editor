@@ -7,15 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
+## [1.2.0] - 2026-05-14
 
-- **devDependencies:** Updated `frutjam` to 2.1.1
-- **devDependencies:** Updated `vite` to 8.0.12
+### Added
+
+- **Auto-grow editor**: The editor now expands vertically as content grows in non-fullscreen mode. A scrollbar appears only once content exceeds the maximum height, which defaults to 500px and can be overridden via the maxHeight option
+- **Resize handle**: The editor has a drag handle at the bottom corner so users can manually resize it taller or shorter
+- **Escape key exits fullscreen**: Pressing Escape while in fullscreen preview mode now exits back to the normal editor view
+- **XSS sanitization**: Preview output is now sanitized via [DOMPurify](https://github.com/cure53/DOMPurify) before being rendered — prevents script injection through crafted markdown input
 
 ### Fixed
 
-- **Crawlable links**: Replaced `<a>` elements without `href` in the heading dropdown with `<button>` elements — fixes the "Links are not crawlable" PageSpeed audit
-- **Accessibility**: Added `role="menu"`, `role="menuitem"`, `role="none"`, `aria-haspopup="menu"`, and `aria-label` attributes to the heading popover for correct screen reader semantics
+- **Fullscreen layout with long content**: Scrolling in fullscreen preview mode no longer breaks with very long text — the editor and preview panels are correctly bounded to the viewport height ([#29](https://github.com/nezanuha/markdown-text-editor/issues/29))
+- **Crawlable links**: Replaced anchor elements without href in the heading dropdown with button elements — fixes the Links are not crawlable PageSpeed audit
+- **Accessibility**: Added proper menu role attributes and labels to the heading popover for correct screen reader semantics
+
+### Changed
+
+- **devDependencies:** Updated frutjam to 2.1.1
+- **devDependencies:** Updated vite to 8.0.12
+- **dependencies:** Added dompurify 3.4.3
 
 ## [1.1.5] - 2026-05-11
 
@@ -320,7 +331,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.5...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.5...v1.2.0
 [1.1.5]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.2...v1.1.3

@@ -16,6 +16,8 @@
 .markdown-editor-wrapper {
     --lightningcss-light: initial;
     --lightningcss-dark: ;
+    min-height: 200px;
+    resize: vertical;
 }
 @media (prefers-color-scheme: dark) {
     .markdown-editor-wrapper {
@@ -32,6 +34,33 @@
 .markdown-editor-wrapper[data-theme="snowberry"] {
     --lightningcss-light: initial;
     --lightningcss-dark: ;
+}
+
+/*
+  Both elements must share the same scrollbar gutter width at all times so
+  their content areas stay identical — preventing line-wrap divergence and
+  cursor drift when content overflows.
+
+  textarea: gutter is always stable (no layout shift when scrollbar appears)
+  displayLayer: same stable gutter, but scrollbar is made invisible
+*/
+.textarea-wrapper:has(.display-layer) .editor-textarea {
+    scrollbar-gutter: stable;
+}
+
+.display-layer {
+    scrollbar-gutter: stable;
+    scrollbar-color: transparent transparent; /* Firefox */
+}
+.display-layer::-webkit-scrollbar {
+    background: transparent; /* Chrome/Safari: preserve gutter width, hide visually */
+}
+.display-layer::-webkit-scrollbar-track {
+    background: transparent;
+}
+.display-layer::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-color: transparent;
 }
 
 .display-layer .faux-bold {

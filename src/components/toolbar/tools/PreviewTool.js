@@ -40,27 +40,26 @@ class PreviewTool extends MakeTool {
         editorDiv.parentNode.classList.toggle('fj:inset-x-0');
         editorDiv.parentNode.classList.toggle('fj:rounded-md');
         editorDiv.parentNode.classList.toggle('fj:z-999');
-    
-        // Add grid layout and divide classes to the editor div
-        editorDiv.classList.remove(
-            'fj:md:grid-cols-2'
-        );
-        previewWrapper.classList.add('fj:hidden');
-        textareaWrapper.classList.remove("fj:hidden", "md:grid");
 
-        textareaWrapper.classList.remove('fj:h-full');
-        this.editor.render();
+        editorDiv.classList.remove('fj:md:grid-cols-2');
+        previewWrapper.classList.add('fj:hidden');
+        textareaWrapper.classList.remove("fj:hidden", "fj:md:grid");
 
         textareaWrapper.querySelector("textarea").classList.remove("fj:h-full!");
 
         if(textareaWrapper.querySelector(".display-layer")){
             textareaWrapper.querySelector(".display-layer").classList.remove("fj:h-full!");
         }
-        
+
+        previewWrapper.classList.remove('fj:min-h-0');
+
         document.querySelector("body").classList.remove('fj:overflow-hidden');
 
-        editorDiv.parentNode.classList.remove('fj:flex', 'fj:flex-col', 'fj:h-dvh');
-        editorDiv.classList.remove('fj:flex-1', 'fj:min-h-0');
+        editorDiv.parentNode.classList.remove('fj:h-dvh', 'fj:resize-none');
+
+        document.removeEventListener('keydown', this._escHandler);
+
+        this.editor._autoGrow();
 
         this.editor.editorContainer.querySelectorAll('.markdown-btn').forEach(button => {
             if (!button.classList.contains('preview-btn')) {
@@ -77,7 +76,7 @@ class PreviewTool extends MakeTool {
     enablePreview(previewWrapper, editorDiv) {
 
         this.preview = false;
-    
+
         const textareaWrapper = editorDiv.querySelector(".textarea-wrapper");
 
         editorDiv.parentNode.classList.toggle('fj:fixed');
@@ -86,24 +85,29 @@ class PreviewTool extends MakeTool {
         editorDiv.parentNode.classList.toggle('fj:rounded-md');
         editorDiv.parentNode.classList.toggle('fj:z-999');
 
-        // Remove grid layout and divide classes from the editor div
-        editorDiv.classList.add(
-            'fj:md:grid-cols-2'
-        );
+        editorDiv.classList.add('fj:md:grid-cols-2');
         previewWrapper.classList.remove('fj:hidden');
         textareaWrapper.classList.add("fj:hidden", "fj:md:grid");
 
-        textareaWrapper.classList.add('fj:h-full');
+        // Clear inline height so fj:h-dvh (added below) can take effect
+        this.editor.editorContainer.style.height = '';
+
         textareaWrapper.querySelector("textarea").classList.add("fj:h-full!");
 
         if(textareaWrapper.querySelector(".display-layer")){
             textareaWrapper.querySelector(".display-layer").classList.add("fj:h-full!");
         }
 
+        previewWrapper.classList.add('fj:min-h-0');
+
         document.querySelector("body").classList.add('fj:overflow-hidden');
 
-        editorDiv.parentNode.classList.add('fj:flex', 'fj:flex-col', 'fj:h-dvh');
-        editorDiv.classList.add('fj:flex-1', 'fj:min-h-0');
+        editorDiv.parentNode.classList.add('fj:h-dvh', 'fj:resize-none');
+
+        this._escHandler = (e) => {
+            if (e.key === 'Escape') this.applySyntax();
+        };
+        document.addEventListener('keydown', this._escHandler);
 
         this.editor.render();
 

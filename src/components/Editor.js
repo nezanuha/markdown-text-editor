@@ -1,5 +1,6 @@
 import '../styles/main.css';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import Toolbar from './toolbar/Toolbar.js';
 import Preview from './Preview.js';
 import Footer from './Footer.js';
@@ -39,6 +40,9 @@ class MarkdownEditor {
         this.createEditor();
         this.addToolbar();
         this.addFooter();
+        this._toolbarH = this.editorContainer.querySelector('.toolbar')?.offsetHeight ?? 0;
+        this._footerH = this.editorContainer.querySelector('.editor-footer')?.offsetHeight ?? 0;
+        this._autoGrow();
     }
 
     createEditor() {
@@ -71,7 +75,8 @@ class MarkdownEditor {
             "fj:px-4",
             "fj:py-2",
             "fj:max-w-full",
-            "fj:size-full",
+            "fj:w-full",
+            "fj:h-full",
             "fj:bg-transparent",
             "fj:outline-0",
             "fj:appearance-none",
@@ -90,6 +95,8 @@ class MarkdownEditor {
             fj:me-surface-outline
             fj:me-surface-rounded
             fj:overflow-hidden
+            fj:flex
+            fj:flex-col
         `;
         const theme = this.options.theme
             ?? this.usertextarea.closest('[data-theme]')?.getAttribute('data-theme');
@@ -97,7 +104,7 @@ class MarkdownEditor {
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
 
         this.markdownEditorDiv = document.createElement('div');
-        this.markdownEditorDiv.className = `editor-layout fj:relative fj:grid fj:grid-cols-1`;
+        this.markdownEditorDiv.className = `editor-layout fj:relative fj:grid fj:grid-cols-1 fj:flex-1 fj:min-h-0`;
         this.editorContainer.appendChild(this.markdownEditorDiv);
 
         this.addTextareaWrapper();
@@ -111,6 +118,8 @@ class MarkdownEditor {
             not-prose
             fj:me-surface
             fj:h-full
+            fj:min-h-0
+            fj:relative
             fj:grid
         `;
 
@@ -122,10 +131,10 @@ class MarkdownEditor {
                 display-layer
                 fj:px-4
                 fj:py-2
-                fj:whitespace-pre-wrap fj:wrap-break-word 
-                fj:pointer-events-none 
-                fj:[grid-area:1/1/2/2]
-                fj:size-full
+                fj:whitespace-pre-wrap fj:wrap-break-word
+                fj:pointer-events-none
+                fj:absolute
+                fj:inset-0
                 fj:m-0
                 fj:box-border
                 fj:z-0
@@ -140,15 +149,14 @@ class MarkdownEditor {
             `;
 
             this.usertextarea.className += `
-                fj:text-transparent 
+                fj:text-transparent
                 fj:caret-primary
                 fj:resize-none
                 fj:outline-none
-                fj:[grid-area:1/1/2/2]
                 fj:m-0
                 fj:box-border
                 fj:relative
-                fj:z-10 
+                fj:z-10
             `;
 
             textareaContainer.appendChild(this.displayLayer);
@@ -167,23 +175,29 @@ class MarkdownEditor {
 
     addInputListener() {
         this.usertextarea.addEventListener('input', () => {
+            this._autoGrow();
             this.renderHybrid(); // Fast: Only Regex
             this.debouncedPreview(); // Slow: Heavy Markdown Parse
         });
 
         this.usertextarea.addEventListener('scroll', () => {
-            if (this.mode === 'hybrid') {
-                // PIXEL PERFECT SYNC: Do not use ratios for the hybrid layer
-                this.displayLayer.scrollTop = this.usertextarea.scrollTop;
-                this.displayLayer.scrollLeft = this.usertextarea.scrollLeft;
-            }
+            if (this._scrollRaf) return;
+            this._scrollRaf = requestAnimationFrame(() => {
+                this._scrollRaf = null;
 
-            if (this.preview && this.previewContent) {
-                // RATIO SYNC: Use ratio only for the fully rendered preview
-                const textarea = this.usertextarea;
-                const ratio = textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight);
-                this.previewContent.scrollTop = ratio * (this.previewContent.scrollHeight - this.previewContent.clientHeight);
-            }
+                if (this.mode === 'hybrid') {
+                    // PIXEL PERFECT SYNC: Do not use ratios for the hybrid layer
+                    this.displayLayer.scrollTop = this.usertextarea.scrollTop;
+                    this.displayLayer.scrollLeft = this.usertextarea.scrollLeft;
+                }
+
+                if (this.preview && this.previewContent) {
+                    // RATIO SYNC: Use ratio only for the fully rendered preview
+                    const textarea = this.usertextarea;
+                    const ratio = textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight);
+                    this.previewContent.scrollTop = ratio * (this.previewContent.scrollHeight - this.previewContent.clientHeight);
+                }
+            });
         });
     }
 
@@ -191,8 +205,11 @@ class MarkdownEditor {
         if (!this.preview) return;
         clearTimeout(this.previewTimer);
         this.previewTimer = setTimeout(() => {
-            this.previewContent.innerHTML = marked(this.usertextarea.value);
+            this.previewContent.innerHTML = DOMPurify.sanitize(marked(this.usertextarea.value));
             this.wirePreviewCheckboxes();
+            const textarea = this.usertextarea;
+            const ratio = textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight);
+            this.previewContent.scrollTop = ratio * (this.previewContent.scrollHeight - this.previewContent.clientHeight);
         }, 150); // 150ms delay feels instant but saves CPU
     }
 
@@ -320,11 +337,11 @@ class MarkdownEditor {
             .replace(/^(#+ )(.*)$/gm,
                 '<span class="fj:text-primary"><span class="fj:opacity-40">$1</span><span class="faux-bold">$2</span></span>')
             .replace(/\*\*(.*?)\*\*/g,
-                '<span class="fj:text-secondary"><span class="fj:opacity-40">**</span><span class="fj:font-bold">$1</span><span class="fj:opacity-40">**</span></span>')
+                '<span class="fj:text-secondary"><span class="fj:opacity-40">**</span><span class="faux-bold">$1</span><span class="fj:opacity-40">**</span></span>')
             .replace(/^([\s]*)([\-\*] |[\d]+\. |\[[\s xX]\] )(.*)$/gm,
-                '$1<span class="fj:text-primary fj:font-medium">$2</span>$3')
+                '$1<span class="fj:text-primary">$2</span>$3')
             .replace(/(\*|_)(.*?)\1/g,
-                '<span class="fj:text-accent"><span class="fj:opacity-40">$1</span><span class="fj:italic">$2</span><span class="fj:opacity-40">$1</span></span>')
+                '<span class="fj:text-accent"><span class="fj:opacity-40">$1</span>$2<span class="fj:opacity-40">$1</span></span>')
             .replace(/~~(.*?)~~/g,
                 '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-40">~~</span>$1<span class="fj:opacity-40">~~</span></span>')
             .replace(/(?<!~)(~)([^~]+)\1(?!~)/g,
@@ -367,10 +384,24 @@ class MarkdownEditor {
         }
     }
 
+    _autoGrow() {
+        if (this.editorContainer.classList.contains('fj:h-dvh')) return;
+
+        const textarea = this.usertextarea;
+        // Shrink to 1px to measure natural content height (bypasses h-full)
+        textarea.style.height = '1px';
+        const contentHeight = textarea.scrollHeight;
+        textarea.style.height = ''; // restore — h-full class takes over
+
+        const maxHeight = this.options.maxHeight ?? 500;
+        this.editorContainer.style.height = (Math.min(contentHeight, maxHeight) + this._toolbarH + this._footerH + 1) + 'px';
+    }
+
     render() {
+        this._autoGrow();
         this.renderHybrid();
         if (this.preview) {
-            this.previewContent.innerHTML = marked(this.usertextarea.value);
+            this.previewContent.innerHTML = DOMPurify.sanitize(marked(this.usertextarea.value));
             this.wirePreviewCheckboxes();
         }
     }
