@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Touch targets**: Removed `fj:me-btn-xs` from toolbar buttons so all controls meet the 48px minimum touch target size required by PageSpeed/Lighthouse
+- **Crawlable links**: Replaced `<a>` elements without `href` in the heading dropdown with `<button>` elements — fixes the "Links are not crawlable" PageSpeed audit
+- **Accessibility**: Added `role="menu"`, `role="menuitem"`, `role="none"`, `aria-haspopup="menu"`, and `aria-label` attributes to the heading popover for correct screen reader semantics
+
 ## [1.1.5] - 2026-05-11
 
 ### Changed
