@@ -23,7 +23,7 @@ class Toolbar {
         this.editor = editor;
         this.options = options;
         this.toolbar = document.createElement('div');
-        this.toolbar.className = 'toolbar not-prose fj:me-surface fj:me-surface-outline fj:border-base-soft fj:border-0 fj:border-b fj:flex fj:gap-x-1 fj:p-1.5 fj:overflow-x-auto';
+        this.toolbar.className = 'toolbar not-prose fj:me-surface fj:me-surface-outline fj:border-base-soft fj:border-0 fj:border-b fj:flex fj:items-center fj:gap-x-1 fj:p-1.5 fj:overflow-x-auto';
         this.toolbar.setAttribute('role', 'toolbar');
         this.toolbar.setAttribute('aria-label', 'Editor toolbar');
         this.init();
