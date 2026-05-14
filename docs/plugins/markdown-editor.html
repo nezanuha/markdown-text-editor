@@ -24,6 +24,8 @@ Because it sits directly on top of a <code>&lt;textarea&gt;</code>, you don't ne
 <p>Full ARIA support is built in and requires no extra configuration. The toolbar is a proper <code>role="toolbar"</code> landmark, the preview pane is a labelled <code>role="region"</code>, all SVG icons are hidden from screen readers, the preview toggle exposes its on/off state via <code>aria-pressed</code>, and disabled toolbar buttons use <code>aria-disabled</code> so assistive technology is never misled. Modals return focus to the triggering button when closed.</p>
 <h3>🛡️ Zero CSS Conflicts</h3>
 <p>All editor styles are fully scoped to the <code>.markdown-editor-wrapper</code> element. Tailwind's global preflight (element resets for <code>h1</code>–<code>h6</code>, <code>a</code>, <code>button</code>, etc.) is excluded, so the editor can live alongside Bootstrap, Tailwind, or any other CSS framework on the same page without breaking a single style.</p>
+<h3>🔒 XSS Safe Preview</h3>
+<p>The rendered preview is sanitized via <a href="https://github.com/cure53/DOMPurify" target="_blank">DOMPurify</a> before being written to the DOM. Script tags, inline event handlers, and malicious URLs in crafted markdown input are stripped automatically — no configuration required.</p>
 
 <h2>Markdown Editor Demo</h2>
 <textarea class="hybrid-markdown-editor" rows="5" placeholder="Start writing..."># Markdown Editor</textarea>
@@ -111,6 +113,12 @@ const editor = new MarkdownEditor('#markdown-editor', {
                 <td><code>string</code></td>
                 <td>inherited</td>
                 <td>Explicitly sets the editor theme (<code>'light'</code>, <code>'dark'</code>, <code>'snowberry'</code>, <code>'darkberry'</code>). If omitted, the editor inherits <code>data-theme</code> from the nearest ancestor element or the <code>&lt;textarea&gt;</code> itself.</td>
+            </tr>
+            <tr>
+                <td><code>maxHeight</code></td>
+                <td><code>number</code></td>
+                <td><code>500</code></td>
+                <td>Maximum height in pixels the editor can grow to in non-fullscreen mode. Once content exceeds this height a scrollbar appears inside the editor. The editor also has a drag handle so users can manually resize it beyond this limit.</td>
             </tr>
         </tbody>
     </table>
@@ -553,7 +561,7 @@ This shows the raw **syntax**.</textarea>
             </tr>
             <tr>
                 <td><code>preview</code></td>
-                <td>Toggles the real-time markdown preview. Checkboxes in the preview pane are clickable and update the markdown source instantly.</td>
+                <td>Toggles a fullscreen side-by-side preview. Checkboxes in the preview pane are clickable and update the markdown source instantly. Press Escape to exit fullscreen.</td>
             </tr>
             <tr>
                 <td rowspan="2" class="text-balance"><a href="#advanced-image-upload" class="underline underline-offset-2"><strong>Advanced image upload feature</strong></a>:<br> Enables configuring image uploads to <br> your own server and setting the image <br> path via an API. This improves performance and SEO.</td>
