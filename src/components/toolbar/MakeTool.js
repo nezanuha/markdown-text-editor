@@ -15,7 +15,7 @@ class MakeTool {
         if (svg) svg.setAttribute('aria-hidden', 'true');
         btn.type = 'button';
         btn.title = this.title;
-        btn.className = `markdown-btn ${btnClass} fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost`;
+        btn.className = `markdown-btn ${btnClass} fj:me-btn fj:me-btn-square fj:me-btn-ghost`;
         btn.addEventListener('click', (event) => this.applySyntax(event));  // Default to 'both', can change in child
 
         if(btnClass == 'preview-btn') {
