@@ -115,10 +115,22 @@ const editor = new MarkdownEditor('#markdown-editor', {
                 <td>Explicitly sets the editor theme (<code>'light'</code>, <code>'dark'</code>, <code>'snowberry'</code>, <code>'darkberry'</code>). If omitted, the editor inherits <code>data-theme</code> from the nearest ancestor element or the <code>&lt;textarea&gt;</code> itself.</td>
             </tr>
             <tr>
+                <td><code>minHeight</code></td>
+                <td><code>number</code></td>
+                <td><code>200</code></td>
+                <td>Minimum height in pixels the editor will shrink to when content is short. Pairs with <code>maxHeight</code> to set the auto-grow range.</td>
+            </tr>
+            <tr>
                 <td><code>maxHeight</code></td>
                 <td><code>number</code></td>
                 <td><code>500</code></td>
                 <td>Maximum height in pixels the editor can grow to in non-fullscreen mode. Once content exceeds this height a scrollbar appears inside the editor. The editor also has a drag handle so users can manually resize it beyond this limit.</td>
+            </tr>
+            <tr>
+                <td><code>onChange</code></td>
+                <td><code>function</code></td>
+                <td><code>undefined</code></td>
+                <td>Callback fired on every content change (user input or programmatic <code>setValue()</code>). Receives the current markdown string as its only argument.</td>
             </tr>
         </tbody>
     </table>
@@ -177,7 +189,7 @@ const editor = new MarkdownEditor('#markdown-editor', {
 </ul>
 
 <h4>📊 Footer (Status Bar)</h4>
-<p>The footer sits below the editor and shows the cursor's <strong>line</strong>, <strong>column</strong>, and the document's <strong>character count</strong> — all updated in real time. It is visible by default and each stat can be toggled independently.</p>
+<p>The footer sits below the editor and shows the cursor's <strong>line</strong>, <strong>column</strong>, the document's <strong>character count</strong>, and optionally the <strong>word count</strong> — all updated in real time. It is visible by default and each stat can be toggled independently.</p>
 
 <div class="overflow-x-auto w-full not-prose">
     <table class="table">
@@ -208,13 +220,19 @@ const editor = new MarkdownEditor('#markdown-editor', {
                 <td><code>true</code></td>
                 <td>Show the total character count.</td>
             </tr>
+            <tr>
+                <td><code>words</code></td>
+                <td><code>boolean</code></td>
+                <td><code>false</code></td>
+                <td>Show the total word count. Off by default — set to <code>true</code> to enable.</td>
+            </tr>
         </tbody>
     </table>
 </div>
 
 <h5>Usage Examples</h5>
 <c-snippet lang="javascript" view="code">
-// Default — all stats visible
+// Default — line, col, and chars visible
 new MarkdownEditor('#editor');
 
 // Disable the footer entirely
@@ -228,6 +246,12 @@ new MarkdownEditor('#editor', { footer: { line: false, col: false } });
 
 // Show only line number
 new MarkdownEditor('#editor', { footer: { col: false, chars: false } });
+
+// Enable word count alongside the defaults
+new MarkdownEditor('#editor', { footer: { words: true } });
+
+// Show word count only
+new MarkdownEditor('#editor', { footer: { line: false, col: false, chars: false, words: true } });
 </c-snippet>
 
 <h3>5. Getting, Setting, and Submitting Content</h3>
@@ -256,7 +280,68 @@ const markdown = textarea.value;
 textarea.value = "## Updated via JS";
 </c-snippet>
 
-<h4>3. Effortless Automatic Form Submission</h4>
+<h4>3. Setting and reading content</h4>
+<p>The recommended way to set initial content is directly in the <code>&lt;textarea&gt;</code> HTML — this works naturally with every backend framework (Django, Laravel, Rails, PHP, etc.) and the editor renders it automatically on init.</p>
+<c-snippet lang="html" view="code">
+<!-- Recommended: set content server-side -->
+<textarea id="markdown-editor"># Hello World</textarea>
+</c-snippet>
+
+<p>To read or update content at runtime, use the native <code>textarea</code> value. Call <code>editor.render()</code> after an update to refresh the preview and hybrid layer.</p>
+<c-snippet lang="javascript" view="code">
+const textarea = document.getElementById('markdown-editor');
+
+// Read
+const markdown = textarea.value;
+
+// Update at runtime
+textarea.value = '# New content';
+editor.render();
+</c-snippet>
+
+<h4>4. Tearing down the editor — <code>destroy()</code></h4>
+<p>Call <code>editor.destroy()</code> to remove the editor DOM wrapper and restore the original <code>&lt;textarea&gt;</code> to its position in the document. Useful in single-page applications when unmounting a view.</p>
+<c-snippet lang="javascript" view="code">
+const editor = new MarkdownEditor('#markdown-editor');
+
+// Remove the editor and restore the plain textarea
+editor.destroy();
+</c-snippet>
+
+<h5>Reacting to changes with <code>onChange</code></h5>
+<p>Pass an <code>onChange</code> callback to be notified on every content change from user input. Receives the current markdown string.</p>
+<c-snippet lang="javascript" view="code">
+const editor = new MarkdownEditor('#markdown-editor', {
+    onChange(value) {
+        console.log('Content changed:', value.length, 'characters');
+    }
+});
+</c-snippet>
+
+<h6>Draft auto-save with <code>localStorage</code></h6>
+<p>Use <code>onChange</code> to save a draft on every keystroke. Restore it by pre-filling the textarea before initialising the editor.</p>
+<c-snippet lang="javascript" view="code">
+const DRAFT_KEY = 'my-page-draft';
+
+// Restore saved draft before init (only if textarea starts empty)
+const textarea = document.getElementById('markdown-editor');
+const saved = localStorage.getItem(DRAFT_KEY);
+if (saved && !textarea.value) textarea.value = saved;
+
+// Save on every change
+const editor = new MarkdownEditor('#markdown-editor', {
+    onChange(value) {
+        localStorage.setItem(DRAFT_KEY, value);
+    }
+});
+
+// Clear draft after successful form submission
+document.querySelector('form').addEventListener('submit', () => {
+    localStorage.removeItem(DRAFT_KEY);
+});
+</c-snippet>
+
+<h4>4. Effortless Automatic Form Submission</h4>
 <p>Because <strong>MarkdownEditor</strong> is built directly on the native <code>&lt;textarea&gt;</code>, it is compatible with every backend framework (Django, Laravel, PHP, Ruby on Rails, etc.) right out of the box.</p>
 <p>This is where the "Native-First" philosophy shines. You don't need to manually sync data before submitting a form. The browser treats the editor exactly like a standard input field.</p>
 <c-snippet view="code">
@@ -580,6 +665,82 @@ This shows the raw **syntax**.</textarea>
     </table>
 </div>
 
+<h3>⌨️ Keyboard Shortcuts</h3>
+<p>Common formatting actions can be triggered directly from the keyboard without touching the toolbar. Each shortcut is also shown in the corresponding toolbar button's tooltip.</p>
+
+<div class="overflow-x-auto w-full not-prose">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Shortcut</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>Ctrl + B</code> &nbsp;/&nbsp; <code>⌘ B</code></td>
+                <td>Toggle <strong>Bold</strong></td>
+            </tr>
+            <tr>
+                <td><code>Ctrl + I</code> &nbsp;/&nbsp; <code>⌘ I</code></td>
+                <td>Toggle <em>Italic</em></td>
+            </tr>
+            <tr>
+                <td><code>Ctrl + K</code> &nbsp;/&nbsp; <code>⌘ K</code></td>
+                <td>Insert Link</td>
+            </tr>
+            <tr>
+                <td><code>Ctrl + `</code> &nbsp;/&nbsp; <code>⌘ `</code></td>
+                <td>Toggle inline <code>Code</code></td>
+            </tr>
+            <tr>
+                <td><code>Ctrl + Shift + S</code> &nbsp;/&nbsp; <code>⌘ ⇧ S</code></td>
+                <td>Toggle <s>Strikethrough</s></td>
+            </tr>
+            <tr>
+                <td><code>Ctrl + Z</code> &nbsp;/&nbsp; <code>⌘ Z</code></td>
+                <td>Undo</td>
+            </tr>
+            <tr>
+                <td><code>Ctrl + Shift + Z</code> &nbsp;/&nbsp; <code>⌘ ⇧ Z</code></td>
+                <td>Redo</td>
+            </tr>
+            <tr>
+                <td><code>Tab</code></td>
+                <td>Indent selected lines</td>
+            </tr>
+            <tr>
+                <td><code>Shift + Tab</code></td>
+                <td>Outdent selected lines</td>
+            </tr>
+            <tr>
+                <td><code>Ctrl + F</code> &nbsp;/&nbsp; <code>⌘ F</code></td>
+                <td>Open Find panel</td>
+            </tr>
+            <tr>
+                <td><code>Ctrl + H</code> &nbsp;/&nbsp; <code>⌘ H</code></td>
+                <td>Open Find &amp; Replace panel</td>
+            </tr>
+            <tr>
+                <td><code>Escape</code></td>
+                <td>Close Find panel / Exit fullscreen preview</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<h3>🔍 Find &amp; Replace</h3>
+<p>A built-in find and replace panel is available inside the editor — no browser extension or separate tool needed.</p>
+<ul>
+    <li>Press <code>Ctrl + F</code> (or <code>⌘ F</code>) to open the <strong>Find</strong> panel</li>
+    <li>Press <code>Ctrl + H</code> (or <code>⌘ H</code>) to open the <strong>Find &amp; Replace</strong> panel</li>
+    <li>Search is <strong>case-insensitive</strong> and shows a live match counter (e.g. <em>3 of 12</em>)</li>
+    <li>Navigate matches with the <strong>▲ / ▼</strong> buttons or <code>Enter</code> / <code>Shift + Enter</code></li>
+    <li><strong>Replace</strong> replaces the current highlighted match; <strong>Replace All</strong> replaces every occurrence at once</li>
+    <li>Press <code>Escape</code> to close the panel and return focus to the editor</li>
+</ul>
+<p>The panel floats in the top-right corner of the editor content area and does not interrupt writing.</p>
+
 <h3>🌙 Theming</h3>
 <p><strong>MarkdownEditor</strong> automatically inherits its theme from the surrounding page — no configuration required. The editor reads <code>data-theme</code> from the nearest ancestor at initialisation, so it stays in sync with your site's theme out of the box.</p>
 
@@ -799,6 +960,20 @@ new MarkdownEditor('#markdown-editor', { theme: 'brand' });
             <p class="para-sm">Editor styles are fully scoped to <code>.markdown-editor-wrapper</code>. Tailwind's global preflight is excluded so the editor lives safely alongside Bootstrap, Tailwind, or any other framework without breaking their styles.</p>
         </div>
     </div>
+
+    <div class="card card-sm card-outline">
+        <div class="card-content">
+            <h2 class="card-title">⌨️ Keyboard Shortcuts</h2>
+            <p class="para-sm"><code>Ctrl+B</code>, <code>Ctrl+I</code>, <code>Ctrl+K</code>, <code>Ctrl+`</code>, <code>Ctrl+Shift+S</code> — common formatting actions without touching the mouse. Each shortcut is shown in the toolbar button's tooltip.</p>
+        </div>
+    </div>
+
+    <div class="card card-sm card-outline">
+        <div class="card-content">
+            <h2 class="card-title">🔍 Find &amp; Replace</h2>
+            <p class="para-sm">Press <code>Ctrl+F</code> to find or <code>Ctrl+H</code> to open find &amp; replace. Case-insensitive search with live match counter, next/prev navigation, single replace, and replace all — without leaving the editor.</p>
+        </div>
+    </div>
 </div>
 
 <h2>Full Configuration Example</h2>
@@ -811,6 +986,10 @@ const editor = new MarkdownEditor('#markdown-editor', {
         line: true,
         col: true,
         chars: true,
+        words: true,
+    },
+    onChange(value) {
+        console.log('Content updated:', value.length, 'characters');
     },
     toolbar: [
         'heading', 'bold', 'italic', 'strikethrough', 'blockquote',
@@ -827,4 +1006,15 @@ const editor = new MarkdownEditor('#markdown-editor', {
         'link', 'undo', 'redo', 'indent', 'outdent', 'preview'
     ],
 });
+
+// Read content natively
+const markdown = document.getElementById('markdown-editor').value;
+
+// Update content programmatically (dispatch input to keep preview in sync)
+// const ta = document.getElementById('markdown-editor');
+// ta.value = '# New content';
+// ta.dispatchEvent(new Event('input', { bubbles: true }));
+
+// destroy() when the view unmounts (SPAs)
+// editor.destroy();
 </c-snippet>

@@ -7,6 +7,8 @@ import Footer from './Footer.js';
 import UndoRedoManager from '../utils/UndoRedoManager.js';
 import IndentManager from '../utils/IndentManager.js';
 import ListManager from '../utils/ListManager.js';
+import ShortcutManager from '../utils/ShortcutManager.js';
+import FindReplace from '../utils/FindReplace.js';
 
 marked.setOptions({
     breaks: true
@@ -24,6 +26,8 @@ class MarkdownEditor {
         this.undoRedoManager = new UndoRedoManager(this);
         this.listManager = new ListManager(this);
         this.indentManager = new IndentManager(this);
+        this.shortcutManager = new ShortcutManager(this);
+        this.findReplace = new FindReplace(this);
     }
 
     _parseFooterOptions(footer) {
@@ -33,6 +37,7 @@ class MarkdownEditor {
             line:  opts.line  !== false,
             col:   opts.col   !== false,
             chars: opts.chars !== false,
+            words: opts.words === true,
         };
     }
 
@@ -64,6 +69,7 @@ class MarkdownEditor {
             || this.usertextarea.getAttribute('aria-labelledby');
         if (!hasLabel) {
             this.usertextarea.setAttribute('aria-label', this.options.label || 'Markdown editor');
+            this._addedAriaLabel = true;
         }
 
         this.usertextarea.classList.add(
@@ -101,6 +107,7 @@ class MarkdownEditor {
         const theme = this.options.theme
             ?? this.usertextarea.closest('[data-theme]')?.getAttribute('data-theme');
         if (theme) this.editorContainer.setAttribute('data-theme', theme);
+        this.editorContainer.style.minHeight = (this.options.minHeight ?? 200) + 'px';
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
 
         this.markdownEditorDiv = document.createElement('div');
@@ -178,6 +185,7 @@ class MarkdownEditor {
             this._autoGrow();
             this.renderHybrid(); // Fast: Only Regex
             this.debouncedPreview(); // Slow: Heavy Markdown Parse
+            if (this.options.onChange) this.options.onChange(this.usertextarea.value);
         });
 
         this.usertextarea.addEventListener('scroll', () => {
@@ -404,6 +412,30 @@ class MarkdownEditor {
             this.previewContent.innerHTML = DOMPurify.sanitize(marked(this.usertextarea.value));
             this.wirePreviewCheckboxes();
         }
+    }
+
+    destroy() {
+        this.shortcutManager?.destroy();
+        this.findReplace?.destroy();
+
+        const parent = this.editorContainer.parentNode;
+        if (!parent) return;
+
+        // Strip classes added by applyDefaultAttributes
+        const addedClasses = [
+            'editor-textarea', 'fj:focus:ring-0', 'fj:focus:outline-0', 'fj:border-0',
+            'fj:border-base-soft', 'fj:px-4', 'fj:py-2', 'fj:max-w-full', 'fj:w-full',
+            'fj:h-full', 'fj:bg-transparent', 'fj:outline-0', 'fj:appearance-none', 'fj:overflow-y-auto',
+            'fj:text-transparent', 'fj:caret-primary', 'fj:resize-none', 'fj:outline-none',
+            'fj:m-0', 'fj:box-border', 'fj:relative', 'fj:z-10',
+        ];
+        addedClasses.forEach(cls => this.usertextarea.classList.remove(cls));
+
+        if (this._addedAriaLabel) this.usertextarea.removeAttribute('aria-label');
+        this.usertextarea.style.height = '';
+
+        parent.insertBefore(this.usertextarea, this.editorContainer);
+        this.editorContainer.remove();
     }
 }
 

@@ -16,7 +16,6 @@
 .markdown-editor-wrapper {
     --lightningcss-light: initial;
     --lightningcss-dark: ;
-    min-height: 200px;
     resize: vertical;
 }
 @media (prefers-color-scheme: dark) {

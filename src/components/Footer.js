@@ -8,12 +8,16 @@ class Footer {
 
         this.positionEl = document.createElement('span');
         this.charsEl = document.createElement('span');
+        this.wordsEl = document.createElement('span');
 
         if (this.options.line || this.options.col) {
             this.footer.appendChild(this.positionEl);
         }
         if (this.options.chars) {
             this.footer.appendChild(this.charsEl);
+        }
+        if (this.options.words) {
+            this.footer.appendChild(this.wordsEl);
         }
 
         container.appendChild(this.footer);
@@ -33,6 +37,11 @@ class Footer {
 
         if (this.options.chars) {
             this.charsEl.textContent = `${value.length.toLocaleString()} chars`;
+        }
+
+        if (this.options.words) {
+            const wordCount = value.trim() ? value.trim().split(/\s+/).length : 0;
+            this.wordsEl.textContent = `${wordCount.toLocaleString()} words`;
         }
     }
 }

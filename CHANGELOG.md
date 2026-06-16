@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-06-16
+
+### Added
+
+- **Keyboard shortcuts**: Common formatting actions can now be triggered from the keyboard — `Ctrl+B` (Bold), `Ctrl+I` (Italic), `Ctrl+K` (Link), `Ctrl+\`` (inline Code), `Ctrl+Shift+S` (Strikethrough). Each shortcut is displayed in the corresponding toolbar button's tooltip
+- **Find & Replace**: Press `Ctrl+F` to open a find panel or `Ctrl+H` to open find & replace. Case-insensitive search with a live match counter, next/prev navigation, single replace, and replace all. The panel floats in the top-right corner of the editor and closes with `Escape`
+- **`onChange` option**: Pass an `onChange(value)` callback to be notified on every keystroke from the user
+- **`footer.words` option**: New opt-in word count stat in the status bar. Set `footer: { words: true }` to enable it alongside the existing line, column, and character stats
+- **`minHeight` option**: Minimum height in pixels the editor will shrink to when content is short. Defaults to `200`. Pairs with the existing `maxHeight` option to define the full auto-grow range
+- **`destroy()` method**: Removes the editor DOM wrapper, restores the original `<textarea>` to its position in the document, and cleans up internal event listeners. Useful in single-page applications when unmounting a view
+
 ## [1.2.0] - 2026-05-14
 
 ### Added
@@ -331,7 +342,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.5...v1.2.0
 [1.1.5]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/nezanuha/markdown-text-editor/compare/v1.1.3...v1.1.4
