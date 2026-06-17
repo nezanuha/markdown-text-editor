@@ -3,11 +3,15 @@ export default class FindReplace {
         this.editor = editor;
         this._matches = [];
         this._currentIndex = -1;
+        this._caseSensitive = false;
         this._panel = null;
         this._findInput = null;
         this._replaceInput = null;
         this._countEl = null;
         this._replaceRow = null;
+        this._caseSensitiveBtn = null;
+        this._highlightEl = null;
+        this._scrollHandler = null;
 
         this._taHandler = this._onTextareaKeyDown.bind(this);
         editor.usertextarea.addEventListener('keydown', this._taHandler);
@@ -41,15 +45,35 @@ export default class FindReplace {
             this._findInput.value = sel;
         }
 
+        if (!this._scrollHandler) {
+            this._scrollHandler = () => this._showMatchHighlight();
+            this.editor.usertextarea.addEventListener('scroll', this._scrollHandler);
+        }
+
         this._search();
     }
 
     close() {
         if (!this._panel) return;
         this._panel.hidden = true;
+        this._clearMatchHighlight();
+
+        if (this._scrollHandler) {
+            this.editor.usertextarea.removeEventListener('scroll', this._scrollHandler);
+            this._scrollHandler = null;
+        }
+
+        const textarea = this.editor.usertextarea;
+        if (this._currentIndex !== -1 && this._matches.length) {
+            const { start, end } = this._matches[this._currentIndex];
+            textarea.focus();
+            textarea.setSelectionRange(start, end);
+        } else {
+            textarea.focus();
+        }
+
         this._matches = [];
         this._currentIndex = -1;
-        this.editor.usertextarea.focus();
     }
 
     _buildPanel() {
@@ -89,6 +113,20 @@ export default class FindReplace {
         );
         nextBtn.addEventListener('click', () => this._next());
 
+        this._caseSensitiveBtn = document.createElement('button');
+        this._caseSensitiveBtn.type = 'button';
+        this._caseSensitiveBtn.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost fj:text-xs fj:font-bold';
+        this._caseSensitiveBtn.textContent = 'Aa';
+        this._caseSensitiveBtn.setAttribute('aria-label', 'Match case');
+        this._caseSensitiveBtn.setAttribute('aria-pressed', 'false');
+        this._caseSensitiveBtn.title = 'Match case';
+        this._caseSensitiveBtn.addEventListener('click', () => {
+            this._caseSensitive = !this._caseSensitive;
+            this._caseSensitiveBtn.setAttribute('aria-pressed', String(this._caseSensitive));
+            this._caseSensitiveBtn.classList.toggle('fj:me-btn-active', this._caseSensitive);
+            this._search();
+        });
+
         const replaceToggle = document.createElement('button');
         replaceToggle.type = 'button';
         replaceToggle.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-ghost fj:text-xs fj:px-1.5';
@@ -105,7 +143,7 @@ export default class FindReplace {
         );
         closeBtn.addEventListener('click', () => this.close());
 
-        findRow.append(this._findInput, this._countEl, prevBtn, nextBtn, replaceToggle, closeBtn);
+        findRow.append(this._findInput, this._countEl, prevBtn, nextBtn, this._caseSensitiveBtn, replaceToggle, closeBtn);
 
         // ── Replace row ─────────────────────────────────────────────
         this._replaceRow = document.createElement('div');
@@ -160,24 +198,24 @@ export default class FindReplace {
         if (!query) {
             this._matches = [];
             this._currentIndex = -1;
+            this._clearMatchHighlight();
             this._updateCount();
             return;
         }
 
-        const lowerValue = value.toLowerCase();
-        const lowerQuery = query.toLowerCase();
+        const searchValue = this._caseSensitive ? value : value.toLowerCase();
+        const searchQuery = this._caseSensitive ? query : query.toLowerCase();
         this._matches = [];
 
         let pos = 0;
-        while (pos <= lowerValue.length - lowerQuery.length) {
-            const idx = lowerValue.indexOf(lowerQuery, pos);
+        while (pos <= searchValue.length - searchQuery.length) {
+            const idx = searchValue.indexOf(searchQuery, pos);
             if (idx === -1) break;
             this._matches.push({ start: idx, end: idx + query.length });
             pos = idx + 1;
         }
 
         if (this._matches.length > 0) {
-            // Prefer keeping current position when re-searching after replace
             this._currentIndex = Math.min(
                 Math.max(this._currentIndex, 0),
                 this._matches.length - 1
@@ -205,12 +243,13 @@ export default class FindReplace {
     }
 
     _selectCurrent() {
-        if (this._currentIndex === -1 || this._matches.length === 0) return;
-        const { start, end } = this._matches[this._currentIndex];
-        const textarea = this.editor.usertextarea;
-        textarea.focus();
-        textarea.setSelectionRange(start, end);
-        this._scrollToMatch(textarea, start);
+        if (this._currentIndex === -1 || this._matches.length === 0) {
+            this._clearMatchHighlight();
+            return;
+        }
+        const { start } = this._matches[this._currentIndex];
+        this._scrollToMatch(this.editor.usertextarea, start);
+        this._showMatchHighlight();
     }
 
     _scrollToMatch(textarea, pos) {
@@ -218,6 +257,69 @@ export default class FindReplace {
         const linesBefore = textarea.value.substring(0, pos).split('\n').length - 1;
         const rowsVisible = Math.floor(textarea.clientHeight / lineHeight);
         textarea.scrollTop = Math.max(0, (linesBefore - Math.floor(rowsVisible / 2)) * lineHeight);
+    }
+
+    _showMatchHighlight() {
+        this._clearMatchHighlight();
+        if (this._currentIndex === -1 || !this._matches.length) return;
+
+        const { start, end } = this._matches[this._currentIndex];
+        const textarea = this.editor.usertextarea;
+        const cs = window.getComputedStyle(textarea);
+        const wrapper = textarea.parentElement;
+
+        // Mirror div replicates textarea layout to measure exact character positions
+        const mirror = document.createElement('div');
+        Object.assign(mirror.style, {
+            position: 'absolute',
+            visibility: 'hidden',
+            pointerEvents: 'none',
+            top: '0', left: '0', right: '0',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word',
+            font: cs.font,
+            lineHeight: cs.lineHeight,
+            paddingTop: cs.paddingTop,
+            paddingRight: cs.paddingRight,
+            paddingBottom: cs.paddingBottom,
+            paddingLeft: cs.paddingLeft,
+            boxSizing: 'border-box',
+        });
+
+        const marker = document.createElement('span');
+        marker.textContent = textarea.value.substring(start, end) || '​';
+        mirror.appendChild(document.createTextNode(textarea.value.substring(0, start)));
+        mirror.appendChild(marker);
+        mirror.appendChild(document.createTextNode(textarea.value.substring(end)));
+
+        wrapper.appendChild(mirror);
+        try {
+            const wRect = wrapper.getBoundingClientRect();
+            const mRect = marker.getBoundingClientRect();
+
+            const hl = document.createElement('div');
+            Object.assign(hl.style, {
+                position: 'absolute',
+                top: (mRect.top - wRect.top - textarea.scrollTop) + 'px',
+                left: (mRect.left - wRect.left) + 'px',
+                width: Math.max(mRect.width, 2) + 'px',
+                height: mRect.height + 'px',
+                background: 'color-mix(in oklch, var(--color-primary, oklch(0.6 0.2 250)), transparent 55%)',
+                borderRadius: '2px',
+                pointerEvents: 'none',
+                zIndex: '2',
+            });
+            wrapper.appendChild(hl);
+            this._highlightEl = hl;
+        } finally {
+            wrapper.removeChild(mirror);
+        }
+    }
+
+    _clearMatchHighlight() {
+        this._highlightEl?.remove();
+        this._highlightEl = null;
     }
 
     _updateCount() {
@@ -253,7 +355,8 @@ export default class FindReplace {
         const textarea = this.editor.usertextarea;
 
         const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        textarea.value = textarea.value.replace(new RegExp(escaped, 'gi'), replaceWith);
+        const flags = this._caseSensitive ? 'g' : 'gi';
+        textarea.value = textarea.value.replace(new RegExp(escaped, flags), replaceWith);
 
         this.editor.render();
         if (this.editor.options.onChange) this.editor.options.onChange(textarea.value);
@@ -264,6 +367,10 @@ export default class FindReplace {
 
     destroy() {
         this.editor.usertextarea.removeEventListener('keydown', this._taHandler);
+        if (this._scrollHandler) {
+            this.editor.usertextarea.removeEventListener('scroll', this._scrollHandler);
+        }
+        this._clearMatchHighlight();
         this._panel?.remove();
     }
 }

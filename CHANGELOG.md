@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **More keyboard shortcuts**: `Ctrl+1` / `Ctrl+2` / `Ctrl+3` for H1–H3 headings, `Ctrl+L` for unordered list, `Ctrl+Shift+F` or `F11` to toggle fullscreen. Shortcut hints added to heading and preview toolbar button tooltips
+- **Find & Replace match highlight**: The current match is now highlighted in the editor with a colored overlay as you type — works in both plain and hybrid modes. The highlight stays visible while the find input keeps focus, and updates as the textarea scrolls
+- **Find & Replace case-sensitive toggle**: An `Aa` button in the find panel toggles case-sensitive search. Affects both navigation and replace all
+
 ## [1.4.0] - 2026-06-16
 
 ### Added
 
-- **Keyboard shortcuts**: Common formatting actions can now be triggered from the keyboard — `Ctrl+B` (Bold), `Ctrl+I` (Italic), `Ctrl+K` (Link), `Ctrl+\`` (inline Code), `Ctrl+Shift+S` (Strikethrough). Each shortcut is displayed in the corresponding toolbar button's tooltip
+- **Keyboard shortcuts**: Common formatting actions can now be triggered from the keyboard — `Ctrl+B` (Bold), `Ctrl+I` (Italic), `Ctrl+K` (Link), `Ctrl+\` (inline Code), `Ctrl+Shift+S` (Strikethrough). Each shortcut is displayed in the corresponding toolbar button's tooltip
 - **Find & Replace**: Press `Ctrl+F` to open a find panel or `Ctrl+H` to open find & replace. Case-insensitive search with a live match counter, next/prev navigation, single replace, and replace all. The panel floats in the top-right corner of the editor and closes with `Escape`
 - **`onChange` option**: Pass an `onChange(value)` callback to be notified on every keystroke from the user
 - **`footer.words` option**: New opt-in word count stat in the status bar. Set `footer: { words: true }` to enable it alongside the existing line, column, and character stats
