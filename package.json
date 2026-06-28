@@ -1,6 +1,6 @@
 {
   "name": "markdown-text-editor",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "type": "module",
   "description": "Lightweight Markdown editor with hybrid WYSIWYG mode, real-time preview, and zero-config setup. Works with any backend via native textarea.",
   "funding": "https://ko-fi.com/nezanuha",
