@@ -32,7 +32,7 @@ class LinkTool extends MakeTool {
             const bodyHTML =`
                 <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
                     <div class="fj:font-medium">Link</div>
-                    <button type="button" class="fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="Close" onclick="nezanuha_toggleModal.close()">
+                    <button type="button" class="modal-close-btn fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="Close">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                 </div>
@@ -45,6 +45,8 @@ class LinkTool extends MakeTool {
                 </form>`;
 
             const modalElement = modal(event, 'fj:max-w-sm', bodyHTML, 'Link');
+
+            modalElement.querySelector(".modal-close-btn").addEventListener("click", () => modalElement.close());
 
             modalElement.querySelector(".submit-link").addEventListener("click", function(e){
                 e.preventDefault();

@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Find & Replace match highlight**: The current match is now highlighted in the editor with a colored overlay as you type — works in both plain and hybrid modes. The highlight stays visible while the find input keeps focus, and updates as the textarea scrolls
 - **Find & Replace case-sensitive toggle**: An `Aa` button in the find panel toggles case-sensitive search. Affects both navigation and replace all
 
+### Fixed
+
+- **CSP compatibility**: Modal close buttons in the Link and Image tools no longer use inline `onclick` handlers, which were blocked by strict Content Security Policy headers. Event listeners are now attached via JavaScript
+
 ## [1.4.0] - 2026-06-16
 
 ### Added
