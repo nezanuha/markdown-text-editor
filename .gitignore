@@ -39,3 +39,6 @@ coverage/
 out/
 
 TODO
+
+# Local AI instructions (contains local Windows paths)
+.claude/
