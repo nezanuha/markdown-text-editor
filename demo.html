@@ -49,6 +49,9 @@ def greet(name):
             //     tabSize: 2,     // number of spaces per indent
             //     autoClosingPairs: true
             // },
+            onChange: (value) => {
+                console.log('onChange fired:', value.slice(0, 50));
+            },
         };
 
             // Now 'MarkdownEditor' is a constructor thanks to library.export: 'default'
