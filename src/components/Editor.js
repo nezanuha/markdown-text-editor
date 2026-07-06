@@ -314,6 +314,7 @@ class MarkdownEditor {
         this.scrollToView();
 
         this.render();
+        this.triggerChange();
     }
 
     scrollToView() {
@@ -403,6 +404,10 @@ class MarkdownEditor {
 
         const maxHeight = this.options.maxHeight ?? 500;
         this.editorContainer.style.height = (Math.min(contentHeight, maxHeight) + this._toolbarH + this._footerH + 1) + 'px';
+    }
+
+    triggerChange() {
+        if (this.options.onChange) this.options.onChange(this.usertextarea.value);
     }
 
     render() {

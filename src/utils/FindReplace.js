@@ -343,7 +343,7 @@ export default class FindReplace {
             textarea.value.substring(end);
 
         this.editor.render();
-        if (this.editor.options.onChange) this.editor.options.onChange(textarea.value);
+        this.editor.triggerChange();
 
         this._search();
     }
@@ -359,7 +359,7 @@ export default class FindReplace {
         textarea.value = textarea.value.replace(new RegExp(escaped, flags), replaceWith);
 
         this.editor.render();
-        if (this.editor.options.onChange) this.editor.options.onChange(textarea.value);
+        this.editor.triggerChange();
 
         this._currentIndex = 0;
         this._search();

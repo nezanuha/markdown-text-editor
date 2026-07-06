@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **CSP compatibility**: Modal close buttons in the Link and Image tools no longer use inline `onclick` handlers, which were blocked by strict Content Security Policy headers. Event listeners are now attached via JavaScript
+- **`onChange` toolbar support**: Toolbar buttons and the heading tool now correctly trigger the `onChange` callback. Previously only manual typing fired it
 
 ## [1.4.0] - 2026-06-16
 
