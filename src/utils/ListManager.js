@@ -3,12 +3,12 @@ class ListManager {
         this.editor = editor;
         this.textarea = editor.usertextarea;
 
-        // Attach the listener directly here
-        this.textarea.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                this.handleEnter(e);
-            }
-        });
+        this._keydownHandler = (e) => { if (e.key === 'Enter') this.handleEnter(e); };
+        this.textarea.addEventListener('keydown', this._keydownHandler);
+    }
+
+    destroy() {
+        this.textarea.removeEventListener('keydown', this._keydownHandler);
     }
 
     handleEnter(event) {

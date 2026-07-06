@@ -23,28 +23,35 @@ export default class UndoRedoManager {
     }
 
     _bindEvents() {
-        this.textarea.addEventListener('keydown', (e) => this._onKeyDown(e));
-        
-        // Listen for selection changes to "pre-save" state before an overwrite happens
-        this.textarea.addEventListener('select', () => this._updateLastSelection());
-        this.textarea.addEventListener('mousedown', () => {
-            // Check selection after a short delay to let the click finish
-            setTimeout(() => this._updateLastSelection(), 0);
-        });
+        this._keydownHandler    = (e) => this._onKeyDown(e);
+        this._selectHandler     = () => this._updateLastSelection();
+        this._mousedownHandler  = () => setTimeout(() => this._updateLastSelection(), 0);
+        this._beforeinputHandler = (e) => {
+            if (e.inputType === 'historyUndo') { e.preventDefault(); this.undo(); }
+            else if (e.inputType === 'historyRedo') { e.preventDefault(); this.redo(); }
+        };
+        this._inputHandler = (e) => this._onInput(e);
+        this._pasteHandler = () => this._saveState();
+        this._blurHandler  = () => this._saveState();
 
-        this.textarea.addEventListener('beforeinput', (e) => {
-            if (e.inputType === 'historyUndo') {
-                e.preventDefault();
-                this.undo();
-            } else if (e.inputType === 'historyRedo') {
-                e.preventDefault();
-                this.redo();
-            }
-        });
+        this.textarea.addEventListener('keydown', this._keydownHandler);
+        this.textarea.addEventListener('select', this._selectHandler);
+        this.textarea.addEventListener('mousedown', this._mousedownHandler);
+        this.textarea.addEventListener('beforeinput', this._beforeinputHandler);
+        this.textarea.addEventListener('input', this._inputHandler);
+        this.textarea.addEventListener('paste', this._pasteHandler);
+        this.textarea.addEventListener('blur', this._blurHandler);
+    }
 
-        this.textarea.addEventListener('input', (e) => this._onInput(e));
-        this.textarea.addEventListener('paste', () => this._saveState());
-        this.textarea.addEventListener('blur', () => this._saveState());
+    destroy() {
+        clearTimeout(this._debounceTimer);
+        this.textarea.removeEventListener('keydown', this._keydownHandler);
+        this.textarea.removeEventListener('select', this._selectHandler);
+        this.textarea.removeEventListener('mousedown', this._mousedownHandler);
+        this.textarea.removeEventListener('beforeinput', this._beforeinputHandler);
+        this.textarea.removeEventListener('input', this._inputHandler);
+        this.textarea.removeEventListener('paste', this._pasteHandler);
+        this.textarea.removeEventListener('blur', this._blurHandler);
     }
 
     _updateLastSelection() {

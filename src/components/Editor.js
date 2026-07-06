@@ -181,14 +181,14 @@ class MarkdownEditor {
     }
 
     addInputListener() {
-        this.usertextarea.addEventListener('input', () => {
+        this._inputHandler = () => {
             this._autoGrow();
             this.renderHybrid(); // Fast: Only Regex
             this.debouncedPreview(); // Slow: Heavy Markdown Parse
             this.notifyChange();
-        });
+        };
 
-        this.usertextarea.addEventListener('scroll', () => {
+        this._scrollHandler = () => {
             if (this._scrollRaf) return;
             this._scrollRaf = requestAnimationFrame(() => {
                 this._scrollRaf = null;
@@ -206,7 +206,10 @@ class MarkdownEditor {
                     this.previewContent.scrollTop = ratio * (this.previewContent.scrollHeight - this.previewContent.clientHeight);
                 }
             });
-        });
+        };
+
+        this.usertextarea.addEventListener('input', this._inputHandler);
+        this.usertextarea.addEventListener('scroll', this._scrollHandler);
     }
 
     debouncedPreview() {
@@ -256,11 +259,11 @@ class MarkdownEditor {
         this.footer = new Footer(this.editorContainer, this.footerOptions);
         this.footer.update(this.usertextarea);
 
-        const update = () => this.footer.update(this.usertextarea);
-        this.usertextarea.addEventListener('input', update);
-        this.usertextarea.addEventListener('click', update);
-        this.usertextarea.addEventListener('keyup', update);
-        this.usertextarea.addEventListener('focus', update);
+        this._footerUpdate = () => this.footer.update(this.usertextarea);
+        this.usertextarea.addEventListener('input', this._footerUpdate);
+        this.usertextarea.addEventListener('click', this._footerUpdate);
+        this.usertextarea.addEventListener('keyup', this._footerUpdate);
+        this.usertextarea.addEventListener('focus', this._footerUpdate);
     }
 
     addToolbar() {
@@ -424,6 +427,18 @@ class MarkdownEditor {
         this.shortcutManager?.destroy();
         this.findReplace?.destroy();
         this.previewTool?.destroy();
+        this.undoRedoManager?.destroy();
+        this.listManager?.destroy();
+
+        if (this._footerUpdate) {
+            this.usertextarea.removeEventListener('input', this._footerUpdate);
+            this.usertextarea.removeEventListener('click', this._footerUpdate);
+            this.usertextarea.removeEventListener('keyup', this._footerUpdate);
+            this.usertextarea.removeEventListener('focus', this._footerUpdate);
+        }
+
+        this.usertextarea.removeEventListener('input', this._inputHandler);
+        this.usertextarea.removeEventListener('scroll', this._scrollHandler);
 
         const parent = this.editorContainer.parentNode;
         if (!parent) return;

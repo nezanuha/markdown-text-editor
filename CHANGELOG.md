@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **PreviewTool memory leak**: Escape key listener and `overflow-hidden` body class are now cleaned up when the editor is destroyed while fullscreen is active
 - **PreviewTool accessibility**: Toolbar buttons are now properly `disabled` (not just `aria-disabled`) when fullscreen preview is active, preventing keyboard activation
 - **ImageTool upload error handling**: HTTP error responses (4xx/5xx) from the upload endpoint are now caught correctly instead of being silently mishandled
+- **`destroy()` memory leaks**: All event listeners (input, scroll, footer, undo/redo, list continuation) are now properly removed when `destroy()` is called, preventing stale listeners from firing after the editor is torn down
 
 ## [1.5.0] - 2026-06-28
 
