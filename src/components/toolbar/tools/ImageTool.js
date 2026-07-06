@@ -108,6 +108,7 @@ class ImageTool extends MakeTool {
 
                 try {
                     const res = await fetch(uploadUrl, { method: 'POST', body: formData });
+                    if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
                     const result = await res.json();
 
                     if (result.success && result.image_path) {

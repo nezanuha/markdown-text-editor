@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-07-06
+
+### Fixed
+
+- **`onChange` toolbar support**: Toolbar buttons, heading tool, list continuation, undo/redo, and checkbox toggles now correctly trigger the `onChange` callback. Previously only manual typing fired it
+- **PreviewTool memory leak**: Escape key listener and `overflow-hidden` body class are now cleaned up when the editor is destroyed while fullscreen is active
+- **PreviewTool accessibility**: Toolbar buttons are now properly `disabled` (not just `aria-disabled`) when fullscreen preview is active, preventing keyboard activation
+- **ImageTool upload error handling**: HTTP error responses (4xx/5xx) from the upload endpoint are now caught correctly instead of being silently mishandled
+
 ## [1.5.0] - 2026-06-28
 
 ### Added
@@ -18,7 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **CSP compatibility**: Modal close buttons in the Link and Image tools no longer use inline `onclick` handlers, which were blocked by strict Content Security Policy headers. Event listeners are now attached via JavaScript
-- **`onChange` toolbar support**: Toolbar buttons and the heading tool now correctly trigger the `onChange` callback. Previously only manual typing fired it
 
 ## [1.4.0] - 2026-06-16
 
@@ -26,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Keyboard shortcuts**: Common formatting actions can now be triggered from the keyboard — `Ctrl+B` (Bold), `Ctrl+I` (Italic), `Ctrl+K` (Link), `Ctrl+\` (inline Code), `Ctrl+Shift+S` (Strikethrough). Each shortcut is displayed in the corresponding toolbar button's tooltip
 - **Find & Replace**: Press `Ctrl+F` to open a find panel or `Ctrl+H` to open find & replace. Case-insensitive search with a live match counter, next/prev navigation, single replace, and replace all. The panel floats in the top-right corner of the editor and closes with `Escape`
-- **`onChange` option**: Pass an `onChange(value)` callback to be notified on every keystroke from the user
+- **`onChange` option**: Pass an `onChange(value)` callback to be notified whenever the editor content changes
 - **`footer.words` option**: New opt-in word count stat in the status bar. Set `footer: { words: true }` to enable it alongside the existing line, column, and character stats
 - **`minHeight` option**: Minimum height in pixels the editor will shrink to when content is short. Defaults to `200`. Pairs with the existing `maxHeight` option to define the full auto-grow range
 - **`destroy()` method**: Removes the editor DOM wrapper, restores the original `<textarea>` to its position in the document, and cleans up internal event listeners. Useful in single-page applications when unmounting a view

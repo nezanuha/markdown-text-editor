@@ -177,6 +177,7 @@ export default class UndoRedoManager {
         this.lastSelection = { ...selection };
         
         if (this.editor.render) this.editor.render();
+        this.editor.notifyChange();
         this.textarea.focus();
     }
 }

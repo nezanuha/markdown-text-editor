@@ -31,7 +31,8 @@ class ListManager {
             const after = value.substring(selectionStart);
             this.textarea.value = before + "\n" + after;
             this.textarea.setSelectionRange(lineStart + 1, lineStart + 1);
-            this.editor.render(); // Trigger editor refresh
+            this.editor.render();
+            this.editor.notifyChange();
             return;
         }
 
@@ -53,6 +54,7 @@ class ListManager {
             const cursor = selectionStart + insert.length;
             this.textarea.setSelectionRange(cursor, cursor);
             this.editor.render();
+            this.editor.notifyChange();
         }
     }
 }

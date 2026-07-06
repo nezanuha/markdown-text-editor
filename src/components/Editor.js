@@ -185,7 +185,7 @@ class MarkdownEditor {
             this._autoGrow();
             this.renderHybrid(); // Fast: Only Regex
             this.debouncedPreview(); // Slow: Heavy Markdown Parse
-            if (this.options.onChange) this.options.onChange(this.usertextarea.value);
+            this.notifyChange();
         });
 
         this.usertextarea.addEventListener('scroll', () => {
@@ -244,6 +244,7 @@ class MarkdownEditor {
                 }
                 this.usertextarea.value = lines.join('\n');
                 this.render();
+                this.notifyChange();
             });
         });
     }
@@ -314,7 +315,7 @@ class MarkdownEditor {
         this.scrollToView();
 
         this.render();
-        this.triggerChange();
+        this.notifyChange();
     }
 
     scrollToView() {
@@ -406,7 +407,7 @@ class MarkdownEditor {
         this.editorContainer.style.height = (Math.min(contentHeight, maxHeight) + this._toolbarH + this._footerH + 1) + 'px';
     }
 
-    triggerChange() {
+    notifyChange() {
         if (this.options.onChange) this.options.onChange(this.usertextarea.value);
     }
 
@@ -422,6 +423,7 @@ class MarkdownEditor {
     destroy() {
         this.shortcutManager?.destroy();
         this.findReplace?.destroy();
+        this.previewTool?.destroy();
 
         const parent = this.editorContainer.parentNode;
         if (!parent) return;

@@ -82,7 +82,8 @@ class Toolbar {
         // Append preview button at the end
         if (this.options.includes('preview')) {
             const previewToolInstance = new PreviewTool(this.editor);
-            this.toolbar.appendChild(previewToolInstance.button); // Directly append to toolbar at the end
+            this.editor.previewTool = previewToolInstance;
+            this.toolbar.appendChild(previewToolInstance.button);
         }
 
         this.editor.editorContainer.insertBefore(this.toolbar, this.editor.markdownEditorDiv);

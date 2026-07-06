@@ -90,7 +90,7 @@ class HeadingTool extends MakeTool {
 
         this.editor.scrollToView();
         this.editor.render();
-        this.editor.triggerChange();
+        this.editor.notifyChange();
     }
 
     applySyntax() {}
