@@ -1,4 +1,6 @@
-# MarkdownEditor — The Native-First JavaScript Markdown Editor
+# MarkdownEditor — Lightweight JavaScript Markdown Editor with WYSIWYG & Plain Mode
+
+### The Native-First JavaScript Markdown Editor
 
 [![npm installs][npm_installs]](https://www.npmjs.com/package/markdown-text-editor)
 [![Jsdelivr hits][jsdelivr]](https://cdn.jsdelivr.net/npm/markdown-text-editor)
@@ -7,143 +9,156 @@
 [![Secured](https://img.shields.io/badge/Security-Passed-green)](https://snyk.io/test/github/nezanuha/markdown-text-editor)
 ![GitHub Repo stars](https://img.shields.io/github/stars/nezanuha/markdown-text-editor?style=flat)
 
-A lightweight, developer-friendly Markdown editor that transforms a standard HTML `<textarea>` into a feature-rich editing experience without breaking native form submission.
+A lightweight, embeddable JavaScript Markdown editor that transforms a standard HTML `<textarea>` into a full-featured editing experience — without breaking native form submission. Works with any backend (Django, Laravel, PHP, Node.js, Rails) out of the box.
 
-> A native `<textarea>` can be enhanced into an advanced Markdown editor while still functioning like a standard textarea, allowing developers to submit its content through a normal form, retrieve the Markdown value using JavaScript via `id`, `name`, or any selector, and set the content programmatically with the editor automatically reflecting the changes.
+A native-first Markdown editor built on a standard textarea. No data binding, no API — just drop it in and your forms keep working as-is.
 
-## 💡 The Concept: Native Power
+> **No complex APIs. No data binding. No JSON schemas.** Just a `<textarea>` that types Markdown and submits like any normal form field — enhanced with a rich toolbar, live preview, and WYSIWYG hybrid mode.
 
-Most advanced editors require complex APIs to get or set data. This editor stays true to the web: **if you know how to use a `<textarea>`, you know how to use this editor**.
+## ⭐ Why developers choose this over EasyMDE / SimpleMDE
 
-It acts as a transparent layer over your native element. This means:
+Most JavaScript markdown editors (EasyMDE, SimpleMDE, CodeMirror-based editors) replace your `<textarea>` with a custom element — which means you have to write extra code to extract the value before form submission, sync state manually, and learn a new API just to read or set content.
 
-- **Automatic Form Submission**: Since it's a `<textarea>`, the content is automatically included in your POST requests
-- **No New Syntax**: Use standard JavaScript to get or set values
-- **Seamless Integration**: Works with any backend (Node, PHP, Python, etc.) just like a normal form field
+**MarkdownEditor is different.** It sits transparently on top of your existing `<textarea>`:
+
+| Feature | MarkdownEditor | EasyMDE / SimpleMDE |
+|---|---|---|
+| Native `<textarea>` preserved | ✅ | ❌ Replaced |
+| Form submission works as-is | ✅ | ❌ Requires extra JS |
+| Get/set value via `.value` | ✅ | ❌ Custom API needed |
+| WYSIWYG hybrid mode | ✅ | ❌ |
+| CSP-compatible (no inline JS) | ✅ | ❌ |
+| Zero CSS conflicts | ✅ | ❌ |
+| RTL support | ✅ | ❌ |
+| Built-in Find & Replace | ✅ | ❌ |
+| Keyboard shortcuts | ✅ | Partial |
+| Dark mode / theming | ✅ | Limited |
+| ~116KB bundle | ✅ | ~300KB+ |
 
 ## 🚀 Quick Start
 
-### 1. Installation
-
-#### NPM
+### Install via NPM
 
 ```bash
 npm install markdown-text-editor
 ```
 
-——— OR ———
-
-#### CDN
+### Or use a CDN
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/markdown-text-editor"></script>
 ```
 
-### 2. The HTML Structure
-
-Simply place a `<textarea>` inside your standard form. No special wrappers required.
+### Basic Setup
 
 ```html
-<form method="post" action="api/submit-form">
-  <input type="text" name="title" placeholder="Article Title">
-
-  <textarea id="markdown-editor" name="content"># Heading level 1</textarea>
-
-  <button type="submit">Submit Post</button>
+<form method="post" action="/submit">
+  <textarea id="markdown-editor" name="content"># Hello World</textarea>
+  <button type="submit">Save</button>
 </form>
+
+<script>
+  import MarkdownEditor from "markdown-text-editor";
+  new MarkdownEditor('#markdown-editor');
+</script>
 ```
 
-### 3. Initialization
-
-Works out of the box with any bundler (Vite, webpack, Rollup) or via CDN — no extra configuration needed. CSS is injected automatically, so a single import is all you need.
-
-```javascript
-import MarkdownEditor from "markdown-text-editor";
-
-// Plain mode (default) — raw Markdown syntax
-const editor = new MarkdownEditor('#markdown-editor');
-
-// Hybrid mode — WYSIWYG-inspired, renders formatting live as you type
-const editor = new MarkdownEditor('#markdown-editor', { mode: 'hybrid' });
-```
-
-## 🛠 Developer Workflow
-
-### Getting Content
-
-You don't need a custom library method to get the text. Just target the ID:
-
-```javascript
-const markdown = document.getElementById('markdown-editor').value;
-console.log(markdown);
-```
-
-### Setting Content
-
-The editor listens for changes. When you update the textarea value via JavaScript, the preview/editor UI updates automatically:
-
-```javascript
-const textarea = document.getElementById('markdown-editor');
-textarea.value = "## New Content Loaded via JS";
-
-// The editor UI reflects this immediately
-```
+That's it. Form submission, `.value` access, and all native textarea behaviour work exactly as before.
 
 ## ✨ Features
 
-- 🔌 **Native Form Integration**: Works exactly like a standard `<textarea>`. No complex APIs—just use the `value` or `name` attribute to get or set content. It "just works" with standard HTML form submissions
-- 🖼️ **Advanced Image Upload**: Easily configure image uploads to your own server. Set your custom image paths via an API to ensure faster page loads and better SEO by avoiding heavy Base64 strings
-- 🔀 **Hybrid & Plain Modes**: Choose between a **Hybrid (WYSIWYG)** experience for visual editing or a Plain Markdown mode for a traditional coding feel
-- ⚡ **Real-time Live Preview**: Watch your Markdown render instantly as you type, including support for links, images, and complex formatting. Task list checkboxes in the preview pane are clickable and sync back to the markdown source instantly
-- ♿ **Accessible by Default**: Full ARIA support out of the box — toolbar landmark (`role="toolbar"`), labelled preview region, screen-reader-friendly tool buttons (SVGs marked `aria-hidden`), `aria-pressed` on the preview toggle, `aria-disabled` on inactive buttons, and correct focus restoration when modals close
-- 🛡️ **Zero CSS Conflicts**: Editor styles are fully scoped to the `.markdown-editor-wrapper` element and Tailwind's global preflight is excluded — no bleed into Bootstrap, Tailwind, or any other CSS framework on the same page
-- 🌍 **Built-in RTL Support**: Native support for Right-to-Left (RTL) languages like Arabic, Urdu, and Farsi, making it globally accessible
-- 🌙 **Adaptive Theming**: Features automatic Dark Mode support that follows your system or website settings for a seamless visual experience
-- 🎨 **Frutjam UI Ready**: Effortless integration with the **Frutjam** UI library, including automatic theme adjustments to match your UI components
-- 🚀 **High Performance**:
-    - **Lightweight**: Tiny bundle size (~116KB minified)
-    - **Heavy Content**: Optimized to handle long documents and large files without performance lag
-    - **Smart rendering**: Debounced preview updates, cached style calculations, and conflict-free keyboard handling between list continuation and indentation
-- 📱 **Fully Responsive**: A fluid UI that adapts perfectly to desktops, tablets, and smartphones
-- 📝 **Smart Editing**: GitHub-style automatic list continuation—press `Enter` and the editor handles the bullets/numbers for you. Supports ordered lists, unordered lists, and checklists
-- 🔄 **Undo / Redo**: Full history system using granular diffs — restores both text content and exact cursor position. Integrated with `Ctrl+Z`, `Ctrl+Y`, and `Ctrl+Shift+Z`
-- 🎛️ **Effortless Customization**: Quickly match your brand's look and feel using simple CSS variables
-- 📦 **Universal Module Support**: Compatible with **ESM**, **UMD**, **CommonJS**, and **IIFE** — works with Vite, webpack, Rollup, or directly via CDN (`<script src>`) with no extra configuration
-- 🔄 **Actively Maintained**: Regularly updated with new features, optimizations, and community-driven improvements
+- 🔌 **Native Form Integration** — Works exactly like a standard `<textarea>`. No complex APIs — just use `.value` or the `name` attribute. Compatible with Django, Laravel, PHP, Rails, Node.js
+- 🔀 **WYSIWYG Hybrid Mode** — Renders bold, italic, headings, and code live as you type while keeping the underlying Markdown. Switch to plain mode for raw syntax editing
+- ⚡ **Live Preview** — Full side-by-side Markdown preview with clickable task list checkboxes that sync back to the source instantly
+- 🖼️ **Advanced Image Upload** — Upload images directly to your server or S3. Avoids heavy Base64 strings for better performance and SEO
+- 🔍 **Find & Replace** — Built-in panel (`Ctrl+F` / `Ctrl+H`) with live match counter, next/prev navigation, case-sensitive toggle, and replace all
+- ⌨️ **Keyboard Shortcuts** — `Ctrl+B`, `Ctrl+I`, `Ctrl+K`, `Ctrl+Z`, `Ctrl+1`–`Ctrl+3` for headings, and more
+- 📝 **Smart List Continuation** — GitHub-style: press `Enter` inside a list and the bullet/number continues automatically
+- 🔄 **Undo / Redo** — Full diff-based history with exact cursor restoration. Works with `Ctrl+Z`, `Ctrl+Y`, `Ctrl+Shift+Z`
+- ♿ **Accessible by Default** — `role="toolbar"`, `aria-pressed`, `aria-disabled`, `disabled`, screen-reader-friendly SVGs, and correct focus restoration on modal close
+- 🛡️ **XSS Safe** — Preview output sanitized via [DOMPurify](https://github.com/cure53/DOMPurify) before rendering
+- 🛡️ **CSP Compatible** — No inline event handlers. Works with strict Content Security Policy headers
+- 🌍 **RTL Support** — Native Right-to-Left support for Arabic, Urdu, Farsi, and other RTL languages
+- 🌙 **Dark Mode & Theming** — Inherits `data-theme` from any ancestor element. Built-in light, dark, snowberry, and darkberry themes. Fully customizable via CSS variables
+- 🎛️ **Modular Toolbar** — Pick exactly which tools appear and in what order
+- 📦 **Universal Module Support** — ESM, CommonJS, UMD, and IIFE. Works with Vite, webpack, Rollup, or directly via `<script src>` CDN — no configuration needed
+- 🚀 **High Performance** — ~116KB bundle. Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
+
+## 🛠 Developer Workflow
+
+### Getting & Setting Content
+
+```javascript
+// Get — just like any textarea
+const markdown = document.getElementById('markdown-editor').value;
+
+// Set — editor UI updates automatically
+document.getElementById('markdown-editor').value = '## Updated content';
+```
+
+### React to every change with `onChange`
+
+```javascript
+const editor = new MarkdownEditor('#markdown-editor', {
+    onChange(value) {
+        console.log('Content changed:', value.length, 'characters');
+    }
+});
+```
+
+### Auto-save draft to localStorage
+
+```javascript
+const textarea = document.getElementById('markdown-editor');
+const saved = localStorage.getItem('draft');
+if (saved && !textarea.value) textarea.value = saved;
+
+const editor = new MarkdownEditor('#markdown-editor', {
+    onChange(value) {
+        localStorage.setItem('draft', value);
+    }
+});
+```
+
+### Tear down in SPAs
+
+```javascript
+// Removes editor UI, restores original textarea, cleans up all event listeners
+editor.destroy();
+```
 
 ## 📖 Documentation
 
-For the complete API reference, advanced configuration, and styling guides, visit the official [Markdown Editor Documentation](https://frutjam.com/plugins/markdown-editor).
+Full API reference, configuration options, theming guide, and advanced image upload docs:
+👉 **[frutjam.com/plugins/markdown-editor](https://frutjam.com/plugins/markdown-editor)**
 
-## WYSIWYG (Hybrid) & Plain Mode Markdown Editing Experience
+## WYSIWYG Hybrid Mode vs Plain Mode
 
-### Hybrid Mode (WYSIWYG + Markdown): See how the editor combines WYSIWYG and Markdown editing in one interface
+### Hybrid Mode — live formatting as you type
 
 ![Hybrid mode WYSIWYG styled markdown editor](https://cdn.frutjam.com/media/plugins/hybrid-mode-markdown-editor.webp)
 
-### Plain Markdown Mode: Experience editing Markdown directly with full control over formatting
+### Plain Mode — raw Markdown syntax
 
 ![Plain mode markdown editor](https://cdn.frutjam.com/media/plugins/plain-mode-markdown-editor.webp)
 
 ---
 
-## Contribute
+## 🤝 Contributing
 
-Contributions to this **open source project** are highly encouraged! If you have bug fixes, feature enhancements, or new ideas, please consider opening an issue or submitting a pull request. Your help will ensure that this **best, simple, embeddable JavaScript markdown editor plugin** continues to evolve and serve the community with **real-time preview** and **syntax highlighting** capabilities.
+Contributions are welcome! Bug fixes, feature requests, and improvements — open an issue or submit a pull request.
 
 ---
 
 ## License
 
-This project is released under the [MIT License](LICENSE).
+[MIT License](LICENSE)
 
 ---
 
-Thank you for choosing the MarkdownEditor Plugin – your reliable, feature-rich solution for seamless markdown editing and content creation with **easy integration**. Happy coding!
-
 ## ⭐ Support
 
-If you like this project, consider giving it a star! 🌟
+If this saves you time, consider giving it a star — it helps others find this project!
 
 [![GitHub stars](https://img.shields.io/github/stars/nezanuha/markdown-text-editor.svg?style=social&label=Star&maxAge=2592000)](https://github.com/nezanuha/markdown-text-editor/stargazers)
 
