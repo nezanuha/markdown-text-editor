@@ -37,19 +37,27 @@ Most JavaScript markdown editors (EasyMDE, SimpleMDE, CodeMirror-based editors) 
 
 ## 🚀 Quick Start
 
-### Install via NPM
+### NPM (bundlers: Vite, webpack, Rollup, etc.)
 
 ```bash
 npm install markdown-text-editor
 ```
 
-### Or use a CDN
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor"></script>
+```javascript
+import MarkdownEditor from 'markdown-text-editor';
+new MarkdownEditor('#markdown-editor');
 ```
 
-### Basic Setup
+### CDN: ES module
+
+```html
+<script type="module">
+  import MarkdownEditor from 'https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.es.js';
+  new MarkdownEditor('#markdown-editor');
+</script>
+```
+
+### CDN: global script tag (IIFE)
 
 ```html
 <form method="post" action="/submit">
@@ -57,11 +65,13 @@ npm install markdown-text-editor
   <button type="submit">Save</button>
 </form>
 
+<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor"></script>
 <script>
-  import MarkdownEditor from "markdown-text-editor";
   new MarkdownEditor('#markdown-editor');
 </script>
 ```
+
+**Via CDN**: no import needed, `MarkdownEditor` is available globally.
 
 That's it. Form submission, `.value` access, and all native textarea behaviour work exactly as before.
 
