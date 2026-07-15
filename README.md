@@ -170,7 +170,7 @@ Contributions are welcome! Bug fixes, feature requests, and improvements — ope
 
 If this saves you time, consider giving it a star — it helps others find this project!
 
-[![GitHub stars](https://img.shields.io/github/stars/nezanuha/markdown-text-editor.svg?style=social&label=Star&maxAge=2592000)](https://github.com/nezanuha/markdown-text-editor/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/nezanuha/markdown-text-editor.svg?style=social&label=Star&maxAge=2592000)](https://github.com/nezanuha/markdown-text-editor)
 
 ---
 
