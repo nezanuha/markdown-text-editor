@@ -71,6 +71,7 @@ class PreviewTool extends MakeTool {
                 button.setAttribute('aria-pressed', 'false');
             }
         });
+
     }
 
     // Method to show the preview (enable it)
@@ -116,7 +117,6 @@ class PreviewTool extends MakeTool {
             if (!button.classList.contains('preview-btn')) {
                 button.classList.add('fj:pointer-events-none', 'fj:md:pointer-events-auto', 'fj:opacity-25', 'fj:md:opacity-100');
                 button.setAttribute('aria-disabled', 'true');
-                button.disabled = true;
             } else {
                 button.classList.add('fj:me-btn-active');
                 button.setAttribute('aria-pressed', 'true');

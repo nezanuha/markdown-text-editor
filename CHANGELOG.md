@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **PreviewTool**: Toolbar buttons on desktop now remain functional when fullscreen preview is active — previously `disabled` was set regardless of screen size, blocking clicks even though buttons were visually enabled in the split view
+
 ## [1.5.2] - 2026-07-13
 
 ### Changed
