@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.5.3] - 2026-07-21
+
 ### Fixed
 
 - **PreviewTool**: Fixed a bug introduced in a recent version where toolbar buttons stopped working on desktop when fullscreen preview was active. On mobile they remain disabled since the editor is hidden
@@ -384,7 +388,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.2...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.3...HEAD
+[1.5.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.2...v1.5.3
 [1.5.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.4.0...v1.5.0
