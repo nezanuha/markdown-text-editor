@@ -14,71 +14,63 @@ class LinkTool extends MakeTool {
         let editor = this.editor;
         let textarea = editor.usertextarea;
         let { selectionStart, selectionEnd } = textarea;
-        let selectedText = textarea.value.substring(selectionStart, selectionEnd);
-    
-        // Check if the selected text contains a link syntax [text](url)
-        const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/;
-    
-        if (selectedText && linkRegex.test(selectedText)) {
-            // If the selected text is already a link, extract the text inside the brackets
-            const match = selectedText.match(linkRegex);
-            const linkText = match[1];  // Text inside the square brackets
-    
-            // Replace the selected text with just the text
-            textarea.setRangeText(linkText, selectionStart, selectionEnd, 'select');
-        } else {
-            // If no link syntax, prompt for the URL and apply the syntax
-            
-            const bodyHTML =`
-                <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
-                    <div class="fj:font-medium">Link</div>
-                    <button type="button" class="modal-close-btn fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="Close">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                    </button>
-                </div>
-                <form method="post">
-                    <div class="fj:flex fj:flex-col fj:justify-center fj:gap-y-4.5 fj:mt-4">
-                        <input type="url" placeholder="URL" class="link-input fj:me-input fj:w-full" required>
-                        <input type="text" placeholder="Link text" class="link-text-input fj:me-input fj:w-full" value="${selectedText}" required>
-                        <button type="submit" class="submit-link fj:me-btn fj:me-btn-sm fj:self-end">Apply</button>
-                    </div>
-                </form>`;
+        const fullText = textarea.value;
 
-            const modalElement = modal(event, 'fj:max-w-sm', bodyHTML, 'Link');
-
-            modalElement.querySelector(".modal-close-btn").addEventListener("click", () => modalElement.close());
-
-            modalElement.querySelector(".submit-link").addEventListener("click", function(e){
-                e.preventDefault();
-                let linkInput = modalElement.querySelector(".link-input");
-                let linkTextInput = modalElement.querySelector(".link-text-input");
-
-                if (!linkInput.validity.valid) {
-                    linkInput.reportValidity();
-                } else if (!linkTextInput.validity.valid) {
-                    linkTextInput.reportValidity();
-                } else {
-                    const link = linkInput.value;
-                    let linkText = linkTextInput.value;
-
-                    if(linkText == ''){
-                        linkText = 'Link Text';
-                    }
-
-                    let newText = '';
-                    if (selectedText) {
-                        newText = `[${selectedText}](${link})`; // Insert the link with selected text
-                    } else {
-                        newText = `[${linkText}](${link})`; // Insert a placeholder text if nothing is selected
-                    }
-                    editor.insertText(newText); // Insert the constructed link markdown
-                    
-                    linkInput.value = '';
-                    linkTextInput.value = '';
-                    modalElement.close();
-                }
-            });
+        // Auto-expand selection if the selected text is inside an existing link [text](url)
+        const before = fullText.substring(0, selectionStart);
+        const after = fullText.substring(selectionEnd);
+        if (before.endsWith('[') && /^\]\([^)]+\)/.test(after)) {
+            const urlMatch = after.match(/^\]\(([^)]+)\)/);
+            if (urlMatch) {
+                selectionStart = before.length - 1;
+                selectionEnd = selectionEnd + urlMatch[0].length;
+                textarea.setSelectionRange(selectionStart, selectionEnd);
+            }
         }
+
+        let selectedText = fullText.substring(selectionStart, selectionEnd);
+
+        const linkRegex = /^\[([^\]]+)\]\(([^)]+)\)$/;
+        const match = selectedText && selectedText.match(linkRegex);
+
+        const prefillText = match ? match[1] : selectedText;
+        const prefillUrl  = match ? match[2] : '';
+
+        const bodyHTML = `
+            <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
+                <div class="fj:font-medium">Link</div>
+                <button type="button" class="modal-close-btn fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <form method="post">
+                <div class="fj:flex fj:flex-col fj:justify-center fj:gap-y-4.5 fj:mt-4">
+                    <input type="url" placeholder="URL" class="link-input fj:me-input fj:w-full" value="${prefillUrl}" required>
+                    <input type="text" placeholder="Link text" class="link-text-input fj:me-input fj:w-full" value="${prefillText}" required>
+                    <button type="submit" class="submit-link fj:me-btn fj:me-btn-sm fj:self-end">Apply</button>
+                </div>
+            </form>`;
+
+        const modalElement = modal(event, 'fj:max-w-sm', bodyHTML, 'Link');
+
+        modalElement.querySelector(".modal-close-btn").addEventListener("click", () => modalElement.close());
+
+        modalElement.querySelector(".submit-link").addEventListener("click", function(e) {
+            e.preventDefault();
+            const linkInput = modalElement.querySelector(".link-input");
+            const linkTextInput = modalElement.querySelector(".link-text-input");
+
+            if (!linkInput.validity.valid) {
+                linkInput.reportValidity();
+            } else if (!linkTextInput.validity.valid) {
+                linkTextInput.reportValidity();
+            } else {
+                const link = linkInput.value;
+                const linkText = linkTextInput.value || 'Link Text';
+                editor.insertText(`[${linkText}](${link})`);
+                modalElement.close();
+            }
+        });
     }
     
 }

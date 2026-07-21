@@ -19,7 +19,7 @@ class HeadingTool extends MakeTool {
         btn.title = 'Heading';
         btn.setAttribute('aria-label', 'Heading');
         btn.setAttribute('aria-haspopup', 'menu');
-        btn.className = 'markdown-btn heading-btn fj:me-btn fj:me-btn-square fj:me-btn-ghost fj:me-popover-toggle';
+        btn.className = 'markdown-btn heading-btn fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost fj:me-popover-toggle';
         btn.setAttribute('popovertarget', popoverId);
 
         const popoverContent = document.createElement('div');

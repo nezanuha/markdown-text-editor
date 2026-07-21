@@ -65,7 +65,6 @@ class PreviewTool extends MakeTool {
             if (!button.classList.contains('preview-btn')) {
                 button.classList.remove('fj:pointer-events-none', 'fj:md:pointer-events-auto', 'fj:opacity-25', 'fj:md:opacity-100');
                 button.removeAttribute('aria-disabled');
-                button.disabled = false;
             } else {
                 button.classList.remove('fj:me-btn-active');
                 button.setAttribute('aria-pressed', 'false');
@@ -113,10 +112,11 @@ class PreviewTool extends MakeTool {
 
         this.editor.render();
 
+        const isMobile = window.matchMedia('(max-width: 767px)').matches;
         this.editor.editorContainer.querySelectorAll('.markdown-btn').forEach(button => {
             if (!button.classList.contains('preview-btn')) {
                 button.classList.add('fj:pointer-events-none', 'fj:md:pointer-events-auto', 'fj:opacity-25', 'fj:md:opacity-100');
-                button.setAttribute('aria-disabled', 'true');
+                button.setAttribute('aria-disabled', isMobile ? 'true' : 'false');
             } else {
                 button.classList.add('fj:me-btn-active');
                 button.setAttribute('aria-pressed', 'true');

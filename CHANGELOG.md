@@ -9,7 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **PreviewTool**: Toolbar buttons on desktop now remain functional when fullscreen preview is active — previously `disabled` was set regardless of screen size, blocking clicks even though buttons were visually enabled in the split view
+- **PreviewTool**: Fixed a bug introduced in a recent version where toolbar buttons stopped working on desktop when fullscreen preview was active. On mobile they remain disabled since the editor is hidden
+- **HeadingTool**: Heading button is now the same size as other toolbar buttons
+- **LinkTool**: Edited link text was ignored — the modal submitted the original selected text instead of what was typed in the Link text field
+- **LinkTool**: Clicking the link button with only the label selected inside an existing `[text](url)` link caused nested syntax like `[[text](url)](newurl)`. The selection now auto-expands to cover the full link before opening the modal
+- **ImageTool**: Edited alt text was ignored — the modal submitted the original selected text instead of what was typed in the Alt text field
+- **ImageTool**: Selecting a full `![alt](url)` image silently stripped it to plain text instead of opening the modal pre-filled for editing
+- **ImageTool**: Selecting only the alt text inside `![alt](url)` caused nested syntax like `![![alt](url)](newurl)`. The selection now auto-expands to cover the full image before opening the modal
+- **Footer**: Configuring `footer` with only `words: true` (and all other options false) showed no footer. The `words` option is now included in the visibility check
 
 ## [1.5.2] - 2026-07-13
 

@@ -51,17 +51,6 @@ class Toolbar {
             outdent: OutdentTool
         };
 
-        // Append all tools except preview
-        // this.options.forEach(tool => {
-        //     if (tool !== 'preview') {
-        //         const ToolClass = toolMapping[tool];
-        //         if (ToolClass) {
-        //             const toolInstance = new ToolClass(this.editor);
-        //             this.toolbar.appendChild(toolInstance.button); // Directly append to toolbar
-        //         }
-        //     }
-        // });
-
         this.options.forEach(tool => {
             let ToolClass, config;
         

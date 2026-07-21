@@ -17,26 +17,38 @@ class ImageTool extends MakeTool {
     applySyntax(event) {
         const editor = this.editor;
         const textarea = editor.usertextarea;
-        const { selectionStart, selectionEnd } = textarea;
-        const selectedText = textarea.value.substring(selectionStart, selectionEnd);
+        let { selectionStart, selectionEnd } = textarea;
+        const fullText = textarea.value;
+
+        // Auto-expand selection if the selected text is inside an existing image ![alt](url)
+        const before = fullText.substring(0, selectionStart);
+        const after = fullText.substring(selectionEnd);
+        if (before.endsWith('![') && /^\]\([^)]+\)/.test(after)) {
+            const urlMatch = after.match(/^\]\(([^)]+)\)/);
+            if (urlMatch) {
+                selectionStart = before.length - 2;
+                selectionEnd = selectionEnd + urlMatch[0].length;
+                textarea.setSelectionRange(selectionStart, selectionEnd);
+            }
+        }
+
+        const selectedText = fullText.substring(selectionStart, selectionEnd);
 
         const acceptFormats = this.fileInputConfig.accept
             ? this.fileInputConfig.accept.map(type => `image/${type}`).join(',')
             : 'image/*';
 
-        const isAltRequired = typeof this.altInputConfig === 'boolean' 
-            ? this.altInputConfig 
+        const isAltRequired = typeof this.altInputConfig === 'boolean'
+            ? this.altInputConfig
             : (this.altInputConfig.required !== false);
 
         const uploadUrl = this.fileInputConfig.uploadUrl || null;
         const customParams = this.fileInputConfig.params || {};
 
-        const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/;
-        if (selectedText && imageRegex.test(selectedText)) {
-            const match = selectedText.match(imageRegex);
-            textarea.setRangeText(match[1], selectionStart, selectionEnd, 'select');
-            return;
-        }
+        const imageRegex = /^!\[([^\]]*)\]\(([^)]+)\)$/;
+        const imageMatch = selectedText && selectedText.match(imageRegex);
+        const prefillAlt = imageMatch ? imageMatch[1] : selectedText;
+        const prefillUrl  = imageMatch ? imageMatch[2] : '';
 
         let fileInputTag = '';
         if (this.fileInputConfig) {
@@ -55,8 +67,8 @@ class ImageTool extends MakeTool {
             </div>
             <div class="fj:mt-4 fj:flex fj:flex-col fj:gap-y-4">
                 ${fileInputTag}
-                <input type="url" placeholder="URL" class="img-link-input fj:me-input fj:w-full" required>
-                <input type="text" placeholder="Alt text" class="img-link-alt-input fj:me-input fj:w-full" value="${selectedText}" ${isAltRequired ? 'required' : ''}>
+                <input type="url" placeholder="URL" class="img-link-input fj:me-input fj:w-full" value="${prefillUrl}" required>
+                <input type="text" placeholder="Alt text" class="img-link-alt-input fj:me-input fj:w-full" value="${prefillAlt}" ${isAltRequired ? 'required' : ''}>
                 <button type="button" class="submit-img-link fj:me-btn fj:me-btn-sm fj:self-end">Apply</button>
             </div>`;
 
@@ -136,10 +148,7 @@ class ImageTool extends MakeTool {
             // --- 3. FINAL INSERTION ---
             const imgLink = urlInputSelector.value;
             const imgLinkAlt = imgFileAltInput.value || '';
-            
-            const newText = selectedText 
-                ? `![${selectedText}](${imgLink})` 
-                : `![${imgLinkAlt}](${imgLink})`;
+            const newText = `![${imgLinkAlt}](${imgLink})`;
 
             editor.insertText(newText);
             modalElement.close();

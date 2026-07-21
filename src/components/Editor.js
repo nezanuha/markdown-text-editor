@@ -254,8 +254,8 @@ class MarkdownEditor {
 
     addFooter() {
         if (!this.footerOptions) return;
-        const { line, col, chars } = this.footerOptions;
-        if (!line && !col && !chars) return;
+        const { line, col, chars, words } = this.footerOptions;
+        if (!line && !col && !chars && !words) return;
         this.footer = new Footer(this.editorContainer, this.footerOptions);
         this.footer.update(this.usertextarea);
 
