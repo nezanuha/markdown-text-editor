@@ -70,6 +70,7 @@
 
 .editor-textarea {
     font: inherit;
+    box-sizing: border-box;
     scrollbar-gutter: stable;
 }
 
