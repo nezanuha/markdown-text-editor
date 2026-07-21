@@ -68,6 +68,7 @@
 
 .editor-textarea {
     font: inherit;
+    scrollbar-gutter: stable;
 }
 
 .textarea-wrapper:has(.display-layer) .editor-textarea::selection {

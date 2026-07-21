@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ImageTool**: Selecting a full `![alt](url)` image silently stripped it to plain text instead of opening the modal pre-filled for editing
 - **ImageTool**: Selecting only the alt text inside `![alt](url)` caused nested syntax like `![![alt](url)](newurl)`. The selection now auto-expands to cover the full image before opening the modal
 - **Footer**: Configuring `footer` with only `words: true` (and all other options false) showed no footer. The `words` option is now included in the visibility check
+- **Split view scrollbar**: In fullscreen preview mode, the textarea scrollbar appeared in the middle of the screen and overlapped the preview panel content
+- **scrollToView**: After clicking a toolbar button, the editor scrolled to the wrong line when content had actual newlines
 
 ## [1.5.2] - 2026-07-13
 

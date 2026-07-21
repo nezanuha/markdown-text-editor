@@ -325,13 +325,9 @@ class MarkdownEditor {
         const textarea = this.usertextarea;
         const selectionStart = textarea.selectionStart;
 
-        if (!this._lineHeight) {
-            this._lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
-        }
-
-        const lineHeight = this._lineHeight;
+        const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
+        const currentLine = textarea.value.substring(0, selectionStart).split('\n').length - 1;
         const rowsInView = Math.floor(textarea.clientHeight / lineHeight);
-        const currentLine = Math.floor(selectionStart / textarea.cols);
         textarea.scrollTop = (currentLine - Math.floor(rowsInView / 2)) * lineHeight;
     }
     
