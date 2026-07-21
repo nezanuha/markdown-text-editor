@@ -74,7 +74,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "diff": "^9.0.0",
     "frutjam": "^2.2.5",
-    "postcss": "^8.5.20",
+    "postcss": "^8.5.21",
     "tailwindcss": "^4.3.3",
     "vite": "^8.1.5",
     "vite-plugin-css-injected-by-js": "^5.0.2"
