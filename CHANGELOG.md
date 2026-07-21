@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- **Preview prose styles**: Typography styles in the preview pane are no longer blocked by `not-prose` on any ancestor element in the host page. The typography plugin now uses an internal exclusion class (`not-mte-prose`) so third-party `not-prose` usage has no effect on the editor
 
 ## [1.5.3] - 2026-07-21
 

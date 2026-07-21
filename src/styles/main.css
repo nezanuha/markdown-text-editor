@@ -5,7 +5,9 @@
     reset: false;
     root: .markdown-editor-wrapper;
 };
-@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/typography" {
+    className: mte-prose;
+};
 
 /*
   @tailwindcss/node hardcodes Safari 16.4 as its LightningCSS target, which
