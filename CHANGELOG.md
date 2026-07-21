@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.5.4] - 2026-07-21
+
 ### Fixed
 
 - **Preview prose styles**: Typography styles in the preview pane are no longer blocked by `not-prose` on any ancestor element in the host page. The typography plugin now uses an internal exclusion class (`not-mte-prose`) so third-party `not-prose` usage has no effect on the editor
@@ -391,7 +395,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.3...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.4...HEAD
+[1.5.4]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.3...v1.5.4
 [1.5.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.2...v1.5.3
 [1.5.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.0...v1.5.1
