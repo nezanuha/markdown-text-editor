@@ -57,7 +57,7 @@ export default class ShortcutManager {
         // F11 → toggle fullscreen when editor is focused or already in fullscreen
         if (e.key === 'F11') {
             const editorFocused = this.editor.editorContainer.contains(document.activeElement);
-            const inFullscreen = this.editor.editorContainer.classList.contains('fj:h-dvh');
+            const inFullscreen = this.editor.editorContainer.classList.contains('is-fullscreen');
             if (editorFocused || inFullscreen) {
                 e.preventDefault();
                 this.editor.editorContainer.querySelector('.preview-btn')?.click();

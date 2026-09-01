@@ -80,3 +80,12 @@
     caret-color: var(--color-primary);
 }
 
+.markdown-editor-wrapper.is-fullscreen {
+    position: fixed;
+    top: 0;
+    inset-inline: 0;
+    height: 100dvh;
+    resize: none;
+    border-radius: 0px;
+    z-index: var(--mte-fullscreen-z-index, 10000);
+}

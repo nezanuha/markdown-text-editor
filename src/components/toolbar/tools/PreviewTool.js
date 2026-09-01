@@ -35,11 +35,7 @@ class PreviewTool extends MakeTool {
 
         const textareaWrapper = editorDiv.querySelector(".textarea-wrapper");
 
-        editorDiv.parentNode.classList.toggle('fj:fixed');
-        editorDiv.parentNode.classList.toggle('fj:top-0');
-        editorDiv.parentNode.classList.toggle('fj:inset-x-0');
-        editorDiv.parentNode.classList.toggle('fj:rounded-md');
-        editorDiv.parentNode.classList.toggle('fj:z-999');
+        editorDiv.parentNode.classList.remove('is-fullscreen');
 
         editorDiv.classList.remove('fj:md:grid-cols-2');
         previewWrapper.classList.add('fj:hidden');
@@ -54,8 +50,6 @@ class PreviewTool extends MakeTool {
         previewWrapper.classList.remove('fj:min-h-0');
 
         document.querySelector("body").classList.remove('fj:overflow-hidden');
-
-        editorDiv.parentNode.classList.remove('fj:h-dvh', 'fj:resize-none');
 
         document.removeEventListener('keydown', this._escHandler);
 
@@ -80,17 +74,14 @@ class PreviewTool extends MakeTool {
 
         const textareaWrapper = editorDiv.querySelector(".textarea-wrapper");
 
-        editorDiv.parentNode.classList.toggle('fj:fixed');
-        editorDiv.parentNode.classList.toggle('fj:top-0');
-        editorDiv.parentNode.classList.toggle('fj:inset-x-0');
-        editorDiv.parentNode.classList.toggle('fj:rounded-md');
-        editorDiv.parentNode.classList.toggle('fj:z-999');
+        editorDiv.parentNode.classList.add('is-fullscreen');
 
         editorDiv.classList.add('fj:md:grid-cols-2');
         previewWrapper.classList.remove('fj:hidden');
         textareaWrapper.classList.add("fj:hidden", "fj:md:grid");
 
-        // Clear inline height so fj:h-dvh (added below) can take effect
+        // Clear inline height set by _autoGrow. An inline style would beat
+        // the height in the .is-fullscreen rule.
         this.editor.editorContainer.style.height = '';
 
         textareaWrapper.querySelector("textarea").classList.add("fj:h-full!");
@@ -102,8 +93,6 @@ class PreviewTool extends MakeTool {
         previewWrapper.classList.add('fj:min-h-0');
 
         document.querySelector("body").classList.add('fj:overflow-hidden');
-
-        editorDiv.parentNode.classList.add('fj:h-dvh', 'fj:resize-none');
 
         this._escHandler = (e) => {
             if (e.key === 'Escape') this.applySyntax();

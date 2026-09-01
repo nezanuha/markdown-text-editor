@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Added
+
+- **`style` option**: Sets CSS variables and properties on the editor from JavaScript, so a single editor can be styled at initialisation without adding a stylesheet rule
+- **`--mte-fullscreen-z-index`**: Sets the editor's fullscreen stacking order. Override it on `.markdown-editor-wrapper` in your own stylesheet
+
+### Changed
+
+- **Fullscreen corners**: The editor now sits flush to the viewport edges in fullscreen instead of keeping a small border radius
+
+### Fixed
+
+- **Fullscreen z-index**: Fullscreen mode used a hardcoded `z-index: 999`, below the range UI frameworks reserve for fixed headers and overlays, so page toolbars painted over the editor. The default is now `10000` ([#37](https://github.com/nezanuha/markdown-text-editor/issues/37))
 
 ## [1.5.4] - 2026-07-21
 

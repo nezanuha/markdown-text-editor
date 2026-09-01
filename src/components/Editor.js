@@ -108,6 +108,15 @@ class MarkdownEditor {
             ?? this.usertextarea.closest('[data-theme]')?.getAttribute('data-theme');
         if (theme) this.editorContainer.setAttribute('data-theme', theme);
         this.editorContainer.style.minHeight = (this.options.minHeight ?? 200) + 'px';
+
+        // Any CSS variable or property, applied to the wrapper. One option
+        // instead of a dedicated option per variable.
+        if (this.options.style) {
+            for (const [prop, value] of Object.entries(this.options.style)) {
+                this.editorContainer.style.setProperty(prop, String(value));
+            }
+        }
+
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
 
         this.markdownEditorDiv = document.createElement('div');
@@ -394,7 +403,7 @@ class MarkdownEditor {
     }
 
     _autoGrow() {
-        if (this.editorContainer.classList.contains('fj:h-dvh')) return;
+        if (this.editorContainer.classList.contains('is-fullscreen')) return;
 
         const textarea = this.usertextarea;
         // Shrink to 1px to measure natural content height (bypasses h-full)
