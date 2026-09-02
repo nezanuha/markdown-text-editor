@@ -115,14 +115,6 @@ class MarkdownEditor {
 
         this.editorContainer.style.minHeight = (this.options.minHeight ?? 200) + 'px';
 
-        // Any CSS variable or property, applied to the wrapper. One option
-        // instead of a dedicated option per variable.
-        if (this.options.style) {
-            for (const [prop, value] of Object.entries(this.options.style)) {
-                this.editorContainer.style.setProperty(prop, String(value));
-            }
-        }
-
         this.usertextarea.parentNode.insertBefore(this.editorContainer, this.usertextarea);
 
         this.markdownEditorDiv = document.createElement('div');

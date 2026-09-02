@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **`style` option**: Sets CSS variables and properties on the editor from JavaScript, so a single editor can be styled at initialisation without adding a stylesheet rule
 - **`--mte-fullscreen-z-index`**: Sets the editor's fullscreen stacking order. Override it on `.markdown-editor-wrapper` in your own stylesheet
 - **`data-editor` attribute**: The editor now mirrors its textarea's id, so a single editor can be targeted in CSS with `[data-editor="my-textarea-id"]` when several are on one page
 
