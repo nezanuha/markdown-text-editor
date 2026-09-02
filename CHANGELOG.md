@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.6.0] - 2026-09-02
+
 ### Added
 
 - **`--mte-fullscreen-z-index`**: Sets the editor's fullscreen stacking order. Override it on `.markdown-editor-wrapper` in your own stylesheet
@@ -406,7 +410,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.4...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.4...v1.6.0
 [1.5.4]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.3...v1.5.4
 [1.5.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.2...v1.5.3
 [1.5.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.1...v1.5.2
