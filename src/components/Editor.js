@@ -107,6 +107,12 @@ class MarkdownEditor {
         const theme = this.options.theme
             ?? this.usertextarea.closest('[data-theme]')?.getAttribute('data-theme');
         if (theme) this.editorContainer.setAttribute('data-theme', theme);
+
+        // Mirror the textarea's id so a single editor can be targeted in CSS.
+        // Copied as a data attribute, not an id, so getElementById still
+        // resolves to the textarea.
+        if (this.usertextarea.id) this.editorContainer.dataset.editor = this.usertextarea.id;
+
         this.editorContainer.style.minHeight = (this.options.minHeight ?? 200) + 'px';
 
         // Any CSS variable or property, applied to the wrapper. One option
