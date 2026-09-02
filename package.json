@@ -65,8 +65,8 @@
     "url": "https://github.com/nezanuha/markdown-text-editor/issues"
   },
   "dependencies": {
-    "dompurify": "^3.4.12",
-    "marked": "~18.0.7"
+    "dompurify": "^3.4.14",
+    "marked": "~18.0.11"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
@@ -74,9 +74,9 @@
     "@tailwindcss/vite": "^4.3.3",
     "diff": "^9.0.0",
     "frutjam": "^2.2.5",
-    "postcss": "^8.5.21",
+    "postcss": "^8.5.26",
     "tailwindcss": "^4.3.3",
-    "vite": "^8.1.5",
+    "vite": "^8.2.2",
     "vite-plugin-css-injected-by-js": "^5.0.2"
   }
 }
