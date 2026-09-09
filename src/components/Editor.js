@@ -1,5 +1,5 @@
 import '../styles/main.css';
-import { marked } from 'marked';
+import { Marked } from 'marked';
 import DOMPurify from 'dompurify';
 import Toolbar from './toolbar/Toolbar.js';
 import Preview from './Preview.js';
@@ -10,9 +10,9 @@ import ListManager from '../utils/ListManager.js';
 import ShortcutManager from '../utils/ShortcutManager.js';
 import FindReplace from '../utils/FindReplace.js';
 
-marked.setOptions({
-    breaks: true
-});
+// Own instance rather than marked.setOptions(), which would mutate the shared
+// singleton and silently change behaviour for a host app that also uses marked.
+const defaultRenderer = new Marked({ breaks: true });
 
 class MarkdownEditor {
     constructor(selector, options = {}) {
@@ -223,12 +223,28 @@ class MarkdownEditor {
         if (!this.preview) return;
         clearTimeout(this.previewTimer);
         this.previewTimer = setTimeout(() => {
-            this.previewContent.innerHTML = DOMPurify.sanitize(marked(this.usertextarea.value));
+            this.previewContent.innerHTML = this._renderMarkdown(this.usertextarea.value);
             this.wirePreviewCheckboxes();
             const textarea = this.usertextarea;
             const ratio = textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight);
             this.previewContent.scrollTop = ratio * (this.previewContent.scrollHeight - this.previewContent.clientHeight);
         }, 150); // 150ms delay feels instant but saves CPU
+    }
+
+    _renderMarkdown(markdown) {
+        const render   = this.options.renderer  ?? (md   => defaultRenderer.parse(md));
+        const sanitize = this.options.sanitizer ?? (html => DOMPurify.sanitize(html));
+        const html = render(markdown);
+
+        // Clickable checkboxes are matched by index against task-list lines, so a
+        // custom renderer that emits none breaks them silently. Warn once.
+        if (this.options.renderer && !this._taskListWarned
+            && /^\s*[-*] \[[ xX]\] /m.test(markdown) && !/type=["']?checkbox/.test(html)) {
+            this._taskListWarned = true;
+            console.warn('[MarkdownEditor] Task list syntax found, but the custom renderer emitted no checkboxes. Clickable checkboxes in the preview need a task-list plugin, e.g. markdown-it-task-lists.');
+        }
+
+        return sanitize(html);
     }
 
     wirePreviewCheckboxes() {
@@ -421,7 +437,7 @@ class MarkdownEditor {
         this._autoGrow();
         this.renderHybrid();
         if (this.preview) {
-            this.previewContent.innerHTML = DOMPurify.sanitize(marked(this.usertextarea.value));
+            this.previewContent.innerHTML = this._renderMarkdown(this.usertextarea.value);
             this.wirePreviewCheckboxes();
         }
     }

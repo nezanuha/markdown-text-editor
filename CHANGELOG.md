@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Added
+
+- **`renderer` option**: Use a different markdown parser for the preview, such as markdown-it. Receives the markdown, returns HTML. Preview only, hybrid mode is unchanged ([#39](https://github.com/nezanuha/markdown-text-editor/issues/39))
+- **`sanitizer` option**: Use a different HTML sanitizer, or allow tags DOMPurify strips by default such as `<iframe>` for video embeds. DOMPurify still runs if you only set `renderer` ([#39](https://github.com/nezanuha/markdown-text-editor/issues/39))
+
+### Fixed
+
+- **Shared `marked` settings**: The editor changed marked's global options, which also affected apps that used marked directly. It now uses its own instance
 
 ## [1.6.0] - 2026-09-02
 
