@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-09-10
+
 ### Added
 
 - **TypeScript definitions**: The package now ships types, so options, toolbar entries and variable shapes are checked and autocompleted. A mistyped tool name is a compile error rather than a silently missing button
@@ -419,7 +421,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.4...v1.6.0
 [1.5.4]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.3...v1.5.4
 [1.5.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.2...v1.5.3
