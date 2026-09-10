@@ -2,7 +2,7 @@
   "name": "markdown-text-editor",
   "version": "1.7.0",
   "type": "module",
-  "description": "Lightweight Markdown editor with hybrid WYSIWYG mode, real-time preview, and zero-config setup. Works with any backend via native textarea.",
+  "description": "Lightweight Markdown editor with hybrid WYSIWYG mode, real-time preview, and zero-config setup. TypeScript types included, pluggable renderer. Works with any backend via native textarea.",
   "funding": "https://ko-fi.com/nezanuha",
   "main": "./dist/markdown-text-editor.umd.js",
   "module": "./dist/markdown-text-editor.es.js",
@@ -60,7 +60,12 @@
     "csp compatible",
     "form markdown editor",
     "live preview",
-    "mde"
+    "mde",
+    "typescript",
+    "markdown-it",
+    "template editor",
+    "merge tags",
+    "placeholders"
   ],
   "author": "Nezanuha",
   "license": "MIT",
