@@ -30,7 +30,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "prepublishOnly": "npm run build",
-    "postversion": "git push origin main --tags"
+    "postversion": "git push origin main --tags",
+    "test": "node test/smoke.mjs"
   },
   "publishConfig": {
     "provenance": true,
@@ -74,6 +75,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "diff": "^9.0.0",
     "frutjam": "^2.2.5",
+    "happy-dom": "^20.14.3",
     "postcss": "^8.5.26",
     "tailwindcss": "^4.3.3",
     "vite": "^8.2.2",
