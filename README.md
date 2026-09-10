@@ -77,7 +77,7 @@ That's it. Form submission, `.value` access, and all native textarea behaviour w
 
 ## ✨ Features
 
-- 🔌 **Native Form Integration** — Works exactly like a standard `<textarea>`. No complex APIs — just use `.value` or the `name` attribute. Compatible with Django, Laravel, PHP, Rails, Node.js
+- 🔌 **Native Form Integration** — Works exactly like a standard `<textarea>`. No complex APIs — just use `.value` or the `name` attribute. Compatible with Django, Laravel, PHP, Rails, Node.js, and with React or Vue via a ref and `destroy()` on unmount
 - 🔀 **WYSIWYG Hybrid Mode** — Renders bold, italic, headings, and code live as you type while keeping the underlying Markdown. Switch to plain mode for raw syntax editing
 - ⚡ **Live Preview** — Full side-by-side Markdown preview with clickable task list checkboxes that sync back to the source instantly
 - 🔧 **Bring Your Own Renderer** — Swap marked for markdown-it or any other parser so the preview matches whatever your backend renders. The sanitizer is replaceable too, and DOMPurify still runs by default
@@ -138,6 +138,17 @@ const editor = new MarkdownEditor('#markdown-editor', {
 // Removes editor UI, restores original textarea, cleans up all event listeners
 editor.destroy();
 ```
+
+In React, create the editor in an effect and return `destroy` as the cleanup — that also covers StrictMode running effects twice in development:
+
+```jsx
+useEffect(() => {
+    const editor = new MarkdownEditor(ref.current, { onChange });
+    return () => editor.destroy();
+}, []);
+```
+
+Use `defaultValue`, not `value`. The editor writes to the textarea directly, so a controlled binding (or Vue's `:value`) would overwrite what the user is typing. Full React and Vue examples are in the [documentation](https://frutjam.com/community/plugins/markdown-editor).
 
 ## 📖 Documentation
 
