@@ -23,7 +23,7 @@ Markdown is a lightweight markup language with plain-text formatting syntax. It 
 
 ## Code Example
 
-Here’s an example of a simple Python function:
+Here's an example of a simple Python function:
 
 ```python
 def greet(name):
@@ -49,13 +49,17 @@ Hi {{customer.name}} ({{customer.email}}), invoice {{invoice.number}} is dated {
         const options = {
             placeholder: 'Start writing...',
             mode: 'hybrid', // default plain
-            variables: [
-                { label: 'Today', value: '{{today}}', sample: '10 September 2026' },
-                { label: 'Customer', items: [
-                    { label: 'Name',  value: '{{customer.name}}',  sample: 'Hannes' },
-                    { label: 'Email', value: '{{customer.email}}', sample: 'hannes@example.com' },
+            toolbar: [
+                'heading', 'bold', 'italic', 'ul', 'ol', 'checklist', 'link',
+                { variables: [
+                    { label: 'Today', value: '{{today}}', sample: '10 September 2026' },
+                    { label: 'Customer', items: [
+                        { label: 'Name',  value: '{{customer.name}}',  sample: 'Hannes' },
+                        { label: 'Email', value: '{{customer.email}}', sample: 'hannes@example.com' },
+                    ]},
+                    { label: 'Invoice No', value: '{{invoice.number}}' }, // no sample, stays raw
                 ]},
-                { label: 'Invoice No', value: '{{invoice.number}}' }, // no sample, stays raw
+                'preview'
             ],
             // indent: {
             //     useTabs: false, // ❌ no tabs — use spaces

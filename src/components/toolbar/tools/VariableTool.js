@@ -14,9 +14,10 @@ class VariableTool extends MakeTool {
     }
 
     createButton() {
-        const variables = Array.isArray(this.editor.options.variables)
-            ? this.editor.options.variables
-            : [];
+        // Parsed by the editor at construction; reading it here rather than from
+        // the config argument avoids MakeTool's constructor ordering, which calls
+        // createButton() before any field assigned after super() exists.
+        const variables = this.editor.variables ?? [];
 
         // Nothing usable configured means no button at all, not an empty dropdown
         if (!flattenVariables(variables).length) return null;

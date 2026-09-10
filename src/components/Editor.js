@@ -22,6 +22,7 @@ class MarkdownEditor {
         this.mode = options.mode || 'plain';
         this.preview = (this.options.toolbar) ? this.options.toolbar.includes('preview') : true;
         this.footerOptions = this._parseFooterOptions(options.footer);
+        this.variables = this._parseVariables(options.toolbar);
         this.previewTimer = null;
         this.init();
         this.undoRedoManager = new UndoRedoManager(this);
@@ -29,6 +30,17 @@ class MarkdownEditor {
         this.indentManager = new IndentManager(this);
         this.shortcutManager = new ShortcutManager(this);
         this.findReplace = new FindReplace(this);
+    }
+
+    /**
+     * Variables are configured inline in the toolbar as { variables: [...] },
+     * but the preview needs them before the toolbar exists, since createEditor()
+     * renders first. Read them from the toolbar array at construction instead.
+     */
+    _parseVariables(toolbar) {
+        const entry = (Array.isArray(toolbar) ? toolbar : [])
+            .find(tool => tool && typeof tool === 'object' && Array.isArray(tool.variables));
+        return entry ? entry.variables : [];
     }
 
     _parseFooterOptions(footer) {
@@ -238,7 +250,7 @@ class MarkdownEditor {
 
         // Variables that declare a sample are shown as that sample in the preview.
         // Only this copy is affected; the textarea keeps the real placeholders.
-        const source = applyVariableSamples(markdown, this.options.variables);
+        const source = applyVariableSamples(markdown, this.variables);
         const html = render(source);
 
         // Clickable checkboxes are matched by index against task-list lines, so a
@@ -328,7 +340,6 @@ class MarkdownEditor {
                 // Rich Media/Links
                 'link',
                 'image',
-                'variables',
                 
                 // View/Preview (Usually far right)
                 'preview'
