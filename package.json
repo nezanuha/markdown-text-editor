@@ -11,6 +11,7 @@
   "jsdelivr": "./dist/markdown-text-editor.min.js",
   "exports": {
     ".": {
+      "types": "./types/index.d.ts",
       "import": "./dist/markdown-text-editor.es.js",
       "require": "./dist/markdown-text-editor.umd.js",
       "default": "./dist/markdown-text-editor.umd.js"
@@ -18,6 +19,7 @@
   },
   "files": [
     "dist/",
+    "types/",
     "README.md",
     "LICENSE"
   ],
@@ -31,7 +33,8 @@
     "preview": "vite preview",
     "prepublishOnly": "npm run build",
     "postversion": "git push origin main --tags",
-    "test": "node test/smoke.mjs"
+    "test": "node test/smoke.mjs",
+    "typecheck": "tsc --noEmit --strict --lib es2020,dom --moduleResolution bundler --module esnext test/types.test.ts"
   },
   "publishConfig": {
     "provenance": true,
@@ -78,7 +81,9 @@
     "happy-dom": "^20.14.3",
     "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
     "vite": "^8.2.2",
     "vite-plugin-css-injected-by-js": "^5.0.2"
-  }
+  },
+  "types": "./types/index.d.ts"
 }

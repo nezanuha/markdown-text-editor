@@ -150,6 +150,10 @@ useEffect(() => {
 
 Use `defaultValue`, not `value`. The editor writes to the textarea directly, so a controlled binding (or Vue's `:value`) would overwrite what the user is typing. Full React and Vue examples are in the [documentation](https://frutjam.com/community/plugins/markdown-editor).
 
+The same two rules cover Svelte, Angular and anything else: don't bind the value, and call `destroy()` on unmount. In Angular, `onChange` fires outside the zone, so wrap it in `zone.run()` for change detection to notice.
+
+Options are read once when the editor is constructed. Changing them later has no effect — destroy the editor and create a new one instead.
+
 ## 📖 Documentation
 
 Full API reference, configuration options, theming guide, and advanced image upload docs:

@@ -33,3 +33,6 @@ jobs:
       # is not simulated, so anything visual still needs a browser.
       - name: Test
         run: npm test
+
+      - name: Typecheck
+        run: npm run typecheck
