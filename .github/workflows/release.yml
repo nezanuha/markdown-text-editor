@@ -25,6 +25,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Build explicitly rather than leaving it to prepublishOnly, because the
+      # tests run against dist/ and must not publish an untested bundle
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
       - name: Publish to npm
         run: npm publish
 
