@@ -7,6 +7,7 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
 <body class="p-4 lg:p-12">
+<nav class="mb-6 text-sm"><a href="/demo/renderer.html" class="underline underline-offset-2">renderer / sanitizer demo &rarr;</a></nav>
     <form method="post" class="flex flex-col gap-4">
         <textarea class="editor h-48" rows="5" placeholder="Enter your text" id="notes">
 # Markdown Editor
@@ -28,6 +29,10 @@ Here’s an example of a simple Python function:
 def greet(name):
     return f"Hello, {name}!"
 ```
+
+## Variables
+
+Hi {{customer.name}} ({{customer.email}}), invoice {{invoice.number}} is dated {{today}}.
         </textarea>
         <button type="button" class="get-markdown btn-primary btn-sm self-end">Get Markdown</button>
     </form>
@@ -44,6 +49,14 @@ def greet(name):
         const options = {
             placeholder: 'Start writing...',
             mode: 'hybrid', // default plain
+            variables: [
+                { label: 'Today', value: '{{today}}', sample: '10 September 2026' },
+                { label: 'Customer', items: [
+                    { label: 'Name',  value: '{{customer.name}}',  sample: 'Hannes' },
+                    { label: 'Email', value: '{{customer.email}}', sample: 'hannes@example.com' },
+                ]},
+                { label: 'Invoice No', value: '{{invoice.number}}' }, // no sample, stays raw
+            ],
             // indent: {
             //     useTabs: false, // ❌ no tabs — use spaces
             //     tabSize: 2,     // number of spaces per indent

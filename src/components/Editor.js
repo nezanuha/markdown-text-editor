@@ -9,6 +9,7 @@ import IndentManager from '../utils/IndentManager.js';
 import ListManager from '../utils/ListManager.js';
 import ShortcutManager from '../utils/ShortcutManager.js';
 import FindReplace from '../utils/FindReplace.js';
+import { applyVariableSamples } from '../utils/variables.js';
 
 // Own instance rather than marked.setOptions(), which would mutate the shared
 // singleton and silently change behaviour for a host app that also uses marked.
@@ -234,12 +235,16 @@ class MarkdownEditor {
     _renderMarkdown(markdown) {
         const render   = this.options.renderer  ?? (md   => defaultRenderer.parse(md));
         const sanitize = this.options.sanitizer ?? (html => DOMPurify.sanitize(html));
-        const html = render(markdown);
+
+        // Variables that declare a sample are shown as that sample in the preview.
+        // Only this copy is affected; the textarea keeps the real placeholders.
+        const source = applyVariableSamples(markdown, this.options.variables);
+        const html = render(source);
 
         // Clickable checkboxes are matched by index against task-list lines, so a
         // custom renderer that emits none breaks them silently. Warn once.
         if (this.options.renderer && !this._taskListWarned
-            && /^\s*[-*] \[[ xX]\] /m.test(markdown) && !/type=["']?checkbox/.test(html)) {
+            && /^\s*[-*] \[[ xX]\] /m.test(source) && !/type=["']?checkbox/.test(html)) {
             this._taskListWarned = true;
             console.warn('[MarkdownEditor] Task list syntax found, but the custom renderer emitted no checkboxes. Clickable checkboxes in the preview need a task-list plugin, e.g. markdown-it-task-lists.');
         }
@@ -323,6 +328,7 @@ class MarkdownEditor {
                 // Rich Media/Links
                 'link',
                 'image',
+                'variables',
                 
                 // View/Preview (Usually far right)
                 'preview'

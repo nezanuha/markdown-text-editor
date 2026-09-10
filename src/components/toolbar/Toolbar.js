@@ -17,6 +17,7 @@ import CodeTool from './tools/CodeTool.js';
 import CodeBlockTool from './tools/CodeBlockTool.js';
 import HrTool from './tools/HrTool.js';
 import TableTool from './tools/TableTool.js';
+import VariableTool from './tools/VariableTool.js';
 
 class Toolbar {
     constructor(editor, options) {
@@ -48,7 +49,8 @@ class Toolbar {
             undo: UndoTool,
             redo: RedoTool,
             indent: IndentTool,
-            outdent: OutdentTool
+            outdent: OutdentTool,
+            variables: VariableTool
         };
 
         this.options.forEach(tool => {
@@ -64,7 +66,8 @@ class Toolbar {
         
             if (ToolClass) {
                 const toolInstance = new ToolClass(this.editor, config);
-                this.toolbar.appendChild(toolInstance.button);
+                // A tool may decline to render, e.g. variables with nothing configured
+                if (toolInstance.button) this.toolbar.appendChild(toolInstance.button);
             }
         });
 

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`variables` option**: Adds a toolbar dropdown for inserting placeholders such as `{{customer.name}}`, so whoever writes a template picks from a list of readable names instead of remembering the syntax. Entries can be grouped, and any entry given a `sample` shows that sample in the preview while the saved text keeps the placeholder ([#38](https://github.com/nezanuha/markdown-text-editor/discussions/38))
 - **`renderer` option**: Use a different markdown parser for the preview, such as markdown-it. Receives the markdown, returns HTML. Preview only, hybrid mode is unchanged ([#39](https://github.com/nezanuha/markdown-text-editor/issues/39))
 - **`sanitizer` option**: Use a different HTML sanitizer, or allow tags DOMPurify strips by default such as `<iframe>` for video embeds. DOMPurify still runs if you only set `renderer` ([#39](https://github.com/nezanuha/markdown-text-editor/issues/39))
 

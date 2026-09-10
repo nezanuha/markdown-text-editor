@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>Renderer / Sanitizer Demo</title>
+<script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+
+<!-- third-party renderers and sanitizer, from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/markdown-it@14/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2/dist/markdown-it-task-lists.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+</head>
+<body class="p-4 lg:p-12 space-y-10">
+
+<nav class="text-sm"><a href="/demo/" class="underline underline-offset-2">&larr; main demo</a></nav>
+
+<h1 class="text-2xl font-semibold">renderer / sanitizer</h1>
+
+<section class="space-y-2">
+  <h3 class="font-medium">1. Default (marked)</h3>
+  <p class="text-sm opacity-70">Baseline. Checkboxes clickable, script stripped.</p>
+  <textarea class="h-40" id="ed1" rows="8"># Heading
+
+- [ ] task one
+- [x] task two
+
+<script>alert('xss')</script></textarea>
+</section>
+
+<section class="space-y-2">
+  <h3 class="font-medium">2. markdown-it + task-lists</h3>
+  <p class="text-sm opacity-70">Checkboxes should still work, and linkify should turn the bare URL into a link — marked would not.</p>
+  <textarea class="h-40" id="ed2" rows="8"># Heading
+
+- [ ] task one
+- [x] task two
+
+www.example.com becomes a link with linkify</textarea>
+</section>
+
+<section class="space-y-2">
+  <h3 class="font-medium">3. markdown-it without the task-lists plugin</h3>
+  <p class="text-sm opacity-70">Open the console. Expect exactly one warning, no matter how much you type.</p>
+  <textarea class="h-24" id="ed3" rows="4">- [ ] this should warn</textarea>
+</section>
+
+<section class="space-y-2">
+  <h3 class="font-medium">4. iframe, default sanitizer</h3>
+  <p class="text-sm opacity-70">The iframe should be <b>stripped</b>.</p>
+  <textarea class="h-24" id="ed4" rows="4">&lt;iframe src="https://example.com"&gt;&lt;/iframe&gt;</textarea>
+</section>
+
+<section class="space-y-2">
+  <h3 class="font-medium">5. iframe, custom sanitizer with ADD_TAGS</h3>
+  <p class="text-sm opacity-70">The iframe should <b>survive</b>.</p>
+  <textarea class="h-24" id="ed5" rows="4">&lt;iframe src="https://example.com"&gt;&lt;/iframe&gt;</textarea>
+</section>
+
+<section class="space-y-2">
+  <h3 class="font-medium">6. A sanitizer that isn't DOMPurify</h3>
+  <p class="text-sm opacity-70">Proves the option isn't tied to one library. Strips every tag.</p>
+  <textarea class="h-24" id="ed6" rows="4"># Heading
+
+**bold** and <em>html</em></textarea>
+</section>
+
+<script type="module">
+    import MarkdownEditor from '/src/components/Editor.js';
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const mdPlain = window.markdownit({ html: true, linkify: true, breaks: true });
+        const mdTasks = window.markdownit({ html: true, linkify: true, breaks: true })
+                              .use(window.markdownitTaskLists);
+
+        // 1 — defaults, no options at all
+        new MarkdownEditor('#ed1');
+
+        // 2 — markdown-it with task list support
+        new MarkdownEditor('#ed2', {
+            renderer: markdown => mdTasks.render(markdown)
+        });
+
+        // 3 — markdown-it without it, should warn once
+        new MarkdownEditor('#ed3', {
+            renderer: markdown => mdPlain.render(markdown)
+        });
+
+        // 4 — iframe dropped by the default sanitizer
+        new MarkdownEditor('#ed4', {
+            renderer: markdown => mdPlain.render(markdown)
+        });
+
+        // 5 — iframe allowed through
+        new MarkdownEditor('#ed5', {
+            renderer:  markdown => mdPlain.render(markdown),
+            sanitizer: html => DOMPurify.sanitize(html, {
+                ADD_TAGS: ['iframe'],
+                ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder']
+            })
+        });
+
+        // 6 — not DOMPurify at all
+        new MarkdownEditor('#ed6', {
+            renderer:  markdown => mdPlain.render(markdown),
+            sanitizer: html => html.replace(/<[^>]*>/g, '')
+        });
+    });
+</script>
+</body>
+</html>

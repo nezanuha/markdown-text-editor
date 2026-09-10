@@ -57,7 +57,7 @@ export default defineConfig({
         sourcemap: true,
     },
     server: {
-        open: '/demo.html',
+        open: '/demo/',
         port: 3000,
     },
 });
