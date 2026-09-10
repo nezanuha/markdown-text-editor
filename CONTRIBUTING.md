@@ -23,6 +23,7 @@ Both import from `src/`, so changes hot-reload.
 ```bash
 npm run build   # tests run against dist/, so build first
 npm test
+npm run typecheck
 ```
 
 The suite constructs editors under [happy-dom](https://github.com/capricorn86/happy-dom) and asserts on the resulting DOM. It exists to catch runtime errors and structural mistakes that a build cannot — a tool that throws on construction, a button that renders when it shouldn't.
@@ -44,7 +45,10 @@ src/
       tools/               one file per toolbar button
   utils/                   undo/redo, lists, indent, shortcuts, find & replace
   styles/main.css          plain CSS on top of Tailwind + frutjam
-test/smoke.mjs
+test/
+  smoke.mjs              headless tests, run against dist/
+  types.test.ts          compile-only, proves the types match the code
+types/index.d.ts         published TypeScript definitions
 demo/
 ```
 
@@ -58,6 +62,12 @@ demo/
 For a dropdown, copy the popover pattern in `HeadingTool.js` — it already handles the roles and markup. One gotcha: `MakeTool`'s constructor calls `createButton()`, so anything your override needs must come from `this.editor`, not from a field you assign after `super()`.
 
 A tool may return `null` from `createButton()` to render nothing, as `VariableTool` does when no variables are configured.
+
+## Types
+
+`types/index.d.ts` is hand-written and published with the package. **Adding or changing an option means updating it**, or TypeScript users get a compile error on valid configuration.
+
+`test/types.test.ts` guards against drift. It never runs; it only has to compile. Valid configuration must type-check, and each `@ts-expect-error` must actually error, since an unused one is itself a compile error. `npm run typecheck` runs both, and so does CI.
 
 ## Style
 

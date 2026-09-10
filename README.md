@@ -93,6 +93,7 @@ That's it. Form submission, `.value` access, and all native textarea behaviour w
 - 🌍 **RTL Support** — Native Right-to-Left support for Arabic, Urdu, Farsi, and other RTL languages
 - 🌙 **Dark Mode & Theming** — Inherits `data-theme` from any ancestor element. Built-in light, dark, snowberry, and darkberry themes. Fully customizable via CSS variables
 - 🎛️ **Modular Toolbar** — Pick exactly which tools appear and in what order
+- 🟦 **TypeScript Ready** — Definitions ship with the package. Options, toolbar entries and variable shapes are all checked, so a mistyped tool name is a compile error rather than a silently missing button
 - 📦 **Universal Module Support** — ESM, CommonJS, UMD, and IIFE. Works with Vite, webpack, Rollup, or directly via `<script src>` CDN — no configuration needed
 - 🚀 **High Performance** — ~52KB gzipped (245KB minified). Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
 
