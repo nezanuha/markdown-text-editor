@@ -31,9 +31,9 @@ Most JavaScript markdown editors (EasyMDE, SimpleMDE, CodeMirror-based editors) 
 | Zero CSS conflicts | ✅ | ❌ |
 | RTL support | ✅ | ❌ |
 | Built-in Find & Replace | ✅ | ❌ |
+| Swap the markdown parser | ✅ | ❌ |
 | Keyboard shortcuts | ✅ | Partial |
 | Dark mode / theming | ✅ | Limited |
-| ~116KB bundle | ✅ | ~300KB+ |
 
 ## 🚀 Quick Start
 
@@ -80,19 +80,21 @@ That's it. Form submission, `.value` access, and all native textarea behaviour w
 - 🔌 **Native Form Integration** — Works exactly like a standard `<textarea>`. No complex APIs — just use `.value` or the `name` attribute. Compatible with Django, Laravel, PHP, Rails, Node.js
 - 🔀 **WYSIWYG Hybrid Mode** — Renders bold, italic, headings, and code live as you type while keeping the underlying Markdown. Switch to plain mode for raw syntax editing
 - ⚡ **Live Preview** — Full side-by-side Markdown preview with clickable task list checkboxes that sync back to the source instantly
+- 🔧 **Bring Your Own Renderer** — Swap marked for markdown-it or any other parser so the preview matches whatever your backend renders. The sanitizer is replaceable too, and DOMPurify still runs by default
+- 🏷️ **Variable Dropdown** — Give template authors a menu of readable names that insert placeholders like `{{customer.name}}`. Entries can be grouped, and a sample value can stand in for the placeholder in the preview
 - 🖼️ **Advanced Image Upload** — Upload images directly to your server or S3. Avoids heavy Base64 strings for better performance and SEO
 - 🔍 **Find & Replace** — Built-in panel (`Ctrl+F` / `Ctrl+H`) with live match counter, next/prev navigation, case-sensitive toggle, and replace all
 - ⌨️ **Keyboard Shortcuts** — `Ctrl+B`, `Ctrl+I`, `Ctrl+K`, `Ctrl+Z`, `Ctrl+1`–`Ctrl+3` for headings, and more
 - 📝 **Smart List Continuation** — GitHub-style: press `Enter` inside a list and the bullet/number continues automatically
 - 🔄 **Undo / Redo** — Full diff-based history with exact cursor restoration. Works with `Ctrl+Z`, `Ctrl+Y`, `Ctrl+Shift+Z`
 - ♿ **Accessible by Default** — `role="toolbar"`, `aria-pressed`, `aria-disabled`, `disabled`, screen-reader-friendly SVGs, and correct focus restoration on modal close
-- 🛡️ **XSS Safe** — Preview output sanitized via [DOMPurify](https://github.com/cure53/DOMPurify) before rendering
+- 🛡️ **XSS Safe** — Preview output sanitized via [DOMPurify](https://github.com/cure53/DOMPurify) before rendering, including the output of a custom renderer
 - 🛡️ **CSP Compatible** — No inline event handlers. Works with strict Content Security Policy headers
 - 🌍 **RTL Support** — Native Right-to-Left support for Arabic, Urdu, Farsi, and other RTL languages
 - 🌙 **Dark Mode & Theming** — Inherits `data-theme` from any ancestor element. Built-in light, dark, snowberry, and darkberry themes. Fully customizable via CSS variables
 - 🎛️ **Modular Toolbar** — Pick exactly which tools appear and in what order
 - 📦 **Universal Module Support** — ESM, CommonJS, UMD, and IIFE. Works with Vite, webpack, Rollup, or directly via `<script src>` CDN — no configuration needed
-- 🚀 **High Performance** — ~116KB bundle. Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
+- 🚀 **High Performance** — ~52KB gzipped (245KB minified). Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
 
 ## 🛠 Developer Workflow
 
@@ -157,6 +159,8 @@ Full API reference, configuration options, theming guide, and advanced image upl
 ## 🤝 Contributing
 
 Contributions are welcome! Bug fixes, feature requests, and improvements — open an issue or submit a pull request.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, tests, project layout, and how to add a toolbar tool.
 
 ---
 
