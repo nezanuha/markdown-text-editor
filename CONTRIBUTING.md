@@ -77,13 +77,14 @@ Toolbar buttons use frutjam utility classes prefixed `fj:`. Prefer an existing f
 
 ## Documentation
 
-The docs page lives in a separate repository:
+The documentation site is maintained separately, at
+[frutjam.com/community/plugins/markdown-editor](https://frutjam.com/community/plugins/markdown-editor).
+Its source is not in this repository, so there is nothing for you to edit there.
 
-```
-frutjam.com/frontend/templates/frontend/content/community/plugins/markdown-editor.html
-```
-
-If your change adds or alters an option, mention it in the pull request and it will be documented there. Update `README.md` only for user-visible features.
+If your change adds or alters an option, say so in the pull request and it will be
+documented on release. In this repository, update `README.md` for user-visible
+features, `CHANGELOG.md` for every change, and `types/index.d.ts` for anything that
+touches the options.
 
 ## Changelog
 
