@@ -78,7 +78,7 @@ Toolbar buttons use frutjam utility classes prefixed `fj:`. Prefer an existing f
 ## Documentation
 
 The documentation site is maintained separately, at
-[frutjam.com/community/plugins/markdown-editor](https://frutjam.com/community/plugins/markdown-editor).
+[frutjam.com/plugins/markdown-editor](https://frutjam.com/plugins/markdown-editor).
 Its source is not in this repository, so there is nothing for you to edit there.
 
 If your change adds or alters an option, say so in the pull request and it will be
