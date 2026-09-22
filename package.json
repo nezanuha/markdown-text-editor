@@ -75,15 +75,15 @@
   },
   "dependencies": {
     "dompurify": "^3.4.15",
-    "marked": "~18.0.12"
+    "marked": "~18.0.14"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
     "diff": "^9.0.0",
-    "frutjam": "^2.2.5",
-    "happy-dom": "^20.14.3",
+    "frutjam": "^2.2.6",
+    "happy-dom": "^20.14.5",
     "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
