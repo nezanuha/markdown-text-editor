@@ -13,27 +13,30 @@ A lightweight, embeddable JavaScript Markdown editor that transforms a standard 
 
 A native-first Markdown editor built on a standard textarea. No data binding, no API — just drop it in and your forms keep working as-is.
 
+**Works standalone.** No Frutjam, no Tailwind, no framework required — the styles are bundled.
+
 > **No complex APIs. No data binding. No JSON schemas.** Just a `<textarea>` that types Markdown and submits like any normal form field — enhanced with a rich toolbar, live preview, and WYSIWYG hybrid mode.
 
 ## ⭐ Why developers choose this over EasyMDE / SimpleMDE
 
-Most JavaScript markdown editors (EasyMDE, SimpleMDE, CodeMirror-based editors) replace your `<textarea>` with a custom element — which means you have to write extra code to extract the value before form submission, sync state manually, and learn a new API just to read or set content.
+Most JavaScript markdown editors (EasyMDE, SimpleMDE, CodeMirror-based editors) hide your `<textarea>` and edit a copy, writing the value back when the form is submitted. That holds up until something else needs the field: a `required` input the browser cannot focus blocks the submit entirely, and `.value` or `FormData` read before submit returns an empty string, which breaks htmx, Turbo, Livewire, autosave and unsaved-changes guards.
 
 **MarkdownEditor is different.** It sits transparently on top of your existing `<textarea>`:
 
 | Feature | MarkdownEditor | EasyMDE / SimpleMDE |
 |---|---|---|
-| Native `<textarea>` preserved | ✅ | ❌ Replaced |
-| Form submission works as-is | ✅ | ❌ Requires extra JS |
-| Get/set value via `.value` | ✅ | ❌ Custom API needed |
+| Native `<textarea>` preserved | ✅ | ❌ Hidden, edited as a copy |
+| Works with `required` fields | ✅ | ❌ Browser blocks the submit |
+| `.value` correct before submit | ✅ | ❌ Empty until the form submits |
+| Serialises with `FormData`, htmx, Turbo | ✅ | ❌ Needs the editor's own API |
 | WYSIWYG hybrid mode | ✅ | ❌ |
-| CSP-compatible (no inline JS) | ✅ | ❌ |
-| Zero CSS conflicts | ✅ | ❌ |
-| RTL support | ✅ | ❌ |
+| Inline event handlers (CSP) | ✅ None | Some |
+| RTL support | ✅ Built in | Via CodeMirror's `direction` option |
 | Built-in Find & Replace | ✅ | ❌ |
 | Swap the markdown parser | ✅ | ❌ |
 | Keyboard shortcuts | ✅ | Partial |
 | Dark mode / theming | ✅ | Limited |
+| Bundle size, gzipped | 51 KB | 107 KB (JS + CSS) |
 
 ## 🚀 Quick Start
 
