@@ -1,6 +1,6 @@
-# MarkdownEditor — Lightweight JavaScript Markdown Editor with WYSIWYG & Plain Mode
+# Markdown Text Editor
 
-### The Native-First JavaScript Markdown Editor
+### Toolbar, live preview and WYSIWYG on the textarea you already have
 
 [![npm installs][npm_installs]](https://www.npmjs.com/package/markdown-text-editor)
 [![Jsdelivr hits][jsdelivr]](https://cdn.jsdelivr.net/npm/markdown-text-editor)

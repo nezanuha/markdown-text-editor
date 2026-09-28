@@ -2,7 +2,7 @@
   "name": "markdown-text-editor",
   "version": "1.7.0",
   "type": "module",
-  "description": "Lightweight Markdown editor with hybrid WYSIWYG mode, real-time preview, and zero-config setup. TypeScript types included, pluggable renderer. Works with any backend via native textarea.",
+  "description": "A markdown editor that enhances your textarea instead of replacing it, so form submission, validation and required fields keep working. WYSIWYG hybrid mode, live preview, find and replace, RTL, TypeScript types. Works with any backend.",
   "funding": "https://ko-fi.com/nezanuha",
   "main": "./dist/markdown-text-editor.umd.js",
   "module": "./dist/markdown-text-editor.es.js",
@@ -74,7 +74,7 @@
     "url": "https://github.com/nezanuha/markdown-text-editor/issues"
   },
   "dependencies": {
-    "dompurify": "^3.4.15",
+    "dompurify": "^3.4.16",
     "marked": "~18.0.14"
   },
   "devDependencies": {
@@ -87,7 +87,7 @@
     "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
-    "vite": "^8.3.0",
+    "vite": "^8.3.1",
     "vite-plugin-css-injected-by-js": "^5.0.2"
   },
   "types": "./types/index.d.ts"
