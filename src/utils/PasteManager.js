@@ -42,7 +42,13 @@ export default class PasteManager {
 
     _onPaste(event) {
         const images = this._imageFiles(event.clipboardData);
-        if (images.length && this.editor.imageUpload) {
+        if (images.length) {
+            if (!this.editor.imageUpload) {
+                // Nothing to prevent here, a textarea cannot paste an image anyway,
+                // but say why nothing happened rather than leaving it a mystery.
+                console.warn('[MarkdownEditor] An image was pasted but no upload endpoint is configured. Add { image: { fileInput: { uploadUrl: "..." } } } to the toolbar to enable it.');
+                return;
+            }
             event.preventDefault();
             this._uploadAll(images);
             return;
@@ -61,9 +67,21 @@ export default class PasteManager {
     }
 
     _onDrop(event) {
-        const images = this._imageFiles(event.dataTransfer);
-        if (!images.length || !this.editor.imageUpload) return;
+        if (!this._carriesFiles(event.dataTransfer)) return;
+
+        // Always swallow file drops. The browser's default is to navigate to the
+        // dropped file, which would throw away everything the user has written,
+        // and dragover has already advertised the textarea as a drop target.
         event.preventDefault();
+
+        const images = this._imageFiles(event.dataTransfer);
+        if (!images.length) return;
+
+        if (!this.editor.imageUpload) {
+            console.warn('[MarkdownEditor] An image was dropped but no upload endpoint is configured. Add { image: { fileInput: { uploadUrl: "..." } } } to the toolbar to enable it.');
+            return;
+        }
+
         this._uploadAll(images);
     }
 

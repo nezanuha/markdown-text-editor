@@ -236,11 +236,17 @@ check('a URL with spaces is not treated as a link', () => {
     return !event.defaultPrevented;
 });
 
-check('pasting an image does nothing without an upload endpoint', () => {
+check('pasting an image without an upload endpoint warns and does nothing', () => {
+    let warned = '';
+    const quiet = console.warn;
+    console.warn = (...a) => { warned = a.join(' '); };
     const e = makeEditor({ toolbar: FULL_BAR }, '');
     const file = new window.File(['x'], 'a.png', { type: 'image/png' });
     const event = paste(e, { files: [file] });
-    return !event.defaultPrevented;
+    console.warn = quiet;
+    return !event.defaultPrevented
+        && e.usertextarea.value === ''
+        && /no upload endpoint is configured/.test(warned);
 });
 
 // --- renderer / sanitizer ---------------------------------------------------
@@ -344,12 +350,33 @@ await checkAsync('the failure marker is translatable', async () => {
     return e.usertextarea.value === '![Fallo la subida]()';
 });
 
+const drop = (editor, files) => {
+    const event = new window.Event('drop', { bubbles: true, cancelable: true });
+    event.dataTransfer = { files, types: files.length ? ['Files'] : [] };
+    editor.usertextarea.dispatchEvent(event);
+    return event;
+};
+
+await checkAsync('a file drop is swallowed even with no upload configured', async () => {
+    const quiet = console.warn; console.warn = () => {};
+    const e = makeEditor({ toolbar: FULL_BAR }, 'my draft');
+    const event = drop(e, [pngFile()]);
+    console.warn = quiet;
+    // Without preventDefault the browser would navigate to the file and lose the draft
+    return event.defaultPrevented && e.usertextarea.value === 'my draft';
+});
+
+await checkAsync('a non-image file drop is swallowed too', async () => {
+    const e = makeEditor({ toolbar: UPLOAD_BAR }, 'my draft');
+    const pdf = new window.File(['x'], 'a.pdf', { type: 'application/pdf' });
+    const event = drop(e, [pdf]);
+    return event.defaultPrevented && e.usertextarea.value === 'my draft';
+});
+
 await checkAsync('dropping an image uploads it too', async () => {
     stubUpload({ success: true, image_path: '/media/dropped.png' });
     const e = makeEditor({ toolbar: UPLOAD_BAR }, '');
-    const event = new window.Event('drop', { bubbles: true, cancelable: true });
-    event.dataTransfer = { files: [pngFile()], types: ['Files'] };
-    e.usertextarea.dispatchEvent(event);
+    drop(e, [pngFile()]);
     await settle(e);
     return e.usertextarea.value === '![](/media/dropped.png)';
 });
