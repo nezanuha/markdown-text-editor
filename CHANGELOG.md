@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-09-29
+
 ### Added
 
 - **Paste and drop images**: Paste a screenshot or drag an image into the editor and it uploads through the endpoint you already configured for the image tool, showing a placeholder until it lands and a visible marker if it fails. Requires `image.fileInput.uploadUrl`
@@ -431,7 +433,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.4...v1.6.0
 [1.5.4]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.3...v1.5.4
