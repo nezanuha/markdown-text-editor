@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Paste and drop images**: Paste a screenshot or drag an image into the editor and it uploads through the endpoint you already configured for the image tool, showing a placeholder until it lands. Requires `image.fileInput.uploadUrl`
+- **Paste a link onto selected text**: Select some words, paste a URL, and you get `[selected](url)` instead of the URL replacing the text
+- **`labels` option**: Translates the editor's own interface, keyed by the English text. Tooltips, menu items, modal fields and buttons. Anything left out stays in English
+
+### Fixed
+
+- **Uploads no longer discard typed alt text**: If the server returned its own `image_alt`, it overwrote whatever the user had written. A suggestion is now only used when the field was left empty
+
 ## [1.7.0] - 2026-09-10
 
 ### Added

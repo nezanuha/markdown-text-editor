@@ -28,8 +28,8 @@ class VariableTool extends MakeTool {
         btn.innerHTML = ICON;
         btn.querySelector('svg')?.setAttribute('aria-hidden', 'true');
         btn.type = 'button';
-        btn.title = 'Insert variable';
-        btn.setAttribute('aria-label', 'Insert variable');
+        btn.title = this.editor.label('Insert variable');
+        btn.setAttribute('aria-label', this.editor.label('Insert variable'));
         btn.setAttribute('aria-haspopup', 'menu');
         btn.className = 'markdown-btn variable-btn fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost fj:me-popover-toggle';
         btn.setAttribute('popovertarget', popoverId);
@@ -37,7 +37,7 @@ class VariableTool extends MakeTool {
         const popoverContent = document.createElement('div');
         popoverContent.id = popoverId;
         popoverContent.setAttribute('role', 'menu');
-        popoverContent.setAttribute('aria-label', 'Variables');
+        popoverContent.setAttribute('aria-label', this.editor.label('Variables'));
         popoverContent.className = 'fj:me-popover-content';
         popoverContent.setAttribute('popover', '');
 

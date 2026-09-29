@@ -14,7 +14,9 @@ class MakeTool {
         const svg = btn.querySelector('svg');
         if (svg) svg.setAttribute('aria-hidden', 'true');
         btn.type = 'button';
-        btn.title = this.title;
+        // The class stays keyed on the English title so styling and tests are
+        // unaffected by translation; only what the user sees is translated.
+        btn.title = this.title ? this.editor.label(this.title) : this.title;
         btn.className = `markdown-btn ${btnClass} fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost`;
         btn.addEventListener('click', (event) => this.applySyntax(event));  // Default to 'both', can change in child
 

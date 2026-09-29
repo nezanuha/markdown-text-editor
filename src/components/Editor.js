@@ -9,6 +9,7 @@ import IndentManager from '../utils/IndentManager.js';
 import ListManager from '../utils/ListManager.js';
 import ShortcutManager from '../utils/ShortcutManager.js';
 import FindReplace from '../utils/FindReplace.js';
+import PasteManager from '../utils/PasteManager.js';
 import { applyVariableSamples } from '../utils/variables.js';
 
 // Own instance rather than marked.setOptions(), which would mutate the shared
@@ -23,6 +24,7 @@ class MarkdownEditor {
         this.preview = (this.options.toolbar) ? this.options.toolbar.includes('preview') : true;
         this.footerOptions = this._parseFooterOptions(options.footer);
         this.variables = this._parseVariables(options.toolbar);
+        this.imageUpload = this._parseImageUpload(options.toolbar);
         this.previewTimer = null;
         this.init();
         this.undoRedoManager = new UndoRedoManager(this);
@@ -30,6 +32,28 @@ class MarkdownEditor {
         this.indentManager = new IndentManager(this);
         this.shortcutManager = new ShortcutManager(this);
         this.findReplace = new FindReplace(this);
+        this.pasteManager = new PasteManager(this);
+    }
+
+    /**
+     * Returns the translation for a UI string, or the string itself when none is
+     * configured. Keyed by the English text, the way gettext is, so a tool does
+     * not need to know anything about translation.
+     */
+    label(text) {
+        return this.options.labels?.[text] ?? text;
+    }
+
+    /**
+     * Upload settings live in the toolbar as { image: { fileInput: {...} } }, but
+     * paste and drop need them before the toolbar exists. Read them up front, and
+     * only when an upload endpoint is actually configured.
+     */
+    _parseImageUpload(toolbar) {
+        const entry = (Array.isArray(toolbar) ? toolbar : [])
+            .find(tool => tool && typeof tool === 'object' && tool.image);
+        const fileInput = entry?.image?.fileInput;
+        return fileInput?.uploadUrl ? fileInput : null;
     }
 
     /**
@@ -465,6 +489,7 @@ class MarkdownEditor {
         this.previewTool?.destroy();
         this.undoRedoManager?.destroy();
         this.listManager?.destroy();
+        this.pasteManager?.destroy();
 
         if (this._footerUpdate) {
             this.usertextarea.removeEventListener('input', this._footerUpdate);

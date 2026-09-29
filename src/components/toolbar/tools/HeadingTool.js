@@ -16,8 +16,8 @@ class HeadingTool extends MakeTool {
         const svg = btn.querySelector('svg');
         if (svg) svg.setAttribute('aria-hidden', 'true');
         btn.type = 'button';
-        btn.title = 'Heading';
-        btn.setAttribute('aria-label', 'Heading');
+        btn.title = this.editor.label('Heading');
+        btn.setAttribute('aria-label', this.editor.label('Heading'));
         btn.setAttribute('aria-haspopup', 'menu');
         btn.className = 'markdown-btn heading-btn fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost fj:me-popover-toggle';
         btn.setAttribute('popovertarget', popoverId);
@@ -25,7 +25,7 @@ class HeadingTool extends MakeTool {
         const popoverContent = document.createElement('div');
         popoverContent.id = popoverId;
         popoverContent.setAttribute('role', 'menu');
-        popoverContent.setAttribute('aria-label', 'Heading level');
+        popoverContent.setAttribute('aria-label', this.editor.label('Heading level'));
         popoverContent.className = 'fj:me-popover-content';
         popoverContent.setAttribute('popover', '');
 
@@ -42,7 +42,7 @@ class HeadingTool extends MakeTool {
             btn.type = 'button';
             btn.setAttribute('role', 'menuitem');
             btn.className = `fj:me-menu-item ${headingClasses[level - 1]}`;
-            btn.textContent = `Heading ${level}`;
+            btn.textContent = `${this.editor.label('Heading')} ${level}`;
             btn.addEventListener('click', () => {
                 this.applyHeading(level);
                 popoverContent.hidePopover();

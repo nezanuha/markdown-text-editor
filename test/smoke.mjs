@@ -172,6 +172,77 @@ check('the textarea keeps the real placeholders', () => {
     return e.usertextarea.value === 'Hi {{user}}';
 });
 
+// --- labels -----------------------------------------------------------------
+
+// ShortcutManager appends the shortcut, so titles read "Negrita (Ctrl+B)"
+const tooltip = (editor, cls) => editor.editorContainer.querySelector(cls).title;
+
+check('tool tooltips are translatable', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, labels: { Bold: 'Negrita', Table: 'Tabla' } });
+    return tooltip(e, '.bold-btn').startsWith('Negrita')
+        && tooltip(e, '.table-btn') === 'Tabla';
+});
+
+check('untranslated labels fall back to English', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, labels: { Bold: 'Negrita' } });
+    return tooltip(e, '.italic-btn').startsWith('Italic');
+});
+
+check('class names stay in English so styling is unaffected', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, labels: { Bold: 'Negrita' } });
+    return e.editorContainer.querySelector('.bold-btn') !== null;
+});
+
+check('heading menu items are translated', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, labels: { Heading: 'Titulo' } });
+    const wrapper = e.editorContainer.querySelector('.heading-btn').closest('.fj\\:me-popover');
+    return [...wrapper.querySelectorAll(ITEM)].some(b => b.textContent === 'Titulo 1');
+});
+
+// --- paste ------------------------------------------------------------------
+
+const paste = (editor, { text = '', files = [] } = {}) => {
+    const event = new window.Event('paste', { bubbles: true, cancelable: true });
+    event.clipboardData = { getData: () => text, files, types: files.length ? ['Files'] : ['text/plain'] };
+    editor.usertextarea.dispatchEvent(event);
+    return event;
+};
+
+check('a bare URL pasted over a selection becomes a link', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'see the docs here');
+    e.usertextarea.setSelectionRange(4, 12);      // "the docs"
+    paste(e, { text: 'https://example.com' });
+    return e.usertextarea.value === 'see [the docs](https://example.com) here';
+});
+
+check('a URL pasted with no selection is left to the browser', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'abc');
+    e.usertextarea.setSelectionRange(3, 3);
+    const event = paste(e, { text: 'https://example.com' });
+    return !event.defaultPrevented && e.usertextarea.value === 'abc';
+});
+
+check('non-URL text pasted over a selection is left to the browser', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'hello world');
+    e.usertextarea.setSelectionRange(0, 5);
+    const event = paste(e, { text: 'not a url' });
+    return !event.defaultPrevented;
+});
+
+check('a URL with spaces is not treated as a link', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'hello world');
+    e.usertextarea.setSelectionRange(0, 5);
+    const event = paste(e, { text: 'see https://example.com for more' });
+    return !event.defaultPrevented;
+});
+
+check('pasting an image does nothing without an upload endpoint', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, '');
+    const file = new window.File(['x'], 'a.png', { type: 'image/png' });
+    const event = paste(e, { files: [file] });
+    return !event.defaultPrevented;
+});
+
 // --- renderer / sanitizer ---------------------------------------------------
 
 check('custom renderer is used', () => {
@@ -197,6 +268,91 @@ check('custom sanitizer is used', () => {
 check('script tags are stripped by default', () => {
     const e = makeEditor({ toolbar: FULL_BAR }, '<script>alert(1)</scr' + 'ipt>');
     return !/<script/i.test(e.previewContent.innerHTML);
+});
+
+// --- image upload via paste and drop ----------------------------------------
+
+const checkAsync = async (name, fn) => {
+    try {
+        const result = await fn();
+        if (result === true) { passed++; return; }
+        failures.push(name + '\n      expected true, got ' + JSON.stringify(result));
+    } catch (err) {
+        failures.push(name + '\n      threw ' + err.name + ': ' + err.message);
+    }
+};
+
+const UPLOAD_BAR = [...BASE_BAR, { image: { fileInput: { uploadUrl: '/api/upload' } } }, 'preview'];
+const pngFile = () => new window.File(['x'], 'shot.png', { type: 'image/png' });
+
+// Replaces fetch for one upload, and records what the editor sent
+const stubUpload = (body) => {
+    const sent = {};
+    globalThis.fetch = async (url, init) => {
+        sent.url = url;
+        sent.method = init?.method;
+        sent.form = init?.body;
+        return { ok: true, json: async () => body };
+    };
+    return sent;
+};
+
+// The editor awaits fetch, so yield until the placeholder has been swapped out
+const settle = async (editor) => {
+    for (let i = 0; i < 20 && editor.usertextarea.value.includes('Uploading'); i++) {
+        await new Promise(r => setTimeout(r, 0));
+    }
+};
+
+await checkAsync('pasting an image uploads it and inserts the markdown', async () => {
+    const sent = stubUpload({ success: true, image_path: '/media/shot.png', image_alt: 'A screenshot' });
+    const e = makeEditor({ toolbar: UPLOAD_BAR }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return e.usertextarea.value === '![A screenshot](/media/shot.png)'
+        && sent.url === '/api/upload' && sent.method === 'POST';
+});
+
+await checkAsync('a placeholder is shown while the upload is in flight', async () => {
+    let release;
+    globalThis.fetch = () => new Promise(r => { release = r; });
+    const e = makeEditor({ toolbar: UPLOAD_BAR }, '');
+    paste(e, { files: [pngFile()] });
+    const during = e.usertextarea.value;
+    release({ ok: true, json: async () => ({ success: true, image_path: '/m/a.png' }) });
+    await settle(e);
+    return during.includes('Uploading...') && e.usertextarea.value === '![](/m/a.png)';
+});
+
+await checkAsync('the placeholder is removed when the upload fails', async () => {
+    globalThis.fetch = async () => ({ ok: false, status: 500, json: async () => ({}) });
+    const quiet = console.error; console.error = () => {};
+    const e = makeEditor({ toolbar: UPLOAD_BAR }, 'before');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    console.error = quiet;
+    return e.usertextarea.value === 'before';
+});
+
+await checkAsync('dropping an image uploads it too', async () => {
+    stubUpload({ success: true, image_path: '/media/dropped.png' });
+    const e = makeEditor({ toolbar: UPLOAD_BAR }, '');
+    const event = new window.Event('drop', { bubbles: true, cancelable: true });
+    event.dataTransfer = { files: [pngFile()], types: ['Files'] };
+    e.usertextarea.dispatchEvent(event);
+    await settle(e);
+    return e.usertextarea.value === '![](/media/dropped.png)';
+});
+
+await checkAsync('the upload placeholder is translatable', async () => {
+    let release;
+    globalThis.fetch = () => new Promise(r => { release = r; });
+    const e = makeEditor({ toolbar: UPLOAD_BAR, labels: { 'Uploading...': 'Subiendo...' } }, '');
+    paste(e, { files: [pngFile()] });
+    const during = e.usertextarea.value;
+    release({ ok: true, json: async () => ({ success: true, image_path: '/m/a.png' }) });
+    await settle(e);
+    return during.includes('Subiendo...');
 });
 
 // --- report -----------------------------------------------------------------

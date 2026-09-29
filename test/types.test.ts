@@ -40,6 +40,9 @@ const full: MarkdownEditorOptions = {
 };
 
 const minimal: MarkdownEditorOptions = {};
+const translated: MarkdownEditorOptions = {
+    labels: { Bold: 'Negrita', 'Insert variable': 'Insertar variable', 'Uploading...': 'Subiendo...' },
+};
 const noFooter: MarkdownEditorOptions = { footer: false };
 const customTheme: MarkdownEditorOptions = { theme: 'my-brand' };
 const altDisabled: MarkdownEditorOptions = { toolbar: [{ image: { altInput: false } }] };
@@ -79,8 +82,11 @@ const badRenderer: MarkdownEditorOptions = { renderer: (md: string) => 42 };
 const badSanitizer: MarkdownEditorOptions = { sanitizer: () => undefined };
 // @ts-expect-error the first argument is a selector or a textarea
 const badTarget = new MarkdownEditor(42);
+// @ts-expect-error label values are strings
+const badLabels: MarkdownEditorOptions = { labels: { Bold: 42 } };
 
 export {
+    translated, badLabels,
     full, minimal, noFooter, customTheme, altDisabled, altRequired,
     flat, grouped, entries, bySelector, byElement, textarea, container, markdown,
     badMode, badHeight, badTool, badVariable, badGroup, badRenderer, badSanitizer, badTarget,

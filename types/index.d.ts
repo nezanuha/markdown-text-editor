@@ -114,6 +114,15 @@ export interface MarkdownEditorOptions {
     onChange?: (value: string) => void;
 
     /**
+     * Translations for the editor's own interface, keyed by the English text:
+     * tooltips, menu items, modal fields and buttons. Anything not listed stays
+     * in English. CSS class names are unaffected.
+     *
+     * @example labels: { Bold: 'Negrita', 'Insert variable': 'Insertar variable' }
+     */
+    labels?: Record<string, string>;
+
+    /**
      * Replaces the markdown parser used for the preview. Must be synchronous and
      * return an HTML string. Affects the preview pane only; hybrid mode's live
      * formatting uses a separate internal renderer.

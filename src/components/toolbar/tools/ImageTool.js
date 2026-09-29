@@ -1,5 +1,6 @@
 import MakeTool from '../MakeTool.js';
 import { modal } from '../../modal.js';
+import { uploadImage } from '../../../utils/imageUpload.js';
 
 class ImageTool extends MakeTool {
     constructor(editor, config = {}) {
@@ -60,16 +61,16 @@ class ImageTool extends MakeTool {
 
         const bodyHTML = `
             <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
-                <div class="fj:font-medium">Image</div>
-                <button type="button" class="modal-close-btn fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="Close">
+                <div class="fj:font-medium">${editor.label('Image')}</div>
+                <button type="button" class="modal-close-btn fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="${editor.label('Close')}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
             <div class="fj:mt-4 fj:flex fj:flex-col fj:gap-y-4">
                 ${fileInputTag}
-                <input type="url" placeholder="URL" class="img-link-input fj:me-input fj:w-full" value="${prefillUrl}" required>
-                <input type="text" placeholder="Alt text" class="img-link-alt-input fj:me-input fj:w-full" value="${prefillAlt}" ${isAltRequired ? 'required' : ''}>
-                <button type="button" class="submit-img-link fj:me-btn fj:me-btn-sm fj:self-end">Apply</button>
+                <input type="url" placeholder="${editor.label('URL')}" class="img-link-input fj:me-input fj:w-full" value="${prefillUrl}" required>
+                <input type="text" placeholder="${editor.label('Alt text')}" class="img-link-alt-input fj:me-input fj:w-full" value="${prefillAlt}" ${isAltRequired ? 'required' : ''}>
+                <button type="button" class="submit-img-link fj:me-btn fj:me-btn-sm fj:self-end">${editor.label('Apply')}</button>
             </div>`;
 
         const modalElement = modal(event, 'fj:max-w-sm', bodyHTML, 'Image');
@@ -108,41 +109,29 @@ class ImageTool extends MakeTool {
             if (hasFile && uploadUrl) {
                 const file = fileInputSelector.files[0];
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Uploading...';
-
-                const formData = new FormData();
-                formData.append('image_file', file);
-                formData.append('image_alt', imgFileAltInput.value);
-
-                Object.keys(customParams).forEach(key => {
-                    formData.append(key, customParams[key]);
-                });
+                submitBtn.textContent = editor.label('Uploading...');
 
                 try {
-                    const res = await fetch(uploadUrl, { method: 'POST', body: formData });
-                    if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
-                    const result = await res.json();
+                    const { path, alt } = await uploadImage(file, {
+                        uploadUrl,
+                        params: customParams,
+                        alt: imgFileAltInput.value,
+                    });
 
-                    if (result.success && result.image_path) {
-                        urlInputSelector.value = result.image_path;
-                        if (result.image_alt) imgFileAltInput.value = result.image_alt;
-                    } else {
-                        alert(result.error || result.message || 'Image upload failed.');
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Apply';
-                        urlInputSelector.required = true; // Restore
-                        return;
-                    }
+                    urlInputSelector.value = path;
+                    // Only take the server's suggestion when the user wrote nothing,
+                    // so a typed description is never silently replaced.
+                    if (alt && !imgFileAltInput.value.trim()) imgFileAltInput.value = alt;
                 } catch (err) {
-                    alert('Upload failed.');
+                    alert(err.message || 'Upload failed.');
                     submitBtn.disabled = false;
-                    submitBtn.textContent = 'Apply';
+                    submitBtn.textContent = editor.label('Apply');
                     urlInputSelector.required = true; // Restore
                     return;
                 }
-                
+
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Apply';
+                submitBtn.textContent = editor.label('Apply');
             }
 
             // --- 3. FINAL INSERTION ---
