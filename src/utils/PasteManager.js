@@ -81,7 +81,10 @@ export default class PasteManager {
                 const { path, alt } = await uploadImage(file, this.editor.imageUpload);
                 this._replace(token, `![${alt}](${path})`);
             } catch (err) {
-                this._replace(token, '');
+                // Leave a visible marker rather than silently removing the
+                // placeholder. Without devtools open, a vanishing placeholder
+                // looks like nothing happened at all.
+                this._replace(token, `![${this.editor.label('Upload failed')}]()`);
                 console.error('[MarkdownEditor] Image upload failed.', err);
             }
         }

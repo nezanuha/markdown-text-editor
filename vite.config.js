@@ -36,10 +36,41 @@ function scopeGlobalCss() {
 }
 scopeGlobalCss.postcss = true;
 
+/**
+ * Dev-only stand-in for an image upload endpoint, so the demo pages can exercise
+ * paste and drop without a backend. Answers in the shape the editor expects, after
+ * a deliberate delay so the "Uploading..." placeholder is actually visible.
+ *
+ * It does not parse the upload, it just echoes a small SVG back as a data URI, so
+ * the pasted image renders in the preview and the round trip is provable.
+ */
+function mockUploadEndpoint() {
+    return {
+        name: 'mock-upload-endpoint',
+        apply: 'serve',
+        configureServer(server) {
+            server.middlewares.use('/api/upload', (req, res, next) => {
+                if (req.method !== 'POST') return next();
+                req.resume(); // drain the body, we do not need it
+                req.on('end', () => setTimeout(() => {
+                    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="90"><rect width="160" height="90" fill="#6366f1"/><text x="80" y="52" font-family="system-ui" font-size="14" fill="#fff" text-anchor="middle">uploaded</text></svg>`;
+                    res.setHeader('Content-Type', 'application/json');
+                    res.end(JSON.stringify({
+                        success: true,
+                        image_path: 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64'),
+                        image_alt: 'A placeholder returned by the mock upload endpoint',
+                    }));
+                }, 1200));
+            });
+        },
+    };
+}
+
 export default defineConfig({
     plugins: [
         tailwindcss(),
         cssInjectedByJs(),
+        mockUploadEndpoint(),
     ],
     css: {
         postcss: {

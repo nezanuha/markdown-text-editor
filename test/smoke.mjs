@@ -324,14 +324,24 @@ await checkAsync('a placeholder is shown while the upload is in flight', async (
     return during.includes('Uploading...') && e.usertextarea.value === '![](/m/a.png)';
 });
 
-await checkAsync('the placeholder is removed when the upload fails', async () => {
+await checkAsync('a failed upload leaves a visible marker, not silence', async () => {
     globalThis.fetch = async () => ({ ok: false, status: 500, json: async () => ({}) });
     const quiet = console.error; console.error = () => {};
     const e = makeEditor({ toolbar: UPLOAD_BAR }, 'before');
     paste(e, { files: [pngFile()] });
     await settle(e);
     console.error = quiet;
-    return e.usertextarea.value === 'before';
+    return e.usertextarea.value === 'before![Upload failed]()';
+});
+
+await checkAsync('the failure marker is translatable', async () => {
+    globalThis.fetch = async () => ({ ok: false, status: 500, json: async () => ({}) });
+    const quiet = console.error; console.error = () => {};
+    const e = makeEditor({ toolbar: UPLOAD_BAR, labels: { 'Upload failed': 'Fallo la subida' } }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    console.error = quiet;
+    return e.usertextarea.value === '![Fallo la subida]()';
 });
 
 await checkAsync('dropping an image uploads it too', async () => {

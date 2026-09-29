@@ -42,6 +42,13 @@ Hi {{customer.name}} ({{customer.email}}), invoice {{invoice.number}} is dated {
         <div class="output"></div>
     </div>
 
+    <div class="border-t mt-10 pt-5 space-y-3">
+        <strong class="font-medium mt-3 block">Translated interface (<code>labels</code>)</strong>
+        <p class="text-sm opacity-70">Same editor, Spanish tooltips and modal text. Hover a button, or open
+           the link dialog. The CSS class names are unchanged.</p>
+        <textarea class="translated h-32" rows="4">Pasa el cursor sobre los botones.</textarea>
+    </div>
+
     <script type="module">
         import MarkdownEditor from '/src/components/Editor.js';
 
@@ -59,6 +66,9 @@ Hi {{customer.name}} ({{customer.email}}), invoice {{invoice.number}} is dated {
                     ]},
                     { label: 'Invoice No', value: '{{invoice.number}}' }, // no sample, stays raw
                 ]},
+                // /api/upload is mocked by a dev-only plugin in vite.config.js,
+                // with a 1.2s delay so the "Uploading..." placeholder is visible
+                { image: { fileInput: { uploadUrl: '/api/upload' } } },
                 'preview'
             ],
             // indent: {
@@ -74,6 +84,27 @@ Hi {{customer.name}} ({{customer.email}}), invoice {{invoice.number}} is dated {
             // Now 'MarkdownEditor' is a constructor thanks to library.export: 'default'
             document.querySelectorAll(".editor").forEach(element => {
                 const editor = new MarkdownEditor(element, options); 
+            });
+
+            new MarkdownEditor(".translated", {
+                toolbar: ['heading', 'bold', 'italic', 'link',
+                    { image: { fileInput: { uploadUrl: '/api/upload' } } },
+                    'preview'
+                ],
+                labels: {
+                    'Heading': 'Titulo',
+                    'Bold': 'Negrita',
+                    'Italic': 'Cursiva',
+                    'Link': 'Enlace',
+                    'Image': 'Imagen',
+                    'Preview': 'Vista previa',
+                    'URL': 'Direccion',
+                    'Link text': 'Texto del enlace',
+                    'Alt text': 'Texto alternativo',
+                    'Apply': 'Aplicar',
+                    'Close': 'Cerrar',
+                    'Uploading...': 'Subiendo...',
+                },
             });
 
             document.querySelector(".get-markdown").addEventListener("click", function(e){
