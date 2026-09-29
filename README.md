@@ -40,7 +40,7 @@ Most JavaScript markdown editors (EasyMDE, SimpleMDE, CodeMirror-based editors) 
 | Swap the markdown parser | ✅ | ❌ |
 | Keyboard shortcuts | ✅ | Partial |
 | Dark mode / theming | ✅ | Limited |
-| Bundle size, gzipped | 51 KB | 107 KB (JS + CSS) |
+| Bundle size, gzipped | 53 KB | 107 KB (JS + CSS) |
 
 ## 🚀 Quick Start
 
@@ -102,7 +102,7 @@ That's it. Form submission, `.value` access, and all native textarea behaviour w
 - 🎛️ **Modular Toolbar** — Pick exactly which tools appear and in what order
 - 🟦 **TypeScript Ready** — Definitions ship with the package. Options, toolbar entries and variable shapes are all checked, so a mistyped tool name is a compile error rather than a silently missing button
 - 📦 **Universal Module Support** — ESM, CommonJS, UMD, and IIFE. Works with Vite, webpack, Rollup, or directly via `<script src>` CDN — no configuration needed
-- 🚀 **High Performance** — ~52KB gzipped (245KB minified). Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
+- 🚀 **High Performance** — ~53KB gzipped (252KB minified). Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
 
 ## 🛠 Developer Workflow
 
