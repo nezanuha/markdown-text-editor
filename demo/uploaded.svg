@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180" role="img" aria-label="Placeholder image returned by the demo upload endpoint">
-  <rect width="320" height="180" rx="8" fill="#6366f1"/>
-  <text x="160" y="88" font-family="system-ui, sans-serif" font-size="18" font-weight="600" fill="#ffffff" text-anchor="middle">uploaded</text>
-  <text x="160" y="112" font-family="system-ui, sans-serif" font-size="12" fill="#c7d2fe" text-anchor="middle">demo upload endpoint</text>
-</svg>
