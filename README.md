@@ -13,7 +13,11 @@ A lightweight, embeddable JavaScript Markdown editor that transforms a standard 
 
 A native-first Markdown editor built on a standard textarea. No data binding, no API — just drop it in and your forms keep working as-is.
 
-**Works standalone.** No Frutjam, no Tailwind, no framework required — the styles are bundled.
+**Works standalone.** No Frutjam, no Tailwind, no framework required, the styles are bundled.
+
+![Hybrid mode: headings, bold text and list markers styled live inside the textarea while the Markdown syntax stays visible](https://cdn.frutjam.com/media/plugins/hybrid-mode-markdown-editor.webp)
+
+<sub>Hybrid mode. Text is styled as you type and the Markdown stays where it is, because this is your `<textarea>`, not a copy of it.</sub>
 
 > **No complex APIs. No data binding. No JSON schemas.** Just a `<textarea>` that types Markdown and submits like any normal form field — enhanced with a rich toolbar, live preview, and WYSIWYG hybrid mode.
 
