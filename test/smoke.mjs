@@ -7,6 +7,9 @@
  *
  * Layout is not simulated, so offsetHeight and friends are always 0. Anything
  * depending on real measurement still has to be checked in a browser.
+ *
+ * DOMPurify also drops block elements (p, pre, blockquote) under happy-dom's
+ * parser, though inline ones survive. Assert on <em> or <strong>, not <pre>.
  */
 import { Window } from 'happy-dom';
 
@@ -21,7 +24,7 @@ proto.hidePopover ??= function () { this.removeAttribute('data-open'); };
 
 for (const key of ['window', 'document', 'navigator', 'HTMLElement', 'Element', 'Node',
                    'getComputedStyle', 'matchMedia', 'CustomEvent', 'Event',
-                   'MutationObserver', 'requestAnimationFrame']) {
+                   'MutationObserver', 'requestAnimationFrame', 'KeyboardEvent']) {
     if (window[key] === undefined) continue;
     // Node defines some of these as getter-only, so assignment alone is not enough
     Object.defineProperty(globalThis, key, {
@@ -170,6 +173,184 @@ check('a longer variable is not clobbered by a shorter prefix', () => {
 check('the textarea keeps the real placeholders', () => {
     const e = makeEditor({ toolbar: barWith(VARS) }, 'Hi {{user}}');
     return e.usertextarea.value === 'Hi {{user}}';
+});
+
+// --- custom tools -----------------------------------------------------------
+
+class ShoutTool extends MarkdownEditor.Tool {
+    constructor(editor, config) {
+        super(editor, 'Shout');
+        this.text = config?.text ?? '**LOUD**';
+        this.button = this.createButton('<svg></svg>');
+    }
+    applySyntax() { this.editor.insertText(this.text); }
+}
+
+const accordion = (overrides = {}) => ({
+    custom: {
+        title: 'Insert accordion',
+        icon: '<svg viewBox="0 0 24 24"></svg>',
+        action: (editor) => editor.insertText('<div class="accordion"></div>'),
+        ...overrides,
+    },
+});
+
+check('a declarative custom tool renders and inserts', () => {
+    const e = makeEditor({ toolbar: ['bold', accordion(), 'preview'] }, '');
+    const btn = e.editorContainer.querySelector('.insert-accordion-btn');
+    if (!btn || btn.title !== 'Insert accordion') return false;
+    btn.click();
+    return e.usertextarea.value === '<div class="accordion"></div>';
+});
+
+check('the action receives the click event, for dialogs', () => {
+    let seen = null;
+    const e = makeEditor({ toolbar: [accordion({ action: (ed, ev) => { seen = ev; } }), 'preview'] });
+    e.editorContainer.querySelector('.insert-accordion-btn').click();
+    return seen !== null && typeof seen.type === 'string';
+});
+
+check('a declarative tool title is translatable', () => {
+    const e = makeEditor({ toolbar: [accordion(), 'preview'], labels: { 'Insert accordion': 'Insertar acordeon' } });
+    return e.editorContainer.querySelector('.insert-accordion-btn').title === 'Insertar acordeon';
+});
+
+check('a custom tool with no action is skipped, not fatal', () => {
+    const quiet = console.warn; console.warn = () => {};
+    const e = makeEditor({ toolbar: ['bold', { custom: { title: 'Broken' } }, 'preview'] });
+    console.warn = quiet;
+    return e.editorContainer.querySelector('.broken-btn') === null
+        && e.editorContainer.querySelector('.bold-btn') !== null;
+});
+
+// Note: DOMPurify drops block elements (p, pre, blockquote) under happy-dom's
+// parser, so assert on inline tags only. They survive in a real browser.
+const press = (editor, { key, ctrl = false, shift = false, alt = false }) => {
+    const ev = new window.KeyboardEvent('keydown',
+        { key, ctrlKey: ctrl, shiftKey: shift, altKey: alt, bubbles: true, cancelable: true });
+    editor.usertextarea.dispatchEvent(ev);
+    return ev;
+};
+
+check('a custom tool can declare a keyboard shortcut', () => {
+    let fired = 0;
+    const e = makeEditor({ toolbar: ['bold', { custom: {
+        title: 'Shout', icon: '<svg></svg>', shortcut: 'Ctrl+Shift+K',
+        action: (ed) => { fired++; ed.insertText('!!'); },
+    }}, 'preview'] }, '');
+    const ev = press(e, { key: 'K', ctrl: true, shift: true });
+    return fired === 1 && ev.defaultPrevented && e.usertextarea.value === '!!';
+});
+
+check('the shortcut is shown in the tooltip, like the built-ins', () => {
+    const e = makeEditor({ toolbar: [{ custom: {
+        title: 'Shout', icon: '<svg></svg>', shortcut: 'Ctrl+Shift+K', action: () => {},
+    }}, 'preview'] });
+    return e.editorContainer.querySelector('.shout-btn').title === 'Shout (Ctrl+Shift+K)';
+});
+
+check('a tool shortcut can take over a built-in combination', () => {
+    let mine = 0;
+    const e = makeEditor({ toolbar: ['bold', { custom: {
+        title: 'Mine', icon: '<svg></svg>', shortcut: 'Ctrl+B', action: () => { mine++; },
+    }}, 'preview'] }, '');
+    press(e, { key: 'b', ctrl: true });
+    return mine === 1 && e.usertextarea.value === '';   // built-in bold did not also run
+});
+
+check('built-in shortcuts still work alongside', () => {
+    const e = makeEditor({ toolbar: ['bold', 'preview'] }, 'hi');
+    e.usertextarea.setSelectionRange(0, 2);
+    press(e, { key: 'b', ctrl: true });
+    return e.usertextarea.value === '**hi**';
+});
+
+check('renderMarkdown is public and honours the configured renderer', () => {
+    const plain = makeEditor({ toolbar: FULL_BAR });
+    const custom = makeEditor({ toolbar: FULL_BAR, renderer: md => '<em>' + md.toUpperCase() + '</em>' });
+    // The uppercasing proves the custom renderer ran; which tags survive is
+    // happy-dom's business, not the editor's.
+    return plain.renderMarkdown('**hi**').includes('<strong>hi</strong>')
+        && custom.renderMarkdown('x').includes('X');
+});
+
+check('renderMarkdown sanitizes, like the preview', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    return !/onerror/.test(e.renderMarkdown('<img src=x onerror=alert(1)>'));
+});
+
+check('createToolbar builds a toolbar bound to another textarea', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'main');
+    const sub = document.createElement('textarea');
+    sub.value = 'hello';
+    document.body.appendChild(sub);
+
+    const bar = e.createToolbar(sub, ['bold', 'italic']);
+    sub.setSelectionRange(0, 5);
+    bar.querySelector('.bold-btn').click();
+
+    // the sub-area changed and the real editor did not
+    return sub.value === '**hello**' && e.usertextarea.value === 'main';
+});
+
+check('a standalone toolbar has no preview button', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const sub = document.createElement('textarea');
+    document.body.appendChild(sub);
+    return e.createToolbar(sub, ['bold', 'preview']).querySelector('.preview-btn') === null;
+});
+
+check('a standalone toolbar inherits labels', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, labels: { Bold: 'Negrita' } });
+    const sub = document.createElement('textarea');
+    document.body.appendChild(sub);
+    return e.createToolbar(sub, ['bold']).querySelector('.bold-btn').title === 'Negrita';
+});
+
+check('destroy reaches toolbar tools', () => {
+    let torn = false;
+    class Listening extends MarkdownEditor.Tool {
+        constructor(editor) { super(editor, 'Listening'); this.button = this.createButton('<svg></svg>'); }
+        destroy() { torn = true; }
+    }
+    makeEditor({ toolbar: ['bold', Listening, 'preview'] }).destroy();
+    return torn;
+});
+
+check('Tool and modal are reachable without a named export', () =>
+    typeof MarkdownEditor.Tool === 'function' && typeof MarkdownEditor.modal === 'function');
+
+check('a tool class in the toolbar renders a button', () => {
+    const e = makeEditor({ toolbar: ['bold', ShoutTool, 'preview'] });
+    const btn = e.editorContainer.querySelector('.shout-btn');
+    return btn !== null && btn.title === 'Shout';
+});
+
+check('a custom tool can insert text', () => {
+    const e = makeEditor({ toolbar: [ShoutTool, 'preview'] }, 'hi ');
+    e.usertextarea.setSelectionRange(3, 3);
+    e.editorContainer.querySelector('.shout-btn').click();
+    return e.usertextarea.value === 'hi **LOUD**';
+});
+
+check('a custom tool can take configuration', () => {
+    const e = makeEditor({ toolbar: [{ tool: ShoutTool, config: { text: '~~quiet~~' } }, 'preview'] }, '');
+    e.editorContainer.querySelector('.shout-btn').click();
+    return e.usertextarea.value === '~~quiet~~';
+});
+
+check('custom tool labels are translatable like any other', () => {
+    const e = makeEditor({ toolbar: [ShoutTool, 'preview'], labels: { Shout: 'Gritar' } });
+    return e.editorContainer.querySelector('.shout-btn').title === 'Gritar';
+});
+
+check('a custom tool returning no button is skipped', () => {
+    class Silent extends MarkdownEditor.Tool {
+        constructor(editor) { super(editor, 'Silent'); this.button = null; }
+    }
+    const e = makeEditor({ toolbar: ['bold', Silent, 'preview'] });
+    return e.editorContainer.querySelector('.silent-btn') === null
+        && e.editorContainer.querySelector('.bold-btn') !== null;
 });
 
 // --- labels -----------------------------------------------------------------

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Custom toolbar tools**: Add your own button without forking. Describe it inline with `{ custom: { title, icon, action } }`, or extend `MarkdownEditor.Tool` when the tool builds its own markup such as a dropdown. Tools can declare a keyboard shortcut, are translatable through `labels`, and are torn down by `destroy()`
+- **`renderMarkdown()`**: Turns markdown into sanitized HTML exactly as the preview does, for a tool that has to embed rendered content such as a tooltip body
+- **`createToolbar()`**: Builds a small toolbar bound to another textarea, so a tool collecting rich text in its own dialog can offer the real formatting buttons
+
 ## [1.8.0] - 2026-09-29
 
 ### Added

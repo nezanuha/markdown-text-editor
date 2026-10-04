@@ -41,7 +41,7 @@ src/
     Preview.js  Footer.js
     toolbar/
       Toolbar.js           tool registry, builds the toolbar
-      MakeTool.js          base class for tools
+      Tool.js              base class for tools
       tools/               one file per toolbar button
   utils/                   undo/redo, lists, indent, shortcuts, find & replace
   styles/main.css          plain CSS on top of Tailwind + frutjam
@@ -52,14 +52,40 @@ types/index.d.ts         published TypeScript definitions
 demo/
 ```
 
-## Adding a toolbar tool
+## Writing a tool outside this repository
 
-1. Create `src/components/toolbar/tools/YourTool.js` extending `MakeTool`.
+If your tool is specific to your stack — Bootstrap components, your design
+system, your CMS shortcodes — it does not need to live here. Extend the base
+class and pass it straight to `toolbar`:
+
+```js
+class CardTool extends MarkdownEditor.Tool {
+    constructor(editor) {
+        super(editor, 'Card');
+        this.button = this.createButton('<svg>…</svg>');
+    }
+    applySyntax() {
+        this.editor.insertText('<div class="card">…</div>');
+    }
+}
+
+new MarkdownEditor('#editor', { toolbar: ['bold', CardTool, 'preview'] });
+```
+
+`MarkdownEditor.modal` is available too, which is the dialog the link and image
+tools use. Tooltips go through `editor.label()`, so custom tools are translatable
+like every built-in one.
+
+Prefer this over a fork. You keep your tools, and you stay on upstream releases.
+
+## Adding a toolbar tool to this repository
+
+1. Create `src/components/toolbar/tools/YourTool.js` extending `Tool`.
 2. Implement `applySyntax()`, and use `this.editor.insertText(text, offset, trailing)` rather than writing to the textarea directly — it handles focus, caret position, scrolling, re-render and `onChange`.
 3. Register it in the `toolMapping` object in `Toolbar.js`.
 4. Add it to the default toolbar array in `Editor.js` only if it is useful without configuration.
 
-For a dropdown, copy the popover pattern in `HeadingTool.js` — it already handles the roles and markup. One gotcha: `MakeTool`'s constructor calls `createButton()`, so anything your override needs must come from `this.editor`, not from a field you assign after `super()`.
+For a dropdown, copy the popover pattern in `HeadingTool.js` — it already handles the roles and markup. One gotcha: `Tool`'s constructor calls `createButton()`, so anything your override needs must come from `this.editor`, not from a field you assign after `super()`.
 
 A tool may return `null` from `createButton()` to render nothing, as `VariableTool` does when no variables are configured.
 

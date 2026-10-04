@@ -48,6 +48,34 @@ const customTheme: MarkdownEditorOptions = { theme: 'my-brand' };
 const altDisabled: MarkdownEditorOptions = { toolbar: [{ image: { altInput: false } }] };
 const altRequired: MarkdownEditorOptions = { toolbar: [{ image: { altInput: { required: true } } }] };
 
+class ShoutTool extends MarkdownEditor.Tool {
+    constructor(editor: MarkdownEditor) {
+        super(editor, 'Shout');
+        this.button = this.createButton('<svg></svg>');
+    }
+    applySyntax() { this.editor.insertText('**LOUD**'); }
+}
+
+const withCustomTool: MarkdownEditorOptions = {
+    toolbar: ['bold', ShoutTool, { tool: ShoutTool, config: { text: 'x' } }, 'preview'],
+};
+
+const withDeclarativeTool: MarkdownEditorOptions = {
+    toolbar: ['bold', {
+        custom: {
+            title: 'Insert accordion',
+            icon: '<svg></svg>',
+            shortcut: 'Ctrl+Shift+K',
+            action(editor, event) { editor.insertText('<div class="accordion"></div>'); },
+        },
+    }, 'preview'],
+};
+
+
+// @ts-expect-error a declarative tool needs an action
+const noAction: MarkdownEditorOptions = { toolbar: [{ custom: { title: 'x' } }] };
+const translatedCustom: MarkdownEditorOptions = { labels: { Shout: 'Gritar' } };
+
 const flat: Variable = { label: 'Today', value: '{{today}}' };
 const grouped: VariableGroup = { label: 'Customer', items: [flat] };
 const entries: ToolbarEntry[] = ['bold', { variables: [flat, grouped] }];
@@ -58,6 +86,12 @@ const byElement = new MarkdownEditor(document.createElement('textarea'));
 const textarea: HTMLTextAreaElement = bySelector.usertextarea;
 const container: HTMLDivElement = bySelector.editorContainer;
 const markdown: string = textarea.value;
+
+const rendered: string = bySelector.renderMarkdown('**hi**');
+const subToolbar: HTMLDivElement = bySelector.createToolbar(
+    document.createElement('textarea'), ['bold', 'italic'],
+);
+const defaultTools: HTMLDivElement = bySelector.createToolbar(document.createElement('textarea'));
 
 bySelector.insertText('{{customer.name}}');
 bySelector.insertText('**bold**', 2, 2);
@@ -86,6 +120,8 @@ const badTarget = new MarkdownEditor(42);
 const badLabels: MarkdownEditorOptions = { labels: { Bold: 42 } };
 
 export {
+    rendered, subToolbar, defaultTools,
+    withCustomTool, withDeclarativeTool, noAction, translatedCustom, ShoutTool,
     translated, badLabels,
     full, minimal, noFooter, customTheme, altDisabled, altRequired,
     flat, grouped, entries, bySelector, byElement, textarea, container, markdown,

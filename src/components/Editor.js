@@ -2,6 +2,8 @@ import '../styles/main.css';
 import { Marked } from 'marked';
 import DOMPurify from 'dompurify';
 import Toolbar from './toolbar/Toolbar.js';
+import Tool from './toolbar/Tool.js';
+import { modal } from './modal.js';
 import Preview from './Preview.js';
 import Footer from './Footer.js';
 import UndoRedoManager from '../utils/UndoRedoManager.js';
@@ -268,6 +270,44 @@ class MarkdownEditor {
         }, 150); // 150ms delay feels instant but saves CPU
     }
 
+    /**
+     * Renders markdown to sanitized HTML exactly as the preview does, honouring
+     * the configured renderer and sanitizer. Useful from a custom tool that has
+     * to embed rendered content, such as a tooltip body.
+     */
+    renderMarkdown(markdown) {
+        return this._renderMarkdown(markdown);
+    }
+
+    /**
+     * Builds a small toolbar bound to another textarea, for a custom tool that
+     * collects rich text in its own dialog. The tools are the real ones, so they
+     * behave identically, and this replaces hand-rolling a fake editor object.
+     *
+     * Returns the toolbar element; append it wherever you like.
+     */
+    createToolbar(textarea, tools = ['bold', 'italic', 'strikethrough']) {
+        const host = Object.create(this);
+
+        // Only the target and the write path differ. Everything else, including
+        // label() and the options, is inherited from the real editor.
+        host.usertextarea = textarea;
+        host.scrollToView = () => {};
+        host.render = () => {};
+        host.notifyChange = () => {};
+        host.insertText = (text, selectionOffset = 0, trailingLength = 0) => {
+            const { selectionStart, selectionEnd, value } = textarea;
+            textarea.value = value.slice(0, selectionStart) + text + value.slice(selectionEnd);
+            textarea.focus();
+            textarea.setSelectionRange(
+                selectionStart + selectionOffset,
+                selectionStart + text.length - trailingLength,
+            );
+        };
+
+        return new Toolbar(host, tools, { standalone: true }).toolbar;
+    }
+
     _renderMarkdown(markdown) {
         const render   = this.options.renderer  ?? (md   => defaultRenderer.parse(md));
         const sanitize = this.options.sanitizer ?? (html => DOMPurify.sanitize(html));
@@ -331,7 +371,7 @@ class MarkdownEditor {
     }
 
     addToolbar() {
-        new Toolbar(
+        this.toolbarInstance = new Toolbar(
             this,
             this.options.toolbar ||
             [
@@ -490,6 +530,8 @@ class MarkdownEditor {
         this.undoRedoManager?.destroy();
         this.listManager?.destroy();
         this.pasteManager?.destroy();
+        // Reaches toolbar tools, including custom ones that added listeners
+        this.toolbarInstance?.destroy();
 
         if (this._footerUpdate) {
             this.usertextarea.removeEventListener('input', this._footerUpdate);
@@ -521,5 +563,11 @@ class MarkdownEditor {
         this.editorContainer.remove();
     }
 }
+
+// Exposed so you can write your own toolbar tool without forking. Attached to
+// the class rather than exported by name, because adding a named export would
+// change the shape of the UMD and IIFE globals and break every <script> user.
+MarkdownEditor.Tool = Tool;
+MarkdownEditor.modal = modal;
 
 export default MarkdownEditor;

@@ -57,6 +57,29 @@ Hi {{customer.name}} ({{customer.email}}), invoice {{invoice.number}} is dated {
     </div>
 
     <div class="border-t mt-10 pt-5 space-y-3">
+        <strong class="font-medium mt-3 block">Custom tools</strong>
+        <p class="text-sm opacity-70">Three buttons that are not built in, added without forking. The first two
+           are declared as plain objects; the third is a class, which is what you need when a tool builds its
+           own markup. Hover each one, then click with and without a selection.</p>
+        <p class="text-sm opacity-70">Things to try:</p>
+        <ul class="text-sm opacity-70 list-disc ms-5 space-y-1">
+            <li><b>Callout</b> and <b>Signature</b> are plain objects. Select a line, press Callout.</li>
+            <li><b>Highlight</b> adds a <code>shortcut</code>. Hover it to see <code>Ctrl+Shift+H</code> in the
+                tooltip, then press the shortcut with and without a selection.</li>
+            <li><b>Embed video</b> is a class, because it opens a dialog. Its caption field has a real toolbar
+                built by <code>createToolbar</code>, and the caption is rendered with
+                <code>renderMarkdown</code>.</li>
+        </ul>
+        <p class="text-sm opacity-70">The embed inserts an <code>&lt;iframe&gt;</code>, which DOMPurify strips by
+           default, so this editor also passes a <code>sanitizer</code> allowing it. Remove that option and the
+           embed vanishes from the preview — allowing iframes is the host application's decision, not the
+           editor's.</p>
+        <textarea class="custom-tools h-40" rows="5">Select this line and press the callout button.
+
+Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
+    </div>
+
+    <div class="border-t mt-10 pt-5 space-y-3">
         <strong class="font-medium mt-3 block">Translated interface (<code>labels</code>)</strong>
         <p class="text-sm opacity-70">Same editor, Spanish tooltips and modal text. Hover a button, or open
            the link dialog. The CSS class names are unchanged.</p>
@@ -65,6 +88,7 @@ Hi {{customer.name}} ({{customer.email}}), invoice {{invoice.number}} is dated {
 
     <script type="module">
         import MarkdownEditor from '/src/components/Editor.js';
+        import DOMPurify from 'dompurify';
 
         window.addEventListener('DOMContentLoaded', () => {
         const options = {
@@ -108,6 +132,94 @@ Hi {{customer.name}} ({{customer.email}}), invoice {{invoice.number}} is dated {
             // No image tool at all
             new MarkdownEditor(".no-image-tool", {
                 toolbar: ['bold', 'italic', 'preview'],
+            });
+
+            // A class is only needed when the tool builds its own markup. This one
+            // opens the same dialog the link and image tools use.
+            class EmbedTool extends MarkdownEditor.Tool {
+                constructor(editor) {
+                    super(editor, 'Embed video');
+                    this.button = this.createButton('<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 9 5 3-5 3z"/></svg>');
+                }
+                applySyntax(event) {
+                    const dialog = MarkdownEditor.modal(event, 'fj:max-w-sm', `
+                        <div class="fj:font-medium">Embed video</div>
+                        <div class="fj:mt-4 fj:flex fj:flex-col fj:gap-y-4">
+                            <input type="url" placeholder="https://youtube.com/watch?v=..."
+                                   class="embed-url fj:me-input fj:w-full">
+                            <div>
+                                <div class="embed-caption-toolbar fj:mb-1"></div>
+                                <textarea class="embed-caption fj:me-input fj:w-full" rows="2"
+                                          placeholder="Caption, markdown allowed"></textarea>
+                            </div>
+                            <button type="button" class="embed-go fj:me-btn fj:me-btn-sm fj:self-end">Insert</button>
+                        </div>`, 'Embed');
+
+                    // The real formatting tools, bound to the caption textarea.
+                    // No hand-rolled editor object, and labels are inherited.
+                    const caption = dialog.querySelector('.embed-caption');
+                    dialog.querySelector('.embed-caption-toolbar').appendChild(
+                        this.editor.createToolbar(caption, ['bold', 'italic', 'link'])
+                    );
+
+                    dialog.querySelector('.embed-go').addEventListener('click', () => {
+                        const url = dialog.querySelector('.embed-url').value.trim();
+                        if (url) {
+                            // renderMarkdown honours the configured renderer and sanitizer
+                            const text = caption.value.trim();
+                            const figcaption = text ? `\n<figcaption>${this.editor.renderMarkdown(text)}</figcaption>` : '';
+                            this.editor.insertText(`\n<figure>\n<iframe src="${url}" allowfullscreen></iframe>${figcaption}\n</figure>\n`);
+                        }
+                        dialog.close();
+                    });
+                }
+            }
+
+            new MarkdownEditor(".custom-tools", {
+                // DOMPurify strips <iframe> by default, so an embed would vanish from
+                // the preview. Allowing it is the host application's call, not the
+                // editor's, which is what the sanitizer option is for.
+                sanitizer: html => DOMPurify.sanitize(html, {
+                    ADD_TAGS: ['iframe'],
+                    ADD_ATTR: ['allowfullscreen', 'allow', 'frameborder'],
+                }),
+                toolbar: [
+                    'bold', 'italic',
+                    // The usual way: describe the button, no class involved
+                    { custom: {
+                        title: 'Callout',
+                        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
+                        action(editor) {
+                            const ta = editor.usertextarea;
+                            const selected = ta.value.slice(ta.selectionStart, ta.selectionEnd) || 'Something worth noting';
+                            const block = `> [!NOTE]\n> ${selected.replace(/\n/g, '\n> ')}`;
+                            editor.insertText(block, block.length, 0);
+                        },
+                    }},
+                    // A shortcut, shown in the tooltip and handled like a built-in
+                    { custom: {
+                        title: 'Highlight',
+                        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>',
+                        shortcut: 'Ctrl+Shift+H',
+                        action(editor) {
+                            const ta = editor.usertextarea;
+                            const selected = ta.value.slice(ta.selectionStart, ta.selectionEnd);
+                            if (selected) {
+                                const wrapped = `==${selected}==`;
+                                editor.insertText(wrapped, wrapped.length, 0);
+                            } else {
+                                editor.insertText('====', 2, 2);   // caret lands between the marks
+                            }
+                        },
+                    }},
+                    { custom: {
+                        title: 'Signature',
+                        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c3.5 0 4-10 7-10s3.5 10 7 10"/><path d="M3 21h18"/></svg>',
+                        action: (editor) => editor.insertText('\n\n---\nBest regards,\n'),
+                    }},
+                    EmbedTool,
+                    'preview'
+                ],
             });
 
             new MarkdownEditor(".translated", {

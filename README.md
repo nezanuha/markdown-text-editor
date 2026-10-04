@@ -99,6 +99,7 @@ That's it. Form submission, `.value` access, and all native textarea behaviour w
 - 🛡️ **CSP Compatible** — No inline event handlers. Works with strict Content Security Policy headers
 - 🌍 **RTL Support** — Native Right-to-Left support for Arabic, Urdu, Farsi, and other RTL languages
 - 🌙 **Dark Mode & Theming** — Inherits `data-theme` from any ancestor element. Built-in light, dark, snowberry, and darkberry themes. Fully customizable via CSS variables
+- 🧩 **Custom Tools** — Write your own toolbar button by extending `MarkdownEditor.Tool` and dropping the class into `toolbar`. No fork, no patching, and it stays translatable like the built-in tools
 - 🎛️ **Modular Toolbar** — Pick exactly which tools appear and in what order
 - 🟦 **TypeScript Ready** — Definitions ship with the package. Options, toolbar entries and variable shapes are all checked, so a mistyped tool name is a compile error rather than a silently missing button
 - 📦 **Universal Module Support** — ESM, CommonJS, UMD, and IIFE. Works with Vite, webpack, Rollup, or directly via `<script src>` CDN — no configuration needed

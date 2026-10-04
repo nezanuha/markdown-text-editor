@@ -15,9 +15,29 @@ const DEFAULT_SHORTCUTS = [
     { key: 'l', ctrl: true,  shift: false, ToolClass: ULTool,            label: 'Ctrl+L',       btnClass: 'ul-btn' },
 ];
 
+/** Turns 'Ctrl+Shift+K' into something comparable against a keydown event. */
+function parseShortcut(spec) {
+    const parts = String(spec).split('+').map(s => s.trim().toLowerCase());
+    const key = parts.pop();
+    if (!key) return null;
+    return {
+        key,
+        ctrl: parts.includes('ctrl') || parts.includes('cmd') || parts.includes('meta'),
+        shift: parts.includes('shift'),
+        alt: parts.includes('alt'),
+    };
+}
+
 export default class ShortcutManager {
     constructor(editor) {
         this.editor = editor;
+        // Shortcuts declared by tools, including custom ones. Collected once,
+        // after the toolbar exists, so a tool only has to set this.shortcut.
+        this.toolShortcuts = (editor.toolbarInstance?.tools ?? [])
+            .filter(tool => tool.shortcut)
+            .map(tool => ({ tool, combo: parseShortcut(tool.shortcut) }))
+            .filter(entry => entry.combo);
+
         this._handler = this._onKeyDown.bind(this);
         this._docHandler = this._onDocKeyDown.bind(this);
         editor.usertextarea.addEventListener('keydown', this._handler);
@@ -42,6 +62,16 @@ export default class ShortcutManager {
             e.preventDefault();
             new HeadingTool(this.editor).applyHeading(parseInt(e.key));
             return;
+        }
+
+        // Tool-declared shortcuts win, so a custom tool can deliberately take
+        // over a combination the editor would otherwise handle.
+        for (const { tool, combo } of this.toolShortcuts) {
+            if (key === combo.key && ctrl === combo.ctrl && shift === combo.shift && e.altKey === combo.alt) {
+                e.preventDefault();
+                tool.applySyntax(e);
+                return;
+            }
         }
 
         for (const shortcut of DEFAULT_SHORTCUTS) {
@@ -74,6 +104,11 @@ export default class ShortcutManager {
         if (headingBtn) headingBtn.title += ' (Ctrl+1/2/3)';
         const previewBtn = this.editor.editorContainer.querySelector('.preview-btn');
         if (previewBtn) previewBtn.title += ' (F11)';
+
+        // Tool-declared shortcuts get the same treatment as the built-ins
+        for (const { tool } of this.toolShortcuts) {
+            if (tool.button) tool.button.title += ` (${tool.shortcut})`;
+        }
     }
 
     destroy() {

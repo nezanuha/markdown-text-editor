@@ -65,7 +65,58 @@ export interface ImageTool {
     };
 }
 
-export type ToolbarEntry = ToolName | VariablesTool | ImageTool;
+/**
+ * A tool of your own. Extend `MarkdownEditor.Tool`, set `this.button` in the
+ * constructor, and implement `applySyntax()`.
+ *
+ * @example
+ * class ShoutTool extends MarkdownEditor.Tool {
+ *     constructor(editor) {
+ *         super(editor, 'Shout');
+ *         this.button = this.createButton('<svg>…</svg>');
+ *     }
+ *     applySyntax() { this.editor.insertText('**LOUD**'); }
+ * }
+ */
+export type CustomTool = new (editor: MarkdownEditor, config?: any) => {
+    /** Appended to the toolbar. Return `null` to render nothing. */
+    button: HTMLElement | null;
+};
+
+/**
+ * A toolbar button described rather than written as a class. The usual way to
+ * add your own tool.
+ *
+ * @example
+ * { custom: {
+ *     title: 'Insert accordion',
+ *     icon: '<svg>…</svg>',
+ *     action(editor) { editor.insertText('<div class="accordion">…</div>'); }
+ * }}
+ */
+export interface DeclarativeTool {
+    custom: {
+        /** Tooltip, and the source of the button's CSS class. Translatable via `labels`. */
+        title: string;
+        /** Inline SVG for the button face. */
+        icon?: string;
+        /** Runs on click. The event is passed so dialog tools can position against it. */
+        action: (editor: MarkdownEditor, event: Event) => void;
+        /**
+         * Keyboard shortcut, e.g. `'Ctrl+Shift+K'`. Appended to the tooltip, and
+         * takes precedence over a built-in using the same combination.
+         */
+        shortcut?: string;
+    };
+}
+
+export type ToolbarEntry =
+    | ToolName
+    | VariablesTool
+    | ImageTool
+    | DeclarativeTool
+    | CustomTool
+    | { tool: CustomTool; config?: any };
 
 /** Status bar fields. `false` hides the bar entirely. */
 export interface FooterOptions {
@@ -147,11 +198,52 @@ export interface MarkdownEditorOptions {
     sanitizer?: (html: string) => string;
 }
 
+/** Base class for toolbar tools. Reach it as `MarkdownEditor.Tool`. */
+export declare class Tool {
+    constructor(editor: MarkdownEditor, title: string);
+    readonly editor: MarkdownEditor;
+    /** The element appended to the toolbar. Set it to `null` to render nothing. */
+    button: HTMLElement | null;
+    /** Builds the default square icon button. Override for a dropdown or similar. */
+    createButton(iconHtml?: string): HTMLElement | null;
+    /** Called when the button is clicked, or its shortcut is pressed. */
+    applySyntax(event?: Event): void;
+    /** Set to e.g. `'Ctrl+Shift+K'` to bind a shortcut. */
+    shortcut?: string;
+    /** Implement to release anything the tool registered. Called by `destroy()`. */
+    destroy?: () => void;
+}
+
 export default class MarkdownEditor {
     /**
      * @param selector A CSS selector for a `<textarea>`, or the element itself.
      */
     constructor(selector: string | HTMLTextAreaElement, options?: MarkdownEditorOptions);
+
+    /** Base class for writing your own toolbar tool. */
+    static Tool: typeof Tool;
+
+    /** The dialog helper the built-in link and image tools use. */
+    static modal: (event: Event, size: string, bodyHTML: string, label?: string) => HTMLDialogElement;
+
+    /** Returns the translation for a UI string, or the string itself. */
+    label(text: string): string;
+
+    /**
+     * Renders markdown to sanitized HTML exactly as the preview does, honouring
+     * the configured `renderer` and `sanitizer`. For custom tools that need to
+     * embed rendered content, such as a tooltip body.
+     */
+    renderMarkdown(markdown: string): string;
+
+    /**
+     * Builds a small toolbar bound to another textarea, for a custom tool that
+     * collects rich text in its own dialog. The tools are the real ones, and
+     * `labels` are inherited. Returns the element; append it where you like.
+     *
+     * No preview button is added, whatever you pass.
+     */
+    createToolbar(textarea: HTMLTextAreaElement, tools?: ToolbarEntry[]): HTMLDivElement;
 
     /** The original textarea. Its `.value` is always the current markdown. */
     readonly usertextarea: HTMLTextAreaElement;
