@@ -1,6 +1,6 @@
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 
-class CodeTool extends MakeTool {
+class CodeTool extends Tool {
     constructor(editor) {
         super(editor, 'Code');
         this.button = this.createButton(`

@@ -1,6 +1,6 @@
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 
-class OLTool extends MakeTool {
+class OLTool extends Tool {
     constructor(editor) {
         super(editor, 'Ordered list');
         this.button = this.createButton(`

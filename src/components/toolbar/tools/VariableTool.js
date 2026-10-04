@@ -1,21 +1,21 @@
 // #components/Toolbar/tools/VariableTool.js
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 import { flattenVariables } from '../../../utils/variables.js';
 
 const ICON = `
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 4a2 2 0 0 0 -2 2v3a2 2 0 0 1 -2 2a2 2 0 0 1 2 2v3a2 2 0 0 0 2 2" /><path d="M17 4a2 2 0 0 1 2 2v3a2 2 0 0 0 2 2a2 2 0 0 0 -2 2v3a2 2 0 0 1 -2 2" /></svg>
 `;
 
-class VariableTool extends MakeTool {
+class VariableTool extends Tool {
     constructor(editor) {
-        // MakeTool's constructor calls createButton(), so read config from
+        // Tool's constructor calls createButton(), so read config from
         // this.editor there rather than from a field assigned after super()
         super(editor, 'Variables');
     }
 
     createButton() {
         // Parsed by the editor at construction; reading it here rather than from
-        // the config argument avoids MakeTool's constructor ordering, which calls
+        // the config argument avoids Tool's constructor ordering, which calls
         // createButton() before any field assigned after super() exists.
         const variables = this.editor.variables ?? [];
 

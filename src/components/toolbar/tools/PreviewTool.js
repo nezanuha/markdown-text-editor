@@ -1,7 +1,7 @@
 // #components/Toolbar/tools/PreviewToggleTool.js
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 
-class PreviewTool extends MakeTool {
+class PreviewTool extends Tool {
     constructor(editor) {
         // No markdown syntax for preview toggle, so we call the parent constructor with empty values
         super(editor, 'Preview');

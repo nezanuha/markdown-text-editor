@@ -1,8 +1,8 @@
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 import { modal } from '../../modal.js';
 import { uploadImage } from '../../../utils/imageUpload.js';
 
-class ImageTool extends MakeTool {
+class ImageTool extends Tool {
     constructor(editor, config = {}) {
         super(editor, 'Image link');
         this.config = config;

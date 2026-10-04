@@ -1,7 +1,7 @@
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 import { modal } from '../../modal.js';
 
-class LinkTool extends MakeTool {
+class LinkTool extends Tool {
     constructor(editor) {
         super(editor, 'Link');
         this.button = this.createButton(`

@@ -1,6 +1,6 @@
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 
-class OutdentTool extends MakeTool {
+class OutdentTool extends Tool {
     constructor(editor) {
         super(editor, 'Outdent');
         this.button = this.createButton(`

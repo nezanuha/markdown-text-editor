@@ -1,6 +1,6 @@
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 
-class HrTool extends MakeTool {
+class HrTool extends Tool {
     constructor(editor) {
         super(editor, 'Horizontal Rule');
         this.button = this.createButton(`

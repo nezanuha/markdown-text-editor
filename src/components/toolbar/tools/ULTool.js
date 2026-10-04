@@ -1,6 +1,6 @@
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 
-class ULTool extends MakeTool {
+class ULTool extends Tool {
     constructor(editor) {
         super(editor, 'Unordered list');
         this.button = this.createButton(`

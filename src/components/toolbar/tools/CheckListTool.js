@@ -1,6 +1,6 @@
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 
-class CheckListTool extends MakeTool {
+class CheckListTool extends Tool {
     constructor(editor) {
         super(editor, 'Check list');
         this.button = this.createButton(`

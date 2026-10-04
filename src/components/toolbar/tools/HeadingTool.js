@@ -1,6 +1,6 @@
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 
-class HeadingTool extends MakeTool {
+class HeadingTool extends Tool {
     constructor(editor) {
         super(editor, 'Heading');
         this.button = this.createButton(`

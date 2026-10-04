@@ -1,4 +1,4 @@
-class MakeTool {
+class Tool {
     constructor(editor, title) {
         this.editor = editor;
         this.defaultText = `${title} text`; // Default text if nothing is selected
@@ -31,4 +31,4 @@ class MakeTool {
     }
 }
 
-export default MakeTool;
+export default Tool;

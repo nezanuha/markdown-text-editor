@@ -1,6 +1,6 @@
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 
-class IndentTool extends MakeTool {
+class IndentTool extends Tool {
     constructor(editor) {
         super(editor, 'Indent');
         this.button = this.createButton(`

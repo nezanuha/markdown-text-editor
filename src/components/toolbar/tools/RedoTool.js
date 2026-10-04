@@ -1,6 +1,6 @@
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 
-class RedoTool extends MakeTool {
+class RedoTool extends Tool {
     constructor(editor) {
         super(editor, 'Redo');
         this.button = this.createButton(`

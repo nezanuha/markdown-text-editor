@@ -1,6 +1,6 @@
-import MakeTool from '../MakeTool.js';
+import Tool from '../Tool.js';
 
-class BlockQuoteTool extends MakeTool {
+class BlockQuoteTool extends Tool {
     constructor(editor) {
         // Call the parent constructor with the markdown syntax for italic (*)
         super(editor, 'Blockquote');
