@@ -34,6 +34,16 @@ for (const key of ['window', 'document', 'navigator', 'HTMLElement', 'Element', 
 
 const { default: MarkdownEditor } = await import('../dist/markdown-text-editor.es.js');
 
+// Nothing loads the stylesheet here, so the editor's missing-CSS error fires on
+// the first one built. Collect it rather than letting it litter the output, and
+// pass anything else through so a real error is still visible.
+const cssErrors = [];
+const realError = console.error;
+console.error = (...args) => {
+    if (String(args[0]).includes('Stylesheet not loaded')) cssErrors.push(args[0]);
+    else realError(...args);
+};
+
 let passed = 0;
 const failures = [];
 const check = (name, fn) => {
@@ -583,6 +593,19 @@ await checkAsync('the upload placeholder is translatable', async () => {
     release({ ok: true, json: async () => ({ success: true, image_path: '/m/a.png' }) });
     await settle(e);
     return during.includes('Subiendo...');
+});
+
+// --- the separate stylesheet ------------------------------------------------
+// From 2.0.0 the CSS is a file the host has to load, so forgetting it leaves a
+// working but unstyled editor. These guard the only signal the user gets.
+
+check('a missing stylesheet is reported', () =>
+    cssErrors.length === 1 && cssErrors[0].includes("import 'markdown-text-editor/style.css'"));
+
+check('it is reported once per page, not once per editor', () => {
+    const before = cssErrors.length;
+    makeEditor(); makeEditor();
+    return cssErrors.length === before;
 });
 
 // --- report -----------------------------------------------------------------

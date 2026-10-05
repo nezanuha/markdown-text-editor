@@ -51,13 +51,19 @@ npm install markdown-text-editor
 ```
 
 ```javascript
+import 'markdown-text-editor/style.css';
 import MarkdownEditor from 'markdown-text-editor';
+
 new MarkdownEditor('#markdown-editor');
 ```
+
+Import the stylesheet **or** link it, never both. If you forget it entirely the editor still works, and tells you so in the console.
 
 ### CDN: ES module
 
 ```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.css">
+
 <script type="module">
   import MarkdownEditor from 'https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.es.js';
   new MarkdownEditor('#markdown-editor');
@@ -67,6 +73,8 @@ new MarkdownEditor('#markdown-editor');
 ### CDN: global script tag (IIFE)
 
 ```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.css">
+
 <form method="post" action="/submit">
   <textarea id="markdown-editor" name="content"># Hello World</textarea>
   <button type="submit">Save</button>
@@ -96,14 +104,14 @@ That's it. Form submission, `.value` access, and all native textarea behaviour w
 - 🔄 **Undo / Redo** — Full diff-based history with exact cursor restoration. Works with `Ctrl+Z`, `Ctrl+Y`, `Ctrl+Shift+Z`
 - ♿ **Accessible by Default** — `role="toolbar"`, `aria-pressed`, `aria-disabled`, `disabled`, screen-reader-friendly SVGs, and correct focus restoration on modal close
 - 🛡️ **XSS Safe** — Preview output sanitized via [DOMPurify](https://github.com/cure53/DOMPurify) before rendering, including the output of a custom renderer
-- 🛡️ **No inline scripts** — No inline event handlers and no `eval`, so `script-src` needs no exception. The stylesheet is currently injected as a `<style>` element, which a strict `style-src` blocks ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42))
+- 🛡️ **CSP Compatible** — No inline event handlers, no `eval`, and no injected `<style>` element. The stylesheet is a real file you link, so a strict policy needs no `'unsafe-inline'` exception for either `script-src` or `style-src` ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42))
 - 🌍 **RTL Support** — Native Right-to-Left support for Arabic, Urdu, Farsi, and other RTL languages
 - 🌙 **Dark Mode & Theming** — Inherits `data-theme` from any ancestor element. Built-in light, dark, snowberry, and darkberry themes. Fully customizable via CSS variables
 - 🧩 **Custom Tools** — Add your own toolbar button with `{ custom: { title, icon, action } }`, or extend `MarkdownEditor.Tool` when it builds its own markup. Keyboard shortcuts, translation and teardown work exactly as they do for the built-ins. No fork, no patching
 - 🎛️ **Modular Toolbar** — Pick exactly which tools appear and in what order
 - 🟦 **TypeScript Ready** — Definitions ship with the package. Options, toolbar entries and variable shapes are all checked, so a mistyped tool name is a compile error rather than a silently missing button
 - 📦 **Universal Module Support** — ESM, CommonJS, UMD, and IIFE. Works with Vite, webpack, Rollup, or directly via `<script src>` CDN — no configuration needed
-- 🚀 **High Performance** — ~54KB gzipped (253KB minified). Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
+- 🚀 **High Performance** — ~40KB gzipped JS plus ~13KB gzipped CSS, cached separately. Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
 
 ## 🛠 Developer Workflow
 

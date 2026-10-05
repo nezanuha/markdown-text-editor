@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
-import cssInjectedByJs from 'vite-plugin-css-injected-by-js';
 
 const SCOPE = '.markdown-editor-wrapper';
 const GLOBAL_SELECTORS = /^(\*|:before|:after|::backdrop)$/;
@@ -119,7 +118,6 @@ function mockUploadEndpoint() {
 export default defineConfig({
     plugins: [
         tailwindcss(),
-        cssInjectedByJs(),
         mockUploadEndpoint(),
     ],
     css: {

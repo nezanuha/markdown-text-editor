@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **The stylesheet is now a separate file**: The CSS is no longer carried inside the JavaScript and injected as a `<style>` element when the script loads. Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css` if you use a bundler. This is the breaking part of the release: an existing setup keeps working but renders unstyled until that line is added, and the editor now says so in the console rather than leaving you to guess. It makes the editor usable under a strict Content Security Policy, where an injected style element is refused whatever nonce it carries, and lets the stylesheet be cached separately from the JavaScript instead of being re-downloaded with every patch release ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))
+
 ### Added
 
 - **Custom toolbar tools**: Add your own button without forking. Describe it inline with `{ custom: { title, icon, action } }`, or extend `MarkdownEditor.Tool` when the tool builds its own markup such as a dropdown. Tools can declare a keyboard shortcut, are translatable through `labels`, and are torn down by `destroy()`
