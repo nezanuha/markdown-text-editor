@@ -40,7 +40,7 @@ Most JavaScript markdown editors (EasyMDE, SimpleMDE, CodeMirror-based editors) 
 | Swap the markdown parser | ✅ | ❌ |
 | Keyboard shortcuts | ✅ | Partial |
 | Dark mode / theming | ✅ | Limited |
-| Bundle size, gzipped | 53 KB | 107 KB (JS + CSS) |
+| Bundle size, gzipped | 54 KB | 107 KB (JS + CSS) |
 
 ## 🚀 Quick Start
 
@@ -96,14 +96,14 @@ That's it. Form submission, `.value` access, and all native textarea behaviour w
 - 🔄 **Undo / Redo** — Full diff-based history with exact cursor restoration. Works with `Ctrl+Z`, `Ctrl+Y`, `Ctrl+Shift+Z`
 - ♿ **Accessible by Default** — `role="toolbar"`, `aria-pressed`, `aria-disabled`, `disabled`, screen-reader-friendly SVGs, and correct focus restoration on modal close
 - 🛡️ **XSS Safe** — Preview output sanitized via [DOMPurify](https://github.com/cure53/DOMPurify) before rendering, including the output of a custom renderer
-- 🛡️ **CSP Compatible** — No inline event handlers. Works with strict Content Security Policy headers
+- 🛡️ **No inline scripts** — No inline event handlers and no `eval`, so `script-src` needs no exception. The stylesheet is currently injected as a `<style>` element, which a strict `style-src` blocks ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42))
 - 🌍 **RTL Support** — Native Right-to-Left support for Arabic, Urdu, Farsi, and other RTL languages
 - 🌙 **Dark Mode & Theming** — Inherits `data-theme` from any ancestor element. Built-in light, dark, snowberry, and darkberry themes. Fully customizable via CSS variables
-- 🧩 **Custom Tools** — Write your own toolbar button by extending `MarkdownEditor.Tool` and dropping the class into `toolbar`. No fork, no patching, and it stays translatable like the built-in tools
+- 🧩 **Custom Tools** — Add your own toolbar button with `{ custom: { title, icon, action } }`, or extend `MarkdownEditor.Tool` when it builds its own markup. Keyboard shortcuts, translation and teardown work exactly as they do for the built-ins. No fork, no patching
 - 🎛️ **Modular Toolbar** — Pick exactly which tools appear and in what order
 - 🟦 **TypeScript Ready** — Definitions ship with the package. Options, toolbar entries and variable shapes are all checked, so a mistyped tool name is a compile error rather than a silently missing button
 - 📦 **Universal Module Support** — ESM, CommonJS, UMD, and IIFE. Works with Vite, webpack, Rollup, or directly via `<script src>` CDN — no configuration needed
-- 🚀 **High Performance** — ~53KB gzipped (252KB minified). Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
+- 🚀 **High Performance** — ~54KB gzipped (253KB minified). Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
 
 ## 🛠 Developer Workflow
 
@@ -140,6 +140,46 @@ const editor = new MarkdownEditor('#markdown-editor', {
     }
 });
 ```
+
+### Add your own toolbar button
+
+Most tools are just a title, an icon and a function. No class, no fork:
+
+```javascript
+new MarkdownEditor('#markdown-editor', {
+    toolbar: ['bold', 'italic', {
+        custom: {
+            title: 'Callout',            // tooltip, and the .callout-btn class
+            icon: '<svg>…</svg>',
+            shortcut: 'Ctrl+Shift+C',    // optional, shown in the tooltip
+            action(editor) {
+                editor.insertText('> [!NOTE]\n> ');
+            }
+        }
+    }, 'preview']
+});
+```
+
+Use `editor.insertText(text, caretOffset, trailingLength)` rather than writing to the textarea yourself — it replaces the selection, restores focus, moves the caret, re-renders the preview, fires `onChange`, and keeps undo working.
+
+A tool that builds its own markup, such as a dropdown or a dialog, extends the base class instead:
+
+```javascript
+class EmbedTool extends MarkdownEditor.Tool {
+    constructor(editor) {
+        super(editor, 'Embed video');
+        this.button = this.createButton('<svg>…</svg>');
+    }
+    applySyntax(event) {
+        // MarkdownEditor.modal is the same dialog the link and image tools use
+        const dialog = MarkdownEditor.modal(event, 'fj:max-w-sm', '…', 'Embed');
+    }
+}
+
+new MarkdownEditor('#markdown-editor', { toolbar: ['bold', EmbedTool, 'preview'] });
+```
+
+Two helpers exist for tools that need them: `editor.renderMarkdown(md)` returns sanitized HTML exactly as the preview does, and `editor.createToolbar(textarea, ['bold', 'italic'])` builds a real toolbar bound to another textarea, for a tool collecting rich text in its own dialog.
 
 ### Tear down in SPAs
 

@@ -42,13 +42,15 @@ src/
     toolbar/
       Toolbar.js           tool registry, builds the toolbar
       Tool.js              base class for tools
+      CustomTool.js        wraps the declarative { custom: {...} } form
       tools/               one file per toolbar button
-  utils/                   undo/redo, lists, indent, shortcuts, find & replace
+  utils/                   undo/redo, lists, indent, shortcuts, paste, find & replace
   styles/main.css          plain CSS on top of Tailwind + frutjam
 test/
   smoke.mjs              headless tests, run against dist/
   types.test.ts          compile-only, proves the types match the code
 types/index.d.ts         published TypeScript definitions
+scripts/                 release-time checks, not published
 demo/
 ```
 
