@@ -242,6 +242,18 @@ check('a custom tool can declare a keyboard shortcut', () => {
     return fired === 1 && ev.defaultPrevented && e.usertextarea.value === '!!';
 });
 
+check('a skipped custom tool does not keep its shortcut', () => {
+    const quiet = console.warn; console.warn = () => {};
+    const e = makeEditor({ toolbar: ['bold', { custom: {
+        title: 'Broken', shortcut: 'Ctrl+Shift+J',   // no action
+    }}, 'preview'] }, 'untouched');
+    console.warn = quiet;
+    const ev = press(e, { key: 'J', ctrl: true, shift: true });
+    // Without the guard the manager still registers it, so preventDefault()
+    // eats the keystroke and applySyntax throws on every press.
+    return !ev.defaultPrevented && e.usertextarea.value === 'untouched';
+});
+
 check('the shortcut is shown in the tooltip, like the built-ins', () => {
     const e = makeEditor({ toolbar: [{ custom: {
         title: 'Shout', icon: '<svg></svg>', shortcut: 'Ctrl+Shift+K', action: () => {},
