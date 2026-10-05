@@ -16,6 +16,14 @@
   polyfill resolves correctly inside the editor.
 */
 .markdown-editor-wrapper {
+    /*
+      Read once after the editor mounts. The stylesheet is a separate file from
+      2.0.0, so a missing <link> or import produces an unstyled editor with no
+      error. This lets the editor notice and say so, rather than leaving you to
+      work it out from the appearance.
+    */
+    --mte-css: 1;
+
     --lightningcss-light: initial;
     --lightningcss-dark: ;
     resize: vertical;

@@ -35,6 +35,28 @@ class MarkdownEditor {
         this.shortcutManager = new ShortcutManager(this);
         this.findReplace = new FindReplace(this);
         this.pasteManager = new PasteManager(this);
+        this._warnIfStylesheetMissing();
+    }
+
+    /**
+     * The stylesheet is a separate file, so forgetting it leaves a working but
+     * unstyled editor with nothing in the console to explain why. main.css sets
+     * --mte-css on the wrapper; if it does not resolve, the stylesheet never
+     * loaded. Warn once per page rather than once per editor.
+     */
+    _warnIfStylesheetMissing() {
+        if (MarkdownEditor._cssWarned) return;
+        // A detached or hidden container cannot be measured, so take no view
+        if (!this.editorContainer?.isConnected) return;
+
+        if (getComputedStyle(this.editorContainer).getPropertyValue('--mte-css').trim()) return;
+
+        MarkdownEditor._cssWarned = true;
+        console.error(
+            '[MarkdownEditor] Stylesheet not loaded, so the editor will look unstyled.\n' +
+            "  Bundlers:  import 'markdown-text-editor/style.css'\n" +
+            '  Browsers:  <link rel="stylesheet" href=".../dist/markdown-text-editor.css">'
+        );
     }
 
     /**
