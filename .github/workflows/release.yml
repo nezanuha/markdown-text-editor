@@ -36,18 +36,32 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      # A semver prerelease always carries a hyphen, so the tag name tells us
+      # whether this is a beta. Without --tag, npm would point `latest` at it
+      # and every plain `npm install` would pick up the prerelease.
       - name: Publish to npm
-        run: npm publish
+        run: |
+          case "$GITHUB_REF_NAME" in
+            *-*) npm publish --tag beta ;;
+            *)   npm publish ;;
+          esac
 
       - name: Extract changelog notes
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           awk "/^## \[$VERSION\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md > release-notes.md
+          # A prerelease has no changelog section of its own; never hand
+          # gh an empty notes file
+          [ -s release-notes.md ] || echo "See CHANGELOG.md for details." > release-notes.md
 
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          case "$GITHUB_REF_NAME" in
+            *-*) PRE="--prerelease" ;;
+            *)   PRE="" ;;
+          esac
           gh release create "$GITHUB_REF_NAME" \
             --title "$GITHUB_REF_NAME" \
-            --notes-file release-notes.md
+            --notes-file release-notes.md $PRE

@@ -135,3 +135,40 @@ Explain *why* in the body, not just what. The diff already shows what changed; i
 - Note anything that changes existing behaviour, however small
 
 Not sure whether an idea fits? Open an issue or a discussion first. That is usually faster than building something that turns out to need a different shape.
+
+## Releasing
+
+Maintainers only.
+
+**Stable release.** Close the changelog section first, or `npm version` refuses:
+
+```bash
+# CHANGELOG.md:  ## [Unreleased]  ->  ## [1.9.0] - 2026-10-04
+git commit -am "chore: update changelog for version 1.9.0 release"
+git push
+
+npm version minor      # or patch / major
+```
+
+`npm version` runs `scripts/check-changelog.mjs`, bumps `package.json`, commits and tags, and `postversion` pushes the current branch along with the tag. The `v*.*.*` tag triggers `.github/workflows/release.yml`, which builds, tests, typechecks, publishes to npm and creates the GitHub release from that changelog section.
+
+Releasing from a branch works the same way, which is how a `2.0.0` branch can publish betas while `main` stays free to ship 1.x patches.
+
+**Beta.** Leave `## [Unreleased]` alone. A beta is a preview of a release rather than one of its own, so there is no section to close and the guard skips the check:
+
+```bash
+npm version premajor --preid beta     # 1.9.0        -> 2.0.0-beta.0
+npm version prerelease --preid beta   # 2.0.0-beta.0 -> 2.0.0-beta.1
+```
+
+`premajor` opens the cycle, `prerelease` advances it. Running `premajor` a second time would jump to `3.0.0-beta.0`, and reaching for `prerelease` first gives `1.9.1-beta.0`, a beta of a patch release.
+
+Prerelease tags publish under the `beta` dist-tag, so a plain `npm install markdown-text-editor` is unaffected. Testers use `npm install markdown-text-editor@beta`.
+
+When the stable version is ready, close the changelog as above and run `npm version major`. From `2.0.0-beta.1` that gives `2.0.0`, not 3.0.0. Then drop the stale tag:
+
+```bash
+npm dist-tag rm markdown-text-editor beta
+```
+
+`npm dist-tag ls markdown-text-editor` shows where everything currently points.

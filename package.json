@@ -32,7 +32,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "prepublishOnly": "npm run build",
-    "postversion": "git push origin main --tags",
+    "version": "node scripts/check-changelog.mjs",
+    "postversion": "git push origin HEAD --follow-tags",
     "test": "node test/smoke.mjs",
     "typecheck": "tsc --noEmit --strict --lib es2020,dom --moduleResolution bundler --module esnext test/types.test.ts"
   },
