@@ -17,6 +17,7 @@
       "default": "./dist/markdown-text-editor.umd.js"
     },
     "./style.css": "./dist/markdown-text-editor.css",
+    "./dist/*": "./dist/*",
     "./package.json": "./package.json"
   },
   "files": [
