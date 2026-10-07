@@ -86,7 +86,7 @@
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
     "diff": "^9.0.0",
-    "frutjam": "^2.2.6",
+    "frutjam": "^2.3.0",
     "happy-dom": "^20.14.5",
     "postcss": "^8.5.29",
     "tailwindcss": "^4.3.3",
