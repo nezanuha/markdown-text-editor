@@ -100,7 +100,7 @@ export interface DeclarativeTool {
         title: string;
         /** Inline SVG for the button face. */
         icon?: string;
-        /** Runs on click. The event is passed so dialog tools can position against it. */
+        /** Runs on click. The event is passed on for handing to `MarkdownEditor.modal`. */
         action: (editor: MarkdownEditor, event: Event) => void;
         /**
          * Keyboard shortcut, e.g. `'Ctrl+Shift+K'`. Appended to the tooltip, and
