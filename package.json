@@ -1,6 +1,6 @@
 {
   "name": "markdown-text-editor",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "type": "module",
   "description": "A markdown editor that enhances your textarea instead of replacing it, so form submission, validation and required fields keep working. WYSIWYG hybrid mode, live preview, find and replace, RTL, TypeScript types. Works with any backend.",
   "funding": "https://ko-fi.com/nezanuha",
