@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-10-08
+
 ### Added
 
 - **Custom toolbar tools**: Add your own button without forking. Describe it inline with `{ custom: { title, icon, action } }`, or extend `MarkdownEditor.Tool` when the tool builds its own markup such as a dropdown. Tools can declare a keyboard shortcut, are translatable through `labels`, and are torn down by `destroy()`
@@ -440,7 +442,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.5.4...v1.6.0
