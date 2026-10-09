@@ -48,6 +48,11 @@ const customTheme: MarkdownEditorOptions = { theme: 'my-brand' };
 const altDisabled: MarkdownEditorOptions = { toolbar: [{ image: { altInput: false } }] };
 const altRequired: MarkdownEditorOptions = { toolbar: [{ image: { altInput: { required: true } } }] };
 
+const someHeadings: MarkdownEditorOptions = { toolbar: [{ heading: { levels: [2, 3, 4] } }] };
+const allHeadings: MarkdownEditorOptions = { toolbar: [{ heading: {} }, 'heading'] };
+// @ts-expect-error  7 is not a heading level
+const badHeading: MarkdownEditorOptions = { toolbar: [{ heading: { levels: [7] } }] };
+
 class ShoutTool extends MarkdownEditor.Tool {
     constructor(editor: MarkdownEditor) {
         super(editor, 'Shout');

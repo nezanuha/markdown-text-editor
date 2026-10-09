@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Choose which heading levels the dropdown offers**: `{ heading: { levels: [2, 3, 4] } }` in the toolbar array. Useful wherever H1 belongs to the page rather than the content, which is most CMS body fields. `Ctrl+1`, `Ctrl+2` and `Ctrl+3` follow the same list, so a level you leave out cannot be inserted from the keyboard either, and the button's tooltip lists only the shortcuts that still work. Defaults to all six
+
 ### Changed
 
 - **The stylesheet is now a separate file**: The CSS is no longer carried inside the JavaScript and injected as a `<style>` element when the script loads. Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css` if you use a bundler. This is the breaking part of the release: an existing setup keeps working but renders unstyled until that line is added, and the editor now says so in the console rather than leaving you to guess. It makes the editor usable under a strict Content Security Policy, where an injected style element is refused whatever nonce it carries, and lets the stylesheet be cached separately from the JavaScript instead of being re-downloaded with every patch release ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))

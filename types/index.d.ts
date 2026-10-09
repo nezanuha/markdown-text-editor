@@ -52,6 +52,24 @@ export interface VariablesTool {
     variables: Array<Variable | VariableGroup>;
 }
 
+export interface HeadingTool {
+    heading: {
+        /**
+         * Which heading levels the dropdown offers, in the order 1-6 regardless
+         * of how you list them. Defaults to all six. Useful where H1 belongs to
+         * the page rather than the content, e.g. `[2, 3, 4]`.
+         *
+         * `Ctrl+1`, `Ctrl+2` and `Ctrl+3` follow this list, so a level you leave
+         * out cannot be inserted from the keyboard either.
+         *
+         * This restricts the toolbar, not the document: someone can still type
+         * `# Title` by hand and it renders as a heading. Enforce the rule on the
+         * server if it has to hold.
+         */
+        levels?: Array<1 | 2 | 3 | 4 | 5 | 6>;
+    };
+}
+
 export interface ImageTool {
     image: {
         fileInput?: {
@@ -114,6 +132,7 @@ export type ToolbarEntry =
     | ToolName
     | VariablesTool
     | ImageTool
+    | HeadingTool
     | DeclarativeTool
     | CustomTool
     | { tool: CustomTool; config?: any };

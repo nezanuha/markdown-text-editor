@@ -38,6 +38,14 @@ export default class ShortcutManager {
             .map(tool => ({ tool, combo: parseShortcut(tool.shortcut) }))
             .filter(entry => entry.combo);
 
+        // Ctrl+1/2/3 must offer the same levels the dropdown does, or the
+        // keyboard inserts a heading the toolbar says is unavailable. With no
+        // heading tool in the toolbar there is nothing to disagree with, so the
+        // shortcuts keep working on all six.
+        const headingTool = (editor.toolbarInstance?.tools ?? [])
+            .find(tool => tool instanceof HeadingTool);
+        this.headingLevels = headingTool?.levels ?? [1, 2, 3, 4, 5, 6];
+
         this._handler = this._onKeyDown.bind(this);
         this._docHandler = this._onDocKeyDown.bind(this);
         editor.usertextarea.addEventListener('keydown', this._handler);
@@ -57,8 +65,9 @@ export default class ShortcutManager {
             return;
         }
 
-        // Heading shortcuts: Ctrl+1 / Ctrl+2 / Ctrl+3
-        if (ctrl && !shift && ['1', '2', '3'].includes(e.key)) {
+        // Heading shortcuts: Ctrl+1 / Ctrl+2 / Ctrl+3, for the levels on offer
+        if (ctrl && !shift && ['1', '2', '3'].includes(e.key)
+            && this.headingLevels.includes(parseInt(e.key))) {
             e.preventDefault();
             new HeadingTool(this.editor).applyHeading(parseInt(e.key));
             return;
@@ -101,7 +110,10 @@ export default class ShortcutManager {
             if (btn) btn.title += ` (${label})`;
         }
         const headingBtn = this.editor.editorContainer.querySelector('.heading-btn');
-        if (headingBtn) headingBtn.title += ' (Ctrl+1/2/3)';
+        const headingKeys = this.headingLevels.filter(n => n <= 3);
+        if (headingBtn && headingKeys.length) {
+            headingBtn.title += ` (Ctrl+${headingKeys.join('/')})`;
+        }
         const previewBtn = this.editor.editorContainer.querySelector('.preview-btn');
         if (previewBtn) previewBtn.title += ' (F11)';
 

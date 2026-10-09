@@ -402,6 +402,75 @@ check('heading menu items are translated', () => {
     return [...wrapper.querySelectorAll(ITEM)].some(b => b.textContent === 'Titulo 1');
 });
 
+// --- heading levels ---------------------------------------------------------
+
+const headingItems = editor => [...editor.editorContainer
+    .querySelector('.heading-btn').closest('.fj\\:me-popover')
+    .querySelectorAll(ITEM)].map(b => b.textContent);
+
+check('all six levels are offered by default', () =>
+    headingItems(makeEditor({ toolbar: ['heading', 'bold'] })).length === 6);
+
+check('levels narrows the dropdown', () => {
+    const items = headingItems(makeEditor({ toolbar: [{ heading: { levels: [2, 3, 4] } }, 'bold'] }));
+    return items.length === 3 && items[0] === 'Heading 2' && items[2] === 'Heading 4';
+});
+
+check('levels are sorted, whatever order you give them', () => {
+    const items = headingItems(makeEditor({ toolbar: [{ heading: { levels: [4, 2] } }, 'bold'] }));
+    return items[0] === 'Heading 2' && items[1] === 'Heading 4';
+});
+
+check('a narrowed dropdown still inserts the right prefix', () => {
+    const e = makeEditor({ toolbar: [{ heading: { levels: [2, 3] } }, 'bold'] }, 'Title');
+    e.editorContainer.querySelector('.heading-btn').closest('.fj\\:me-popover')
+        .querySelectorAll(ITEM)[1].click();      // Heading 3
+    return e.usertextarea.value === '### Title';
+});
+
+check('a level left out cannot be typed either', () => {
+    const e = makeEditor({ toolbar: [{ heading: { levels: [2, 3] } }, 'bold'] }, 'Title');
+    const ev = press(e, { key: '1', ctrl: true });
+    return !ev.defaultPrevented && e.usertextarea.value === 'Title';
+});
+
+check('a level that is offered still works from the keyboard', () => {
+    const e = makeEditor({ toolbar: [{ heading: { levels: [2, 3] } }, 'bold'] }, 'Title');
+    press(e, { key: '2', ctrl: true });
+    return e.usertextarea.value === '## Title';
+});
+
+check('the tooltip lists only the shortcuts that exist', () => {
+    const e = makeEditor({ toolbar: [{ heading: { levels: [2, 3] } }, 'bold'] });
+    return tooltip(e, '.heading-btn') === 'Heading (Ctrl+2/3)';
+});
+
+check('no shortcut hint when none of 1-3 is offered', () => {
+    const e = makeEditor({ toolbar: [{ heading: { levels: [4, 5, 6] } }, 'bold'] });
+    return tooltip(e, '.heading-btn') === 'Heading';
+});
+
+check('levels restrict the toolbar, not what can be typed', () => {
+    const e = makeEditor({ toolbar: [{ heading: { levels: [2, 3] } }, 'bold'] });
+    // A hand-typed H1 is still a heading; the renderer decides what is valid,
+    // not the toolbar. Asserting on the transformation rather than the tag,
+    // since DOMPurify drops block elements under happy-dom.
+    return e.renderMarkdown('# Title').trim() === 'Title';
+});
+
+check('shortcuts still cover 1-3 when heading is not in the toolbar', () => {
+    const e = makeEditor({ toolbar: ['bold'] }, 'Title');
+    press(e, { key: '1', ctrl: true });
+    return e.usertextarea.value === '# Title';
+});
+
+check('a junk levels value warns and falls back to all six', () => {
+    const quiet = console.warn; console.warn = () => {};
+    const items = headingItems(makeEditor({ toolbar: [{ heading: { levels: [0, 9, 'two'] } }, 'bold'] }));
+    console.warn = quiet;
+    return items.length === 6;
+});
+
 // --- paste ------------------------------------------------------------------
 
 const paste = (editor, { text = '', files = [] } = {}) => {
