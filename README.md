@@ -191,8 +191,15 @@ editor.destroy();
 In React, create the editor in an effect and return `destroy` as the cleanup — that also covers StrictMode running effects twice in development:
 
 ```jsx
+// Options are read once, so reach the latest onChange through a ref rather
+// than rebuilding the editor whenever the parent re-renders
+const onChangeRef = useRef(onChange);
+onChangeRef.current = onChange;
+
 useEffect(() => {
-    const editor = new MarkdownEditor(ref.current, { onChange });
+    const editor = new MarkdownEditor(ref.current, {
+        onChange: (value) => onChangeRef.current?.(value),
+    });
     return () => editor.destroy();
 }, []);
 ```
