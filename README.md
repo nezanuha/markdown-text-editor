@@ -110,6 +110,7 @@ That's it. Form submission, `.value` access, and all native textarea behaviour w
 - 🧩 **Custom Tools** — Add your own toolbar button with `{ custom: { title, icon, action } }`, or extend `MarkdownEditor.Tool` when it builds its own markup. Keyboard shortcuts, translation and teardown work exactly as they do for the built-ins. No fork, no patching
 - 🎛️ **Modular Toolbar** — Pick exactly which tools appear and in what order
 - 🟦 **TypeScript Ready** — Definitions ship with the package. Options, toolbar entries and variable shapes are all checked, so a mistyped tool name is a compile error rather than a silently missing button
+- 🖥️ **SSR Safe** — Importing it on the server doesn't throw, so Next.js, Remix and Nuxt need no `dynamic(..., { ssr: false })` wrapper. The `<textarea>` is in the server HTML with its content, and the editor enhances it after hydration, so there's no markup mismatch and nothing pops in
 - 📦 **Universal Module Support** — ESM, CommonJS, UMD, and IIFE. Works with Vite, webpack, Rollup, or directly via `<script src>` CDN — no configuration needed
 - 🚀 **High Performance** — ~40KB gzipped JS plus ~13KB gzipped CSS, cached separately. Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
 
@@ -215,6 +216,8 @@ useEffect(() => {
 Use `defaultValue`, not `value`. The editor writes to the textarea directly, so a controlled binding (or Vue's `:value`) would overwrite what the user is typing. Full React and Vue examples are in the [documentation](https://frutjam.com/plugins/markdown-editor).
 
 The same two rules cover Svelte, Angular and anything else: don't bind the value, and call `destroy()` on unmount. In Angular, `onChange` fires outside the zone, so wrap it in `zone.run()` for change detection to notice.
+
+This is also all you need for server-side rendering. `useEffect`, `onMounted` and `onMount` never run on the server, so the DOM work stays in the browser and importing the package server-side is safe. Next.js, Remix and Nuxt need no `ssr: false` wrapper, and the `<textarea>` ships in the server HTML with its content already in it.
 
 Options are read once when the editor is constructed. Changing them later has no effect — destroy the editor and create a new one instead.
 
