@@ -89,6 +89,23 @@
 }
 
 /*
+ * Every utility in the build is written for border-box, and so is the sizing
+ * done from JavaScript: the wrapper carries a 1px border and is given a pixel
+ * height directly, so under content-box each editor comes out 2px taller than
+ * asked and `minHeight: 200` quietly becomes 202.
+ *
+ * Tailwind's preflight sets this globally, so on a Tailwind page it was always
+ * true. Scope it to the editor so a plain page renders the same, rather than
+ * leaving the box model to whatever the host happens to load.
+ */
+.markdown-editor-wrapper,
+.markdown-editor-wrapper *,
+.markdown-editor-wrapper *::before,
+.markdown-editor-wrapper *::after {
+    box-sizing: border-box;
+}
+
+/*
  * The utility classes on our own elements set `display`, and an author rule
  * outranks the user agent's `[hidden] { display: none }` however the cascade is
  * ordered. So an element carrying both `fj:flex` and `hidden` stays on screen,
