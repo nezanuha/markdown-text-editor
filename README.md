@@ -13,7 +13,7 @@ A lightweight, embeddable JavaScript Markdown editor that transforms a standard 
 
 A native-first Markdown editor built on a standard textarea. No data binding, no API — just drop it in and your forms keep working as-is.
 
-**Works standalone.** No Frutjam, no Tailwind, no framework required, the styles are bundled.
+**Works standalone.** No Frutjam, no Tailwind, no framework required. One script and one stylesheet.
 
 ![Hybrid mode: headings, bold text and list markers styled live inside the textarea while the Markdown syntax stays visible](https://cdn.frutjam.com/media/plugins/hybrid-mode-markdown-editor.webp)
 
@@ -40,7 +40,7 @@ Most JavaScript markdown editors (EasyMDE, SimpleMDE, CodeMirror-based editors) 
 | Swap the markdown parser | ✅ | ❌ |
 | Keyboard shortcuts | ✅ | Partial |
 | Dark mode / theming | ✅ | Limited |
-| Bundle size, gzipped | 54 KB | 107 KB (JS + CSS) |
+| Bundle size, gzipped | 56 KB (JS + CSS) | 107 KB (JS + CSS) |
 
 ## 🚀 Quick Start
 
@@ -90,6 +90,22 @@ Import the stylesheet **or** link it, never both. If you forget it entirely the 
 
 That's it. Form submission, `.value` access, and all native textarea behaviour work exactly as before.
 
+### Upgrading from 1.x
+
+**Add the stylesheet.** It used to be carried inside the JavaScript and injected as a `<style>` element. It is now a real file, so an existing setup keeps working but renders unstyled until you link or import it. The editor says so in the console rather than leaving you to guess.
+
+```javascript
+import 'markdown-text-editor/style.css';   // bundlers
+```
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.css">
+```
+
+If you load the editor from an unpinned CDN URL, this reaches you the moment 2.0.0 publishes. Pin a version if you are not ready.
+
+That is the whole breaking change. `labels` was renamed to `locale` and still works under the old name, so nothing else needs touching.
+
 ## ✨ Features
 
 - 🔌 **Native Form Integration** — Works exactly like a standard `<textarea>`. No complex APIs — just use `.value` or the `name` attribute. Compatible with Django, Laravel, PHP, Rails, Node.js, and with React or Vue via a ref and `destroy()` on unmount
@@ -106,13 +122,14 @@ That's it. Form submission, `.value` access, and all native textarea behaviour w
 - 🛡️ **XSS Safe** — Preview output sanitized via [DOMPurify](https://github.com/cure53/DOMPurify) before rendering, including the output of a custom renderer
 - 🛡️ **CSP Compatible** — No inline event handlers, no `eval`, and no injected `<style>` element. The stylesheet is a real file you link, so a strict policy needs no `'unsafe-inline'` exception for either `script-src` or `style-src` ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42))
 - 🌍 **RTL Support** — Native Right-to-Left support for Arabic, Urdu, Farsi, and other RTL languages
+- 🗣️ **Translatable Interface** — Every tooltip, menu item, dialog field and screen reader name goes through the `locale` option, keyed by the English string. `locale/template.js` lists all 45 of them so you don't have to go looking. Fifty-six languages ship with the package; you import the one you need
 - 🌙 **Dark Mode & Theming** — Inherits `data-theme` from any ancestor element. Built-in light, dark, snowberry, and darkberry themes. Fully customizable via CSS variables
 - 🧩 **Custom Tools** — Add your own toolbar button with `{ custom: { title, icon, action } }`, or extend `MarkdownEditor.Tool` when it builds its own markup. Keyboard shortcuts, translation and teardown work exactly as they do for the built-ins. No fork, no patching
 - 🎛️ **Modular Toolbar** — Pick exactly which tools appear and in what order
 - 🟦 **TypeScript Ready** — Definitions ship with the package. Options, toolbar entries and variable shapes are all checked, so a mistyped tool name is a compile error rather than a silently missing button
 - 🖥️ **SSR Safe** — Importing it on the server doesn't throw, so Next.js, Remix and Nuxt need no `dynamic(..., { ssr: false })` wrapper. The `<textarea>` is in the server HTML with its content, and the editor enhances it after hydration, so there's no markup mismatch and nothing pops in
 - 📦 **Universal Module Support** — ESM, CommonJS, UMD, and IIFE. Works with Vite, webpack, Rollup, or directly via `<script src>` CDN — no configuration needed
-- 🚀 **High Performance** — ~40KB gzipped JS plus ~13KB gzipped CSS, cached separately. Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
+- 🚀 **High Performance** — ~43KB gzipped JS plus ~14KB gzipped CSS, cached separately. Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
 
 ## 🛠 Developer Workflow
 
@@ -189,6 +206,53 @@ new MarkdownEditor('#markdown-editor', { toolbar: ['bold', EmbedTool, 'preview']
 ```
 
 Two helpers exist for tools that need them: `editor.renderMarkdown(md)` returns sanitized HTML exactly as the preview does, and `editor.createToolbar(textarea, ['bold', 'italic'])` builds a real toolbar bound to another textarea, for a tool collecting rich text in its own dialog.
+
+### Translate the interface
+
+Every tooltip, menu item, dialog field and screen reader name goes through the `locale` option, keyed by the English string. Anything you leave out stays in English.
+
+```javascript
+import fr from 'markdown-text-editor/locale/fr.js';
+
+new MarkdownEditor('#markdown-editor', { locale: fr });
+```
+
+`locale` takes the strings, not a language code. `locale: 'fr'` is a compile error in TypeScript and logs what to write instead in JavaScript. Importing the one language you want is why nobody downloads the other fifty-five.
+
+<details>
+<summary><strong>56 languages ship with the package</strong></summary>
+
+`ar` Arabic · `az` Azerbaijani · `bg` Bulgarian · `bn` Bengali · `bs` Bosnian · `ca` Catalan · `cs` Czech · `da` Danish · `de` German · `el` Greek · `es` Spanish · `et` Estonian · `fa` Persian · `fi` Finnish · `fil` Filipino · `fr` French · `ga` Irish · `he` Hebrew · `hi` Hindi · `hr` Croatian · `hu` Hungarian · `hy` Armenian · `id` Indonesian · `is` Icelandic · `it` Italian · `ja` Japanese · `kn` Kannada · `ko` Korean · `lt` Lithuanian · `lv` Latvian · `mk` Macedonian · `mr` Marathi · `ms` Malay · `mt` Maltese · `nl` Dutch · `no` Norwegian · `pl` Polish · `pt` Portuguese · `ro` Romanian · `ru` Russian · `sk` Slovak · `sl` Slovenian · `sq` Albanian · `sr` Serbian · `sv` Swedish · `sw` Swahili · `ta` Tamil · `te` Telugu · `th` Thai · `tr` Turkish · `uk` Ukrainian · `ur` Urdu · `uz` Uzbek · `vi` Vietnamese · `zh` Chinese (Simplified) · `zh-hk` Chinese (Hong Kong)
+
+English needs no file; it is what the editor falls back to.
+
+None of these has been checked by a native speaker yet, so each file exports `reviewed = false` and says so in its header. If one reads wrong to you, [a pull request](https://github.com/nezanuha/markdown-text-editor/issues) correcting a single line is welcome and genuinely useful. Languages with more than one plural form, such as Polish and Arabic, currently get one wording that reads correctly for most counts but not all.
+
+</details>
+
+Partial is fine, and you can override a shipped translation without forking it:
+
+```javascript
+import fr from 'markdown-text-editor/locale/fr.js';
+
+new MarkdownEditor('#markdown-editor', {
+    locale: { ...fr, 'Image': 'Photo' }   // your wording wins
+});
+```
+
+**`locale/template.js` lists every string**, English on both sides. Copy it to add a language, or map it through a translation system you already have, which keeps the editor's wording consistent with the rest of your interface:
+
+```javascript
+import template from 'markdown-text-editor/locale/template.js';
+
+const locale = Object.fromEntries(
+    Object.keys(template).map(key => [key, i18n.t(`editor.${key}`)])
+);
+
+new MarkdownEditor('#markdown-editor', { locale });
+```
+
+Counts carry a `{n}` placeholder, so `'{n} words'` can become `'{n} mots'` or `'mots : {n}'` and the number lands where that language wants it. CSS class names never change, so `.bold-btn` stays `.bold-btn` in every language.
 
 ### Tear down in SPAs
 

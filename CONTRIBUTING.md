@@ -50,6 +50,9 @@ test/
   smoke.mjs              headless tests, run against dist/
   types.test.ts          compile-only, proves the types match the code
 types/index.d.ts         published TypeScript definitions
+locale/
+  template.js            every string the `locale` option can translate
+  <code>.js              one file per language, 56 of them
 scripts/                 release-time checks, not published
 demo/
 ```
@@ -96,6 +99,54 @@ A tool may return `null` from `createButton()` to render nothing, as `VariableTo
 `types/index.d.ts` is hand-written and published with the package. **Adding or changing an option means updating it**, or TypeScript users get a compile error on valid configuration.
 
 `test/types.test.ts` guards against drift. It never runs; it only has to compile. Valid configuration must type-check, and each `@ts-expect-error` must actually error, since an unused one is itself a compile error. `npm run typecheck` runs both, and so does CI.
+
+## Translatable text
+
+Any text a user sees goes through `editor.label()`, keyed by the English string:
+
+```js
+btn.setAttribute('aria-label', this.editor.label('Match case'));
+```
+
+That includes `aria-label` and `title`, not just visible text. A screen reader user
+on a translated editor hearing English control names is worse off than a sighted
+one, because there is no visual context to fall back on.
+
+**Add the new string to `locale/template.js` in the same change, by running `npm run locale:extract`.** That file is
+the only list of what `locale` can translate, so a string missing from it is a
+string nobody knows they can translate. Keys and values are identical there; it is a
+template to copy, not a translation.
+
+Counts use a `{n}` placeholder, e.g. `'{n} words'`, so a translation can put the
+number where its language wants it rather than being forced into English word order.
+
+### Rewording an existing string
+
+Treat a shipped English string as part of the public API. `label()` is
+`strings?.[text] ?? text`, so renaming `'Find'` to `'Search'` does not fail, it
+silently falls back to English in all fifty-six locale files at once.
+
+`npm run locale:check` catches it, and runs as part of `npm test`. A rename shows
+up as a `missing` key and an `orphan` key together:
+
+```
+locale/pl.js
+  missing   "Search and replace"
+  orphan    "Find and replace"
+```
+
+If the meaning did not change, move each translation to the new key. If it did,
+the translations are now wrong and the files should lose that key so the string
+falls back to English rather than saying the wrong thing.
+
+Either way, the nicer wording is rarely worth the cost. Prefer leaving a shipped
+string alone.
+
+### Adding a language
+
+Copy `locale/template.js` to `locale/<code>.js`, translate the values, and keep
+`export const reviewed = false;` until a native speaker has read it. Run
+`npm run locale:check` before opening the pull request.
 
 ## Style
 

@@ -10,9 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Choose which heading levels the dropdown offers**: `{ heading: { levels: [2, 3, 4] } }` in the toolbar array. Useful wherever H1 belongs to the page rather than the content, which is most CMS body fields. `Ctrl+1`, `Ctrl+2` and `Ctrl+3` follow the same list, so a level you leave out cannot be inserted from the keyboard either, and the button's tooltip lists only the shortcuts that still work. Defaults to all six
+- **A list of every translatable string**: `markdown-text-editor/locale/template.js` holds all 45 keys the editor can translate, with English on both sides. Copy it, translate the values, pass the result. Until now the only way to find out what could be translated was to read the source, which is a poor starting point for anyone who does not read English comfortably
+- **Fifty-six languages included**: Import the one you want from `markdown-text-editor/locale/` and pass it as `locale`. Every file is a separate module, so the language you import is the only one that reaches your bundle and the editor's own size is unchanged. None has been checked by a native speaker yet, which each file says in its header, and corrections are welcome. Languages with several plural forms, such as Polish and Arabic, get a single form that reads correctly for most counts but not all
+
+### Fixed
+
+- **Find and replace was never translatable**: The panel's buttons, placeholders and screen reader names were hardcoded English regardless of `labels`, so a translated editor still announced "Match case" and "Replace all" to a screen reader in English
+- **The footer was never translatable**: The line, column, character and word counts stayed English in a translated editor. They are now keyed as `{n} words` and the like, so a translation decides where the number sits rather than being forced into English word order
 
 ### Changed
 
+- **`labels` is now `locale`**: The option takes the same object of translations, under a name that fits what is in it. Nine of the forty-five keys were never labels, being status messages, error text and count templates such as `{n} words`, and anything added later is more likely to be a sentence than a button name. `labels` keeps working, so nothing breaks. Passing a language code rather than the strings, `locale: 'es'`, now says so in the console instead of quietly leaving the editor in English
 - **The stylesheet is now a separate file**: The CSS is no longer carried inside the JavaScript and injected as a `<style>` element when the script loads. Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css` if you use a bundler. This is the breaking part of the release: an existing setup keeps working but renders unstyled until that line is added, and the editor now says so in the console rather than leaving you to guess. It makes the editor usable under a strict Content Security Policy, where an injected style element is refused whatever nonce it carries, and lets the stylesheet be cached separately from the JavaScript instead of being re-downloaded with every patch release ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))
 
 ## [1.9.0] - 2026-10-08
