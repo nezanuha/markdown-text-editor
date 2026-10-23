@@ -12,6 +12,7 @@
  * parser, though inline ones survive. Assert on <em> or <strong>, not <pre>.
  */
 import { Window } from 'happy-dom';
+import { readFileSync } from 'node:fs';
 
 const window = new Window({ url: 'http://localhost' });
 
@@ -430,6 +431,39 @@ check('the find panel is translatable, screen reader names included', () => {
         && aria('[aria-pressed]') === 'Coincidir mayusculas'
         && [...panel.querySelectorAll('button')].some(b => b.getAttribute('aria-label') === 'Siguiente');
 });
+
+// The panel is hidden with the `hidden` attribute, but every element in it also
+// carries a utility class that sets `display`, and an author rule outranks the
+// user agent's `[hidden] { display: none }`. Without a rule of our own the close
+// button did nothing and the replace row never hid (#45). Only a real cascade
+// catches this, so load the stylesheet for these two.
+const withStylesheet = fn => {
+    const style = document.createElement('style');
+    style.textContent = readFileSync(new URL('../dist/markdown-text-editor.css', import.meta.url), 'utf8');
+    document.head.appendChild(style);
+    try { return fn(); } finally { style.remove(); }
+};
+
+check('the find panel actually hides when closed', () => withStylesheet(() => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    e.findReplace.open();
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const shown = getComputedStyle(panel).display;
+    panel.closest('.markdown-editor-wrapper')
+        .querySelector('[aria-label="Close"]').click();
+    return shown !== 'none' && getComputedStyle(panel).display === 'none';
+}));
+
+check('the replace row stays hidden until the replace button is pressed', () => withStylesheet(() => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    e.findReplace.open();
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const row = panel.querySelector('div:last-child');
+    const before = getComputedStyle(row).display;
+    [...panel.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === 'Toggle replace row').click();
+    return before === 'none' && getComputedStyle(row).display !== 'none';
+}));
 
 check('the footer is translatable, with the number placed by the translation', () => {
     const e = makeEditor({ footer: { words: true, chars: true }, labels: {

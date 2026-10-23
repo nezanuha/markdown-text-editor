@@ -88,6 +88,28 @@
     caret-color: var(--color-primary);
 }
 
+/*
+ * The utility classes on our own elements set `display`, and an author rule
+ * outranks the user agent's `[hidden] { display: none }` however the cascade is
+ * ordered. So an element carrying both `fj:flex` and `hidden` stays on screen,
+ * which left the find panel impossible to close and the replace row always
+ * showing (#45).
+ *
+ * Tailwind's preflight fixes this globally, which is why the bug only appeared
+ * on pages that do not already load Tailwind. A library has no business
+ * shipping a global reset, so scope it to the editor instead.
+ *
+ * The scope is also what makes the rule win: three class-level components
+ * against the single class of `fj:flex`. Preflight needs !important because it
+ * sits in @layer base and loses to the utilities layer on layer order whatever
+ * its specificity; this rule is unlayered, so specificity decides and no
+ * !important is needed. Do not shorten the selector to a bare `[hidden]`, which
+ * only ties with the utility and leaves source order to settle it.
+ */
+.markdown-editor-wrapper [hidden]:not([hidden="until-found"]) {
+    display: none;
+}
+
 .markdown-editor-wrapper.is-fullscreen {
     position: fixed;
     top: 0;

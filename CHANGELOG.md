@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The find panel could not be closed**: On a page that does not already load Tailwind, the close button did nothing and the replace row was always showing. The panel is hidden with the `hidden` attribute, but every element in it also carries a class that sets `display`, and a stylesheet rule outranks the browser's built-in meaning of `hidden`. Tailwind's own reset papers over this, which is why the demo behaved and ordinary pages did not ([#45](https://github.com/nezanuha/markdown-text-editor/issues/45))
 - **Find and replace was never translatable**: The panel's buttons, placeholders and screen reader names were hardcoded English regardless of `labels`, so a translated editor still announced "Match case" and "Replace all" to a screen reader in English
 - **The footer was never translatable**: The line, column, character and word counts stayed English in a translated editor. They are now keyed as `{n} words` and the like, so a translation decides where the number sits rather than being forced into English word order
 
