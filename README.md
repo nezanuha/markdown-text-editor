@@ -40,7 +40,7 @@ Most JavaScript markdown editors (EasyMDE, SimpleMDE, CodeMirror-based editors) 
 | Swap the markdown parser | ✅ | ❌ |
 | Keyboard shortcuts | ✅ | Partial |
 | Dark mode / theming | ✅ | Limited |
-| Bundle size, gzipped | 56 KB (JS + CSS) | 107 KB (JS + CSS) |
+| Bundle size, gzipped | 57 KB (JS + CSS) | 107 KB (JS + CSS) |
 
 ## 🚀 Quick Start
 
