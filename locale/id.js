@@ -1,0 +1,55 @@
+/**
+ * Indonesian (id).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} karakter",
+    "{n} words": "{n} kata",
+    "All": "Semua",
+    "Alt text": "Teks alternatif",
+    "Apply": "Terapkan",
+    "Blockquote": "Kutipan",
+    "Bold": "Tebal",
+    "Check list": "Daftar tugas",
+    "Close": "Tutup",
+    "Code": "Kode",
+    "Code Block": "Blok kode",
+    "Col {n}": "Kol {n}",
+    "Editor toolbar": "Bilah alat editor",
+    "Find": "Cari",
+    "Find and replace": "Cari dan ganti",
+    "Heading": "Judul",
+    "Heading level": "Tingkat judul",
+    "Horizontal Rule": "Garis horizontal",
+    "Image": "Gambar",
+    "Image link": "Tautan gambar",
+    "Indent": "Tambah indentasi",
+    "Insert variable": "Sisipkan variabel",
+    "Italic": "Miring",
+    "Link": "Tautan",
+    "Link text": "Teks tautan",
+    "Ln {n}": "Brs {n}",
+    "Match case": "Cocokkan huruf besar/kecil",
+    "Next match": "Hasil berikutnya",
+    "Ordered list": "Daftar bernomor",
+    "Outdent": "Kurangi indentasi",
+    "Preview": "Pratinjau",
+    "Previous match": "Hasil sebelumnya",
+    "Redo": "Ulangi",
+    "Replace": "Ganti",
+    "Replace all": "Ganti semua",
+    "Replace with": "Ganti dengan",
+    "Strikethrough": "Coret",
+    "Table": "Tabel",
+    "Toggle replace row": "Tampilkan atau sembunyikan baris ganti",
+    "Undo": "Urungkan",
+    "Unordered list": "Daftar berpoin",
+    "Upload failed": "Unggahan gagal",
+    "Uploading...": "Mengunggah...",
+    "URL": "URL",
+    "Variables": "Variabel",
+};

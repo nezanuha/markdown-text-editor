@@ -1,0 +1,55 @@
+/**
+ * Urdu (ur).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} حروف",
+    "{n} words": "{n} الفاظ",
+    "All": "سب",
+    "Alt text": "متبادل متن",
+    "Apply": "لاگو کریں",
+    "Blockquote": "اقتباس",
+    "Bold": "جلی",
+    "Check list": "چیک لسٹ",
+    "Close": "بند کریں",
+    "Code": "کوڈ",
+    "Code Block": "کوڈ بلاک",
+    "Col {n}": "کالم {n}",
+    "Editor toolbar": "ایڈیٹر ٹول بار",
+    "Find": "تلاش کریں",
+    "Find and replace": "تلاش کریں اور بدلیں",
+    "Heading": "سرخی",
+    "Heading level": "سرخی کا درجہ",
+    "Horizontal Rule": "افقی لکیر",
+    "Image": "تصویر",
+    "Image link": "تصویر کا لنک",
+    "Indent": "حاشیہ بڑھائیں",
+    "Insert variable": "متغیر داخل کریں",
+    "Italic": "ترچھا",
+    "Link": "لنک",
+    "Link text": "لنک کا متن",
+    "Ln {n}": "سطر {n}",
+    "Match case": "حروف کی بڑائی چھوٹائی ملائیں",
+    "Next match": "اگلا نتیجہ",
+    "Ordered list": "نمبر والی فہرست",
+    "Outdent": "حاشیہ کم کریں",
+    "Preview": "پیش منظر",
+    "Previous match": "پچھلا نتیجہ",
+    "Redo": "دوبارہ کریں",
+    "Replace": "بدلیں",
+    "Replace all": "سب بدلیں",
+    "Replace with": "اس سے بدلیں",
+    "Strikethrough": "خط کشیدہ",
+    "Table": "جدول",
+    "Toggle replace row": "تبدیلی کی سطر دکھائیں یا چھپائیں",
+    "Undo": "واپس لیں",
+    "Unordered list": "نقطوں والی فہرست",
+    "Upload failed": "اپ لوڈ ناکام",
+    "Uploading...": "اپ لوڈ ہو رہا ہے...",
+    "URL": "URL",
+    "Variables": "متغیرات",
+};

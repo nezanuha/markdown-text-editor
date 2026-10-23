@@ -1,0 +1,55 @@
+/**
+ * Bulgarian (bg).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} знака",
+    "{n} words": "{n} думи",
+    "All": "Всички",
+    "Alt text": "Алтернативен текст",
+    "Apply": "Приложи",
+    "Blockquote": "Цитат",
+    "Bold": "Получер",
+    "Check list": "Списък със задачи",
+    "Close": "Затвори",
+    "Code": "Код",
+    "Code Block": "Блок с код",
+    "Col {n}": "Кол {n}",
+    "Editor toolbar": "Лента с инструменти на редактора",
+    "Find": "Търсене",
+    "Find and replace": "Търсене и замяна",
+    "Heading": "Заглавие",
+    "Heading level": "Ниво на заглавието",
+    "Horizontal Rule": "Хоризонтална линия",
+    "Image": "Изображение",
+    "Image link": "Връзка към изображение",
+    "Indent": "Увеличи отстъпа",
+    "Insert variable": "Вмъкни променлива",
+    "Italic": "Курсив",
+    "Link": "Връзка",
+    "Link text": "Текст на връзката",
+    "Ln {n}": "Ред {n}",
+    "Match case": "Съвпадение на регистъра",
+    "Next match": "Следващо съвпадение",
+    "Ordered list": "Номериран списък",
+    "Outdent": "Намали отстъпа",
+    "Preview": "Преглед",
+    "Previous match": "Предишно съвпадение",
+    "Redo": "Повтори",
+    "Replace": "Замени",
+    "Replace all": "Замени всички",
+    "Replace with": "Замени с",
+    "Strikethrough": "Зачертан",
+    "Table": "Таблица",
+    "Toggle replace row": "Покажи или скрий реда за замяна",
+    "Undo": "Отмени",
+    "Unordered list": "Списък с водачи",
+    "Upload failed": "Качването е неуспешно",
+    "Uploading...": "Качване...",
+    "URL": "URL",
+    "Variables": "Променливи",
+};

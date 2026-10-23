@@ -1,0 +1,55 @@
+/**
+ * Ukrainian (uk).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} симв.",
+    "{n} words": "{n} слів",
+    "All": "Усе",
+    "Alt text": "Альтернативний текст",
+    "Apply": "Застосувати",
+    "Blockquote": "Цитата",
+    "Bold": "Напівжирний",
+    "Check list": "Список завдань",
+    "Close": "Закрити",
+    "Code": "Код",
+    "Code Block": "Блок коду",
+    "Col {n}": "Стовп {n}",
+    "Editor toolbar": "Панель інструментів редактора",
+    "Find": "Знайти",
+    "Find and replace": "Знайти й замінити",
+    "Heading": "Заголовок",
+    "Heading level": "Рівень заголовка",
+    "Horizontal Rule": "Горизонтальна лінія",
+    "Image": "Зображення",
+    "Image link": "Посилання на зображення",
+    "Indent": "Збільшити відступ",
+    "Insert variable": "Вставити змінну",
+    "Italic": "Курсив",
+    "Link": "Посилання",
+    "Link text": "Текст посилання",
+    "Ln {n}": "Ряд {n}",
+    "Match case": "Враховувати регістр",
+    "Next match": "Наступний збіг",
+    "Ordered list": "Нумерований список",
+    "Outdent": "Зменшити відступ",
+    "Preview": "Попередній перегляд",
+    "Previous match": "Попередній збіг",
+    "Redo": "Повторити",
+    "Replace": "Замінити",
+    "Replace all": "Замінити все",
+    "Replace with": "Замінити на",
+    "Strikethrough": "Закреслений",
+    "Table": "Таблиця",
+    "Toggle replace row": "Показати або приховати рядок заміни",
+    "Undo": "Скасувати",
+    "Unordered list": "Маркований список",
+    "Upload failed": "Не вдалося завантажити",
+    "Uploading...": "Завантаження...",
+    "URL": "URL",
+    "Variables": "Змінні",
+};

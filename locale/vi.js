@@ -1,0 +1,55 @@
+/**
+ * Vietnamese (vi).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} ký tự",
+    "{n} words": "{n} từ",
+    "All": "Tất cả",
+    "Alt text": "Văn bản thay thế",
+    "Apply": "Áp dụng",
+    "Blockquote": "Trích dẫn",
+    "Bold": "Đậm",
+    "Check list": "Danh sách kiểm",
+    "Close": "Đóng",
+    "Code": "Mã",
+    "Code Block": "Khối mã",
+    "Col {n}": "Cột {n}",
+    "Editor toolbar": "Thanh công cụ trình soạn thảo",
+    "Find": "Tìm",
+    "Find and replace": "Tìm và thay thế",
+    "Heading": "Tiêu đề",
+    "Heading level": "Cấp tiêu đề",
+    "Horizontal Rule": "Đường kẻ ngang",
+    "Image": "Hình ảnh",
+    "Image link": "Liên kết hình ảnh",
+    "Indent": "Tăng thụt lề",
+    "Insert variable": "Chèn biến",
+    "Italic": "Nghiêng",
+    "Link": "Liên kết",
+    "Link text": "Văn bản liên kết",
+    "Ln {n}": "Dòng {n}",
+    "Match case": "Phân biệt chữ hoa chữ thường",
+    "Next match": "Kết quả tiếp theo",
+    "Ordered list": "Danh sách đánh số",
+    "Outdent": "Giảm thụt lề",
+    "Preview": "Xem trước",
+    "Previous match": "Kết quả trước",
+    "Redo": "Làm lại",
+    "Replace": "Thay thế",
+    "Replace all": "Thay thế tất cả",
+    "Replace with": "Thay thế bằng",
+    "Strikethrough": "Gạch ngang",
+    "Table": "Bảng",
+    "Toggle replace row": "Hiện hoặc ẩn hàng thay thế",
+    "Undo": "Hoàn tác",
+    "Unordered list": "Danh sách dấu đầu dòng",
+    "Upload failed": "Tải lên thất bại",
+    "Uploading...": "Đang tải lên...",
+    "URL": "URL",
+    "Variables": "Biến",
+};

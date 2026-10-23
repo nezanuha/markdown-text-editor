@@ -1,0 +1,55 @@
+/**
+ * Hungarian (hu).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} karakter",
+    "{n} words": "{n} szó",
+    "All": "Mind",
+    "Alt text": "Alternatív szöveg",
+    "Apply": "Alkalmaz",
+    "Blockquote": "Idézet",
+    "Bold": "Félkövér",
+    "Check list": "Feladatlista",
+    "Close": "Bezárás",
+    "Code": "Kód",
+    "Code Block": "Kódblokk",
+    "Col {n}": "Oszl {n}",
+    "Editor toolbar": "Szerkesztő eszköztára",
+    "Find": "Keresés",
+    "Find and replace": "Keresés és csere",
+    "Heading": "Címsor",
+    "Heading level": "Címsorszint",
+    "Horizontal Rule": "Vízszintes vonal",
+    "Image": "Kép",
+    "Image link": "Képhivatkozás",
+    "Indent": "Behúzás növelése",
+    "Insert variable": "Változó beszúrása",
+    "Italic": "Dőlt",
+    "Link": "Hivatkozás",
+    "Link text": "Hivatkozás szövege",
+    "Ln {n}": "Sor {n}",
+    "Match case": "Kis- és nagybetű megkülönböztetése",
+    "Next match": "Következő találat",
+    "Ordered list": "Számozott lista",
+    "Outdent": "Behúzás csökkentése",
+    "Preview": "Előnézet",
+    "Previous match": "Előző találat",
+    "Redo": "Mégis",
+    "Replace": "Csere",
+    "Replace all": "Mindet cseréli",
+    "Replace with": "Csere erre",
+    "Strikethrough": "Áthúzott",
+    "Table": "Táblázat",
+    "Toggle replace row": "Csere sor megjelenítése vagy elrejtése",
+    "Undo": "Visszavonás",
+    "Unordered list": "Felsorolás",
+    "Upload failed": "A feltöltés nem sikerült",
+    "Uploading...": "Feltöltés...",
+    "URL": "URL",
+    "Variables": "Változók",
+};

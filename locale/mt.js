@@ -1,0 +1,55 @@
+/**
+ * Maltese (mt).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} karattri",
+    "{n} words": "{n} kliem",
+    "All": "Kollox",
+    "Alt text": "Test alternattiv",
+    "Apply": "Applika",
+    "Blockquote": "Kwotazzjoni",
+    "Bold": "Grassett",
+    "Check list": "Lista ta' kontroll",
+    "Close": "Agħlaq",
+    "Code": "Kodiċi",
+    "Code Block": "Blokk ta' kodiċi",
+    "Col {n}": "Kol {n}",
+    "Editor toolbar": "Barra tal-għodod tal-editur",
+    "Find": "Fittex",
+    "Find and replace": "Fittex u ibdel",
+    "Heading": "Intestatura",
+    "Heading level": "Livell tal-intestatura",
+    "Horizontal Rule": "Linja orizzontali",
+    "Image": "Immaġni",
+    "Image link": "Link tal-immaġni",
+    "Indent": "Żid l-indentazzjoni",
+    "Insert variable": "Daħħal varjabbli",
+    "Italic": "Korsiv",
+    "Link": "Link",
+    "Link text": "Test tal-link",
+    "Ln {n}": "Lin {n}",
+    "Match case": "Qabbel ittri kbar u żgħar",
+    "Next match": "Riżultat li jmiss",
+    "Ordered list": "Lista nnumerata",
+    "Outdent": "Naqqas l-indentazzjoni",
+    "Preview": "Previżjoni",
+    "Previous match": "Riżultat preċedenti",
+    "Redo": "Erġa' agħmel",
+    "Replace": "Ibdel",
+    "Replace all": "Ibdel kollox",
+    "Replace with": "Ibdel bi",
+    "Strikethrough": "Ingassat",
+    "Table": "Tabella",
+    "Toggle replace row": "Uri jew aħbi r-ringiela tas-sostituzzjoni",
+    "Undo": "Ħassar",
+    "Unordered list": "Lista bil-bulits",
+    "Upload failed": "It-tlugħ falla",
+    "Uploading...": "Qed jittella'...",
+    "URL": "URL",
+    "Variables": "Varjabbli",
+};

@@ -1,0 +1,55 @@
+/**
+ * Marathi (mr).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} वर्ण",
+    "{n} words": "{n} शब्द",
+    "All": "सर्व",
+    "Alt text": "पर्यायी मजकूर",
+    "Apply": "लागू करा",
+    "Blockquote": "अवतरण",
+    "Bold": "ठळक",
+    "Check list": "तपासणी यादी",
+    "Close": "बंद करा",
+    "Code": "कोड",
+    "Code Block": "कोड ब्लॉक",
+    "Col {n}": "स्तंभ {n}",
+    "Editor toolbar": "संपादक साधनपट्टी",
+    "Find": "शोधा",
+    "Find and replace": "शोधा आणि बदला",
+    "Heading": "शीर्षक",
+    "Heading level": "शीर्षक स्तर",
+    "Horizontal Rule": "आडवी रेषा",
+    "Image": "प्रतिमा",
+    "Image link": "प्रतिमेची लिंक",
+    "Indent": "इंडेंट वाढवा",
+    "Insert variable": "व्हेरिएबल घाला",
+    "Italic": "तिरपे",
+    "Link": "लिंक",
+    "Link text": "लिंकचा मजकूर",
+    "Ln {n}": "ओळ {n}",
+    "Match case": "लहान-मोठी अक्षरे जुळवा",
+    "Next match": "पुढील जुळणी",
+    "Ordered list": "क्रमांकित यादी",
+    "Outdent": "इंडेंट कमी करा",
+    "Preview": "पूर्वावलोकन",
+    "Previous match": "मागील जुळणी",
+    "Redo": "पुन्हा करा",
+    "Replace": "बदला",
+    "Replace all": "सर्व बदला",
+    "Replace with": "याने बदला",
+    "Strikethrough": "खोडलेले",
+    "Table": "तक्ता",
+    "Toggle replace row": "बदल ओळ दाखवा किंवा लपवा",
+    "Undo": "पूर्ववत करा",
+    "Unordered list": "बुलेट यादी",
+    "Upload failed": "अपलोड अयशस्वी",
+    "Uploading...": "अपलोड होत आहे...",
+    "URL": "URL",
+    "Variables": "व्हेरिएबल्स",
+};

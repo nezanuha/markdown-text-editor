@@ -1,0 +1,55 @@
+/**
+ * Italian (it).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} caratteri",
+    "{n} words": "{n} parole",
+    "All": "Tutto",
+    "Alt text": "Testo alternativo",
+    "Apply": "Applica",
+    "Blockquote": "Citazione",
+    "Bold": "Grassetto",
+    "Check list": "Elenco di controllo",
+    "Close": "Chiudi",
+    "Code": "Codice",
+    "Code Block": "Blocco di codice",
+    "Col {n}": "Col {n}",
+    "Editor toolbar": "Barra degli strumenti dell'editor",
+    "Find": "Trova",
+    "Find and replace": "Trova e sostituisci",
+    "Heading": "Titolo",
+    "Heading level": "Livello del titolo",
+    "Horizontal Rule": "Linea orizzontale",
+    "Image": "Immagine",
+    "Image link": "Collegamento immagine",
+    "Indent": "Aumenta rientro",
+    "Insert variable": "Inserisci variabile",
+    "Italic": "Corsivo",
+    "Link": "Collegamento",
+    "Link text": "Testo del collegamento",
+    "Ln {n}": "Rg {n}",
+    "Match case": "Maiuscole/minuscole",
+    "Next match": "Risultato successivo",
+    "Ordered list": "Elenco numerato",
+    "Outdent": "Riduci rientro",
+    "Preview": "Anteprima",
+    "Previous match": "Risultato precedente",
+    "Redo": "Ripeti",
+    "Replace": "Sostituisci",
+    "Replace all": "Sostituisci tutto",
+    "Replace with": "Sostituisci con",
+    "Strikethrough": "Barrato",
+    "Table": "Tabella",
+    "Toggle replace row": "Mostra o nascondi la riga di sostituzione",
+    "Undo": "Annulla",
+    "Unordered list": "Elenco puntato",
+    "Upload failed": "Caricamento non riuscito",
+    "Uploading...": "Caricamento...",
+    "URL": "URL",
+    "Variables": "Variabili",
+};

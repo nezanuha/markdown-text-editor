@@ -1,0 +1,55 @@
+/**
+ * Irish (ga).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} carachtar",
+    "{n} words": "{n} focal",
+    "All": "Gach rud",
+    "Alt text": "Téacs malartach",
+    "Apply": "Cuir i bhfeidhm",
+    "Blockquote": "Athfhriotal",
+    "Bold": "Trom",
+    "Check list": "Seicliosta",
+    "Close": "Dún",
+    "Code": "Cód",
+    "Code Block": "Bloc cóid",
+    "Col {n}": "Col {n}",
+    "Editor toolbar": "Barra uirlisí an eagarthóra",
+    "Find": "Aimsigh",
+    "Find and replace": "Aimsigh agus ionadaigh",
+    "Heading": "Ceannteideal",
+    "Heading level": "Leibhéal an cheannteidil",
+    "Horizontal Rule": "Líne chothrománach",
+    "Image": "Íomhá",
+    "Image link": "Nasc íomhá",
+    "Indent": "Méadaigh an t-eangú",
+    "Insert variable": "Ionsáigh athróg",
+    "Italic": "Iodálach",
+    "Link": "Nasc",
+    "Link text": "Téacs an naisc",
+    "Ln {n}": "Líne {n}",
+    "Match case": "Meaitseáil cás",
+    "Next match": "An chéad toradh eile",
+    "Ordered list": "Liosta uimhrithe",
+    "Outdent": "Laghdaigh an t-eangú",
+    "Preview": "Réamhamharc",
+    "Previous match": "An toradh roimhe seo",
+    "Redo": "Athdhéan",
+    "Replace": "Ionadaigh",
+    "Replace all": "Ionadaigh gach ceann",
+    "Replace with": "Ionadaigh le",
+    "Strikethrough": "Líne tríd",
+    "Table": "Tábla",
+    "Toggle replace row": "Taispeáin nó folaigh an ró ionadaithe",
+    "Undo": "Cealaigh",
+    "Unordered list": "Liosta urchar",
+    "Upload failed": "Theip ar an uasluchtú",
+    "Uploading...": "Á uasluchtú...",
+    "URL": "URL",
+    "Variables": "Athróga",
+};

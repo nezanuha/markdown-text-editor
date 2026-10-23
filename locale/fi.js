@@ -1,0 +1,55 @@
+/**
+ * Finnish (fi).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} merkkiä",
+    "{n} words": "{n} sanaa",
+    "All": "Kaikki",
+    "Alt text": "Vaihtoehtoinen teksti",
+    "Apply": "Käytä",
+    "Blockquote": "Lainaus",
+    "Bold": "Lihavoitu",
+    "Check list": "Tehtävälista",
+    "Close": "Sulje",
+    "Code": "Koodi",
+    "Code Block": "Koodilohko",
+    "Col {n}": "Sar {n}",
+    "Editor toolbar": "Editorin työkalupalkki",
+    "Find": "Etsi",
+    "Find and replace": "Etsi ja korvaa",
+    "Heading": "Otsikko",
+    "Heading level": "Otsikkotaso",
+    "Horizontal Rule": "Vaakaviiva",
+    "Image": "Kuva",
+    "Image link": "Kuvalinkki",
+    "Indent": "Lisää sisennystä",
+    "Insert variable": "Lisää muuttuja",
+    "Italic": "Kursivoitu",
+    "Link": "Linkki",
+    "Link text": "Linkin teksti",
+    "Ln {n}": "Rivi {n}",
+    "Match case": "Sama kirjainkoko",
+    "Next match": "Seuraava osuma",
+    "Ordered list": "Numeroitu luettelo",
+    "Outdent": "Vähennä sisennystä",
+    "Preview": "Esikatselu",
+    "Previous match": "Edellinen osuma",
+    "Redo": "Tee uudelleen",
+    "Replace": "Korvaa",
+    "Replace all": "Korvaa kaikki",
+    "Replace with": "Korvaa merkkijonolla",
+    "Strikethrough": "Yliviivattu",
+    "Table": "Taulukko",
+    "Toggle replace row": "Näytä tai piilota korvausrivi",
+    "Undo": "Kumoa",
+    "Unordered list": "Luettelomerkit",
+    "Upload failed": "Lataus epäonnistui",
+    "Uploading...": "Ladataan...",
+    "URL": "URL",
+    "Variables": "Muuttujat",
+};

@@ -1,0 +1,55 @@
+/**
+ * Swahili (sw).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "Herufi {n}",
+    "{n} words": "Maneno {n}",
+    "All": "Zote",
+    "Alt text": "Maandishi mbadala",
+    "Apply": "Tumia",
+    "Blockquote": "Nukuu",
+    "Bold": "Nene",
+    "Check list": "Orodha ya kukagua",
+    "Close": "Funga",
+    "Code": "Msimbo",
+    "Code Block": "Kizuizi cha msimbo",
+    "Col {n}": "Safu {n}",
+    "Editor toolbar": "Upau wa vidhibiti wa kihariri",
+    "Find": "Tafuta",
+    "Find and replace": "Tafuta na ubadilishe",
+    "Heading": "Kichwa",
+    "Heading level": "Kiwango cha kichwa",
+    "Horizontal Rule": "Mstari mlalo",
+    "Image": "Picha",
+    "Image link": "Kiungo cha picha",
+    "Indent": "Ongeza nafasi",
+    "Insert variable": "Ingiza kigezo",
+    "Italic": "Italiki",
+    "Link": "Kiungo",
+    "Link text": "Maandishi ya kiungo",
+    "Ln {n}": "Mstari {n}",
+    "Match case": "Linganisha herufi kubwa na ndogo",
+    "Next match": "Linalofuata",
+    "Ordered list": "Orodha yenye nambari",
+    "Outdent": "Punguza nafasi",
+    "Preview": "Hakiki",
+    "Previous match": "Lililotangulia",
+    "Redo": "Rudia",
+    "Replace": "Badilisha",
+    "Replace all": "Badilisha zote",
+    "Replace with": "Badilisha na",
+    "Strikethrough": "Yenye mstari katikati",
+    "Table": "Jedwali",
+    "Toggle replace row": "Onyesha au ficha safu ya kubadilisha",
+    "Undo": "Tendua",
+    "Unordered list": "Orodha yenye vitone",
+    "Upload failed": "Kupakia kumeshindikana",
+    "Uploading...": "Inapakia...",
+    "URL": "URL",
+    "Variables": "Vigezo",
+};

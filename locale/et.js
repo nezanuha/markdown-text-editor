@@ -1,0 +1,55 @@
+/**
+ * Estonian (et).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} märki",
+    "{n} words": "{n} sõna",
+    "All": "Kõik",
+    "Alt text": "Alternatiivtekst",
+    "Apply": "Rakenda",
+    "Blockquote": "Tsitaat",
+    "Bold": "Paks",
+    "Check list": "Kontrollnimekiri",
+    "Close": "Sulge",
+    "Code": "Kood",
+    "Code Block": "Koodiplokk",
+    "Col {n}": "Vrg {n}",
+    "Editor toolbar": "Redaktori tööriistariba",
+    "Find": "Otsi",
+    "Find and replace": "Otsi ja asenda",
+    "Heading": "Pealkiri",
+    "Heading level": "Pealkirja tase",
+    "Horizontal Rule": "Horisontaaljoon",
+    "Image": "Pilt",
+    "Image link": "Pildi link",
+    "Indent": "Suurenda taanet",
+    "Insert variable": "Lisa muutuja",
+    "Italic": "Kaldkiri",
+    "Link": "Link",
+    "Link text": "Lingi tekst",
+    "Ln {n}": "Rida {n}",
+    "Match case": "Tõstutundlik",
+    "Next match": "Järgmine vaste",
+    "Ordered list": "Nummerdatud loend",
+    "Outdent": "Vähenda taanet",
+    "Preview": "Eelvaade",
+    "Previous match": "Eelmine vaste",
+    "Redo": "Tee uuesti",
+    "Replace": "Asenda",
+    "Replace all": "Asenda kõik",
+    "Replace with": "Asenda millega",
+    "Strikethrough": "Läbikriipsutatud",
+    "Table": "Tabel",
+    "Toggle replace row": "Näita või peida asendusrida",
+    "Undo": "Võta tagasi",
+    "Unordered list": "Täpploend",
+    "Upload failed": "Üleslaadimine ebaõnnestus",
+    "Uploading...": "Üleslaadimine...",
+    "URL": "URL",
+    "Variables": "Muutujad",
+};

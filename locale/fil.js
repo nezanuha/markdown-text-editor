@@ -1,0 +1,55 @@
+/**
+ * Filipino (fil).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} karakter",
+    "{n} words": "{n} salita",
+    "All": "Lahat",
+    "Alt text": "Alternatibong teksto",
+    "Apply": "Ilapat",
+    "Blockquote": "Sipi",
+    "Bold": "Makapal",
+    "Check list": "Checklist",
+    "Close": "Isara",
+    "Code": "Code",
+    "Code Block": "Code block",
+    "Col {n}": "Hanay {n}",
+    "Editor toolbar": "Toolbar ng editor",
+    "Find": "Hanapin",
+    "Find and replace": "Hanapin at palitan",
+    "Heading": "Pamagat",
+    "Heading level": "Antas ng pamagat",
+    "Horizontal Rule": "Pahalang na linya",
+    "Image": "Larawan",
+    "Image link": "Link ng larawan",
+    "Indent": "Dagdagan ang indent",
+    "Insert variable": "Maglagay ng variable",
+    "Italic": "Italiko",
+    "Link": "Link",
+    "Link text": "Teksto ng link",
+    "Ln {n}": "Linya {n}",
+    "Match case": "Tugmang malaki at maliit na titik",
+    "Next match": "Susunod na tugma",
+    "Ordered list": "Nakanumerong listahan",
+    "Outdent": "Bawasan ang indent",
+    "Preview": "Preview",
+    "Previous match": "Nakaraang tugma",
+    "Redo": "Gawin muli",
+    "Replace": "Palitan",
+    "Replace all": "Palitan lahat",
+    "Replace with": "Palitan ng",
+    "Strikethrough": "May guhit sa gitna",
+    "Table": "Talahanayan",
+    "Toggle replace row": "Ipakita o itago ang hanay ng pagpapalit",
+    "Undo": "I-undo",
+    "Unordered list": "Listahang may bullet",
+    "Upload failed": "Nabigo ang pag-upload",
+    "Uploading...": "Nag-a-upload...",
+    "URL": "URL",
+    "Variables": "Mga variable",
+};

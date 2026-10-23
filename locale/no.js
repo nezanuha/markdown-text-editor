@@ -1,0 +1,55 @@
+/**
+ * Norwegian (no).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} tegn",
+    "{n} words": "{n} ord",
+    "All": "Alle",
+    "Alt text": "Alternativ tekst",
+    "Apply": "Bruk",
+    "Blockquote": "Sitat",
+    "Bold": "Fet",
+    "Check list": "Sjekkliste",
+    "Close": "Lukk",
+    "Code": "Kode",
+    "Code Block": "Kodeblokk",
+    "Col {n}": "Kol {n}",
+    "Editor toolbar": "Verktøylinje for redigering",
+    "Find": "Søk",
+    "Find and replace": "Søk og erstatt",
+    "Heading": "Overskrift",
+    "Heading level": "Overskriftsnivå",
+    "Horizontal Rule": "Vannrett linje",
+    "Image": "Bilde",
+    "Image link": "Bildelenke",
+    "Indent": "Øk innrykk",
+    "Insert variable": "Sett inn variabel",
+    "Italic": "Kursiv",
+    "Link": "Lenke",
+    "Link text": "Lenketekst",
+    "Ln {n}": "Lin {n}",
+    "Match case": "Skill mellom store og små bokstaver",
+    "Next match": "Neste treff",
+    "Ordered list": "Nummerert liste",
+    "Outdent": "Reduser innrykk",
+    "Preview": "Forhåndsvisning",
+    "Previous match": "Forrige treff",
+    "Redo": "Gjør om",
+    "Replace": "Erstatt",
+    "Replace all": "Erstatt alle",
+    "Replace with": "Erstatt med",
+    "Strikethrough": "Gjennomstreket",
+    "Table": "Tabell",
+    "Toggle replace row": "Vis eller skjul erstatningsraden",
+    "Undo": "Angre",
+    "Unordered list": "Punktliste",
+    "Upload failed": "Opplastingen mislyktes",
+    "Uploading...": "Laster opp...",
+    "URL": "URL",
+    "Variables": "Variabler",
+};

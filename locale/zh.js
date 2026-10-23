@@ -1,0 +1,55 @@
+/**
+ * Chinese (zh).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} 个字符",
+    "{n} words": "{n} 个词",
+    "All": "全部",
+    "Alt text": "替代文字",
+    "Apply": "应用",
+    "Blockquote": "引用",
+    "Bold": "粗体",
+    "Check list": "任务列表",
+    "Close": "关闭",
+    "Code": "代码",
+    "Code Block": "代码块",
+    "Col {n}": "列 {n}",
+    "Editor toolbar": "编辑器工具栏",
+    "Find": "查找",
+    "Find and replace": "查找和替换",
+    "Heading": "标题",
+    "Heading level": "标题级别",
+    "Horizontal Rule": "水平线",
+    "Image": "图片",
+    "Image link": "图片链接",
+    "Indent": "增加缩进",
+    "Insert variable": "插入变量",
+    "Italic": "斜体",
+    "Link": "链接",
+    "Link text": "链接文字",
+    "Ln {n}": "行 {n}",
+    "Match case": "区分大小写",
+    "Next match": "下一个匹配项",
+    "Ordered list": "有序列表",
+    "Outdent": "减少缩进",
+    "Preview": "预览",
+    "Previous match": "上一个匹配项",
+    "Redo": "重做",
+    "Replace": "替换",
+    "Replace all": "全部替换",
+    "Replace with": "替换为",
+    "Strikethrough": "删除线",
+    "Table": "表格",
+    "Toggle replace row": "显示或隐藏替换行",
+    "Undo": "撤销",
+    "Unordered list": "无序列表",
+    "Upload failed": "上传失败",
+    "Uploading...": "上传中...",
+    "URL": "URL",
+    "Variables": "变量",
+};

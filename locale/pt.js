@@ -1,0 +1,55 @@
+/**
+ * Portuguese (pt).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} caracteres",
+    "{n} words": "{n} palavras",
+    "All": "Tudo",
+    "Alt text": "Texto alternativo",
+    "Apply": "Aplicar",
+    "Blockquote": "Citação",
+    "Bold": "Negrito",
+    "Check list": "Lista de tarefas",
+    "Close": "Fechar",
+    "Code": "Código",
+    "Code Block": "Bloco de código",
+    "Col {n}": "Col {n}",
+    "Editor toolbar": "Barra de ferramentas do editor",
+    "Find": "Localizar",
+    "Find and replace": "Localizar e substituir",
+    "Heading": "Título",
+    "Heading level": "Nível de título",
+    "Horizontal Rule": "Linha horizontal",
+    "Image": "Imagem",
+    "Image link": "Link da imagem",
+    "Indent": "Aumentar recuo",
+    "Insert variable": "Inserir variável",
+    "Italic": "Itálico",
+    "Link": "Link",
+    "Link text": "Texto do link",
+    "Ln {n}": "Lin {n}",
+    "Match case": "Diferenciar maiúsculas de minúsculas",
+    "Next match": "Próxima ocorrência",
+    "Ordered list": "Lista numerada",
+    "Outdent": "Diminuir recuo",
+    "Preview": "Pré-visualização",
+    "Previous match": "Ocorrência anterior",
+    "Redo": "Refazer",
+    "Replace": "Substituir",
+    "Replace all": "Substituir tudo",
+    "Replace with": "Substituir por",
+    "Strikethrough": "Riscado",
+    "Table": "Tabela",
+    "Toggle replace row": "Mostrar ou ocultar a linha de substituição",
+    "Undo": "Desfazer",
+    "Unordered list": "Lista com marcadores",
+    "Upload failed": "Falha no envio",
+    "Uploading...": "Enviando...",
+    "URL": "URL",
+    "Variables": "Variáveis",
+};

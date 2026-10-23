@@ -1,0 +1,55 @@
+/**
+ * Swedish (sv).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} tecken",
+    "{n} words": "{n} ord",
+    "All": "Alla",
+    "Alt text": "Alternativ text",
+    "Apply": "Verkställ",
+    "Blockquote": "Citat",
+    "Bold": "Fet",
+    "Check list": "Checklista",
+    "Close": "Stäng",
+    "Code": "Kod",
+    "Code Block": "Kodblock",
+    "Col {n}": "Kol {n}",
+    "Editor toolbar": "Redigerarens verktygsfält",
+    "Find": "Sök",
+    "Find and replace": "Sök och ersätt",
+    "Heading": "Rubrik",
+    "Heading level": "Rubriknivå",
+    "Horizontal Rule": "Vågrät linje",
+    "Image": "Bild",
+    "Image link": "Bildlänk",
+    "Indent": "Öka indrag",
+    "Insert variable": "Infoga variabel",
+    "Italic": "Kursiv",
+    "Link": "Länk",
+    "Link text": "Länktext",
+    "Ln {n}": "Rad {n}",
+    "Match case": "Matcha gemener/versaler",
+    "Next match": "Nästa träff",
+    "Ordered list": "Numrerad lista",
+    "Outdent": "Minska indrag",
+    "Preview": "Förhandsgranska",
+    "Previous match": "Föregående träff",
+    "Redo": "Gör om",
+    "Replace": "Ersätt",
+    "Replace all": "Ersätt alla",
+    "Replace with": "Ersätt med",
+    "Strikethrough": "Genomstruken",
+    "Table": "Tabell",
+    "Toggle replace row": "Visa eller dölj ersättningsraden",
+    "Undo": "Ångra",
+    "Unordered list": "Punktlista",
+    "Upload failed": "Uppladdningen misslyckades",
+    "Uploading...": "Laddar upp...",
+    "URL": "URL",
+    "Variables": "Variabler",
+};

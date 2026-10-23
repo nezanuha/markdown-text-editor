@@ -1,0 +1,55 @@
+/**
+ * Lithuanian (lt).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} simb.",
+    "{n} words": "{n} žodžių",
+    "All": "Viskas",
+    "Alt text": "Alternatyvusis tekstas",
+    "Apply": "Taikyti",
+    "Blockquote": "Citata",
+    "Bold": "Pusjuodis",
+    "Check list": "Užduočių sąrašas",
+    "Close": "Uždaryti",
+    "Code": "Kodas",
+    "Code Block": "Kodo blokas",
+    "Col {n}": "Stlp {n}",
+    "Editor toolbar": "Rengyklės įrankių juosta",
+    "Find": "Ieškoti",
+    "Find and replace": "Ieškoti ir pakeisti",
+    "Heading": "Antraštė",
+    "Heading level": "Antraštės lygis",
+    "Horizontal Rule": "Horizontali linija",
+    "Image": "Paveikslėlis",
+    "Image link": "Paveikslėlio nuoroda",
+    "Indent": "Padidinti įtrauką",
+    "Insert variable": "Įterpti kintamąjį",
+    "Italic": "Kursyvas",
+    "Link": "Nuoroda",
+    "Link text": "Nuorodos tekstas",
+    "Ln {n}": "Eil {n}",
+    "Match case": "Skirti didžiąsias ir mažąsias raides",
+    "Next match": "Kitas atitikmuo",
+    "Ordered list": "Numeruotas sąrašas",
+    "Outdent": "Sumažinti įtrauką",
+    "Preview": "Peržiūra",
+    "Previous match": "Ankstesnis atitikmuo",
+    "Redo": "Grąžinti",
+    "Replace": "Pakeisti",
+    "Replace all": "Pakeisti viską",
+    "Replace with": "Pakeisti kuo",
+    "Strikethrough": "Perbrauktas",
+    "Table": "Lentelė",
+    "Toggle replace row": "Rodyti arba slėpti keitimo eilutę",
+    "Undo": "Atšaukti",
+    "Unordered list": "Ženklintas sąrašas",
+    "Upload failed": "Nepavyko įkelti",
+    "Uploading...": "Įkeliama...",
+    "URL": "URL",
+    "Variables": "Kintamieji",
+};

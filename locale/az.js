@@ -1,0 +1,55 @@
+/**
+ * Azerbaijani (az).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} simvol",
+    "{n} words": "{n} söz",
+    "All": "Hamısı",
+    "Alt text": "Alternativ mətn",
+    "Apply": "Tətbiq et",
+    "Blockquote": "Sitat",
+    "Bold": "Qalın",
+    "Check list": "Yoxlama siyahısı",
+    "Close": "Bağla",
+    "Code": "Kod",
+    "Code Block": "Kod bloku",
+    "Col {n}": "Sütun {n}",
+    "Editor toolbar": "Redaktor alətlər paneli",
+    "Find": "Tap",
+    "Find and replace": "Tap və əvəz et",
+    "Heading": "Başlıq",
+    "Heading level": "Başlıq səviyyəsi",
+    "Horizontal Rule": "Üfüqi xətt",
+    "Image": "Şəkil",
+    "Image link": "Şəkil linki",
+    "Indent": "Girintini artır",
+    "Insert variable": "Dəyişən daxil et",
+    "Italic": "Maili",
+    "Link": "Link",
+    "Link text": "Link mətni",
+    "Ln {n}": "Sətir {n}",
+    "Match case": "Hərf registrinə uyğun",
+    "Next match": "Növbəti uyğunluq",
+    "Ordered list": "Nömrəli siyahı",
+    "Outdent": "Girintini azalt",
+    "Preview": "Önizləmə",
+    "Previous match": "Əvvəlki uyğunluq",
+    "Redo": "Təkrar et",
+    "Replace": "Əvəz et",
+    "Replace all": "Hamısını əvəz et",
+    "Replace with": "Bununla əvəz et",
+    "Strikethrough": "Üstündən xətt çəkilmiş",
+    "Table": "Cədvəl",
+    "Toggle replace row": "Əvəzetmə sətrini göstər və ya gizlət",
+    "Undo": "Geri al",
+    "Unordered list": "İşarəli siyahı",
+    "Upload failed": "Yükləmə alınmadı",
+    "Uploading...": "Yüklənir...",
+    "URL": "URL",
+    "Variables": "Dəyişənlər",
+};

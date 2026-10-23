@@ -1,0 +1,55 @@
+/**
+ * Danish (da).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} tegn",
+    "{n} words": "{n} ord",
+    "All": "Alle",
+    "Alt text": "Alternativ tekst",
+    "Apply": "Anvend",
+    "Blockquote": "Citat",
+    "Bold": "Fed",
+    "Check list": "Tjekliste",
+    "Close": "Luk",
+    "Code": "Kode",
+    "Code Block": "Kodeblok",
+    "Col {n}": "Kol {n}",
+    "Editor toolbar": "Editorens værktøjslinje",
+    "Find": "Søg",
+    "Find and replace": "Søg og erstat",
+    "Heading": "Overskrift",
+    "Heading level": "Overskriftsniveau",
+    "Horizontal Rule": "Vandret linje",
+    "Image": "Billede",
+    "Image link": "Billedlink",
+    "Indent": "Forøg indrykning",
+    "Insert variable": "Indsæt variabel",
+    "Italic": "Kursiv",
+    "Link": "Link",
+    "Link text": "Linktekst",
+    "Ln {n}": "Lin {n}",
+    "Match case": "Forskel på store og små bogstaver",
+    "Next match": "Næste match",
+    "Ordered list": "Nummereret liste",
+    "Outdent": "Formindsk indrykning",
+    "Preview": "Forhåndsvisning",
+    "Previous match": "Forrige match",
+    "Redo": "Gentag",
+    "Replace": "Erstat",
+    "Replace all": "Erstat alle",
+    "Replace with": "Erstat med",
+    "Strikethrough": "Gennemstreget",
+    "Table": "Tabel",
+    "Toggle replace row": "Vis eller skjul erstatningsrækken",
+    "Undo": "Fortryd",
+    "Unordered list": "Punktopstilling",
+    "Upload failed": "Upload mislykkedes",
+    "Uploading...": "Uploader...",
+    "URL": "URL",
+    "Variables": "Variabler",
+};

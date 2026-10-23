@@ -1,0 +1,55 @@
+/**
+ * German (de).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} Zeichen",
+    "{n} words": "{n} Wörter",
+    "All": "Alle",
+    "Alt text": "Alternativtext",
+    "Apply": "Übernehmen",
+    "Blockquote": "Zitat",
+    "Bold": "Fett",
+    "Check list": "Aufgabenliste",
+    "Close": "Schließen",
+    "Code": "Code",
+    "Code Block": "Codeblock",
+    "Col {n}": "Sp {n}",
+    "Editor toolbar": "Editor-Symbolleiste",
+    "Find": "Suchen",
+    "Find and replace": "Suchen und Ersetzen",
+    "Heading": "Überschrift",
+    "Heading level": "Überschriftebene",
+    "Horizontal Rule": "Horizontale Linie",
+    "Image": "Bild",
+    "Image link": "Bildlink",
+    "Indent": "Einrücken",
+    "Insert variable": "Variable einfügen",
+    "Italic": "Kursiv",
+    "Link": "Link",
+    "Link text": "Linktext",
+    "Ln {n}": "Z {n}",
+    "Match case": "Groß-/Kleinschreibung beachten",
+    "Next match": "Nächster Treffer",
+    "Ordered list": "Nummerierte Liste",
+    "Outdent": "Ausrücken",
+    "Preview": "Vorschau",
+    "Previous match": "Vorheriger Treffer",
+    "Redo": "Wiederholen",
+    "Replace": "Ersetzen",
+    "Replace all": "Alle ersetzen",
+    "Replace with": "Ersetzen durch",
+    "Strikethrough": "Durchgestrichen",
+    "Table": "Tabelle",
+    "Toggle replace row": "Ersetzen-Zeile ein- oder ausblenden",
+    "Undo": "Rückgängig",
+    "Unordered list": "Aufzählung",
+    "Upload failed": "Hochladen fehlgeschlagen",
+    "Uploading...": "Wird hochgeladen...",
+    "URL": "URL",
+    "Variables": "Variablen",
+};

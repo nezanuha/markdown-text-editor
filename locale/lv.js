@@ -1,0 +1,55 @@
+/**
+ * Latvian (lv).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} rakstzīmes",
+    "{n} words": "{n} vārdi",
+    "All": "Viss",
+    "Alt text": "Alternatīvais teksts",
+    "Apply": "Lietot",
+    "Blockquote": "Citāts",
+    "Bold": "Treknraksts",
+    "Check list": "Kontrolsaraksts",
+    "Close": "Aizvērt",
+    "Code": "Kods",
+    "Code Block": "Koda bloks",
+    "Col {n}": "Kol {n}",
+    "Editor toolbar": "Redaktora rīkjosla",
+    "Find": "Meklēt",
+    "Find and replace": "Meklēt un aizstāt",
+    "Heading": "Virsraksts",
+    "Heading level": "Virsraksta līmenis",
+    "Horizontal Rule": "Horizontāla līnija",
+    "Image": "Attēls",
+    "Image link": "Attēla saite",
+    "Indent": "Palielināt atkāpi",
+    "Insert variable": "Ievietot mainīgo",
+    "Italic": "Slīpraksts",
+    "Link": "Saite",
+    "Link text": "Saites teksts",
+    "Ln {n}": "Rinda {n}",
+    "Match case": "Reģistrjutīgs",
+    "Next match": "Nākamā atbilstība",
+    "Ordered list": "Numurēts saraksts",
+    "Outdent": "Samazināt atkāpi",
+    "Preview": "Priekšskatījums",
+    "Previous match": "Iepriekšējā atbilstība",
+    "Redo": "Atkārtot",
+    "Replace": "Aizstāt",
+    "Replace all": "Aizstāt visu",
+    "Replace with": "Aizstāt ar",
+    "Strikethrough": "Pārsvītrots",
+    "Table": "Tabula",
+    "Toggle replace row": "Rādīt vai paslēpt aizstāšanas rindu",
+    "Undo": "Atsaukt",
+    "Unordered list": "Aizzīmju saraksts",
+    "Upload failed": "Augšupielāde neizdevās",
+    "Uploading...": "Notiek augšupielāde...",
+    "URL": "URL",
+    "Variables": "Mainīgie",
+};

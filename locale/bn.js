@@ -1,0 +1,55 @@
+/**
+ * Bengali (bn).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} অক্ষর",
+    "{n} words": "{n} শব্দ",
+    "All": "সব",
+    "Alt text": "বিকল্প টেক্সট",
+    "Apply": "প্রয়োগ করুন",
+    "Blockquote": "উদ্ধৃতি",
+    "Bold": "বোল্ড",
+    "Check list": "চেকলিস্ট",
+    "Close": "বন্ধ করুন",
+    "Code": "কোড",
+    "Code Block": "কোড ব্লক",
+    "Col {n}": "কলাম {n}",
+    "Editor toolbar": "সম্পাদক টুলবার",
+    "Find": "খুঁজুন",
+    "Find and replace": "খুঁজুন ও প্রতিস্থাপন করুন",
+    "Heading": "শিরোনাম",
+    "Heading level": "শিরোনামের স্তর",
+    "Horizontal Rule": "অনুভূমিক রেখা",
+    "Image": "ছবি",
+    "Image link": "ছবির লিঙ্ক",
+    "Indent": "ইন্ডেন্ট বাড়ান",
+    "Insert variable": "ভেরিয়েবল যোগ করুন",
+    "Italic": "ইটালিক",
+    "Link": "লিঙ্ক",
+    "Link text": "লিঙ্কের টেক্সট",
+    "Ln {n}": "লাইন {n}",
+    "Match case": "বড় ও ছোট হাতের অক্ষর মেলান",
+    "Next match": "পরবর্তী মিল",
+    "Ordered list": "সংখ্যাযুক্ত তালিকা",
+    "Outdent": "ইন্ডেন্ট কমান",
+    "Preview": "প্রিভিউ",
+    "Previous match": "পূর্ববর্তী মিল",
+    "Redo": "আবার করুন",
+    "Replace": "প্রতিস্থাপন করুন",
+    "Replace all": "সব প্রতিস্থাপন করুন",
+    "Replace with": "যা দিয়ে প্রতিস্থাপন",
+    "Strikethrough": "স্ট্রাইকথ্রু",
+    "Table": "টেবিল",
+    "Toggle replace row": "প্রতিস্থাপন সারি দেখান বা লুকান",
+    "Undo": "পূর্বাবস্থায় ফেরান",
+    "Unordered list": "বুলেট তালিকা",
+    "Upload failed": "আপলোড ব্যর্থ হয়েছে",
+    "Uploading...": "আপলোড হচ্ছে...",
+    "URL": "URL",
+    "Variables": "ভেরিয়েবল",
+};

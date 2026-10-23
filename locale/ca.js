@@ -1,0 +1,55 @@
+/**
+ * Catalan (ca).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} caràcters",
+    "{n} words": "{n} paraules",
+    "All": "Tot",
+    "Alt text": "Text alternatiu",
+    "Apply": "Aplica",
+    "Blockquote": "Cita",
+    "Bold": "Negreta",
+    "Check list": "Llista de tasques",
+    "Close": "Tanca",
+    "Code": "Codi",
+    "Code Block": "Bloc de codi",
+    "Col {n}": "Col {n}",
+    "Editor toolbar": "Barra d'eines de l'editor",
+    "Find": "Cerca",
+    "Find and replace": "Cerca i reemplaça",
+    "Heading": "Encapçalament",
+    "Heading level": "Nivell d'encapçalament",
+    "Horizontal Rule": "Línia horitzontal",
+    "Image": "Imatge",
+    "Image link": "Enllaç d'imatge",
+    "Indent": "Augmenta el sagnat",
+    "Insert variable": "Insereix una variable",
+    "Italic": "Cursiva",
+    "Link": "Enllaç",
+    "Link text": "Text de l'enllaç",
+    "Ln {n}": "Lín {n}",
+    "Match case": "Distingeix majúscules i minúscules",
+    "Next match": "Coincidència següent",
+    "Ordered list": "Llista numerada",
+    "Outdent": "Redueix el sagnat",
+    "Preview": "Previsualització",
+    "Previous match": "Coincidència anterior",
+    "Redo": "Refés",
+    "Replace": "Reemplaça",
+    "Replace all": "Reemplaça-ho tot",
+    "Replace with": "Reemplaça amb",
+    "Strikethrough": "Ratllat",
+    "Table": "Taula",
+    "Toggle replace row": "Mostra o amaga la fila de reemplaçament",
+    "Undo": "Desfés",
+    "Unordered list": "Llista de pics",
+    "Upload failed": "Ha fallat la pujada",
+    "Uploading...": "S'està pujant...",
+    "URL": "URL",
+    "Variables": "Variables",
+};

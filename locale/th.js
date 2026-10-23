@@ -1,0 +1,55 @@
+/**
+ * Thai (th).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} อักขระ",
+    "{n} words": "{n} คำ",
+    "All": "ทั้งหมด",
+    "Alt text": "ข้อความแทน",
+    "Apply": "ใช้",
+    "Blockquote": "คำพูดอ้างอิง",
+    "Bold": "ตัวหนา",
+    "Check list": "รายการตรวจสอบ",
+    "Close": "ปิด",
+    "Code": "โค้ด",
+    "Code Block": "บล็อกโค้ด",
+    "Col {n}": "คอลัมน์ {n}",
+    "Editor toolbar": "แถบเครื่องมือตัวแก้ไข",
+    "Find": "ค้นหา",
+    "Find and replace": "ค้นหาและแทนที่",
+    "Heading": "หัวเรื่อง",
+    "Heading level": "ระดับหัวเรื่อง",
+    "Horizontal Rule": "เส้นแนวนอน",
+    "Image": "รูปภาพ",
+    "Image link": "ลิงก์รูปภาพ",
+    "Indent": "เพิ่มการเยื้อง",
+    "Insert variable": "แทรกตัวแปร",
+    "Italic": "ตัวเอียง",
+    "Link": "ลิงก์",
+    "Link text": "ข้อความลิงก์",
+    "Ln {n}": "บรรทัด {n}",
+    "Match case": "ตรงตามตัวพิมพ์ใหญ่เล็ก",
+    "Next match": "ผลลัพธ์ถัดไป",
+    "Ordered list": "รายการลำดับเลข",
+    "Outdent": "ลดการเยื้อง",
+    "Preview": "ตัวอย่าง",
+    "Previous match": "ผลลัพธ์ก่อนหน้า",
+    "Redo": "ทำซ้ำ",
+    "Replace": "แทนที่",
+    "Replace all": "แทนที่ทั้งหมด",
+    "Replace with": "แทนที่ด้วย",
+    "Strikethrough": "ขีดฆ่า",
+    "Table": "ตาราง",
+    "Toggle replace row": "แสดงหรือซ่อนแถวแทนที่",
+    "Undo": "เลิกทำ",
+    "Unordered list": "รายการสัญลักษณ์แสดงหัวข้อ",
+    "Upload failed": "อัปโหลดไม่สำเร็จ",
+    "Uploading...": "กำลังอัปโหลด...",
+    "URL": "URL",
+    "Variables": "ตัวแปร",
+};

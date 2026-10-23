@@ -1,0 +1,55 @@
+/**
+ * Russian (ru).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} симв.",
+    "{n} words": "{n} слов",
+    "All": "Все",
+    "Alt text": "Альтернативный текст",
+    "Apply": "Применить",
+    "Blockquote": "Цитата",
+    "Bold": "Полужирный",
+    "Check list": "Список задач",
+    "Close": "Закрыть",
+    "Code": "Код",
+    "Code Block": "Блок кода",
+    "Col {n}": "Стлб {n}",
+    "Editor toolbar": "Панель инструментов редактора",
+    "Find": "Найти",
+    "Find and replace": "Найти и заменить",
+    "Heading": "Заголовок",
+    "Heading level": "Уровень заголовка",
+    "Horizontal Rule": "Горизонтальная линия",
+    "Image": "Изображение",
+    "Image link": "Ссылка на изображение",
+    "Indent": "Увеличить отступ",
+    "Insert variable": "Вставить переменную",
+    "Italic": "Курсив",
+    "Link": "Ссылка",
+    "Link text": "Текст ссылки",
+    "Ln {n}": "Стр {n}",
+    "Match case": "Учитывать регистр",
+    "Next match": "Следующее совпадение",
+    "Ordered list": "Нумерованный список",
+    "Outdent": "Уменьшить отступ",
+    "Preview": "Предпросмотр",
+    "Previous match": "Предыдущее совпадение",
+    "Redo": "Повторить",
+    "Replace": "Заменить",
+    "Replace all": "Заменить все",
+    "Replace with": "Заменить на",
+    "Strikethrough": "Зачёркнутый",
+    "Table": "Таблица",
+    "Toggle replace row": "Показать или скрыть строку замены",
+    "Undo": "Отменить",
+    "Unordered list": "Маркированный список",
+    "Upload failed": "Не удалось загрузить",
+    "Uploading...": "Загрузка...",
+    "URL": "URL",
+    "Variables": "Переменные",
+};

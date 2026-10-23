@@ -1,0 +1,55 @@
+/**
+ * Uzbek (uz).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} belgi",
+    "{n} words": "{n} so'z",
+    "All": "Hammasi",
+    "Alt text": "Muqobil matn",
+    "Apply": "Qo'llash",
+    "Blockquote": "Iqtibos",
+    "Bold": "Qalin",
+    "Check list": "Tekshiruv ro'yxati",
+    "Close": "Yopish",
+    "Code": "Kod",
+    "Code Block": "Kod bloki",
+    "Col {n}": "Ust {n}",
+    "Editor toolbar": "Tahrirlagich asboblar paneli",
+    "Find": "Topish",
+    "Find and replace": "Topish va almashtirish",
+    "Heading": "Sarlavha",
+    "Heading level": "Sarlavha darajasi",
+    "Horizontal Rule": "Gorizontal chiziq",
+    "Image": "Rasm",
+    "Image link": "Rasm havolasi",
+    "Indent": "Chekinishni oshirish",
+    "Insert variable": "O'zgaruvchi qo'shish",
+    "Italic": "Qiya",
+    "Link": "Havola",
+    "Link text": "Havola matni",
+    "Ln {n}": "Qator {n}",
+    "Match case": "Katta-kichik harflarni hisobga olish",
+    "Next match": "Keyingi moslik",
+    "Ordered list": "Raqamlangan ro'yxat",
+    "Outdent": "Chekinishni kamaytirish",
+    "Preview": "Ko'rib chiqish",
+    "Previous match": "Oldingi moslik",
+    "Redo": "Qaytarish",
+    "Replace": "Almashtirish",
+    "Replace all": "Hammasini almashtirish",
+    "Replace with": "Nimaga almashtirish",
+    "Strikethrough": "Chizilgan",
+    "Table": "Jadval",
+    "Toggle replace row": "Almashtirish qatorini ko'rsatish yoki yashirish",
+    "Undo": "Bekor qilish",
+    "Unordered list": "Belgili ro'yxat",
+    "Upload failed": "Yuklash muvaffaqiyatsiz",
+    "Uploading...": "Yuklanmoqda...",
+    "URL": "URL",
+    "Variables": "O'zgaruvchilar",
+};

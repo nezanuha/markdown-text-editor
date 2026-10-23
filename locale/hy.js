@@ -1,0 +1,55 @@
+/**
+ * Armenian (hy).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} նիշ",
+    "{n} words": "{n} բառ",
+    "All": "Բոլորը",
+    "Alt text": "Այլընտրանքային տեքստ",
+    "Apply": "Կիրառել",
+    "Blockquote": "Մեջբերում",
+    "Bold": "Թավ",
+    "Check list": "Ստուգացանկ",
+    "Close": "Փակել",
+    "Code": "Կոդ",
+    "Code Block": "Կոդի բլոկ",
+    "Col {n}": "Սյ {n}",
+    "Editor toolbar": "Խմբագրիչի գործիքագոտի",
+    "Find": "Գտնել",
+    "Find and replace": "Գտնել և փոխարինել",
+    "Heading": "Վերնագիր",
+    "Heading level": "Վերնագրի մակարդակ",
+    "Horizontal Rule": "Հորիզոնական գիծ",
+    "Image": "Պատկեր",
+    "Image link": "Պատկերի հղում",
+    "Indent": "Ավելացնել նահանջը",
+    "Insert variable": "Տեղադրել փոփոխական",
+    "Italic": "Շեղ",
+    "Link": "Հղում",
+    "Link text": "Հղման տեքստ",
+    "Ln {n}": "Տող {n}",
+    "Match case": "Հաշվի առնել մեծատառերը",
+    "Next match": "Հաջորդ համընկնումը",
+    "Ordered list": "Համարակալված ցանկ",
+    "Outdent": "Նվազեցնել նահանջը",
+    "Preview": "Նախադիտում",
+    "Previous match": "Նախորդ համընկնումը",
+    "Redo": "Կրկնել",
+    "Replace": "Փոխարինել",
+    "Replace all": "Փոխարինել բոլորը",
+    "Replace with": "Փոխարինել հետևյալով",
+    "Strikethrough": "Վրագծված",
+    "Table": "Աղյուսակ",
+    "Toggle replace row": "Ցուցադրել կամ թաքցնել փոխարինման տողը",
+    "Undo": "Հետարկել",
+    "Unordered list": "Պարբերակված ցանկ",
+    "Upload failed": "Վերբեռնումը ձախողվեց",
+    "Uploading...": "Վերբեռնվում է...",
+    "URL": "URL",
+    "Variables": "Փոփոխականներ",
+};

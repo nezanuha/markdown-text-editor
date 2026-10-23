@@ -1,0 +1,55 @@
+/**
+ * Macedonian (mk).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} знаци",
+    "{n} words": "{n} зборови",
+    "All": "Сè",
+    "Alt text": "Алтернативен текст",
+    "Apply": "Примени",
+    "Blockquote": "Цитат",
+    "Bold": "Задебелено",
+    "Check list": "Список со задачи",
+    "Close": "Затвори",
+    "Code": "Код",
+    "Code Block": "Блок код",
+    "Col {n}": "Кол {n}",
+    "Editor toolbar": "Лента со алатки на уредувачот",
+    "Find": "Најди",
+    "Find and replace": "Најди и замени",
+    "Heading": "Наслов",
+    "Heading level": "Ниво на наслов",
+    "Horizontal Rule": "Хоризонтална линија",
+    "Image": "Слика",
+    "Image link": "Врска до слика",
+    "Indent": "Зголеми вовлекување",
+    "Insert variable": "Вметни променлива",
+    "Italic": "Закосено",
+    "Link": "Врска",
+    "Link text": "Текст на врската",
+    "Ln {n}": "Ред {n}",
+    "Match case": "Совпаѓање на големи и мали букви",
+    "Next match": "Следно совпаѓање",
+    "Ordered list": "Нумериран список",
+    "Outdent": "Намали вовлекување",
+    "Preview": "Преглед",
+    "Previous match": "Претходно совпаѓање",
+    "Redo": "Повтори",
+    "Replace": "Замени",
+    "Replace all": "Замени ги сите",
+    "Replace with": "Замени со",
+    "Strikethrough": "Прецртано",
+    "Table": "Табела",
+    "Toggle replace row": "Прикажи или скриј го редот за замена",
+    "Undo": "Врати",
+    "Unordered list": "Список со точки",
+    "Upload failed": "Прикачувањето не успеа",
+    "Uploading...": "Се прикачува...",
+    "URL": "URL",
+    "Variables": "Променливи",
+};

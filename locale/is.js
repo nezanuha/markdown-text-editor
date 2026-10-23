@@ -1,0 +1,55 @@
+/**
+ * Icelandic (is).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} stafir",
+    "{n} words": "{n} orð",
+    "All": "Allt",
+    "Alt text": "Alt-texti",
+    "Apply": "Nota",
+    "Blockquote": "Tilvitnun",
+    "Bold": "Feitletrað",
+    "Check list": "Gátlisti",
+    "Close": "Loka",
+    "Code": "Kóði",
+    "Code Block": "Kóðablokk",
+    "Col {n}": "Dálkur {n}",
+    "Editor toolbar": "Verkfærastika ritils",
+    "Find": "Leita",
+    "Find and replace": "Leita og skipta út",
+    "Heading": "Fyrirsögn",
+    "Heading level": "Stig fyrirsagnar",
+    "Horizontal Rule": "Lárétt lína",
+    "Image": "Mynd",
+    "Image link": "Myndatengill",
+    "Indent": "Auka inndrátt",
+    "Insert variable": "Setja inn breytu",
+    "Italic": "Skáletrað",
+    "Link": "Tengill",
+    "Link text": "Texti tengils",
+    "Ln {n}": "Lína {n}",
+    "Match case": "Hástafanæmt",
+    "Next match": "Næsta samsvörun",
+    "Ordered list": "Tölusettur listi",
+    "Outdent": "Minnka inndrátt",
+    "Preview": "Forskoðun",
+    "Previous match": "Fyrri samsvörun",
+    "Redo": "Endurtaka",
+    "Replace": "Skipta út",
+    "Replace all": "Skipta út öllum",
+    "Replace with": "Skipta út fyrir",
+    "Strikethrough": "Yfirstrikað",
+    "Table": "Tafla",
+    "Toggle replace row": "Sýna eða fela útskiptingarröð",
+    "Undo": "Afturkalla",
+    "Unordered list": "Punktalisti",
+    "Upload failed": "Upphleðsla mistókst",
+    "Uploading...": "Hleð upp...",
+    "URL": "URL",
+    "Variables": "Breytur",
+};

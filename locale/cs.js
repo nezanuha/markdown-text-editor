@@ -1,0 +1,55 @@
+/**
+ * Czech (cs).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} znaků",
+    "{n} words": "{n} slov",
+    "All": "Vše",
+    "Alt text": "Alternativní text",
+    "Apply": "Použít",
+    "Blockquote": "Citace",
+    "Bold": "Tučné",
+    "Check list": "Seznam úkolů",
+    "Close": "Zavřít",
+    "Code": "Kód",
+    "Code Block": "Blok kódu",
+    "Col {n}": "Sl {n}",
+    "Editor toolbar": "Panel nástrojů editoru",
+    "Find": "Najít",
+    "Find and replace": "Najít a nahradit",
+    "Heading": "Nadpis",
+    "Heading level": "Úroveň nadpisu",
+    "Horizontal Rule": "Vodorovná čára",
+    "Image": "Obrázek",
+    "Image link": "Odkaz na obrázek",
+    "Indent": "Zvětšit odsazení",
+    "Insert variable": "Vložit proměnnou",
+    "Italic": "Kurzíva",
+    "Link": "Odkaz",
+    "Link text": "Text odkazu",
+    "Ln {n}": "Ř {n}",
+    "Match case": "Rozlišovat velká a malá písmena",
+    "Next match": "Další výskyt",
+    "Ordered list": "Číslovaný seznam",
+    "Outdent": "Zmenšit odsazení",
+    "Preview": "Náhled",
+    "Previous match": "Předchozí výskyt",
+    "Redo": "Znovu",
+    "Replace": "Nahradit",
+    "Replace all": "Nahradit vše",
+    "Replace with": "Nahradit čím",
+    "Strikethrough": "Přeškrtnuté",
+    "Table": "Tabulka",
+    "Toggle replace row": "Zobrazit nebo skrýt řádek nahrazení",
+    "Undo": "Zpět",
+    "Unordered list": "Odrážkový seznam",
+    "Upload failed": "Nahrávání se nezdařilo",
+    "Uploading...": "Nahrávání...",
+    "URL": "URL",
+    "Variables": "Proměnné",
+};

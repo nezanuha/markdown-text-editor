@@ -1,0 +1,55 @@
+/**
+ * Tamil (ta).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} எழுத்துகள்",
+    "{n} words": "{n} சொற்கள்",
+    "All": "அனைத்தும்",
+    "Alt text": "மாற்று உரை",
+    "Apply": "பயன்படுத்து",
+    "Blockquote": "மேற்கோள்",
+    "Bold": "தடிமன்",
+    "Check list": "சரிபார்ப்புப் பட்டியல்",
+    "Close": "மூடு",
+    "Code": "குறியீடு",
+    "Code Block": "குறியீட்டுத் தொகுதி",
+    "Col {n}": "நிரல் {n}",
+    "Editor toolbar": "திருத்தி கருவிப்பட்டை",
+    "Find": "தேடு",
+    "Find and replace": "தேடி மாற்று",
+    "Heading": "தலைப்பு",
+    "Heading level": "தலைப்பு நிலை",
+    "Horizontal Rule": "கிடைமட்டக் கோடு",
+    "Image": "படம்",
+    "Image link": "படத்தின் இணைப்பு",
+    "Indent": "இடைவெளியை அதிகரி",
+    "Insert variable": "மாறியைச் செருகு",
+    "Italic": "சாய்வு",
+    "Link": "இணைப்பு",
+    "Link text": "இணைப்பு உரை",
+    "Ln {n}": "வரி {n}",
+    "Match case": "எழுத்து வடிவம் பொருந்த",
+    "Next match": "அடுத்த பொருத்தம்",
+    "Ordered list": "எண்ணிட்ட பட்டியல்",
+    "Outdent": "இடைவெளியைக் குறை",
+    "Preview": "முன்னோட்டம்",
+    "Previous match": "முந்தைய பொருத்தம்",
+    "Redo": "மீண்டும் செய்",
+    "Replace": "மாற்று",
+    "Replace all": "அனைத்தையும் மாற்று",
+    "Replace with": "இதனால் மாற்று",
+    "Strikethrough": "கோடிட்டது",
+    "Table": "அட்டவணை",
+    "Toggle replace row": "மாற்று வரிசையைக் காட்டு அல்லது மறை",
+    "Undo": "செயல்தவிர்",
+    "Unordered list": "புள்ளிப் பட்டியல்",
+    "Upload failed": "பதிவேற்றம் தோல்வியடைந்தது",
+    "Uploading...": "பதிவேற்றுகிறது...",
+    "URL": "URL",
+    "Variables": "மாறிகள்",
+};

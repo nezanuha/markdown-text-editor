@@ -1,0 +1,55 @@
+/**
+ * Turkish (tr).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} karakter",
+    "{n} words": "{n} kelime",
+    "All": "Tümü",
+    "Alt text": "Alternatif metin",
+    "Apply": "Uygula",
+    "Blockquote": "Alıntı",
+    "Bold": "Kalın",
+    "Check list": "Görev listesi",
+    "Close": "Kapat",
+    "Code": "Kod",
+    "Code Block": "Kod bloğu",
+    "Col {n}": "Süt {n}",
+    "Editor toolbar": "Düzenleyici araç çubuğu",
+    "Find": "Bul",
+    "Find and replace": "Bul ve değiştir",
+    "Heading": "Başlık",
+    "Heading level": "Başlık düzeyi",
+    "Horizontal Rule": "Yatay çizgi",
+    "Image": "Görsel",
+    "Image link": "Görsel bağlantısı",
+    "Indent": "Girintiyi artır",
+    "Insert variable": "Değişken ekle",
+    "Italic": "İtalik",
+    "Link": "Bağlantı",
+    "Link text": "Bağlantı metni",
+    "Ln {n}": "Sat {n}",
+    "Match case": "Büyük/küçük harf eşleştir",
+    "Next match": "Sonraki eşleşme",
+    "Ordered list": "Numaralı liste",
+    "Outdent": "Girintiyi azalt",
+    "Preview": "Önizleme",
+    "Previous match": "Önceki eşleşme",
+    "Redo": "Yinele",
+    "Replace": "Değiştir",
+    "Replace all": "Tümünü değiştir",
+    "Replace with": "Şununla değiştir",
+    "Strikethrough": "Üstü çizili",
+    "Table": "Tablo",
+    "Toggle replace row": "Değiştirme satırını göster veya gizle",
+    "Undo": "Geri al",
+    "Unordered list": "Madde işaretli liste",
+    "Upload failed": "Yükleme başarısız",
+    "Uploading...": "Yükleniyor...",
+    "URL": "URL",
+    "Variables": "Değişkenler",
+};

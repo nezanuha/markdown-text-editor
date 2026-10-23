@@ -1,0 +1,55 @@
+/**
+ * Albanian (sq).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} karaktere",
+    "{n} words": "{n} fjalë",
+    "All": "Të gjitha",
+    "Alt text": "Teksti alternativ",
+    "Apply": "Zbato",
+    "Blockquote": "Citim",
+    "Bold": "Trash",
+    "Check list": "Listë kontrolli",
+    "Close": "Mbyll",
+    "Code": "Kod",
+    "Code Block": "Bllok kodi",
+    "Col {n}": "Kol {n}",
+    "Editor toolbar": "Shiriti i veglave të redaktuesit",
+    "Find": "Gjej",
+    "Find and replace": "Gjej dhe zëvendëso",
+    "Heading": "Titull",
+    "Heading level": "Niveli i titullit",
+    "Horizontal Rule": "Vijë horizontale",
+    "Image": "Imazh",
+    "Image link": "Lidhje imazhi",
+    "Indent": "Rrit kryeradhën",
+    "Insert variable": "Fut variabël",
+    "Italic": "Pjerrët",
+    "Link": "Lidhje",
+    "Link text": "Teksti i lidhjes",
+    "Ln {n}": "Rr {n}",
+    "Match case": "Përputh shkronjat e mëdha dhe të vogla",
+    "Next match": "Përputhja tjetër",
+    "Ordered list": "Listë e numëruar",
+    "Outdent": "Zvogëlo kryeradhën",
+    "Preview": "Pamje paraprake",
+    "Previous match": "Përputhja e mëparshme",
+    "Redo": "Ribëj",
+    "Replace": "Zëvendëso",
+    "Replace all": "Zëvendëso të gjitha",
+    "Replace with": "Zëvendëso me",
+    "Strikethrough": "Vijëzuar",
+    "Table": "Tabelë",
+    "Toggle replace row": "Shfaq ose fshih rreshtin e zëvendësimit",
+    "Undo": "Zhbëj",
+    "Unordered list": "Listë me pika",
+    "Upload failed": "Ngarkimi dështoi",
+    "Uploading...": "Duke ngarkuar...",
+    "URL": "URL",
+    "Variables": "Variabla",
+};

@@ -1,0 +1,55 @@
+/**
+ * Greek (el).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} χαρακτήρες",
+    "{n} words": "{n} λέξεις",
+    "All": "Όλα",
+    "Alt text": "Εναλλακτικό κείμενο",
+    "Apply": "Εφαρμογή",
+    "Blockquote": "Παράθεση",
+    "Bold": "Έντονα",
+    "Check list": "Λίστα ελέγχου",
+    "Close": "Κλείσιμο",
+    "Code": "Κώδικας",
+    "Code Block": "Μπλοκ κώδικα",
+    "Col {n}": "Στ {n}",
+    "Editor toolbar": "Γραμμή εργαλείων επεξεργαστή",
+    "Find": "Εύρεση",
+    "Find and replace": "Εύρεση και αντικατάσταση",
+    "Heading": "Επικεφαλίδα",
+    "Heading level": "Επίπεδο επικεφαλίδας",
+    "Horizontal Rule": "Οριζόντια γραμμή",
+    "Image": "Εικόνα",
+    "Image link": "Σύνδεσμος εικόνας",
+    "Indent": "Αύξηση εσοχής",
+    "Insert variable": "Εισαγωγή μεταβλητής",
+    "Italic": "Πλάγια",
+    "Link": "Σύνδεσμος",
+    "Link text": "Κείμενο συνδέσμου",
+    "Ln {n}": "Γρ {n}",
+    "Match case": "Ταίριασμα πεζών-κεφαλαίων",
+    "Next match": "Επόμενο αποτέλεσμα",
+    "Ordered list": "Αριθμημένη λίστα",
+    "Outdent": "Μείωση εσοχής",
+    "Preview": "Προεπισκόπηση",
+    "Previous match": "Προηγούμενο αποτέλεσμα",
+    "Redo": "Επανάληψη",
+    "Replace": "Αντικατάσταση",
+    "Replace all": "Αντικατάσταση όλων",
+    "Replace with": "Αντικατάσταση με",
+    "Strikethrough": "Διακριτή διαγραφή",
+    "Table": "Πίνακας",
+    "Toggle replace row": "Εμφάνιση ή απόκρυψη γραμμής αντικατάστασης",
+    "Undo": "Αναίρεση",
+    "Unordered list": "Λίστα με κουκκίδες",
+    "Upload failed": "Η μεταφόρτωση απέτυχε",
+    "Uploading...": "Μεταφόρτωση...",
+    "URL": "URL",
+    "Variables": "Μεταβλητές",
+};

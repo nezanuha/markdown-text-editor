@@ -1,0 +1,55 @@
+/**
+ * Kannada (kn).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} ಅಕ್ಷರಗಳು",
+    "{n} words": "{n} ಪದಗಳು",
+    "All": "ಎಲ್ಲಾ",
+    "Alt text": "ಪರ್ಯಾಯ ಪಠ್ಯ",
+    "Apply": "ಅನ್ವಯಿಸು",
+    "Blockquote": "ಉದ್ಧರಣೆ",
+    "Bold": "ದಪ್ಪ",
+    "Check list": "ಪರಿಶೀಲನಾ ಪಟ್ಟಿ",
+    "Close": "ಮುಚ್ಚು",
+    "Code": "ಕೋಡ್",
+    "Code Block": "ಕೋಡ್ ಬ್ಲಾಕ್",
+    "Col {n}": "ಕಾಲಂ {n}",
+    "Editor toolbar": "ಸಂಪಾದಕ ಪರಿಕರಪಟ್ಟಿ",
+    "Find": "ಹುಡುಕು",
+    "Find and replace": "ಹುಡುಕಿ ಬದಲಾಯಿಸಿ",
+    "Heading": "ಶೀರ್ಷಿಕೆ",
+    "Heading level": "ಶೀರ್ಷಿಕೆ ಮಟ್ಟ",
+    "Horizontal Rule": "ಅಡ್ಡ ಗೆರೆ",
+    "Image": "ಚಿತ್ರ",
+    "Image link": "ಚಿತ್ರದ ಲಿಂಕ್",
+    "Indent": "ಇಂಡೆಂಟ್ ಹೆಚ್ಚಿಸಿ",
+    "Insert variable": "ವೇರಿಯಬಲ್ ಸೇರಿಸಿ",
+    "Italic": "ಓರೆ",
+    "Link": "ಲಿಂಕ್",
+    "Link text": "ಲಿಂಕ್ ಪಠ್ಯ",
+    "Ln {n}": "ಸಾಲು {n}",
+    "Match case": "ಅಕ್ಷರ ಗಾತ್ರ ಹೊಂದಿಸಿ",
+    "Next match": "ಮುಂದಿನ ಹೊಂದಾಣಿಕೆ",
+    "Ordered list": "ಸಂಖ್ಯೆಯ ಪಟ್ಟಿ",
+    "Outdent": "ಇಂಡೆಂಟ್ ಕಡಿಮೆ ಮಾಡಿ",
+    "Preview": "ಮುನ್ನೋಟ",
+    "Previous match": "ಹಿಂದಿನ ಹೊಂದಾಣಿಕೆ",
+    "Redo": "ಮತ್ತೆ ಮಾಡು",
+    "Replace": "ಬದಲಾಯಿಸು",
+    "Replace all": "ಎಲ್ಲವನ್ನೂ ಬದಲಾಯಿಸು",
+    "Replace with": "ಇದರಿಂದ ಬದಲಾಯಿಸು",
+    "Strikethrough": "ಅಡ್ಡಗೆರೆ ಹಾಕಿದ",
+    "Table": "ಕೋಷ್ಟಕ",
+    "Toggle replace row": "ಬದಲಾವಣೆ ಸಾಲನ್ನು ತೋರಿಸು ಅಥವಾ ಮರೆಮಾಡು",
+    "Undo": "ರದ್ದುಮಾಡು",
+    "Unordered list": "ಬುಲೆಟ್ ಪಟ್ಟಿ",
+    "Upload failed": "ಅಪ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ",
+    "Uploading...": "ಅಪ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
+    "URL": "URL",
+    "Variables": "ವೇರಿಯಬಲ್‌ಗಳು",
+};

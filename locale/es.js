@@ -1,0 +1,55 @@
+/**
+ * Spanish (es).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} caracteres",
+    "{n} words": "{n} palabras",
+    "All": "Todo",
+    "Alt text": "Texto alternativo",
+    "Apply": "Aplicar",
+    "Blockquote": "Cita",
+    "Bold": "Negrita",
+    "Check list": "Lista de tareas",
+    "Close": "Cerrar",
+    "Code": "Código",
+    "Code Block": "Bloque de código",
+    "Col {n}": "Col {n}",
+    "Editor toolbar": "Barra de herramientas del editor",
+    "Find": "Buscar",
+    "Find and replace": "Buscar y reemplazar",
+    "Heading": "Encabezado",
+    "Heading level": "Nivel de encabezado",
+    "Horizontal Rule": "Línea horizontal",
+    "Image": "Imagen",
+    "Image link": "Enlace de imagen",
+    "Indent": "Aumentar sangría",
+    "Insert variable": "Insertar variable",
+    "Italic": "Cursiva",
+    "Link": "Enlace",
+    "Link text": "Texto del enlace",
+    "Ln {n}": "Lín {n}",
+    "Match case": "Coincidir mayúsculas y minúsculas",
+    "Next match": "Coincidencia siguiente",
+    "Ordered list": "Lista ordenada",
+    "Outdent": "Reducir sangría",
+    "Preview": "Vista previa",
+    "Previous match": "Coincidencia anterior",
+    "Redo": "Rehacer",
+    "Replace": "Reemplazar",
+    "Replace all": "Reemplazar todo",
+    "Replace with": "Reemplazar con",
+    "Strikethrough": "Tachado",
+    "Table": "Tabla",
+    "Toggle replace row": "Mostrar u ocultar la fila de reemplazo",
+    "Undo": "Deshacer",
+    "Unordered list": "Lista con viñetas",
+    "Upload failed": "Error al subir",
+    "Uploading...": "Subiendo...",
+    "URL": "URL",
+    "Variables": "Variables",
+};

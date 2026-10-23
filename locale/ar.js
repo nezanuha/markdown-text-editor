@@ -1,0 +1,55 @@
+/**
+ * Arabic (ar).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} حرف",
+    "{n} words": "{n} كلمة",
+    "All": "الكل",
+    "Alt text": "نص بديل",
+    "Apply": "تطبيق",
+    "Blockquote": "اقتباس",
+    "Bold": "عريض",
+    "Check list": "قائمة مهام",
+    "Close": "إغلاق",
+    "Code": "كود",
+    "Code Block": "كتلة كود",
+    "Col {n}": "عمود {n}",
+    "Editor toolbar": "شريط أدوات المحرر",
+    "Find": "بحث",
+    "Find and replace": "بحث واستبدال",
+    "Heading": "عنوان",
+    "Heading level": "مستوى العنوان",
+    "Horizontal Rule": "خط أفقي",
+    "Image": "صورة",
+    "Image link": "رابط الصورة",
+    "Indent": "زيادة المسافة البادئة",
+    "Insert variable": "إدراج متغير",
+    "Italic": "مائل",
+    "Link": "رابط",
+    "Link text": "نص الرابط",
+    "Ln {n}": "سطر {n}",
+    "Match case": "مطابقة حالة الأحرف",
+    "Next match": "النتيجة التالية",
+    "Ordered list": "قائمة مرقمة",
+    "Outdent": "تقليل المسافة البادئة",
+    "Preview": "معاينة",
+    "Previous match": "النتيجة السابقة",
+    "Redo": "إعادة",
+    "Replace": "استبدال",
+    "Replace all": "استبدال الكل",
+    "Replace with": "استبدال بـ",
+    "Strikethrough": "يتوسطه خط",
+    "Table": "جدول",
+    "Toggle replace row": "إظهار أو إخفاء صف الاستبدال",
+    "Undo": "تراجع",
+    "Unordered list": "قائمة نقطية",
+    "Upload failed": "فشل الرفع",
+    "Uploading...": "جارٍ الرفع...",
+    "URL": "URL",
+    "Variables": "المتغيرات",
+};

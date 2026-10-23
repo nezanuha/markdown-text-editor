@@ -1,0 +1,55 @@
+/**
+ * Hindi (hi).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} वर्ण",
+    "{n} words": "{n} शब्द",
+    "All": "सभी",
+    "Alt text": "वैकल्पिक टेक्स्ट",
+    "Apply": "लागू करें",
+    "Blockquote": "उद्धरण",
+    "Bold": "बोल्ड",
+    "Check list": "चेकलिस्ट",
+    "Close": "बंद करें",
+    "Code": "कोड",
+    "Code Block": "कोड ब्लॉक",
+    "Col {n}": "स्तंभ {n}",
+    "Editor toolbar": "संपादक टूलबार",
+    "Find": "खोजें",
+    "Find and replace": "खोजें और बदलें",
+    "Heading": "शीर्षक",
+    "Heading level": "शीर्षक स्तर",
+    "Horizontal Rule": "क्षैतिज रेखा",
+    "Image": "छवि",
+    "Image link": "छवि लिंक",
+    "Indent": "इंडेंट बढ़ाएँ",
+    "Insert variable": "वेरिएबल जोड़ें",
+    "Italic": "इटैलिक",
+    "Link": "लिंक",
+    "Link text": "लिंक टेक्स्ट",
+    "Ln {n}": "पंक्ति {n}",
+    "Match case": "केस मिलाएँ",
+    "Next match": "अगला मिलान",
+    "Ordered list": "क्रमांकित सूची",
+    "Outdent": "इंडेंट घटाएँ",
+    "Preview": "पूर्वावलोकन",
+    "Previous match": "पिछला मिलान",
+    "Redo": "फिर से करें",
+    "Replace": "बदलें",
+    "Replace all": "सभी बदलें",
+    "Replace with": "इससे बदलें",
+    "Strikethrough": "स्ट्राइकथ्रू",
+    "Table": "तालिका",
+    "Toggle replace row": "बदलने की पंक्ति दिखाएँ या छिपाएँ",
+    "Undo": "पूर्ववत करें",
+    "Unordered list": "बुलेट सूची",
+    "Upload failed": "अपलोड विफल",
+    "Uploading...": "अपलोड हो रहा है...",
+    "URL": "URL",
+    "Variables": "वेरिएबल",
+};

@@ -1,0 +1,55 @@
+/**
+ * Chinese (Hong Kong SAR China) (zh-hk).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} 個字元",
+    "{n} words": "{n} 個字",
+    "All": "全部",
+    "Alt text": "替代文字",
+    "Apply": "套用",
+    "Blockquote": "引用",
+    "Bold": "粗體",
+    "Check list": "待辦清單",
+    "Close": "關閉",
+    "Code": "程式碼",
+    "Code Block": "程式碼區塊",
+    "Col {n}": "欄 {n}",
+    "Editor toolbar": "編輯器工具列",
+    "Find": "尋找",
+    "Find and replace": "尋找及取代",
+    "Heading": "標題",
+    "Heading level": "標題層級",
+    "Horizontal Rule": "水平線",
+    "Image": "圖片",
+    "Image link": "圖片連結",
+    "Indent": "增加縮排",
+    "Insert variable": "插入變數",
+    "Italic": "斜體",
+    "Link": "連結",
+    "Link text": "連結文字",
+    "Ln {n}": "行 {n}",
+    "Match case": "大小寫相符",
+    "Next match": "下一個相符項",
+    "Ordered list": "編號清單",
+    "Outdent": "減少縮排",
+    "Preview": "預覽",
+    "Previous match": "上一個相符項",
+    "Redo": "重做",
+    "Replace": "取代",
+    "Replace all": "全部取代",
+    "Replace with": "取代為",
+    "Strikethrough": "刪除線",
+    "Table": "表格",
+    "Toggle replace row": "顯示或隱藏取代列",
+    "Undo": "復原",
+    "Unordered list": "項目符號清單",
+    "Upload failed": "上傳失敗",
+    "Uploading...": "上傳中...",
+    "URL": "URL",
+    "Variables": "變數",
+};

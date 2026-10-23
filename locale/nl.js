@@ -1,0 +1,55 @@
+/**
+ * Dutch (nl).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} tekens",
+    "{n} words": "{n} woorden",
+    "All": "Alles",
+    "Alt text": "Alternatieve tekst",
+    "Apply": "Toepassen",
+    "Blockquote": "Citaat",
+    "Bold": "Vet",
+    "Check list": "Takenlijst",
+    "Close": "Sluiten",
+    "Code": "Code",
+    "Code Block": "Codeblok",
+    "Col {n}": "Kol {n}",
+    "Editor toolbar": "Werkbalk van de editor",
+    "Find": "Zoeken",
+    "Find and replace": "Zoeken en vervangen",
+    "Heading": "Kop",
+    "Heading level": "Kopniveau",
+    "Horizontal Rule": "Horizontale lijn",
+    "Image": "Afbeelding",
+    "Image link": "Afbeeldingslink",
+    "Indent": "Inspringen",
+    "Insert variable": "Variabele invoegen",
+    "Italic": "Cursief",
+    "Link": "Link",
+    "Link text": "Linktekst",
+    "Ln {n}": "Rg {n}",
+    "Match case": "Hoofdlettergevoelig",
+    "Next match": "Volgende resultaat",
+    "Ordered list": "Genummerde lijst",
+    "Outdent": "Uitspringen",
+    "Preview": "Voorbeeld",
+    "Previous match": "Vorige resultaat",
+    "Redo": "Opnieuw",
+    "Replace": "Vervangen",
+    "Replace all": "Alles vervangen",
+    "Replace with": "Vervangen door",
+    "Strikethrough": "Doorhalen",
+    "Table": "Tabel",
+    "Toggle replace row": "Vervangrij tonen of verbergen",
+    "Undo": "Ongedaan maken",
+    "Unordered list": "Opsomming",
+    "Upload failed": "Uploaden mislukt",
+    "Uploading...": "Uploaden...",
+    "URL": "URL",
+    "Variables": "Variabelen",
+};

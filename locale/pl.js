@@ -1,0 +1,55 @@
+/**
+ * Polish (pl).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} znaków",
+    "{n} words": "{n} słów",
+    "All": "Wszystko",
+    "Alt text": "Tekst alternatywny",
+    "Apply": "Zastosuj",
+    "Blockquote": "Cytat",
+    "Bold": "Pogrubienie",
+    "Check list": "Lista zadań",
+    "Close": "Zamknij",
+    "Code": "Kod",
+    "Code Block": "Blok kodu",
+    "Col {n}": "Kol {n}",
+    "Editor toolbar": "Pasek narzędzi edytora",
+    "Find": "Znajdź",
+    "Find and replace": "Znajdź i zamień",
+    "Heading": "Nagłówek",
+    "Heading level": "Poziom nagłówka",
+    "Horizontal Rule": "Linia pozioma",
+    "Image": "Obraz",
+    "Image link": "Link do obrazu",
+    "Indent": "Zwiększ wcięcie",
+    "Insert variable": "Wstaw zmienną",
+    "Italic": "Kursywa",
+    "Link": "Link",
+    "Link text": "Tekst linku",
+    "Ln {n}": "Wrs {n}",
+    "Match case": "Uwzględnij wielkość liter",
+    "Next match": "Następne wystąpienie",
+    "Ordered list": "Lista numerowana",
+    "Outdent": "Zmniejsz wcięcie",
+    "Preview": "Podgląd",
+    "Previous match": "Poprzednie wystąpienie",
+    "Redo": "Ponów",
+    "Replace": "Zamień",
+    "Replace all": "Zamień wszystko",
+    "Replace with": "Zamień na",
+    "Strikethrough": "Przekreślenie",
+    "Table": "Tabela",
+    "Toggle replace row": "Pokaż lub ukryj wiersz zamiany",
+    "Undo": "Cofnij",
+    "Unordered list": "Lista punktowana",
+    "Upload failed": "Przesyłanie nie powiodło się",
+    "Uploading...": "Przesyłanie...",
+    "URL": "URL",
+    "Variables": "Zmienne",
+};

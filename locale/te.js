@@ -1,0 +1,55 @@
+/**
+ * Telugu (te).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} అక్షరాలు",
+    "{n} words": "{n} పదాలు",
+    "All": "అన్నీ",
+    "Alt text": "ప్రత్యామ్నాయ వచనం",
+    "Apply": "వర్తింపజేయి",
+    "Blockquote": "ఉల్లేఖనం",
+    "Bold": "మందం",
+    "Check list": "తనిఖీ జాబితా",
+    "Close": "మూసివేయి",
+    "Code": "కోడ్",
+    "Code Block": "కోడ్ బ్లాక్",
+    "Col {n}": "నిలువు {n}",
+    "Editor toolbar": "సంపాదకి సాధనపట్టీ",
+    "Find": "వెతుకు",
+    "Find and replace": "వెతికి మార్చు",
+    "Heading": "శీర్షిక",
+    "Heading level": "శీర్షిక స్థాయి",
+    "Horizontal Rule": "అడ్డగీత",
+    "Image": "చిత్రం",
+    "Image link": "చిత్రం లింక్",
+    "Indent": "ఇండెంట్ పెంచు",
+    "Insert variable": "వేరియబుల్ చొప్పించు",
+    "Italic": "వాలు",
+    "Link": "లింక్",
+    "Link text": "లింక్ వచనం",
+    "Ln {n}": "పంక్తి {n}",
+    "Match case": "అక్షర పరిమాణం సరిపోల్చు",
+    "Next match": "తదుపరి సరిపోలిక",
+    "Ordered list": "సంఖ్యల జాబితా",
+    "Outdent": "ఇండెంట్ తగ్గించు",
+    "Preview": "పరిదృశ్యం",
+    "Previous match": "మునుపటి సరిపోలిక",
+    "Redo": "మళ్లీ చేయి",
+    "Replace": "మార్చు",
+    "Replace all": "అన్నీ మార్చు",
+    "Replace with": "దీనితో మార్చు",
+    "Strikethrough": "కొట్టివేత",
+    "Table": "పట్టిక",
+    "Toggle replace row": "మార్పు వరుసను చూపు లేదా దాచు",
+    "Undo": "రద్దు చేయి",
+    "Unordered list": "బుల్లెట్ జాబితా",
+    "Upload failed": "అప్‌లోడ్ విఫలమైంది",
+    "Uploading...": "అప్‌లోడ్ అవుతోంది...",
+    "URL": "URL",
+    "Variables": "వేరియబుల్స్",
+};

@@ -1,0 +1,55 @@
+/**
+ * Persian (fa).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} نویسه",
+    "{n} words": "{n} واژه",
+    "All": "همه",
+    "Alt text": "متن جایگزین",
+    "Apply": "اعمال",
+    "Blockquote": "نقل‌قول",
+    "Bold": "درشت",
+    "Check list": "فهرست وارسی",
+    "Close": "بستن",
+    "Code": "کد",
+    "Code Block": "بلوک کد",
+    "Col {n}": "ستون {n}",
+    "Editor toolbar": "نوار ابزار ویرایشگر",
+    "Find": "یافتن",
+    "Find and replace": "یافتن و جایگزینی",
+    "Heading": "سرنویس",
+    "Heading level": "سطح سرنویس",
+    "Horizontal Rule": "خط افقی",
+    "Image": "تصویر",
+    "Image link": "پیوند تصویر",
+    "Indent": "افزایش تورفتگی",
+    "Insert variable": "درج متغیر",
+    "Italic": "کج",
+    "Link": "پیوند",
+    "Link text": "متن پیوند",
+    "Ln {n}": "سطر {n}",
+    "Match case": "تطبیق بزرگی و کوچکی حروف",
+    "Next match": "مورد بعدی",
+    "Ordered list": "فهرست شماره‌دار",
+    "Outdent": "کاهش تورفتگی",
+    "Preview": "پیش‌نمایش",
+    "Previous match": "مورد قبلی",
+    "Redo": "انجام دوباره",
+    "Replace": "جایگزینی",
+    "Replace all": "جایگزینی همه",
+    "Replace with": "جایگزینی با",
+    "Strikethrough": "خط‌خورده",
+    "Table": "جدول",
+    "Toggle replace row": "نمایش یا پنهان‌سازی ردیف جایگزینی",
+    "Undo": "واگرد",
+    "Unordered list": "فهرست نشانه‌دار",
+    "Upload failed": "بارگذاری ناموفق بود",
+    "Uploading...": "در حال بارگذاری...",
+    "URL": "URL",
+    "Variables": "متغیرها",
+};

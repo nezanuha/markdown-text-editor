@@ -1,0 +1,55 @@
+/**
+ * Hebrew (he).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} תווים",
+    "{n} words": "{n} מילים",
+    "All": "הכול",
+    "Alt text": "טקסט חלופי",
+    "Apply": "החל",
+    "Blockquote": "ציטוט",
+    "Bold": "מודגש",
+    "Check list": "רשימת משימות",
+    "Close": "סגור",
+    "Code": "קוד",
+    "Code Block": "בלוק קוד",
+    "Col {n}": "טור {n}",
+    "Editor toolbar": "סרגל הכלים של העורך",
+    "Find": "חיפוש",
+    "Find and replace": "חיפוש והחלפה",
+    "Heading": "כותרת",
+    "Heading level": "רמת כותרת",
+    "Horizontal Rule": "קו אופקי",
+    "Image": "תמונה",
+    "Image link": "קישור לתמונה",
+    "Indent": "הגדל כניסה",
+    "Insert variable": "הוסף משתנה",
+    "Italic": "נטוי",
+    "Link": "קישור",
+    "Link text": "טקסט הקישור",
+    "Ln {n}": "שורה {n}",
+    "Match case": "התאם אותיות גדולות/קטנות",
+    "Next match": "התוצאה הבאה",
+    "Ordered list": "רשימה ממוספרת",
+    "Outdent": "הקטן כניסה",
+    "Preview": "תצוגה מקדימה",
+    "Previous match": "התוצאה הקודמת",
+    "Redo": "בצע שוב",
+    "Replace": "החלף",
+    "Replace all": "החלף הכול",
+    "Replace with": "החלף ב",
+    "Strikethrough": "קו חוצה",
+    "Table": "טבלה",
+    "Toggle replace row": "הצג או הסתר את שורת ההחלפה",
+    "Undo": "בטל",
+    "Unordered list": "רשימת תבליטים",
+    "Upload failed": "ההעלאה נכשלה",
+    "Uploading...": "מעלה...",
+    "URL": "URL",
+    "Variables": "משתנים",
+};

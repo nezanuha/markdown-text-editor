@@ -1,0 +1,55 @@
+/**
+ * Japanese (ja).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} 文字",
+    "{n} words": "{n} 単語",
+    "All": "すべて",
+    "Alt text": "代替テキスト",
+    "Apply": "適用",
+    "Blockquote": "引用",
+    "Bold": "太字",
+    "Check list": "チェックリスト",
+    "Close": "閉じる",
+    "Code": "コード",
+    "Code Block": "コードブロック",
+    "Col {n}": "列 {n}",
+    "Editor toolbar": "エディターツールバー",
+    "Find": "検索",
+    "Find and replace": "検索と置換",
+    "Heading": "見出し",
+    "Heading level": "見出しレベル",
+    "Horizontal Rule": "水平線",
+    "Image": "画像",
+    "Image link": "画像リンク",
+    "Indent": "インデントを増やす",
+    "Insert variable": "変数を挿入",
+    "Italic": "斜体",
+    "Link": "リンク",
+    "Link text": "リンクテキスト",
+    "Ln {n}": "行 {n}",
+    "Match case": "大文字と小文字を区別",
+    "Next match": "次の一致",
+    "Ordered list": "番号付きリスト",
+    "Outdent": "インデントを減らす",
+    "Preview": "プレビュー",
+    "Previous match": "前の一致",
+    "Redo": "やり直す",
+    "Replace": "置換",
+    "Replace all": "すべて置換",
+    "Replace with": "置換後の文字列",
+    "Strikethrough": "取り消し線",
+    "Table": "表",
+    "Toggle replace row": "置換行の表示を切り替え",
+    "Undo": "元に戻す",
+    "Unordered list": "箇条書き",
+    "Upload failed": "アップロードに失敗しました",
+    "Uploading...": "アップロード中...",
+    "URL": "URL",
+    "Variables": "変数",
+};

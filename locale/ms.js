@@ -1,0 +1,55 @@
+/**
+ * Malay (ms).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} aksara",
+    "{n} words": "{n} perkataan",
+    "All": "Semua",
+    "Alt text": "Teks alternatif",
+    "Apply": "Guna",
+    "Blockquote": "Petikan",
+    "Bold": "Tebal",
+    "Check list": "Senarai semak",
+    "Close": "Tutup",
+    "Code": "Kod",
+    "Code Block": "Blok kod",
+    "Col {n}": "Ljr {n}",
+    "Editor toolbar": "Bar alat penyunting",
+    "Find": "Cari",
+    "Find and replace": "Cari dan ganti",
+    "Heading": "Tajuk",
+    "Heading level": "Aras tajuk",
+    "Horizontal Rule": "Garis mendatar",
+    "Image": "Imej",
+    "Image link": "Pautan imej",
+    "Indent": "Tambah inden",
+    "Insert variable": "Sisip pemboleh ubah",
+    "Italic": "Condong",
+    "Link": "Pautan",
+    "Link text": "Teks pautan",
+    "Ln {n}": "Brs {n}",
+    "Match case": "Padankan huruf besar kecil",
+    "Next match": "Padanan seterusnya",
+    "Ordered list": "Senarai bernombor",
+    "Outdent": "Kurangkan inden",
+    "Preview": "Pratonton",
+    "Previous match": "Padanan sebelumnya",
+    "Redo": "Buat semula",
+    "Replace": "Ganti",
+    "Replace all": "Ganti semua",
+    "Replace with": "Ganti dengan",
+    "Strikethrough": "Garis lorek",
+    "Table": "Jadual",
+    "Toggle replace row": "Tunjuk atau sembunyikan baris ganti",
+    "Undo": "Buat asal",
+    "Unordered list": "Senarai berbulet",
+    "Upload failed": "Muat naik gagal",
+    "Uploading...": "Memuat naik...",
+    "URL": "URL",
+    "Variables": "Pemboleh ubah",
+};

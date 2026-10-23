@@ -1,0 +1,55 @@
+/**
+ * Korean (ko).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n}자",
+    "{n} words": "{n}단어",
+    "All": "모두",
+    "Alt text": "대체 텍스트",
+    "Apply": "적용",
+    "Blockquote": "인용",
+    "Bold": "굵게",
+    "Check list": "체크리스트",
+    "Close": "닫기",
+    "Code": "코드",
+    "Code Block": "코드 블록",
+    "Col {n}": "열 {n}",
+    "Editor toolbar": "편집기 도구 모음",
+    "Find": "찾기",
+    "Find and replace": "찾기 및 바꾸기",
+    "Heading": "제목",
+    "Heading level": "제목 수준",
+    "Horizontal Rule": "가로줄",
+    "Image": "이미지",
+    "Image link": "이미지 링크",
+    "Indent": "들여쓰기",
+    "Insert variable": "변수 삽입",
+    "Italic": "기울임꼴",
+    "Link": "링크",
+    "Link text": "링크 텍스트",
+    "Ln {n}": "행 {n}",
+    "Match case": "대/소문자 구분",
+    "Next match": "다음 찾기",
+    "Ordered list": "번호 매기기",
+    "Outdent": "내어쓰기",
+    "Preview": "미리보기",
+    "Previous match": "이전 찾기",
+    "Redo": "다시 실행",
+    "Replace": "바꾸기",
+    "Replace all": "모두 바꾸기",
+    "Replace with": "바꿀 내용",
+    "Strikethrough": "취소선",
+    "Table": "표",
+    "Toggle replace row": "바꾸기 행 표시 또는 숨기기",
+    "Undo": "실행 취소",
+    "Unordered list": "글머리 기호",
+    "Upload failed": "업로드 실패",
+    "Uploading...": "업로드 중...",
+    "URL": "URL",
+    "Variables": "변수",
+};

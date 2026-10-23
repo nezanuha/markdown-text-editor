@@ -1,0 +1,55 @@
+/**
+ * Slovenian (sl).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} znakov",
+    "{n} words": "{n} besed",
+    "All": "Vse",
+    "Alt text": "Nadomestno besedilo",
+    "Apply": "Uporabi",
+    "Blockquote": "Citat",
+    "Bold": "Krepko",
+    "Check list": "Kontrolni seznam",
+    "Close": "Zapri",
+    "Code": "Koda",
+    "Code Block": "Blok kode",
+    "Col {n}": "Stolp {n}",
+    "Editor toolbar": "Orodna vrstica urejevalnika",
+    "Find": "Poišči",
+    "Find and replace": "Poišči in zamenjaj",
+    "Heading": "Naslov",
+    "Heading level": "Raven naslova",
+    "Horizontal Rule": "Vodoravna črta",
+    "Image": "Slika",
+    "Image link": "Povezava do slike",
+    "Indent": "Povečaj zamik",
+    "Insert variable": "Vstavi spremenljivko",
+    "Italic": "Ležeče",
+    "Link": "Povezava",
+    "Link text": "Besedilo povezave",
+    "Ln {n}": "Vr {n}",
+    "Match case": "Razlikuj male in velike črke",
+    "Next match": "Naslednje ujemanje",
+    "Ordered list": "Oštevilčen seznam",
+    "Outdent": "Zmanjšaj zamik",
+    "Preview": "Predogled",
+    "Previous match": "Prejšnje ujemanje",
+    "Redo": "Uveljavi",
+    "Replace": "Zamenjaj",
+    "Replace all": "Zamenjaj vse",
+    "Replace with": "Zamenjaj z",
+    "Strikethrough": "Prečrtano",
+    "Table": "Tabela",
+    "Toggle replace row": "Pokaži ali skrij vrstico za zamenjavo",
+    "Undo": "Razveljavi",
+    "Unordered list": "Označen seznam",
+    "Upload failed": "Nalaganje ni uspelo",
+    "Uploading...": "Nalaganje...",
+    "URL": "URL",
+    "Variables": "Spremenljivke",
+};

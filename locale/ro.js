@@ -1,0 +1,55 @@
+/**
+ * Romanian (ro).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} caractere",
+    "{n} words": "{n} cuvinte",
+    "All": "Tot",
+    "Alt text": "Text alternativ",
+    "Apply": "Aplică",
+    "Blockquote": "Citat",
+    "Bold": "Aldin",
+    "Check list": "Listă de verificare",
+    "Close": "Închide",
+    "Code": "Cod",
+    "Code Block": "Bloc de cod",
+    "Col {n}": "Col {n}",
+    "Editor toolbar": "Bara de instrumente a editorului",
+    "Find": "Caută",
+    "Find and replace": "Caută și înlocuiește",
+    "Heading": "Titlu",
+    "Heading level": "Nivel de titlu",
+    "Horizontal Rule": "Linie orizontală",
+    "Image": "Imagine",
+    "Image link": "Link către imagine",
+    "Indent": "Mărește indentarea",
+    "Insert variable": "Inserează variabilă",
+    "Italic": "Cursiv",
+    "Link": "Link",
+    "Link text": "Textul linkului",
+    "Ln {n}": "Lin {n}",
+    "Match case": "Potrivire litere mari și mici",
+    "Next match": "Rezultatul următor",
+    "Ordered list": "Listă numerotată",
+    "Outdent": "Micșorează indentarea",
+    "Preview": "Previzualizare",
+    "Previous match": "Rezultatul anterior",
+    "Redo": "Refă",
+    "Replace": "Înlocuiește",
+    "Replace all": "Înlocuiește tot",
+    "Replace with": "Înlocuiește cu",
+    "Strikethrough": "Tăiat",
+    "Table": "Tabel",
+    "Toggle replace row": "Afișează sau ascunde rândul de înlocuire",
+    "Undo": "Anulează",
+    "Unordered list": "Listă cu marcatori",
+    "Upload failed": "Încărcarea a eșuat",
+    "Uploading...": "Se încarcă...",
+    "URL": "URL",
+    "Variables": "Variabile",
+};

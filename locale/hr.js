@@ -1,0 +1,55 @@
+/**
+ * Croatian (hr).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} znakova",
+    "{n} words": "{n} riječi",
+    "All": "Sve",
+    "Alt text": "Alternativni tekst",
+    "Apply": "Primijeni",
+    "Blockquote": "Citat",
+    "Bold": "Podebljano",
+    "Check list": "Popis zadataka",
+    "Close": "Zatvori",
+    "Code": "Kod",
+    "Code Block": "Blok koda",
+    "Col {n}": "Stup {n}",
+    "Editor toolbar": "Alatna traka uređivača",
+    "Find": "Pronađi",
+    "Find and replace": "Pronađi i zamijeni",
+    "Heading": "Naslov",
+    "Heading level": "Razina naslova",
+    "Horizontal Rule": "Vodoravna crta",
+    "Image": "Slika",
+    "Image link": "Poveznica na sliku",
+    "Indent": "Povećaj uvlaku",
+    "Insert variable": "Umetni varijablu",
+    "Italic": "Kurziv",
+    "Link": "Poveznica",
+    "Link text": "Tekst poveznice",
+    "Ln {n}": "Red {n}",
+    "Match case": "Podudaranje velikih i malih slova",
+    "Next match": "Sljedeće podudaranje",
+    "Ordered list": "Numerirani popis",
+    "Outdent": "Smanji uvlaku",
+    "Preview": "Pretpregled",
+    "Previous match": "Prethodno podudaranje",
+    "Redo": "Ponovi",
+    "Replace": "Zamijeni",
+    "Replace all": "Zamijeni sve",
+    "Replace with": "Zamijeni s",
+    "Strikethrough": "Precrtano",
+    "Table": "Tablica",
+    "Toggle replace row": "Prikaži ili sakrij redak zamjene",
+    "Undo": "Poništi",
+    "Unordered list": "Popis s grafičkim oznakama",
+    "Upload failed": "Prijenos nije uspio",
+    "Uploading...": "Prijenos...",
+    "URL": "URL",
+    "Variables": "Varijable",
+};

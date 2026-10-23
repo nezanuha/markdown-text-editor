@@ -1,0 +1,55 @@
+/**
+ * Slovak (sk).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} znakov",
+    "{n} words": "{n} slov",
+    "All": "Všetko",
+    "Alt text": "Alternatívny text",
+    "Apply": "Použiť",
+    "Blockquote": "Citácia",
+    "Bold": "Tučné",
+    "Check list": "Zoznam úloh",
+    "Close": "Zavrieť",
+    "Code": "Kód",
+    "Code Block": "Blok kódu",
+    "Col {n}": "Stĺ {n}",
+    "Editor toolbar": "Panel nástrojov editora",
+    "Find": "Nájsť",
+    "Find and replace": "Nájsť a nahradiť",
+    "Heading": "Nadpis",
+    "Heading level": "Úroveň nadpisu",
+    "Horizontal Rule": "Vodorovná čiara",
+    "Image": "Obrázok",
+    "Image link": "Odkaz na obrázok",
+    "Indent": "Zväčšiť odsadenie",
+    "Insert variable": "Vložiť premennú",
+    "Italic": "Kurzíva",
+    "Link": "Odkaz",
+    "Link text": "Text odkazu",
+    "Ln {n}": "R {n}",
+    "Match case": "Rozlišovať veľké a malé písmená",
+    "Next match": "Ďalší výskyt",
+    "Ordered list": "Číslovaný zoznam",
+    "Outdent": "Zmenšiť odsadenie",
+    "Preview": "Náhľad",
+    "Previous match": "Predchádzajúci výskyt",
+    "Redo": "Znova",
+    "Replace": "Nahradiť",
+    "Replace all": "Nahradiť všetko",
+    "Replace with": "Nahradiť čím",
+    "Strikethrough": "Prečiarknuté",
+    "Table": "Tabuľka",
+    "Toggle replace row": "Zobraziť alebo skryť riadok nahradenia",
+    "Undo": "Späť",
+    "Unordered list": "Odrážkový zoznam",
+    "Upload failed": "Nahrávanie zlyhalo",
+    "Uploading...": "Nahráva sa...",
+    "URL": "URL",
+    "Variables": "Premenné",
+};

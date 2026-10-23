@@ -1,0 +1,55 @@
+/**
+ * French (fr).
+ *
+ * Not yet checked by a native speaker. Corrections welcome:
+ * https://github.com/nezanuha/markdown-text-editor/issues
+ */
+export const reviewed = false;
+
+export default {
+    "{n} chars": "{n} caractères",
+    "{n} words": "{n} mots",
+    "All": "Tout",
+    "Alt text": "Texte alternatif",
+    "Apply": "Appliquer",
+    "Blockquote": "Citation",
+    "Bold": "Gras",
+    "Check list": "Liste de tâches",
+    "Close": "Fermer",
+    "Code": "Code",
+    "Code Block": "Bloc de code",
+    "Col {n}": "Col {n}",
+    "Editor toolbar": "Barre d'outils de l'éditeur",
+    "Find": "Rechercher",
+    "Find and replace": "Rechercher et remplacer",
+    "Heading": "Titre",
+    "Heading level": "Niveau de titre",
+    "Horizontal Rule": "Ligne horizontale",
+    "Image": "Image",
+    "Image link": "Lien de l'image",
+    "Indent": "Augmenter le retrait",
+    "Insert variable": "Insérer une variable",
+    "Italic": "Italique",
+    "Link": "Lien",
+    "Link text": "Texte du lien",
+    "Ln {n}": "Lig {n}",
+    "Match case": "Respecter la casse",
+    "Next match": "Occurrence suivante",
+    "Ordered list": "Liste numérotée",
+    "Outdent": "Réduire le retrait",
+    "Preview": "Aperçu",
+    "Previous match": "Occurrence précédente",
+    "Redo": "Rétablir",
+    "Replace": "Remplacer",
+    "Replace all": "Tout remplacer",
+    "Replace with": "Remplacer par",
+    "Strikethrough": "Barré",
+    "Table": "Tableau",
+    "Toggle replace row": "Afficher ou masquer la ligne de remplacement",
+    "Undo": "Annuler",
+    "Unordered list": "Liste à puces",
+    "Upload failed": "Échec du téléversement",
+    "Uploading...": "Téléversement...",
+    "URL": "URL",
+    "Variables": "Variables",
+};
