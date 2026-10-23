@@ -17,12 +17,21 @@
       "default": "./dist/markdown-text-editor.umd.js"
     },
     "./style.css": "./dist/markdown-text-editor.css",
+    "./locale/*.js": {
+      "types": "./locale/locale.d.ts",
+      "default": "./locale/*.js"
+    },
+    "./locale/*": {
+      "types": "./locale/locale.d.ts",
+      "default": "./locale/*.js"
+    },
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
   },
   "files": [
     "dist/",
     "types/",
+    "locale/",
     "README.md",
     "LICENSE"
   ],
@@ -35,9 +44,11 @@
     "build": "vite build",
     "preview": "vite preview",
     "prepublishOnly": "npm run build",
+    "locale:extract": "node scripts/locale-extract.mjs",
+    "locale:check": "node scripts/locale-check.mjs",
     "version": "node scripts/check-changelog.mjs",
     "postversion": "git push origin HEAD --follow-tags",
-    "test": "node test/smoke.mjs",
+    "test": "node test/smoke.mjs && node scripts/locale-check.mjs",
     "typecheck": "tsc --noEmit --strict --lib es2020,dom --moduleResolution bundler --module esnext test/types.test.ts"
   },
   "publishConfig": {

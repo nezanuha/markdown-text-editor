@@ -80,7 +80,7 @@ export default class FindReplace {
         const panel = document.createElement('div');
         panel.className = 'find-replace-panel fj:absolute fj:top-1 fj:right-1 fj:z-20 fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:p-1.5 fj:flex fj:flex-col fj:gap-1 fj:shadow-lg';
         panel.setAttribute('role', 'search');
-        panel.setAttribute('aria-label', 'Find and replace');
+        panel.setAttribute('aria-label', this.editor.label('Find and replace'));
 
         // ── Find row ────────────────────────────────────────────────
         const findRow = document.createElement('div');
@@ -88,9 +88,9 @@ export default class FindReplace {
 
         this._findInput = document.createElement('input');
         this._findInput.type = 'text';
-        this._findInput.placeholder = 'Find';
+        this._findInput.placeholder = this.editor.label('Find');
         this._findInput.className = 'fj:me-input fj:me-input-xs fj:w-36';
-        this._findInput.setAttribute('aria-label', 'Find');
+        this._findInput.setAttribute('aria-label', this.editor.label('Find'));
         this._findInput.addEventListener('input', () => this._search());
         this._findInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { e.shiftKey ? this._prev() : this._next(); }
@@ -117,9 +117,9 @@ export default class FindReplace {
         this._caseSensitiveBtn.type = 'button';
         this._caseSensitiveBtn.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost fj:text-xs fj:font-bold';
         this._caseSensitiveBtn.textContent = 'Aa';
-        this._caseSensitiveBtn.setAttribute('aria-label', 'Match case');
+        this._caseSensitiveBtn.setAttribute('aria-label', this.editor.label('Match case'));
         this._caseSensitiveBtn.setAttribute('aria-pressed', 'false');
-        this._caseSensitiveBtn.title = 'Match case';
+        this._caseSensitiveBtn.title = this.editor.label('Match case');
         this._caseSensitiveBtn.addEventListener('click', () => {
             this._caseSensitive = !this._caseSensitive;
             this._caseSensitiveBtn.setAttribute('aria-pressed', String(this._caseSensitive));
@@ -130,8 +130,8 @@ export default class FindReplace {
         const replaceToggle = document.createElement('button');
         replaceToggle.type = 'button';
         replaceToggle.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-ghost fj:text-xs fj:px-1.5';
-        replaceToggle.textContent = 'Replace';
-        replaceToggle.setAttribute('aria-label', 'Toggle replace row');
+        replaceToggle.textContent = this.editor.label('Replace');
+        replaceToggle.setAttribute('aria-label', this.editor.label('Toggle replace row'));
         replaceToggle.addEventListener('click', () => {
             this._replaceRow.hidden = !this._replaceRow.hidden;
             if (!this._replaceRow.hidden) this._replaceInput.focus();
@@ -152,9 +152,9 @@ export default class FindReplace {
 
         this._replaceInput = document.createElement('input');
         this._replaceInput.type = 'text';
-        this._replaceInput.placeholder = 'Replace';
+        this._replaceInput.placeholder = this.editor.label('Replace');
         this._replaceInput.className = 'fj:me-input fj:me-input-xs fj:w-36';
-        this._replaceInput.setAttribute('aria-label', 'Replace with');
+        this._replaceInput.setAttribute('aria-label', this.editor.label('Replace with'));
         this._replaceInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') this._replace();
             if (e.key === 'Escape') { e.preventDefault(); this.close(); }
@@ -163,14 +163,14 @@ export default class FindReplace {
         const replaceBtn = document.createElement('button');
         replaceBtn.type = 'button';
         replaceBtn.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-ghost fj:text-xs fj:px-1.5';
-        replaceBtn.textContent = 'Replace';
+        replaceBtn.textContent = this.editor.label('Replace');
         replaceBtn.addEventListener('click', () => this._replace());
 
         const replaceAllBtn = document.createElement('button');
         replaceAllBtn.type = 'button';
         replaceAllBtn.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-ghost fj:text-xs fj:px-1.5';
-        replaceAllBtn.textContent = 'All';
-        replaceAllBtn.setAttribute('aria-label', 'Replace all');
+        replaceAllBtn.textContent = this.editor.label('All');
+        replaceAllBtn.setAttribute('aria-label', this.editor.label('Replace all'));
         replaceAllBtn.addEventListener('click', () => this._replaceAll());
 
         this._replaceRow.append(this._replaceInput, replaceBtn, replaceAllBtn);
@@ -184,7 +184,9 @@ export default class FindReplace {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost';
-        btn.setAttribute('aria-label', label);
+        // Translated here rather than at each call site, so a new icon button
+        // cannot be added with an untranslated screen reader name
+        btn.setAttribute('aria-label', this.editor.label(label));
         btn.innerHTML = svgHtml;
         const svg = btn.querySelector('svg');
         if (svg) svg.setAttribute('aria-hidden', 'true');

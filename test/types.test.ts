@@ -40,6 +40,8 @@ const full: MarkdownEditorOptions = {
 };
 
 const minimal: MarkdownEditorOptions = {};
+const localised: MarkdownEditorOptions = { locale: { Bold: 'Negrita', '{n} words': '{n} palabras' } };
+
 const translated: MarkdownEditorOptions = {
     labels: { Bold: 'Negrita', 'Insert variable': 'Insertar variable', 'Uploading...': 'Subiendo...' },
 };

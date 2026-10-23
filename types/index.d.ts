@@ -114,7 +114,7 @@ export type CustomTool = new (editor: MarkdownEditor, config?: any) => {
  */
 export interface DeclarativeTool {
     custom: {
-        /** Tooltip, and the source of the button's CSS class. Translatable via `labels`. */
+        /** Tooltip, and the source of the button's CSS class. Translatable via `locale`. */
         title: string;
         /** Inline SVG for the button face. */
         icon?: string;
@@ -185,11 +185,22 @@ export interface MarkdownEditorOptions {
 
     /**
      * Translations for the editor's own interface, keyed by the English text:
-     * tooltips, menu items, modal fields and buttons. Anything not listed stays
-     * in English. CSS class names are unaffected.
+     * tooltips, menu items, modal fields, buttons and screen reader names.
+     * Anything not listed stays in English. CSS class names are unaffected.
      *
-     * @example labels: { Bold: 'Negrita', 'Insert variable': 'Insertar variable' }
+     * Takes the strings themselves, not a language code. Import the one you want
+     * so nobody pays for the languages they do not use.
+     * `locale/template.js` lists every key.
+     *
+     * @example
+     * import es from 'markdown-text-editor/locale/es.js';
+     * new MarkdownEditor('#editor', { locale: es });
+     *
+     * @example locale: { Bold: 'Negrita', '{n} words': '{n} palabras' }
      */
+    locale?: Record<string, string>;
+
+    /** @deprecated Renamed to `locale` in 2.0.0. Still works. */
     labels?: Record<string, string>;
 
     /**
@@ -258,7 +269,7 @@ export default class MarkdownEditor {
     /**
      * Builds a small toolbar bound to another textarea, for a custom tool that
      * collects rich text in its own dialog. The tools are the real ones, and
-     * `labels` are inherited. Returns the element; append it where you like.
+     * `locale` is inherited. Returns the element; append it where you like.
      *
      * No preview button is added, whatever you pass.
      */

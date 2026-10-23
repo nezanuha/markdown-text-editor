@@ -36,6 +36,25 @@ class MarkdownEditor {
         this.findReplace = new FindReplace(this);
         this.pasteManager = new PasteManager(this);
         this._warnIfStylesheetMissing();
+        this._warnIfLocaleIsACode();
+    }
+
+    /**
+     * `locale` takes the strings themselves, not a language code, because the
+     * editor ships no locale loader and bundling every language would cost every
+     * user the size of all of them. Passing a code reads as reasonable and would
+     * otherwise do nothing at all, since indexing a string by a key is undefined
+     * and the lookup falls back to English.
+     */
+    _warnIfLocaleIsACode() {
+        const code = this.options.locale;
+        if (typeof code !== 'string') return;
+
+        console.error(
+            `[MarkdownEditor] locale: '${code}' has no effect. It takes the strings, not a code:\n` +
+            `  import ${/^[a-z]{2}$/i.test(code) ? code : 'strings'} from 'markdown-text-editor/locale/${code}.js'\n` +
+            `  new MarkdownEditor(el, { locale: ${/^[a-z]{2}$/i.test(code) ? code : 'strings'} })`
+        );
     }
 
     /**
@@ -63,9 +82,12 @@ class MarkdownEditor {
      * Returns the translation for a UI string, or the string itself when none is
      * configured. Keyed by the English text, the way gettext is, so a tool does
      * not need to know anything about translation.
+     *
+     * `labels` was the name before 2.0.0 and still works.
      */
     label(text) {
-        return this.options.labels?.[text] ?? text;
+        const strings = this.options.locale ?? this.options.labels;
+        return strings?.[text] ?? text;
     }
 
     /**
@@ -382,7 +404,7 @@ class MarkdownEditor {
         if (!this.footerOptions) return;
         const { line, col, chars, words } = this.footerOptions;
         if (!line && !col && !chars && !words) return;
-        this.footer = new Footer(this.editorContainer, this.footerOptions);
+        this.footer = new Footer(this.editorContainer, this.footerOptions, text => this.label(text));
         this.footer.update(this.usertextarea);
 
         this._footerUpdate = () => this.footer.update(this.usertextarea);

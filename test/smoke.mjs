@@ -396,6 +396,54 @@ check('class names stay in English so styling is unaffected', () => {
     return e.editorContainer.querySelector('.bold-btn') !== null;
 });
 
+check('locale translates, the same as labels did', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, locale: { Bold: 'Negrita', Table: 'Tabla' } });
+    return tooltip(e, '.bold-btn').startsWith('Negrita') && tooltip(e, '.table-btn') === 'Tabla';
+});
+
+check('locale wins when both are given', () => {
+    const e = makeEditor({ toolbar: FULL_BAR,
+        locale: { Bold: 'Negrita' }, labels: { Bold: 'Grassetto' } });
+    return tooltip(e, '.bold-btn').startsWith('Negrita');
+});
+
+check('a language code is reported, not silently ignored', () => {
+    const errors = [];
+    const real = console.error; console.error = m => errors.push(String(m));
+    const e = makeEditor({ toolbar: ['bold'], locale: 'es' });
+    console.error = real;
+    return errors.some(m => m.includes("locale: 'es' has no effect"))
+        && errors.some(m => m.includes("locale/es.js"))
+        && tooltip(e, '.bold-btn').startsWith('Bold');   // still English, as before
+});
+
+check('the find panel is translatable, screen reader names included', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, labels: {
+        'Find': 'Buscar', 'Replace': 'Reemplazar', 'Match case': 'Coincidir mayusculas',
+        'Next match': 'Siguiente', 'Find and replace': 'Buscar y reemplazar',
+    }});
+    e.findReplace.open();
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const aria = sel => panel.querySelector(sel)?.getAttribute('aria-label');
+    return panel.getAttribute('aria-label') === 'Buscar y reemplazar'
+        && panel.querySelector('input').placeholder === 'Buscar'
+        && aria('[aria-pressed]') === 'Coincidir mayusculas'
+        && [...panel.querySelectorAll('button')].some(b => b.getAttribute('aria-label') === 'Siguiente');
+});
+
+check('the footer is translatable, with the number placed by the translation', () => {
+    const e = makeEditor({ footer: { words: true, chars: true }, labels: {
+        '{n} words': 'palabras: {n}', '{n} chars': 'caracteres: {n}',
+    }}, 'one two three');
+    const text = e.editorContainer.querySelector('.editor-footer').textContent;
+    return text.includes('palabras: 3') && text.includes('caracteres: 13');
+});
+
+check('footer counts fall back to English', () => {
+    const e = makeEditor({ footer: { words: true } }, 'one two three');
+    return e.editorContainer.querySelector('.editor-footer').textContent.includes('3 words');
+});
+
 check('heading menu items are translated', () => {
     const e = makeEditor({ toolbar: FULL_BAR, labels: { Heading: 'Titulo' } });
     const wrapper = e.editorContainer.querySelector('.heading-btn').closest('.fj\\:me-popover');

@@ -80,7 +80,7 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
     </div>
 
     <div class="border-t mt-10 pt-5 space-y-3">
-        <strong class="font-medium mt-3 block">Translated interface (<code>labels</code>)</strong>
+        <strong class="font-medium mt-3 block">Translated interface (<code>locale</code>)</strong>
         <p class="text-sm opacity-70">Same editor, Spanish tooltips and modal text. Hover a button, or open
            the link dialog. The CSS class names are unchanged.</p>
         <textarea class="translated h-32" rows="4">Pasa el cursor sobre los botones.</textarea>
@@ -165,7 +165,7 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
                         </div>`, 'Embed');
 
                     // The real formatting tools, bound to the caption textarea.
-                    // No hand-rolled editor object, and labels are inherited.
+                    // No hand-rolled editor object, and the locale is inherited.
                     const caption = dialog.querySelector('.embed-caption');
                     dialog.querySelector('.embed-caption-toolbar').appendChild(
                         this.editor.createToolbar(caption, ['bold', 'italic', 'link'])
@@ -236,7 +236,7 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
                     { image: { fileInput: { uploadUrl: '/api/upload' } } },
                     'preview'
                 ],
-                labels: {
+                locale: {
                     'Heading': 'Titulo',
                     'Bold': 'Negrita',
                     'Italic': 'Cursiva',
