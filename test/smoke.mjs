@@ -436,7 +436,7 @@ check('the find panel is translatable, screen reader names included', () => {
 // carries a utility class that sets `display`, and an author rule outranks the
 // user agent's `[hidden] { display: none }`. Without a rule of our own the close
 // button did nothing and the replace row never hid (#45). Only a real cascade
-// catches this, so load the stylesheet for these two.
+// catches this, so load the stylesheet for the three below.
 const withStylesheet = fn => {
     const style = document.createElement('style');
     style.textContent = readFileSync(new URL('../dist/markdown-text-editor.css', import.meta.url), 'utf8');
@@ -463,6 +463,19 @@ check('the replace row stays hidden until the replace button is pressed', () => 
     [...panel.querySelectorAll('button')]
         .find(b => b.getAttribute('aria-label') === 'Toggle replace row').click();
     return before === 'none' && getComputedStyle(row).display !== 'none';
+}));
+
+// Every utility assumes border-box, and so does the sizing done from
+// JavaScript: the wrapper is handed a pixel height while carrying a 1px border.
+// Under content-box `minHeight: 200` yields 202 and the Find box, which sets a
+// width alongside padding, comes out 17px over. Tailwind's preflight used to be
+// the only thing making this true, so a plain page differed from the demo.
+check('the editor is border-box without the host page providing it', () => withStylesheet(() => {
+    const e = makeEditor({ toolbar: FULL_BAR, minHeight: 200 });
+    e.findReplace.open();
+    const input = e.editorContainer.querySelector('.find-replace-panel input');
+    return getComputedStyle(e.editorContainer).boxSizing === 'border-box'
+        && getComputedStyle(input).boxSizing === 'border-box';
 }));
 
 check('the footer is translatable, with the number placed by the translation', () => {
