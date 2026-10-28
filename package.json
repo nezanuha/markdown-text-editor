@@ -75,7 +75,7 @@
     "url": "https://github.com/nezanuha/markdown-text-editor/issues"
   },
   "dependencies": {
-    "dompurify": "^3.4.16",
+    "dompurify": "^3.4.17",
     "marked": "~18.0.14"
   },
   "devDependencies": {

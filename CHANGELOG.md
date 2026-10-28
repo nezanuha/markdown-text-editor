@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.9.2] - 2026-10-28
 
+### Security
+
+- **Updated the bundled DOMPurify**: The sanitizer had three ways content could slip past it, so markdown from somewhere you do not trust could have put script into the preview. It is built into the file you load, so updating the package is what fixes it
+
 ### Fixed
 
 - **Formatting jumped to the top of a long document**: Clicking a toolbar button, or using its shortcut, scrolled you back to the first line instead of leaving you where you were reading ([#46](https://github.com/nezanuha/markdown-text-editor/issues/46))
