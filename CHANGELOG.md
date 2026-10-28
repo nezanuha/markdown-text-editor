@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.9.2] - 2026-10-28
 
-### Security
+### Changed
 
-- **Updated the bundled DOMPurify**: Closes three ways untrusted markdown could get script past the sanitizer and into the preview. DOMPurify is built into the file you load, so this update is the only way to pick up the fix
+- **Updated DOMPurify to 3.4.17**: Clears the advisories filed against 3.4.16, which your own `npm audit` would have reported. The editor calls the sanitizer with its defaults, and none of those bypasses reach that path, so this is housekeeping rather than an exposure
 
 ### Fixed
 
