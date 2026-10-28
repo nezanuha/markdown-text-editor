@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-- **Updated the bundled DOMPurify**: The sanitizer had three ways content could slip past it, so markdown from somewhere you do not trust could have put script into the preview. It is built into the file you load, so updating the package is what fixes it
+- **Updated the bundled DOMPurify**: Closes three ways untrusted markdown could get script past the sanitizer and into the preview. DOMPurify is built into the file you load, so this update is the only way to pick up the fix
 
 ### Fixed
 
