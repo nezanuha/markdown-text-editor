@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The editor is now the same size on any page**: On a page that does not load Tailwind it came out 2px taller than you asked for and the find box 17px wider, because the box model was left to whatever the page happened to set. `minHeight: 200` now means 200 wherever you drop it in
 - **Find and replace was never translatable**: The panel's buttons, placeholders and screen reader names were hardcoded English regardless of `labels`, so a translated editor still announced "Match case" and "Replace all" to a screen reader in English
 - **The footer was never translatable**: The line, column, character and word counts stayed English in a translated editor. They are now keyed as `{n} words` and the like, so a translation decides where the number sits rather than being forced into English word order
 

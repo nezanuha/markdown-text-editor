@@ -90,7 +90,7 @@
   },
   "dependencies": {
     "dompurify": "^3.4.17",
-    "marked": "~18.1.1"
+    "marked": "~18.1.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
@@ -99,7 +99,7 @@
     "diff": "^9.0.0",
     "frutjam": "^2.3.0",
     "happy-dom": "^21.0.4",
-    "postcss": "^8.5.31",
+    "postcss": "^8.5.32",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vite": "^8.3.5"
