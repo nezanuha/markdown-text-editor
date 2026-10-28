@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.2] - 2026-10-28
+
+### Fixed
+
+- **Formatting jumped to the top of a long document**: Clicking a toolbar button, or using its shortcut, scrolled you back to the first line instead of leaving you where you were reading ([#46](https://github.com/nezanuha/markdown-text-editor/issues/46))
+- **The editor did not keep the height you dragged it to**: Make it taller and the next edit snapped it back, whether you typed or used a toolbar button ([#46](https://github.com/nezanuha/markdown-text-editor/issues/46))
+- **Two resize handles in plain mode**: The textarea had a resize corner of its own, right next to the editor's. Dragging that one stretched the textarea on its own and left the editor looking broken
+
 ## [1.9.1] - 2026-10-24
 
 ### Fixed
@@ -448,7 +456,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.1...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.2...HEAD
+[1.9.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.7.0...v1.8.0

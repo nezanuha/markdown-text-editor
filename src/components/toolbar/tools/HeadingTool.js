@@ -81,6 +81,10 @@ class HeadingTool extends Tool {
             ? (cleanText || 'Heading')
             : (cleanText ? `${prefix}${cleanText}` : `${prefix}Heading`);
 
+        // Assigning value sends the textarea back to the top, so hold the
+        // reader's place across the edit the same way insertText does (#46)
+        const scrollTop = textarea.scrollTop;
+
         textarea.value = `${value.substring(0, lineStart)}${newText}${value.substring(lineEnd)}`;
         textarea.focus();
 
@@ -88,9 +92,9 @@ class HeadingTool extends Tool {
         const textEnd = lineStart + newText.length;
         textarea.setSelectionRange(textStart, textEnd);
 
-        this.editor.scrollToView();
         this.editor.render();
         this.editor.notifyChange();
+        this.editor.restoreScroll(scrollTop);
     }
 
     applySyntax() {}
