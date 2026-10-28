@@ -9,10 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.9.2] - 2026-10-28
 
-### Changed
-
-- **Updated DOMPurify to 3.4.17**: Clears the advisories filed against 3.4.16, which your own `npm audit` would have reported. The editor calls the sanitizer with its defaults, and none of those bypasses reach that path, so this is housekeeping rather than an exposure
-
 ### Fixed
 
 - **Formatting jumped to the top of a long document**: Clicking a toolbar button, or using its shortcut, scrolled you back to the first line instead of leaving you where you were reading ([#46](https://github.com/nezanuha/markdown-text-editor/issues/46))
