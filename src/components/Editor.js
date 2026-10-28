@@ -170,6 +170,11 @@ class MarkdownEditor {
             "fj:outline-0",
             "fj:appearance-none",
             "fj:overflow-y-auto",
+            // The wrapper is the resizable element. Without this the textarea
+            // keeps the browser's own grip, so plain mode showed two handles
+            // and dragging the inner one sized the textarea out of its box.
+            // Hybrid mode set it already, which is why only plain mode showed it.
+            "fj:resize-none",
         );
         if (!this.usertextarea.hasAttribute('placeholder')) {
             this.usertextarea.placeholder = this.options.placeholder || 'Write your markdown...';
@@ -248,7 +253,6 @@ class MarkdownEditor {
             this.usertextarea.className += `
                 fj:text-transparent
                 fj:caret-primary
-                fj:resize-none
                 fj:outline-none
                 fj:m-0
                 fj:box-border
@@ -336,17 +340,18 @@ class MarkdownEditor {
         // Only the target and the write path differ. Everything else, including
         // label() and the options, is inherited from the real editor.
         host.usertextarea = textarea;
-        host.scrollToView = () => {};
         host.render = () => {};
         host.notifyChange = () => {};
         host.insertText = (text, selectionOffset = 0, trailingLength = 0) => {
             const { selectionStart, selectionEnd, value } = textarea;
+            const scrollTop = textarea.scrollTop;
             textarea.value = value.slice(0, selectionStart) + text + value.slice(selectionEnd);
             textarea.focus();
             textarea.setSelectionRange(
                 selectionStart + selectionOffset,
                 selectionStart + text.length - trailingLength,
             );
+            textarea.scrollTop = scrollTop;
         };
 
         return new Toolbar(host, tools, { standalone: true }).toolbar;
@@ -458,27 +463,40 @@ class MarkdownEditor {
     insertText(text, selectionOffset = 0, trailingLength = 0) {
         const { selectionStart, selectionEnd } = this.usertextarea;
         const value = this.usertextarea.value;
+        const scrollTop = this.usertextarea.scrollTop;
+
         this.usertextarea.value = `${value.substring(0, selectionStart)}${text}${value.substring(selectionEnd)}`;
         this.usertextarea.focus();
         this.usertextarea.setSelectionRange(selectionStart + selectionOffset, selectionStart + text.length - trailingLength);
 
-        // Scroll the textarea to the inserted text
-        this.scrollToView();
-
         this.render();
         this.notifyChange();
+        this.restoreScroll(scrollTop);
     }
 
-    scrollToView() {
-        const textarea = this.usertextarea;
-        const selectionStart = textarea.selectionStart;
-
-        const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
-        const currentLine = textarea.value.substring(0, selectionStart).split('\n').length - 1;
-        const rowsInView = Math.floor(textarea.clientHeight / lineHeight);
-        textarea.scrollTop = (currentLine - Math.floor(rowsInView / 2)) * lineHeight;
+    /**
+     * Puts the reader back where they were after an edit. Assigning `value`
+     * resets the textarea to the top, so without this, formatting a word near
+     * the end of a long document threw you back to the first line (#46).
+     *
+     * Call it after render(), because _autoGrow() changes the height and so the
+     * range scrollTop is clamped to.
+     */
+    restoreScroll(scrollTop) {
+        this.usertextarea.scrollTop = scrollTop;
     }
-    
+
+    /**
+     * Kept so a custom tool calling it still works, but it no longer moves the
+     * view. It used to derive a scroll position from `line-height`, which
+     * computes to `normal` unless a page sets it, so parseInt gave NaN and the
+     * textarea jumped to the top on every edit. Counting '\n' also ignored
+     * wrapped lines, so even with a real line-height the position was short.
+     * Holding the existing scroll is both correct and cheaper: an edit at the
+     * caret leaves the caret where the reader was already looking.
+     */
+    scrollToView() {}
+
 
     _highlight(rawValue) {
         let out = rawValue
@@ -544,6 +562,15 @@ class MarkdownEditor {
     _autoGrow() {
         if (this.editorContainer.classList.contains('is-fullscreen')) return;
 
+        // The wrapper is resizable, and dragging it writes an inline height.
+        // Once that differs from the height we last set, the reader has chosen
+        // one themselves, so stop overwriting it on every keystroke (#46).
+        if (this._autoHeight !== undefined
+            && this.editorContainer.style.height !== this._autoHeight) {
+            this._userResized = true;
+        }
+        if (this._userResized) return;
+
         const textarea = this.usertextarea;
         // Shrink to 1px to measure natural content height (bypasses h-full)
         textarea.style.height = '1px';
@@ -551,7 +578,17 @@ class MarkdownEditor {
         textarea.style.height = ''; // restore — h-full class takes over
 
         const maxHeight = this.options.maxHeight ?? 500;
-        this.editorContainer.style.height = (Math.min(contentHeight, maxHeight) + this._toolbarH + this._footerH + 1) + 'px';
+        const height = Math.min(contentHeight, maxHeight) + this._toolbarH + this._footerH + 1;
+
+        // The first call comes from the constructor, before the toolbar and
+        // footer have been measured, so this is NaN. Leave _autoHeight unset
+        // rather than recording a height the browser will refuse: a mismatch
+        // on the next call would read as the reader having resized it, and
+        // auto-grow would switch itself off for good.
+        if (!Number.isFinite(height)) return;
+
+        this._autoHeight = height + 'px';
+        this.editorContainer.style.height = this._autoHeight;
     }
 
     notifyChange() {

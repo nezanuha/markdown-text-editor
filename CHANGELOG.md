@@ -15,7 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **The find panel could not be closed**: On a page that does not already load Tailwind, the close button did nothing and the replace row was always showing. The panel is hidden with the `hidden` attribute, but every element in it also carries a class that sets `display`, and a stylesheet rule outranks the browser's built-in meaning of `hidden`. Tailwind's own reset papers over this, which is why the demo behaved and ordinary pages did not ([#45](https://github.com/nezanuha/markdown-text-editor/issues/45))
 - **Find and replace was never translatable**: The panel's buttons, placeholders and screen reader names were hardcoded English regardless of `labels`, so a translated editor still announced "Match case" and "Replace all" to a screen reader in English
 - **The footer was never translatable**: The line, column, character and word counts stayed English in a translated editor. They are now keyed as `{n} words` and the like, so a translation decides where the number sits rather than being forced into English word order
 
@@ -23,6 +22,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`labels` is now `locale`**: The option takes the same object of translations, under a name that fits what is in it. Nine of the forty-five keys were never labels, being status messages, error text and count templates such as `{n} words`, and anything added later is more likely to be a sentence than a button name. `labels` keeps working, so nothing breaks. Passing a language code rather than the strings, `locale: 'es'`, now says so in the console instead of quietly leaving the editor in English
 - **The stylesheet is now a separate file**: The CSS is no longer carried inside the JavaScript and injected as a `<style>` element when the script loads. Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css` if you use a bundler. This is the breaking part of the release: an existing setup keeps working but renders unstyled until that line is added, and the editor now says so in the console rather than leaving you to guess. It makes the editor usable under a strict Content Security Policy, where an injected style element is refused whatever nonce it carries, and lets the stylesheet be cached separately from the JavaScript instead of being re-downloaded with every patch release ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))
+
+## [1.9.2] - 2026-10-28
+
+### Fixed
+
+- **Formatting jumped to the top of a long document**: Clicking a toolbar button, or using its shortcut, scrolled you back to the first line instead of leaving you where you were reading ([#46](https://github.com/nezanuha/markdown-text-editor/issues/46))
+- **The editor did not keep the height you dragged it to**: Make it taller and the next edit snapped it back, whether you typed or used a toolbar button ([#46](https://github.com/nezanuha/markdown-text-editor/issues/46))
+- **Two resize handles in plain mode**: The textarea had a resize corner of its own, right next to the editor's. Dragging that one stretched the textarea on its own and left the editor looking broken
+
+## [1.9.1] - 2026-10-24
+
+### Fixed
+
+- **The find panel could not be closed**: On a page that does not already load Tailwind, the close button did nothing and the replace row was always showing. The panel is hidden with the `hidden` attribute, but every element in it also carries a class that sets `display`, and a stylesheet rule outranks the browser's built-in meaning of `hidden`. Tailwind's own reset papers over this, which is why the demo behaved and ordinary pages did not ([#45](https://github.com/nezanuha/markdown-text-editor/issues/45))
 
 ## [1.9.0] - 2026-10-08
 
@@ -459,7 +472,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.2...HEAD
+[1.9.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.1...v1.9.2
+[1.9.1]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.6.0...v1.7.0

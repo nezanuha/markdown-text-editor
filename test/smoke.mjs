@@ -566,6 +566,65 @@ check('a junk levels value warns and falls back to all six', () => {
     return items.length === 6;
 });
 
+// --- scroll and height preservation (#46) -----------------------------------
+
+// Layout is not simulated, so scrollTop is just a property here. That is enough:
+// the old code derived a position from `line-height`, which computes to `normal`
+// unless a page sets it, so parseInt gave NaN and every edit wrote NaN to
+// scrollTop, which a browser turns into 0. Recording the writes catches that
+// without needing real layout.
+const recordScrollWrites = textarea => {
+    const writes = [];
+    let value = 0;
+    Object.defineProperty(textarea, 'scrollTop', {
+        get: () => value,
+        set: v => { writes.push(v); value = v; },
+        configurable: true,
+    });
+    return { writes, at: v => { value = v; writes.length = 0; }, now: () => value };
+};
+
+check('formatting holds the scroll position instead of jumping to the top', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'line\n'.repeat(60) + 'word');
+    const scroll = recordScrollWrites(e.usertextarea);
+    scroll.at(600);
+
+    e.usertextarea.setSelectionRange(e.usertextarea.value.length - 4, e.usertextarea.value.length);
+    e.insertText('**word**');
+
+    return scroll.now() === 600 && !scroll.writes.some(v => Number.isNaN(v));
+});
+
+check('the heading tool holds the scroll position too', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'line\n'.repeat(60) + 'title');
+    const scroll = recordScrollWrites(e.usertextarea);
+    scroll.at(600);
+
+    e.usertextarea.setSelectionRange(e.usertextarea.value.length - 2, e.usertextarea.value.length - 2);
+    e.editorContainer.querySelector('.heading-btn').click();
+    const item = [...e.editorContainer.querySelectorAll(ITEM)].find(b => /2/.test(b.textContent));
+    item?.click();
+
+    return scroll.now() === 600 && !scroll.writes.some(v => Number.isNaN(v));
+});
+
+// The wrapper is what resizes. The textarea had its own grip in plain mode,
+// because resize-none was only set on the hybrid path, so you saw two handles
+// and the inner one sized the textarea out of its container.
+check('only the wrapper is resizable, in either mode', () => {
+    const plain = makeEditor({ mode: 'plain' }, 'x');
+    const hybrid = makeEditor({ mode: 'hybrid' }, 'x');
+    return plain.usertextarea.classList.contains('fj:resize-none')
+        && hybrid.usertextarea.classList.contains('fj:resize-none');
+});
+
+check('a height the reader set by hand survives the next edit', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'hello');
+    e.editorContainer.style.height = '420px';   // as dragging the resize handle does
+    e.insertText(' there');
+    return e.editorContainer.style.height === '420px';
+});
+
 // --- paste ------------------------------------------------------------------
 
 const paste = (editor, { text = '', files = [] } = {}) => {
