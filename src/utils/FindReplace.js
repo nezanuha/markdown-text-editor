@@ -11,6 +11,8 @@ export default class FindReplace {
         this._replaceRow = null;
         this._caseSensitiveBtn = null;
         this._highlightEl = null;
+        this._matchTop = null;
+        this._matchHeight = 0;
         this._scrollHandler = null;
 
         this._taHandler = this._onTextareaKeyDown.bind(this);
@@ -247,16 +249,54 @@ export default class FindReplace {
             this._clearMatchHighlight();
             return;
         }
-        const { start } = this._matches[this._currentIndex];
-        this._scrollToMatch(this.editor.usertextarea, start);
+        // Measure first, then scroll: the highlight works out where the match
+        // really is, and the scroll reuses that rather than guessing.
         this._showMatchHighlight();
+        this._scrollMatchIntoView();
     }
 
-    _scrollToMatch(textarea, pos) {
-        const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight) || 20;
-        const linesBefore = textarea.value.substring(0, pos).split('\n').length - 1;
-        const rowsVisible = Math.floor(textarea.clientHeight / lineHeight);
-        textarea.scrollTop = Math.max(0, (linesBefore - Math.floor(rowsVisible / 2)) * lineHeight);
+    /**
+     * Brings the current match into view, by the smallest amount that works.
+     *
+     * The old version worked the position out from `line-height`, which
+     * computes to `normal` unless a page sets one, so parseInt gave NaN and a
+     * hardcoded 20 stood in for the real height. It also counted '\n' while
+     * scrollTop is in pixels, so a wrapped paragraph counted as one line
+     * instead of several and the guess fell hundreds of pixels short. Searching
+     * a long document scrolled you somewhere that did not hold the match.
+     *
+     * _showMatchHighlight already measures the true offset with a mirror, so
+     * this reads that instead of measuring again. Setting scrollTop fires the
+     * scroll handler, which repaints the highlight at the new offset.
+     */
+    _scrollMatchIntoView() {
+        const textarea = this.editor.usertextarea;
+        // A real match has height. Zero means the mirror could not be measured,
+        // because the editor is hidden or detached, and acting on that would
+        // scroll the reader to the top for no reason.
+        if (this._matchTop === null || this._matchHeight <= 0) return;
+
+        const view = textarea.clientHeight;
+        const from = textarea.scrollTop;
+        // Leave a line of context rather than putting the match flush against
+        // the edge it came in from.
+        const margin = this._matchHeight;
+        let to = from;
+
+        if (this._matchTop - margin < from) to = this._matchTop - margin;
+        else if (this._matchTop + this._matchHeight + margin > from + view) {
+            to = this._matchTop + this._matchHeight + margin - view;
+        }
+        if (to === from) return;
+
+        textarea.scrollTop = Math.max(0, to);
+
+        // Move the highlight with it. The scroll event repaints it too, but
+        // that arrives a frame later and the match would flicker in the wrong
+        // place until it does.
+        if (this._highlightEl) {
+            this._highlightEl.style.top = (this._matchTop - textarea.scrollTop) + 'px';
+        }
     }
 
     _showMatchHighlight() {
@@ -274,7 +314,13 @@ export default class FindReplace {
             position: 'absolute',
             visibility: 'hidden',
             pointerEvents: 'none',
-            top: '0', left: '0', right: '0',
+            top: '0', left: '0',
+            // Must wrap exactly as the textarea does. Spanning the wrapper
+            // instead made the mirror wider by the scrollbar, so it wrapped
+            // less and every line below measured too high, putting the
+            // highlight on the wrong line in any document long enough to
+            // scroll.
+            width: textarea.clientWidth + 'px',
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word',
             overflowWrap: 'break-word',
@@ -298,6 +344,12 @@ export default class FindReplace {
             const wRect = wrapper.getBoundingClientRect();
             const mRect = marker.getBoundingClientRect();
 
+            // The mirror is not scrolled, so this is the match's offset within
+            // the content. _scrollMatchIntoView reads it rather than measuring
+            // the same thing a second time.
+            this._matchTop = mRect.top - wRect.top;
+            this._matchHeight = mRect.height;
+
             const hl = document.createElement('div');
             Object.assign(hl.style, {
                 position: 'absolute',
@@ -320,6 +372,7 @@ export default class FindReplace {
     _clearMatchHighlight() {
         this._highlightEl?.remove();
         this._highlightEl = null;
+        this._matchTop = null;
     }
 
     _updateCount() {

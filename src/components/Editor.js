@@ -251,9 +251,7 @@ class MarkdownEditor {
 
                 if (this.preview && this.previewContent) {
                     // RATIO SYNC: Use ratio only for the fully rendered preview
-                    const textarea = this.usertextarea;
-                    const ratio = textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight);
-                    this.previewContent.scrollTop = ratio * (this.previewContent.scrollHeight - this.previewContent.clientHeight);
+                    this._syncPreviewScroll();
                 }
             });
         };
@@ -266,12 +264,38 @@ class MarkdownEditor {
         if (!this.preview) return;
         clearTimeout(this.previewTimer);
         this.previewTimer = setTimeout(() => {
+            // Replacing the markup resets the preview to the top, so remember
+            // where the reader was in case the textarea cannot drive it.
+            const keep = this.previewContent.scrollTop;
             this.previewContent.innerHTML = this._renderMarkdown(this.usertextarea.value);
             this.wirePreviewCheckboxes();
-            const textarea = this.usertextarea;
-            const ratio = textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight);
-            this.previewContent.scrollTop = ratio * (this.previewContent.scrollHeight - this.previewContent.clientHeight);
+            if (!this._syncPreviewScroll()) this.previewContent.scrollTop = keep;
         }, 150); // 150ms delay feels instant but saves CPU
+    }
+
+    /**
+     * Keeps the preview at the same proportion of the way down as the textarea.
+     *
+     * Only when the textarea can actually scroll. If it cannot, the range is
+     * zero, and the old code divided by it: 0/0 is NaN, the browser stores that
+     * as 0, and the preview jumped to the top. Source that renders taller than
+     * it reads, a handful of images say, hits this on every keystroke, pulling
+     * the reader back to the start of a preview they were scrolled into.
+     *
+     * Returns whether it set a position, so the caller knows if it has to put
+     * the reader back itself.
+     */
+    _syncPreviewScroll() {
+        if (!this.preview || !this.previewContent) return false;
+
+        const textarea = this.usertextarea;
+        const range = textarea.scrollHeight - textarea.clientHeight;
+        if (range <= 0) return false;
+
+        const ratio = textarea.scrollTop / range;
+        const previewRange = this.previewContent.scrollHeight - this.previewContent.clientHeight;
+        this.previewContent.scrollTop = ratio * previewRange;
+        return true;
     }
 
     /**

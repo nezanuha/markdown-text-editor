@@ -36,11 +36,24 @@ const { default: MarkdownEditor } = await import('../dist/markdown-text-editor.e
 
 let passed = 0;
 const failures = [];
+// A check may return a promise, for the handful of paths that only settle after
+// a timer or a frame. Those are collected and awaited before the report.
+const pending = [];
+const record = (name, result) => {
+    if (result === true) { passed++; return; }
+    failures.push(name + '\n      expected true, got ' + JSON.stringify(result));
+};
 const check = (name, fn) => {
     try {
         const result = fn();
-        if (result === true) { passed++; return; }
-        failures.push(name + '\n      expected true, got ' + JSON.stringify(result));
+        if (result && typeof result.then === 'function') {
+            pending.push(result.then(
+                r => record(name, r),
+                err => failures.push(name + '\n      threw ' + err.name + ': ' + err.message),
+            ));
+            return;
+        }
+        record(name, result);
     } catch (err) {
         failures.push(name + '\n      threw ' + err.name + ': ' + err.message);
     }
@@ -392,6 +405,47 @@ check('heading menu items are translated', () => {
     return [...wrapper.querySelectorAll(ITEM)].some(b => b.textContent === 'Titulo 1');
 });
 
+// --- scroll arithmetic that could go NaN ------------------------------------
+
+// Layout is not simulated, so these check the guards rather than the geometry.
+// The real positions were measured in a browser; what can regress here is a
+// division by a zero range, or a scroll driven by a measurement that is absent.
+
+// These drive the editor the way a user does rather than calling the new
+// helpers, so they fail on the old code because of what it does, not because a
+// method is missing. Without layout every height is 0, which is exactly the
+// degenerate case both bugs turned into NaN.
+
+check('searching does not fling the textarea to the top', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'line\n'.repeat(60) + 'needle');
+    e.findReplace.open();
+    e.usertextarea.scrollTop = 200;
+
+    const input = e.editorContainer.querySelector('.find-replace-panel input');
+    input.value = 'needle';
+    input.dispatchEvent(new window.Event('input', { bubbles: true }));
+
+    // The old code read line-height, got NaN, and wrote NaN to scrollTop, which
+    // a browser stores as 0. Nothing here can measure a real position, so the
+    // right answer is to leave the reader where they were.
+    return e.usertextarea.scrollTop === 200;
+});
+
+check('typing does not reset a preview the reader scrolled', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, '# one\n\n# two\n\n# three');
+    e.editorContainer.querySelector('.preview-btn')?.click();
+    if (!e.previewContent) return 'no preview pane';
+
+    e.previewContent.scrollTop = 120;
+    // The textarea cannot scroll here, so the range is zero. The old code
+    // divided by it, and 0/0 stored as 0 took the reader back to the top.
+    e.usertextarea.value += ' more';
+    e.usertextarea.dispatchEvent(new window.Event('input', { bubbles: true }));
+
+    return new Promise(resolve => setTimeout(
+        () => resolve(e.previewContent.scrollTop === 120), 250));
+});
+
 // --- selection trimming (#47) -----------------------------------------------
 
 // Double-clicking a word takes the space after it, and triple-clicking a line
@@ -682,6 +736,8 @@ await checkAsync('the upload placeholder is translatable', async () => {
 });
 
 // --- report -----------------------------------------------------------------
+
+await Promise.all(pending);
 
 console.log('\n  ' + passed + ' passed, ' + failures.length + ' failed\n');
 if (failures.length) {
