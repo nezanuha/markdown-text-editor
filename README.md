@@ -15,6 +15,8 @@ A native-first Markdown editor built on a standard textarea. No data binding, no
 
 **Works standalone.** No Frutjam, no Tailwind, no framework required, the styles are bundled.
 
+**Looks like the rest of your app.** It takes the typeface and size from the page it sits on, and picks up `data-theme` from any ancestor, so it doesn't turn up looking like someone else's component.
+
 ![Hybrid mode: headings, bold text and list markers styled live inside the textarea while the Markdown syntax stays visible](https://cdn.frutjam.com/media/plugins/hybrid-mode-markdown-editor.webp)
 
 <sub>Hybrid mode. Text is styled as you type and the Markdown stays where it is, because this is your `<textarea>`, not a copy of it.</sub>
@@ -98,7 +100,8 @@ That's it. Form submission, `.value` access, and all native textarea behaviour w
 - 🛡️ **XSS Safe** — Preview output sanitized via [DOMPurify](https://github.com/cure53/DOMPurify) before rendering, including the output of a custom renderer
 - 🛡️ **No inline scripts** — No inline event handlers and no `eval`, so `script-src` needs no exception. The stylesheet is currently injected as a `<style>` element, which a strict `style-src` blocks ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42))
 - 🌍 **RTL Support** — Native Right-to-Left support for Arabic, Urdu, Farsi, and other RTL languages
-- 🌙 **Dark Mode & Theming** — Inherits `data-theme` from any ancestor element. Built-in light, dark, snowberry, and darkberry themes. Fully customizable via CSS variables
+- 🎨 **Inherits Your UI** — Uses the typeface and size of the page it's dropped into, so it matches your forms rather than imposing its own look. Nothing to configure
+- 🌙 **Dark Mode & Theming** — Picks up `data-theme` from any ancestor element, and follows the system setting when there isn't one. Built-in light, dark, snowberry, and darkberry themes. Fully customizable via CSS variables
 - 🧩 **Custom Tools** — Add your own toolbar button with `{ custom: { title, icon, action } }`, or extend `MarkdownEditor.Tool` when it builds its own markup. Keyboard shortcuts, translation and teardown work exactly as they do for the built-ins. No fork, no patching
 - 🎛️ **Modular Toolbar** — Pick exactly which tools appear and in what order
 - 🟦 **TypeScript Ready** — Definitions ship with the package. Options, toolbar entries and variable shapes are all checked, so a mistyped tool name is a compile error rather than a silently missing button
