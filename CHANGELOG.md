@@ -469,7 +469,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.3...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.4...HEAD
+[1.9.4]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.3...v1.9.4
 [1.9.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.2...v1.9.3
 [1.9.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.0...v1.9.1
