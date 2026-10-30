@@ -15,6 +15,8 @@ A native-first Markdown editor built on a standard textarea. No data binding, no
 
 **Works standalone.** No Frutjam, no Tailwind, no framework required. One script and one stylesheet.
 
+**Looks like the rest of your app.** It takes the typeface and size from the page it sits on, and picks up `data-theme` from any ancestor, so it doesn't turn up looking like someone else's component.
+
 ![Hybrid mode: headings, bold text and list markers styled live inside the textarea while the Markdown syntax stays visible](https://cdn.frutjam.com/media/plugins/hybrid-mode-markdown-editor.webp)
 
 <sub>Hybrid mode. Text is styled as you type and the Markdown stays where it is, because this is your `<textarea>`, not a copy of it.</sub>
@@ -123,7 +125,8 @@ That is the whole breaking change. `labels` was renamed to `locale` and still wo
 - 🛡️ **CSP Compatible** — No inline event handlers, no `eval`, and no injected `<style>` element. The stylesheet is a real file you link, so a strict policy needs no `'unsafe-inline'` exception for either `script-src` or `style-src` ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42))
 - 🌍 **RTL Support** — Native Right-to-Left support for Arabic, Urdu, Farsi, and other RTL languages
 - 🗣️ **Translatable Interface** — Every tooltip, menu item, dialog field and screen reader name goes through the `locale` option, keyed by the English string. `locale/template.js` lists all 45 of them so you don't have to go looking. Fifty-six languages ship with the package; you import the one you need
-- 🌙 **Dark Mode & Theming** — Inherits `data-theme` from any ancestor element. Built-in light, dark, snowberry, and darkberry themes. Fully customizable via CSS variables
+- 🎨 **Inherits Your UI** — Uses the typeface and size of the page it's dropped into, so it matches your forms rather than imposing its own look. Nothing to configure
+- 🌙 **Dark Mode & Theming** — Picks up `data-theme` from any ancestor element, and follows the system setting when there isn't one. Built-in light, dark, snowberry, and darkberry themes. Fully customizable via CSS variables
 - 🧩 **Custom Tools** — Add your own toolbar button with `{ custom: { title, icon, action } }`, or extend `MarkdownEditor.Tool` when it builds its own markup. Keyboard shortcuts, translation and teardown work exactly as they do for the built-ins. No fork, no patching
 - 🎛️ **Modular Toolbar** — Pick exactly which tools appear and in what order
 - 🟦 **TypeScript Ready** — Definitions ship with the package. Options, toolbar entries and variable shapes are all checked, so a mistyped tool name is a compile error rather than a silently missing button
