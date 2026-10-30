@@ -566,6 +566,43 @@ check('a junk levels value warns and falls back to all six', () => {
     return items.length === 6;
 });
 
+// --- selection trimming (#47) -----------------------------------------------
+
+// Double-clicking a word takes the space after it, and triple-clicking a line
+// takes the newline. Wrapping that raw selection put the closing marker on the
+// wrong side: `**Lorem **ipsum`, which no parser reads as bold.
+const selectThen = (value, selected, btn, options = {}) => {
+    const e = makeEditor({ toolbar: FULL_BAR, ...options }, value);
+    const start = value.indexOf(selected);
+    e.usertextarea.setSelectionRange(start, start + selected.length);
+    e.editorContainer.querySelector(btn).click();
+    return e.usertextarea.value;
+};
+
+check('a trailing space is left outside the markers', () =>
+    selectThen('Lorem ipsum dolor', 'Lorem ', '.bold-btn') === '**Lorem** ipsum dolor');
+
+check('italic, strikethrough and code trim the same way', () =>
+    selectThen('Lorem ipsum', 'Lorem ', '.italic-btn') === '*Lorem* ipsum'
+    && selectThen('Lorem ipsum', 'Lorem ', '.code-btn') === '`Lorem` ipsum'
+    // strikethrough is not in FULL_BAR, so ask for it explicitly
+    && selectThen('Lorem ipsum', 'Lorem ', '.strikethrough-btn',
+                  { toolbar: ['bold', 'strikethrough'] }) === '~~Lorem~~ ipsum');
+
+check('a trailing newline from a triple click stays outside', () =>
+    selectThen('First line\nSecond', 'First line\n', '.bold-btn') === '**First line**\nSecond');
+
+check('a selection with no stray whitespace is untouched', () =>
+    selectThen('Lorem ipsum', 'Lorem', '.bold-btn') === '**Lorem** ipsum');
+
+check('unwrapping still works after trimming', () =>
+    selectThen('**Lorem** ipsum', '**Lorem** ', '.bold-btn') === 'Lorem ipsum');
+
+check('a selection of only spaces is left alone', () => {
+    const out = selectThen('a   b', '   ', '.bold-btn');
+    return out.includes('a') && out.includes('b');
+});
+
 // --- scroll and height preservation (#46) -----------------------------------
 
 // Layout is not simulated, so scrollTop is just a property here. That is enough:

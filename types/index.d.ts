@@ -238,6 +238,16 @@ export declare class Tool {
     createButton(iconHtml?: string): HTMLElement | null;
     /** Called when the button is clicked, or its shortcut is pressed. */
     applySyntax(event?: Event): void;
+    /**
+     * Shrinks the selection so it holds no leading or trailing whitespace.
+     * Call it first in `applySyntax` if your tool wraps the selection inline,
+     * since double-clicking a word selects the space after it and the closing
+     * marker would otherwise land on the wrong side of it.
+     *
+     * Line based tools should not call it: a trailing newline is what tells
+     * them which lines the selection covers.
+     */
+    trimSelection(): void;
     /** Set to e.g. `'Ctrl+Shift+K'` to bind a shortcut. */
     shortcut?: string;
     /** Implement to release anything the tool registered. Called by `destroy()`. */

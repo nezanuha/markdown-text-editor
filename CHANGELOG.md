@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`labels` is now `locale`**: The option takes the same object of translations, under a name that fits what is in it. Nine of the forty-five keys were never labels, being status messages, error text and count templates such as `{n} words`, and anything added later is more likely to be a sentence than a button name. `labels` keeps working, so nothing breaks. Passing a language code rather than the strings, `locale: 'es'`, now says so in the console instead of quietly leaving the editor in English
 - **The stylesheet is now a separate file**: The CSS is no longer carried inside the JavaScript and injected as a `<style>` element when the script loads. Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css` if you use a bundler. This is the breaking part of the release: an existing setup keeps working but renders unstyled until that line is added, and the editor now says so in the console rather than leaving you to guess. It makes the editor usable under a strict Content Security Policy, where an injected style element is refused whatever nonce it carries, and lets the stylesheet be cached separately from the JavaScript instead of being re-downloaded with every patch release ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))
 
+## [1.9.3] - 2026-10-30
+
+### Fixed
+
+- **Formatting a double-clicked word put the markers in the wrong place**: Double-clicking selects the space after the word, so bold gave you `**Lorem **ipsum` instead of `**Lorem** ipsum`, and nothing rendered as bold. Triple-clicking a line did the same with the newline. Bold, italic, strikethrough, code and link now leave the surrounding space outside the markers ([#47](https://github.com/nezanuha/markdown-text-editor/issues/47))
+
 ## [1.9.2] - 2026-10-28
 
 ### Fixed
@@ -473,7 +479,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.2...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.3...HEAD
+[1.9.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.2...v1.9.3
 [1.9.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.8.0...v1.9.0

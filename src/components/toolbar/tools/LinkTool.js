@@ -11,6 +11,7 @@ class LinkTool extends Tool {
 
     // Apply link syntax [text](url)
     applySyntax(event) {
+        this.trimSelection();
         let editor = this.editor;
         let textarea = editor.usertextarea;
         let { selectionStart, selectionEnd } = textarea;
