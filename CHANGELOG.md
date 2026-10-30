@@ -15,8 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Find scrolled to the wrong place and highlighted the wrong line**: Searching a long document took you somewhere that did not hold the match, and the highlight sat a few lines away from it
-- **The preview jumped to the top as you typed**: When the editor itself did not need to scroll, the preview reset to the start on every keystroke
 - **The editor is now the same size on any page**: On a page that does not load Tailwind it came out 2px taller than you asked for and the find box 17px wider, because the box model was left to whatever the page happened to set. `minHeight: 200` now means 200 wherever you drop it in
 - **Find and replace was never translatable**: The panel's buttons, placeholders and screen reader names were hardcoded English regardless of `labels`, so a translated editor still announced "Match case" and "Replace all" to a screen reader in English
 - **The footer was never translatable**: The line, column, character and word counts stayed English in a translated editor. They are now keyed as `{n} words` and the like, so a translation decides where the number sits rather than being forced into English word order
@@ -25,6 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`labels` is now `locale`**: The option takes the same object of translations, under a name that fits what is in it. Nine of the forty-five keys were never labels, being status messages, error text and count templates such as `{n} words`, and anything added later is more likely to be a sentence than a button name. `labels` keeps working, so nothing breaks. Passing a language code rather than the strings, `locale: 'es'`, now says so in the console instead of quietly leaving the editor in English
 - **The stylesheet is now a separate file**: The CSS is no longer carried inside the JavaScript and injected as a `<style>` element when the script loads. Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css` if you use a bundler. This is the breaking part of the release: an existing setup keeps working but renders unstyled until that line is added, and the editor now says so in the console rather than leaving you to guess. It makes the editor usable under a strict Content Security Policy, where an injected style element is refused whatever nonce it carries, and lets the stylesheet be cached separately from the JavaScript instead of being re-downloaded with every patch release ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))
+
+## [1.9.4] - 2026-10-30
+
+### Fixed
+
+- **Find scrolled to the wrong place and highlighted the wrong line**: Searching a long document took you somewhere that did not hold the match, and the highlight sat a few lines away from it
+- **The preview jumped to the top as you typed**: When the editor itself did not need to scroll, the preview reset to the start on every keystroke
 
 ## [1.9.3] - 2026-10-30
 
@@ -481,7 +486,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.3...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.4...HEAD
+[1.9.4]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.3...v1.9.4
 [1.9.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.2...v1.9.3
 [1.9.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.0...v1.9.1
