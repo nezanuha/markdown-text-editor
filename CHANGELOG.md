@@ -15,8 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Find jumped to the wrong place, and highlighted the wrong line**: Searching a long document scrolled somewhere that did not hold the match, and the highlight sat a few lines off. The position was guessed from `line-height` and from counting line breaks, neither of which survives wrapped text
-- **The preview jumped to the top as you typed**: If your markdown rendered taller than it reads, a few images or headings say, the preview reset to the start on every keystroke and took you away from what you were reading
+- **Find scrolled to the wrong place and highlighted the wrong line**: Searching a long document took you somewhere that did not hold the match, and the highlight sat a few lines away from it
+- **The preview jumped to the top as you typed**: When the editor itself did not need to scroll, the preview reset to the start on every keystroke
 - **The editor is now the same size on any page**: On a page that does not load Tailwind it came out 2px taller than you asked for and the find box 17px wider, because the box model was left to whatever the page happened to set. `minHeight: 200` now means 200 wherever you drop it in
 - **Find and replace was never translatable**: The panel's buttons, placeholders and screen reader names were hardcoded English regardless of `labels`, so a translated editor still announced "Match case" and "Replace all" to a screen reader in English
 - **The footer was never translatable**: The line, column, character and word counts stayed English in a translated editor. They are now keyed as `{n} words` and the like, so a translation decides where the number sits rather than being forced into English word order
