@@ -78,6 +78,13 @@ new MarkdownEditor('#editor', { toolbar: ['bold', CardTool, 'preview'] });
 tools use. Tooltips go through `editor.label()`, so custom tools are translatable
 like every built-in one.
 
+If your tool wraps the selection in markers, call `this.trimSelection()` first.
+Double-clicking a word selects the space after it and triple-clicking a line
+selects the newline, so without it the closing marker lands on the wrong side
+and you get `**word **next`, which no parser reads as bold. Line based tools
+should leave it alone, since that trailing newline is what tells them which
+lines the selection covers.
+
 Prefer this over a fork. You keep your tools, and you stay on upstream releases.
 
 ## Adding a toolbar tool to this repository

@@ -10,6 +10,7 @@ class StrikethroughTool extends Tool {
     }
 
     applySyntax() {
+        this.trimSelection();
         const textarea = this.editor.usertextarea;
         const { selectionStart, selectionEnd } = textarea;
         const value = textarea.value;

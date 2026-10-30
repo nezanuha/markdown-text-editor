@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.3] - 2026-10-30
+
+### Fixed
+
+- **Formatting a double-clicked word put the markers in the wrong place**: Double-clicking selects the space after the word, so bold gave you `**Lorem **ipsum` instead of `**Lorem** ipsum`, and nothing rendered as bold. Triple-clicking a line did the same with the newline. Bold, italic, strikethrough, code and link now leave the surrounding space outside the markers ([#47](https://github.com/nezanuha/markdown-text-editor/issues/47))
+
 ## [1.9.2] - 2026-10-28
 
 ### Fixed
@@ -456,7 +462,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.2...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.3...HEAD
+[1.9.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.2...v1.9.3
 [1.9.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.8.0...v1.9.0
