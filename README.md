@@ -9,19 +9,21 @@
 [![Secured](https://img.shields.io/badge/Security-Passed-green)](https://snyk.io/test/github/nezanuha/markdown-text-editor)
 ![GitHub Repo stars](https://img.shields.io/github/stars/nezanuha/markdown-text-editor?style=flat)
 
-A lightweight, embeddable JavaScript Markdown editor that transforms a standard HTML `<textarea>` into a full-featured editing experience — without breaking native form submission. Works with any backend (Django, Laravel, PHP, Node.js, Rails) out of the box.
+A lightweight, embeddable JavaScript Markdown editor that enhances a standard HTML `<textarea>` instead of replacing it, so native form submission, validation and `required` fields keep working. No data binding, no API to learn. Toolbar, live preview and WYSIWYG hybrid mode. Works with any backend: Django, Laravel, PHP, Node.js, Rails.
 
-A native-first Markdown editor built on a standard textarea. No data binding, no API — just drop it in and your forms keep working as-is.
+```bash
+npm install markdown-text-editor
+```
 
-**Works standalone.** No Frutjam, no Tailwind, no framework required, the styles are bundled.
-
-**Looks like the rest of your app.** It takes the typeface and size from the page it sits on, and picks up `data-theme` from any ancestor, so it doesn't turn up looking like someone else's component.
+**[Try the live demo and read the docs](https://frutjam.com/plugins/markdown-editor)** · [Quick Start](#-quick-start) · [Why not EasyMDE?](#-why-developers-choose-this-over-easymde--simplemde)
 
 ![Hybrid mode: headings, bold text and list markers styled live inside the textarea while the Markdown syntax stays visible](https://cdn.frutjam.com/media/plugins/hybrid-mode-markdown-editor.webp)
 
 <sub>Hybrid mode. Text is styled as you type and the Markdown stays where it is, because this is your `<textarea>`, not a copy of it.</sub>
 
-> **No complex APIs. No data binding. No JSON schemas.** Just a `<textarea>` that types Markdown and submits like any normal form field — enhanced with a rich toolbar, live preview, and WYSIWYG hybrid mode.
+**Works standalone.** No Frutjam, no Tailwind, no framework required, the styles are bundled.
+
+**Looks like the rest of your app.** It takes the typeface and size from the page it sits on, and picks up `data-theme` from any ancestor, so it doesn't turn up looking like someone else's component.
 
 ## ⭐ Why developers choose this over EasyMDE / SimpleMDE
 
@@ -42,7 +44,7 @@ Most JavaScript markdown editors (EasyMDE, SimpleMDE, CodeMirror-based editors) 
 | Swap the markdown parser | ✅ | ❌ |
 | Keyboard shortcuts | ✅ | Partial |
 | Dark mode / theming | ✅ | Limited |
-| Bundle size, gzipped | 54 KB | 107 KB (JS + CSS) |
+| Bundle size, gzipped | 57 KB | 107 KB (JS + CSS) |
 
 ## 🚀 Quick Start
 
@@ -106,7 +108,7 @@ That's it. Form submission, `.value` access, and all native textarea behaviour w
 - 🎛️ **Modular Toolbar** — Pick exactly which tools appear and in what order
 - 🟦 **TypeScript Ready** — Definitions ship with the package. Options, toolbar entries and variable shapes are all checked, so a mistyped tool name is a compile error rather than a silently missing button
 - 📦 **Universal Module Support** — ESM, CommonJS, UMD, and IIFE. Works with Vite, webpack, Rollup, or directly via `<script src>` CDN — no configuration needed
-- 🚀 **High Performance** — ~54KB gzipped (253KB minified). Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
+- 🚀 **High Performance** — ~57KB gzipped (261KB minified). Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
 
 ## 🛠 Developer Workflow
 
