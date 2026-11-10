@@ -560,6 +560,147 @@ check('the panel is built from the design system, not from its own CSS', () => {
         && !panel.querySelector('[style]');
 });
 
+check('Tab moves to the next cell inside a table, and indents outside one', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, ['Intro paragraph.', '', '| Name | Role |', '| --- | --- |', '| Alice | Engineer |'].join('\n'));
+    const ta = e.usertextarea;
+    const tab = (shift = false) => ta.dispatchEvent(new KeyboardEvent('keydown',
+        { key: 'Tab', shiftKey: shift, bubbles: true, cancelable: true }));
+
+    // Not at offset 0: the caret maths is relative to where the table starts,
+    // and a table at the top of a document hides getting that wrong.
+    const name = ta.value.indexOf('Name');
+    ta.setSelectionRange(name + 1, name + 1);
+    tab();
+    const inCell = ta.value.slice(ta.selectionStart, ta.selectionEnd);
+
+    // outside a table Tab still belongs to the indent manager
+    ta.value = 'plain line';
+    ta.setSelectionRange(0, 0);
+    tab();
+    const indented = ta.value !== 'plain line';
+
+    return inCell === 'Role' && indented;
+});
+
+check('Tab in the last cell starts a row, and Enter on an empty row leaves', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, ['Intro paragraph.', '', '| Name | Role |', '| --- | --- |', '| Alice | Engineer |'].join('\n'));
+    const ta = e.usertextarea;
+    const key = k => ta.dispatchEvent(new KeyboardEvent('keydown',
+        { key: k, bubbles: true, cancelable: true }));
+
+    ta.setSelectionRange(ta.value.lastIndexOf('Engineer'), ta.value.lastIndexOf('Engineer'));
+    key('Tab');                                       // last cell -> new row
+    const rowsAfterTab = ta.value.trim().split('\n').length;
+
+    key('Enter');                                     // the new row is empty
+    const rowsAfterEnter = ta.value.trim().split('\n').length;
+
+    // A table you cannot leave with Enter is a trap, so an empty row exits it.
+    // two lines of prose, then header, delimiter and one row; one more once
+    // Tab has added a row, and back again once Enter has dropped the empty one
+    return rowsAfterTab === 6 && rowsAfterEnter === 5;
+});
+
+check('the table controls open on a click inside a table, and not outside one', () => {
+    const rows = ['Intro.', '', '| a | b |', '|---|---|', '| longer cell | x |'].join('\n');
+    const e = makeEditor({ toolbar: FULL_BAR }, rows);
+    const ta = e.usertextarea;
+    const click = () => ta.dispatchEvent(new window.MouseEvent('mouseup', { bubbles: true }));
+
+    // It is a popover now, so open means open, not "not hidden".
+    const atStart = !e.tablePopover.isOpen;
+    const at = ta.value.indexOf('| a') + 3;
+    ta.setSelectionRange(at, at);
+    click();
+    const inTable = e.tablePopover.isOpen;
+
+    ta.setSelectionRange(0, 0);                       // up in the prose
+    click();
+    // One bar and nothing else: no grips, no insert circles, no shading.
+    return atStart && inTable && !e.tablePopover.isOpen
+        && !e.editorContainer.querySelector('.table-overlay');
+});
+
+check('the table controls act on the column and row the cursor is in', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, ['Intro paragraph.', '', '| a | b |', '|---|---|', '| longer cell | x |'].join('\n'));
+    const ta = e.usertextarea;
+    const pop = e.editorContainer.querySelector('.table-popover');
+    const press = label => [...pop.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === label).click();
+
+    const second = ta.value.indexOf('| b') + 2;
+    ta.setSelectionRange(second, second);
+    ta.dispatchEvent(new window.MouseEvent('mouseup', { bubbles: true }));
+    press('Insert column after');
+    const widened = ta.value.split('\n')[2].split('|').length;
+
+    press('Tidy the table');
+    const lines = ta.value.split('\n').slice(2);
+    const even = lines.every(l => l.length === lines[0].length);
+
+    // two columns become three, which is five pieces either side of the pipes
+    return widened === 5 && even;
+});
+
+check('a table edit leaves the cursor in the cell it was in', () => {
+    const rows = ['Intro.', '', '| Name | Role |', '|---|---|', '| Alice | Engineer |'].join('\n');
+    const e = makeEditor({ toolbar: FULL_BAR }, rows);
+    const ta = e.usertextarea;
+    const pop = e.editorContainer.querySelector('.table-popover');
+
+    // three characters into "Engineer"
+    const at = ta.value.indexOf('Engineer') + 3;
+    ta.setSelectionRange(at, at);
+    ta.dispatchEvent(new window.MouseEvent('mouseup', { bubbles: true }));
+    [...pop.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === 'Insert column after').click();
+
+    // Every column just changed width, so the old offset means nothing. What
+    // should survive is the cell and how far into it the cursor was.
+    const c = ta.selectionStart;
+    const line = ta.value.slice(ta.value.lastIndexOf('\n', c - 1) + 1,
+                                ta.value.indexOf('\n', c));
+    const col = c - (ta.value.lastIndexOf('\n', c - 1) + 1);
+    const cellStart = line.lastIndexOf('|', col - 1) + 1;
+    const cell = line.slice(cellStart, line.indexOf('|', col));
+
+    return cell.trim() === 'Engineer'
+        && col - (cellStart + cell.length - cell.trimStart().length) === 3;
+});
+
+check('deleting the column the cursor is in moves it to the one left behind', () => {
+    const rows = ['Intro.', '', '| Name | Role |', '|---|---|', '| Alice | Engineer |'].join('\n');
+    const e = makeEditor({ toolbar: FULL_BAR }, rows);
+    const ta = e.usertextarea;
+    const pop = e.editorContainer.querySelector('.table-popover');
+
+    const at = ta.value.indexOf('Engineer') + 3;      // the last column
+    ta.setSelectionRange(at, at);
+    ta.dispatchEvent(new window.MouseEvent('mouseup', { bubbles: true }));
+    [...pop.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === 'Delete column').click();
+
+    // Its own cell is gone, so the cursor cannot stay in it. It should land in
+    // the column now at that edge, not back at the top of the table.
+    // three characters into the cell, as it was three into the one deleted
+    return !ta.value.includes('Engineer')
+        && ta.value.slice(ta.selectionStart - 3, ta.selectionStart) === 'Ali';
+});
+
+check('the table button offers a grid of sizes, and inserts the one picked', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const grid = e.editorContainer.querySelector('.table-size-grid');
+    const cell = [...grid.querySelectorAll('button')]
+        .find(b => b.dataset.col === '4' && b.dataset.row === '3');
+
+    cell.click();
+    const lines = e.usertextarea.value.trim().split('\n');
+    // four columns across, three rows down: a header, the delimiter, and two
+    return grid.querySelectorAll('button').length === 64
+        && lines.length === 4
+        && lines[0].split('|').length === 6;
+});
+
 check('the panel lays itself out from its own width, in CSS', () => {
     const e = makeEditor({ toolbar: FULL_BAR });
     e.findReplace.open();

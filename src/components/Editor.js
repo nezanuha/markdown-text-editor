@@ -9,6 +9,8 @@ import Footer from './Footer.js';
 import UndoRedoManager from '../utils/UndoRedoManager.js';
 import IndentManager from '../utils/IndentManager.js';
 import ListManager from '../utils/ListManager.js';
+import TableKeys from '../utils/TableKeys.js';
+import TablePopover from './TablePopover.js';
 import ShortcutManager from '../utils/ShortcutManager.js';
 import FindReplace from '../utils/FindReplace.js';
 import PasteManager from '../utils/PasteManager.js';
@@ -35,11 +37,21 @@ class MarkdownEditor {
         this.previewTimer = null;
         this.init();
         this.undoRedoManager = new UndoRedoManager(this);
+        // Before the indent and list managers, which own Tab and Enter: this
+        // one takes those keys only when the caret is inside a table.
+        this.tableKeys = new TableKeys(this);
         this.listManager = new ListManager(this);
         this.indentManager = new IndentManager(this);
         this.shortcutManager = new ShortcutManager(this);
         this.findReplace = new FindReplace(this);
         this.pasteManager = new PasteManager(this);
+        // Only worth building where tables are offered at all, and
+        // `tablePopover: false` turns it off for anyone who would rather edit
+        // the pipes by hand.
+        if (this.options.tablePopover !== false
+            && this.editorContainer.querySelector('.table-btn')) {
+            this.tablePopover = new TablePopover(this);
+        }
         this._warnIfStylesheetMissing();
         this._warnIfLocaleIsACode();
     }
@@ -657,6 +669,8 @@ class MarkdownEditor {
         this.pasteManager?.destroy();
         // Reaches toolbar tools, including custom ones that added listeners
         this.toolbarInstance?.destroy();
+        this.tableKeys?.destroy();
+        this.tablePopover?.destroy();
 
         if (this._footerUpdate) {
             this.usertextarea.removeEventListener('input', this._footerUpdate);

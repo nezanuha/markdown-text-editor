@@ -170,6 +170,13 @@ export interface MarkdownEditorOptions {
     footer?: false | FooterOptions;
 
     /**
+     * Table controls, which open beside a table when you click inside one.
+     * They need the `table` tool on the toolbar. Set `false` to edit the pipes
+     * by hand; Tab between cells works either way.
+     */
+    tablePopover?: boolean;
+
+    /**
      * Overrides the theme. Without it the editor inherits `data-theme` from the
      * nearest ancestor, or from the textarea itself.
      */
