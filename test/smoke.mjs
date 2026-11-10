@@ -415,6 +415,20 @@ check('locale translates, the same as labels did', () => {
     return tooltip(e, '.bold-btn').startsWith('Negrita') && tooltip(e, '.table-btn') === 'Tabla';
 });
 
+check('every region a screen reader lands on is translated', () => {
+    const e = makeEditor({
+        toolbar: FULL_BAR,
+        preview: true,
+        locale: { 'Preview': 'Vista previa', 'Find and replace': 'Buscar y reemplazar', 'Editor toolbar': 'Barra' },
+    });
+    e.findReplace.open(false);
+    const named = sel => e.editorContainer.querySelector(sel)?.getAttribute('aria-label');
+
+    // the preview pane was the last place still announcing itself in English
+    return named('.preview-wrapper') === 'Vista previa'
+        && named('.find-replace-panel') === 'Buscar y reemplazar';
+});
+
 check('locale wins when both are given', () => {
     const e = makeEditor({ toolbar: FULL_BAR,
         locale: { Bold: 'Negrita' }, labels: { Bold: 'Grassetto' } });
@@ -467,14 +481,402 @@ check('the find panel actually hides when closed', () => withStylesheet(() => {
     return shown !== 'none' && getComputedStyle(panel).display === 'none';
 }));
 
+check('the panel is built from the design system, not from its own CSS', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    e.findReplace.open();
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const inputs = [...panel.querySelectorAll('input')];
+    const buttons = [...panel.querySelectorAll('button')];
+
+    // The boxes are frutjam's input with its border made transparent, so the
+    // panel is the only frame, and every button is frutjam's button. Anything
+    // hand-rolled here would drift from the rest of the editor on the next
+    // theme change.
+    const fields = [...panel.querySelectorAll('.find-replace-field')];
+    return inputs.length === 2
+        && fields.length === 2
+        && fields.every(f => f.className.includes('fj:me-input'))
+        && inputs.every(i => i.className.includes('fj:border-0')
+                          && i.className.includes('fj:bg-transparent'))
+        && buttons.every(b => b.className.includes('fj:me-btn'))
+        && !panel.querySelector('[style]');
+});
+
+check('the panel lays itself out from its own width, in CSS', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    e.findReplace.open();
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const rows = [...panel.querySelectorAll('.find-replace-row')];
+    const controls = [...panel.querySelectorAll('.find-replace-controls')];
+    const options = panel.querySelector('.find-replace-options');
+
+    // The panel is the container, so the rules key off how much room the
+    // panel has rather than how wide the window is: a narrow editor on a
+    // desktop has the same problem as a phone. This used to be a
+    // ResizeObserver measuring offsetTop and toggling a class.
+    return panel.className.includes('fj:@container')
+        && rows.every(r => r.className.includes('fj:flex-wrap')
+                        && r.className.includes('fj:justify-end'))
+        // the controls fold under the box on their own when there is no room
+        && controls.length === 2
+        // under 22rem the matching switches wait behind the chevron
+        && options.className.includes('fj:@max-[22rem]:hidden')
+        && options.className.includes('fj:@max-[22rem]:[.is-expanded_&]:flex');
+});
+
+check('every match is marked, not just the one you are on', async () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'the cat and the hat sat on the mat');
+    e.findReplace.open();
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const input = panel.querySelector('input');
+    input.value = 'the';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    // typing defers the marks to the next pause, so the count can keep up
+    await new Promise(r => setTimeout(r, 200));
+    const layer = e.usertextarea.parentElement.querySelector('.find-replace-marks');
+    // one solid for where you are, a wash for the rest
+    return layer.children.length === 3
+        && layer.querySelectorAll('.find-replace-mark').length === 3
+        && layer.querySelectorAll('.is-current').length === 1;
+});
+
+check('the count is silent, and a live region speaks for it', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'the cat');
+    e.findReplace.open();
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const count = panel.querySelector('.find-replace-count');
+    const live = panel.querySelector('[aria-live]');
+
+    // The count changes on every keystroke. Announcing each one means a
+    // screen reader never gets to the end of a sentence.
+    return count.getAttribute('aria-hidden') === 'true'
+        && live !== null && live !== count
+        && live.className.includes('sr-only')
+        && live.textContent === '';
+});
+
+check('the count is announced once the typing stops', async () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'the cat and the hat');
+    e.findReplace.open();
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const live = panel.querySelector('[aria-live]');
+    const input = panel.querySelector('input');
+
+    input.value = 't';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.value = 'th';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.value = 'the';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    const whileTyping = live.textContent;
+
+    await new Promise(r => setTimeout(r, 700));
+    return whileTyping === '' && live.textContent === '2 matches';
+});
+
+check('replacing everything says how much it changed', async () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'the cat and the hat and the mat');
+    e.findReplace.open(true);
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const live = panel.querySelector('[aria-live]');
+    const [find, replace] = panel.querySelectorAll('input');
+
+    find.value = 'the';
+    find.dispatchEvent(new Event('input', { bubbles: true }));
+    replace.value = 'a';
+    [...panel.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === 'Replace all').click();
+
+    await new Promise(r => setTimeout(r, 700));
+    // the count would say 0 matches, which is true and useless
+    return live.textContent === '3 replaced'
+        && e.usertextarea.value === 'a cat and a hat and a mat';
+});
+
+check('preserve case gives a replacement the case it replaced', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'cat CAT Cat cAt');
+    e.findReplace.open(true);
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const [find, replace] = panel.querySelectorAll('input');
+    const press = label => [...panel.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === label).click();
+
+    find.value = 'cat';
+    find.dispatchEvent(new Event('input', { bubbles: true }));
+    replace.value = 'dog';
+    press('Preserve case');
+    press('Replace all');
+
+    // shouted stays shouted, capitalised stays capitalised, the rest is typed
+    return e.usertextarea.value === 'dog DOG Dog dog';
+});
+
+check('find in selection searches and replaces only what was selected', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'one the two the three the four');
+    const ta = e.usertextarea;
+    e.findReplace.open(true);
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const [find, replace] = panel.querySelectorAll('input');
+    const press = label => [...panel.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === label).click();
+
+    const from = ta.value.indexOf('two');
+    const to = ta.value.indexOf('three') + 'three'.length;
+    ta.setSelectionRange(from, to);
+    press('Find in selection');
+
+    find.value = 'the';
+    find.dispatchEvent(new Event('input', { bubbles: true }));
+    const scoped = panel.querySelector('.find-replace-count').textContent;
+
+    replace.value = 'X';
+    press('Replace all');
+
+    // one of the three "the"s is inside the selection, and only it changes
+    return scoped === '1/1' && ta.value === 'one the two X three the four';
+});
+
+check('find in selection will not engage with nothing selected', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'the cat');
+    e.findReplace.open();
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const btn = [...panel.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === 'Find in selection');
+
+    e.usertextarea.setSelectionRange(3, 3);
+    btn.click();
+    // there is no range to scope to, so the switch stays off rather than
+    // quietly scoping to nothing and finding none of anything
+    return btn.getAttribute('aria-pressed') === 'false';
+});
+
+check('every control in the panel has a name, and says its shortcut', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    e.findReplace.open(true);
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const buttons = [...panel.querySelectorAll('button')];
+
+    // A name for a screen reader, the shortcut declared rather than only
+    // written in the tooltip, and the tooltip spelling Control as Ctrl.
+    const named = buttons.every(b => (b.getAttribute('aria-label') || '').length > 2);
+    const withKeys = buttons.filter(b => b.hasAttribute('aria-keyshortcuts'));
+    const titled = withKeys.every(b => b.title.includes('(') && !b.title.includes('Control+'));
+
+    // the switches report their state, and the disclosure says what it opens
+    const toggles = buttons.filter(b => b.hasAttribute('aria-pressed'));
+    const chevron = panel.querySelector('[aria-expanded]');
+
+    return named && titled
+        && withKeys.length >= 8
+        && toggles.length === 5
+        && chevron.getAttribute('aria-controls') === panel.querySelector('.is-replace').id;
+});
+
+check('what cannot be done is disabled, not silent', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'the cat');
+    e.findReplace.open(true);
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const input = panel.querySelector('input');
+    const state = name => [...panel.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === name).disabled;
+
+    input.value = 'zzz';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    const nothingFound = state('Next match') && state('Previous match')
+        && state('Replace') && state('Replace all');
+
+    input.value = 'the';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    const found = !state('Next match') && !state('Replace all');
+
+    // tabbing onto four controls that answer with silence is the thing to avoid
+    return nothingFound && found;
+});
+
+check('a scoped range keeps covering the same text as the document is edited', () => {
+    // start: "KEEP cat cat | OUTSIDE cat", scoped to "KEEP cat cat "
+    const scoped = (edit) => {
+        const e = makeEditor({ toolbar: FULL_BAR }, 'KEEP cat cat | OUTSIDE cat');
+        e.findReplace.open(true);
+        const panel = e.editorContainer.querySelector('.find-replace-panel');
+        const btn = name => [...panel.querySelectorAll('button')]
+            .find(b => b.getAttribute('aria-label') === name);
+
+        e.usertextarea.setSelectionRange(0, 13);
+        btn('Find in selection').click();
+        const find = panel.querySelector('input');
+        find.value = 'cat';
+        find.dispatchEvent(new Event('input', { bubbles: true }));
+
+        e.usertextarea.value = edit(e.usertextarea.value);
+        e.usertextarea.dispatchEvent(new Event('input', { bubbles: true }));
+
+        panel.querySelector('.is-replace input').value = 'dog';
+        btn('Replace all').click();
+        return e.usertextarea.value;
+    };
+
+    // inserted before the range: it slides along, both cats still inside
+    const before = scoped(v => 'INSERTED ' + v);
+    // inserted after the range: nothing moves
+    const after = scoped(v => v + ' TRAILING');
+    // deleted before the range: it slides back
+    const deleted = scoped(v => v.replace('KEEP ', ''));
+
+    return before === 'INSERTED KEEP dog dog | OUTSIDE cat'
+        && after === 'KEEP dog dog | OUTSIDE cat TRAILING'
+        && deleted === 'dog dog | OUTSIDE cat';
+});
+
+check('the arrows and replace work on a pending edit without waiting for it', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'cat and cat');
+    e.findReplace.open(true);
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const find = panel.querySelector('input');
+    const btn = name => [...panel.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === name);
+
+    find.value = 'cat';
+    find.dispatchEvent(new Event('input', { bubbles: true }));
+
+    // the re-search waits for a pause, so right after this the offsets are
+    // known to be stale and no timer has fired
+    e.usertextarea.value = 'ZZZZZ cat and cat and cat';
+    e.usertextarea.dispatchEvent(new Event('input', { bubbles: true }));
+    const staleBeforeFlush = e.findReplace._stale === true;
+
+    // an arrow has to bring them up to date rather than step through old ones
+    btn('Next match').click();
+    const countAfterArrow = panel.querySelector('.find-replace-count').textContent;
+
+    panel.querySelector('.is-replace input').value = 'dog';
+    btn('Replace all').click();
+
+    return staleBeforeFlush
+        && countAfterArrow.endsWith('/3')
+        && e.usertextarea.value === 'ZZZZZ dog and dog and dog';
+});
+
+check('an edit in the document does not make Replace rewrite the wrong text', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'cat cat cat');
+    e.findReplace.open(true);
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const find = panel.querySelector('input');
+    const replace = panel.querySelector('.is-replace input');
+
+    find.value = 'cat';
+    find.dispatchEvent(new Event('input', { bubbles: true }));
+    replace.value = 'dog';
+
+    // the reader goes back to the text and types, pushing every match along
+    e.usertextarea.value = 'XXXXXXXXXX cat cat cat';
+    e.usertextarea.dispatchEvent(new Event('input', { bubbles: true }));
+
+    [...panel.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === 'Replace').click();
+
+    // Replacing at the offsets found before the edit ate the X's and left
+    // every match standing: 'dogXXXXXXX cat cat cat'
+    return e.usertextarea.value === 'XXXXXXXXXX dog cat cat'
+        && panel.querySelector('.find-replace-count').textContent === '1/2';
+});
+
+check('a switch reports itself the same way wherever it is set from', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'the cat');
+    e.findReplace.open(false);
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const btn = name => [...panel.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === name);
+    const reads = b => b.getAttribute('aria-pressed') + ':'
+        + b.className.includes('fj:me-btn-active') + ':' + b.className.includes('fj:me-btn-ghost');
+
+    const off = reads(btn('Match case'));
+    btn('Match case').click();
+    const on = reads(btn('Match case'));
+
+    // the same three facts for a switch set by hand and one reset by close()
+    e.usertextarea.setSelectionRange(0, 3);
+    btn('Find in selection').click();
+    const scopeOn = reads(btn('Find in selection'));
+    e.findReplace.close();
+    const scopeOff = reads(btn('Find in selection'));
+
+    return off === 'false:false:true' && on === 'true:true:false'
+        && scopeOn === on && scopeOff === off;
+});
+
+check('the shortcuts work from anywhere in the panel', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'the cat and The hat');
+    e.findReplace.open(true);
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const key = (code, mods) => panel.dispatchEvent(new KeyboardEvent('keydown',
+        { key: code.replace('Key', '').toLowerCase(), code, bubbles: true, cancelable: true, ...mods }));
+    const pressed = name => [...panel.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === name).getAttribute('aria-pressed');
+
+    key('KeyC', { altKey: true });
+    const caseOn = pressed('Match case') === 'true';
+    key('KeyR', { altKey: true });
+    const regexOn = pressed('Regular expression') === 'true';
+
+    // Escape has to work with focus on a button, not only in the box
+    [...panel.querySelectorAll('button')][0].focus();
+    panel.dispatchEvent(new KeyboardEvent('keydown',
+        { key: 'Escape', code: 'Escape', bubbles: true, cancelable: true }));
+
+    return caseOn && regexOn && panel.hidden;
+});
+
+check('the shortcuts work with the caret back in the text', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'the cat and The hat');
+    const ta = e.usertextarea;
+    const press = (code, mods) => ta.dispatchEvent(new KeyboardEvent('keydown',
+        { key: code.replace('Key', '').toLowerCase(), code, bubbles: true, cancelable: true, ...mods }));
+    const pressed = name => [...e.editorContainer.querySelectorAll('.find-replace-panel button')]
+        .find(b => b.getAttribute('aria-label') === name)?.getAttribute('aria-pressed');
+
+    // nothing open: Alt+W is not ours to take
+    press('KeyW', { altKey: true });
+    const quietWhenClosed = pressed('Whole word') === undefined;
+
+    e.findReplace.open(false);
+    press('KeyW', { altKey: true });
+    const onFromText = pressed('Whole word') === 'true';
+    press('KeyW', { altKey: true });
+
+    // the letter is unreliable with Alt held, so the code alone has to carry it
+    ta.dispatchEvent(new KeyboardEvent('keydown',
+        { key: '∑', code: 'KeyW', altKey: true, bubbles: true, cancelable: true }));
+    const onFromComposedKey = pressed('Whole word') === 'true';
+
+    return quietWhenClosed && onFromText && onFromComposedKey;
+});
+
+check('the match count reads as a fraction and is there before you type', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'the better letter');
+    e.findReplace.open();
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+    const count = panel.querySelector('.find-replace-count');
+    const empty = count.textContent;
+    const input = panel.querySelector('input');
+    input.value = 'e';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    // Always on screen, so typing does not shift the line, and a slash needs no
+    // translating where "1 of 9" would.
+    return empty === '0/0' && /^\d+\/[1-9]\d*$/.test(count.textContent);
+});
+
 check('the replace row stays hidden until the replace button is pressed', () => withStylesheet(() => {
     const e = makeEditor({ toolbar: FULL_BAR });
     e.findReplace.open();
     const panel = e.editorContainer.querySelector('.find-replace-panel');
-    const row = panel.querySelector('div:last-child');
+    const row = panel.querySelector('.find-replace-row.is-replace');
     const before = getComputedStyle(row).display;
     [...panel.querySelectorAll('button')]
         .find(b => b.getAttribute('aria-label') === 'Toggle replace row').click();
+    // Hidden has to resolve to none against the utility classes on the row,
+    // which is the whole of #45.
     return before === 'none' && getComputedStyle(row).display !== 'none';
 }));
 
