@@ -14,6 +14,7 @@ import RedoTool from './tools/RedoTool.js';
 import IndentTool from './tools/IndentTool.js';
 import OutdentTool from './tools/OutdentTool.js';
 import CodeTool from './tools/CodeTool.js';
+import MathTool from './tools/MathTool.js';
 import CodeBlockTool from './tools/CodeBlockTool.js';
 import HrTool from './tools/HrTool.js';
 import TableTool from './tools/TableTool.js';
@@ -55,6 +56,7 @@ class Toolbar {
             strikethrough: StrikethroughTool,
             blockquote: BlockQuoteTool,
             code: CodeTool,
+            math: MathTool,
             codeblock: CodeBlockTool,
             hr: HrTool,
             table: TableTool,

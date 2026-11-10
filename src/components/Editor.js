@@ -18,6 +18,11 @@ import { applyVariableSamples } from '../utils/variables.js';
 // singleton and silently change behaviour for a host app that also uses marked.
 const defaultRenderer = new Marked({ breaks: true });
 
+// Block maths, or inline maths carrying a TeX character. Used on the markdown
+// and again on the rendered HTML, so the warning only fires when the syntax
+// came through unrendered.
+const MATHS = /\$\$|\$[^$\n]*[\\^_{][^$\n]*\$/;
+
 class MarkdownEditor {
     constructor(selector, options = {}) {
         this.usertextarea = typeof selector === 'string' ? document.querySelector(selector) : selector;
@@ -396,6 +401,21 @@ class MarkdownEditor {
             && /^\s*[-*] \[[ xX]\] /m.test(source) && !/type=["']?checkbox/.test(html)) {
             this._taskListWarned = true;
             console.warn('[MarkdownEditor] Task list syntax found, but the custom renderer emitted no checkboxes. Clickable checkboxes in the preview need a task-list plugin, e.g. markdown-it-task-lists.');
+        }
+
+        // TeX is not markdown. `marked` has no idea `$` means anything, so the
+        // delimiters the maths tool writes come through as text and the reader
+        // sees `$x^2$` in the preview and assumes the editor is broken. Say so
+        // once, and stay quiet when a renderer does handle it, which is why the
+        // same test is applied to the output: if the syntax survived rendering,
+        // nothing understood it.
+        //
+        // Prices are the false positive to avoid, so inline maths has to carry
+        // a TeX character rather than merely sit between two dollar signs:
+        // "$5 to $10" is not maths, "$x^2$" is.
+        if (!this._mathWarned && MATHS.test(source) && MATHS.test(html)) {
+            this._mathWarned = true;
+            console.warn('[MarkdownEditor] Maths syntax found, but nothing rendered it. TeX is not part of markdown, so pass a renderer that understands it and load that renderer\'s stylesheet, e.g. renderer: md => markdownIt().use(katex).render(md)');
         }
 
         return sanitize(html);

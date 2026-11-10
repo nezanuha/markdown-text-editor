@@ -415,6 +415,64 @@ check('locale translates, the same as labels did', () => {
     return tooltip(e, '.bold-btn').startsWith('Negrita') && tooltip(e, '.table-btn') === 'Tabla';
 });
 
+check('the maths tool wraps a selection, and unwraps it again', () => {
+    const e = makeEditor({ toolbar: ['bold', 'math'] }, 'see x^2 here');
+    const btn = e.editorContainer.querySelector('.math-btn');
+
+    e.usertextarea.setSelectionRange(4, 7);
+    btn.click();
+    const wrapped = e.usertextarea.value;
+
+    // pressing it again on the same span takes the delimiters off
+    e.usertextarea.setSelectionRange(4, 9);
+    btn.click();
+
+    return wrapped === 'see $x^2$ here' && e.usertextarea.value === 'see x^2 here';
+});
+
+check('maths over several lines uses the block form', () => {
+    const e = makeEditor({ toolbar: ['bold', 'math'] }, 'a\nb');
+    e.usertextarea.setSelectionRange(0, 3);
+    e.editorContainer.querySelector('.math-btn').click();
+    return e.usertextarea.value === '$$\na\nb\n$$';
+});
+
+check('the maths tool with nothing selected leaves the caret between the markers', () => {
+    const e = makeEditor({ toolbar: ['bold', 'math'] }, '');
+    e.usertextarea.setSelectionRange(0, 0);
+    e.editorContainer.querySelector('.math-btn').click();
+    return e.usertextarea.value === '$$' && e.usertextarea.selectionStart === 1;
+});
+
+check('maths that nothing renders says so, once, and not for prices', () => {
+    const said = [];
+    const real = console.warn;
+    console.warn = (...a) => said.push(a.join(' '));
+
+    const e = makeEditor({ toolbar: ['bold', 'math'] });
+    // marked does not know TeX, so this comes through as text
+    e.renderMarkdown('$x^2$');
+    e.renderMarkdown('$$\n\\frac{a}{b}\n$$');
+    const warnedOnce = said.filter(m => m.includes('Maths syntax')).length === 1;
+
+    // a price is not maths, and must not provoke it
+    const f = makeEditor({ toolbar: ['bold'] });
+    f.renderMarkdown('it costs $5, up from $4');
+    const quietForPrices = !said.some(m => m.includes('Maths syntax') && said.indexOf(m) > 0);
+
+    // and a renderer that handles maths should hear nothing either
+    const g = makeEditor({
+        toolbar: ['bold'],
+        renderer: md => md.replace(/\$([^$]+)\$/g, '<span class="katex">$1</span>'),
+    });
+    const before = said.length;
+    g.renderMarkdown('$x^2$');
+    const quietWhenRendered = said.length === before;
+
+    console.warn = real;
+    return warnedOnce && quietForPrices && quietWhenRendered;
+});
+
 check('every region a screen reader lands on is translated', () => {
     const e = makeEditor({
         toolbar: FULL_BAR,

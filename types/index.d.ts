@@ -18,6 +18,7 @@ export type ToolName =
     | 'indent'
     | 'outdent'
     | 'code'
+    | 'math'
     | 'codeblock'
     | 'hr'
     | 'table'
