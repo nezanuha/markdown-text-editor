@@ -2,6 +2,13 @@
 
 ### Toolbar, live preview and WYSIWYG on the textarea you already have
 
+> **Version 2.0 is in beta** — `npm install markdown-text-editor@beta`
+>
+> The interface is translated into 56 languages, and the stylesheet is now a
+> separate file you link yourself — that last part is the breaking change.
+> 1.x stays on `latest` until 2.0 ships.
+> [What is in 2.0](https://github.com/nezanuha/markdown-text-editor/blob/2.0.0/CHANGELOG.md)
+
 [![npm installs][npm_installs]](https://www.npmjs.com/package/markdown-text-editor)
 [![Jsdelivr hits][jsdelivr]](https://cdn.jsdelivr.net/npm/markdown-text-editor)
 [![Latest Release](https://img.shields.io/npm/v/markdown-text-editor.svg)](https://github.com/nezanuha/markdown-text-editor/releases)
