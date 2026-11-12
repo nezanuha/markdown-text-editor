@@ -127,6 +127,30 @@
     display: none;
 }
 
+/*
+ * A column's alignment is written into the markdown as `:---`, `:---:` or
+ * `---:`, and the renderer turns that into `align="center"` on every cell of
+ * the column. That is a presentational attribute, and the cascade ranks those
+ * below every author declaration, so the typography plugin's
+ * `:where(th,td) { text-align: start }` beat it and the preview drew all three
+ * alignments the same. The alignment was in the document and in the HTML; only
+ * the paint was wrong.
+ *
+ * One class, one attribute and one element outranks a lone class, so this needs
+ * no !important and does not depend on source order. It also outranks frutjam's
+ * table component, which sets `text-align: start` the same way, so the preview
+ * can move onto that component without the bug coming back.
+ */
+.markdown-editor-wrapper :is(th, td)[align="left"] {
+    text-align: left;
+}
+.markdown-editor-wrapper :is(th, td)[align="center"] {
+    text-align: center;
+}
+.markdown-editor-wrapper :is(th, td)[align="right"] {
+    text-align: right;
+}
+
 .markdown-editor-wrapper.is-fullscreen {
     position: fixed;
     top: 0;

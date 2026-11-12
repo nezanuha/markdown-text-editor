@@ -13,7 +13,28 @@
  * rewriting something that was never a table.
  */
 
-const DELIMITER = /^\s*\|?(\s*:?-{1,}:?\s*\|)+\s*:?-{1,}:?\s*\|?\s*$/;
+// One cell is a table too. The repeated group was `+`, which needs a cell
+// before the last one, so `| --- |` never matched and a one-column table was
+// invisible to all of this: no controls, no Tab between cells, no alignment.
+// The size grid offers one column, so the editor could write a table it then
+// refused to recognise.
+const DELIMITER = /^\s*\|?(\s*:?-{1,}:?\s*\|)*\s*:?-{1,}:?\s*\|?\s*$/;
+
+// A delimiter row is made of these characters and nothing else, and finding
+// a stray one costs a single pass.
+//
+// DELIMITER alone backtracks over the dashes against the spaces when a line
+// turns out not to match at the very end -- quadratic, and 109ms on a line of
+// 16k. The run above made that reachable: the repeated group used to be `+`,
+// so a line with no second cell failed before the engine ever reached the
+// part that backtracks. This check fails those lines just as early, and it is
+// worth having because tableAt runs on every click and every keystroke.
+const DELIMITER_CHARS = /^[\s|:-]*$/;
+
+/** Whether a line is a table's delimiter row, `| --- | :--: |`. */
+function isDelimiter(line) {
+    return DELIMITER_CHARS.test(line) && DELIMITER.test(line);
+}
 
 /** Splits a row on unescaped pipes, dropping the outer empties. */
 function splitRow(line) {
@@ -94,15 +115,46 @@ export function tableAt(value, offset) {
     }
 
     // collect the run, and remember where each line began
-    const starts = [];
-    const lines = [];
+    let starts = [];
+    let lines = [];
     for (let s = first; s <= last; s = lineEnd(s) + 1) {
         starts.push(s);
         lines.push(lineAt(s));
         if (lineEnd(s) >= value.length) break;
     }
     if (lines.length < 2) return null;
-    if (!DELIMITER.test(lines[1])) return null;
+
+    // A table has exactly one delimiter row, so a second one in the run cannot
+    // belong to it: it is the start of another table. Two tables written with
+    // no blank line between them are two tables to anyone reading them, and
+    // taking the run as one made an edit to the first rewrite the second --
+    // widening it to match, and leaving its delimiter showing as a row of
+    // dashes. It also put the cursor halfway down a table it thought was one,
+    // so Enter could never step out of the first.
+    const delimiters = [];
+    for (let i = 0; i < lines.length; i++) {
+        if (isDelimiter(lines[i])) delimiters.push(i);
+    }
+
+    // the delimiter governing the cursor is the last one at or above it, and
+    // the header is the line before it
+    const cursorLine = starts.indexOf(here);
+    let governing = -1;
+    for (const i of delimiters) {
+        if (i - 1 <= cursorLine) governing = i;
+    }
+    if (governing < 1) return null;
+
+    const nextTable = delimiters.find(i => i > governing);
+    const from = governing - 1;
+    const to = nextTable === undefined ? lines.length - 1 : nextTable - 2;
+    if (to < from + 1) return null;             // a header and its delimiter
+
+    lines = lines.slice(from, to + 1);
+    starts = starts.slice(from, to + 1);
+    first = starts[0];
+
+    if (!isDelimiter(lines[1])) return null;
 
     const align = splitRow(lines[1]).map(readAlign);
     const rows = [];
@@ -136,7 +188,12 @@ export function serialise({ rows, align }) {
     const width = Math.max(align.length, ...rows.map(r => r.length));
     const widths = [];
     for (let c = 0; c < width; c++) {
-        widths.push(Math.max(3, ...rows.map(r => (r[c] ?? '').length)));
+        // A centre marker is five characters at its shortest, `:---:`, so a
+        // column narrower than that has to widen to fit it. Letting the marker
+        // overflow instead left the pipes out of line in a way Tidy could never
+        // put right, since this is the function Tidy writes with.
+        const floor = align[c] === 'center' ? 5 : 3;
+        widths.push(Math.max(floor, ...rows.map(r => (r[c] ?? '').length)));
     }
 
     const line = cells => '| ' + cells.map((c, i) => (c ?? '').padEnd(widths[i])).join(' | ') + ' |';

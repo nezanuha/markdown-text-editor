@@ -34,6 +34,21 @@ export function clearScrollbar(textarea, el) {
 }
 
 /**
+ * Turns a switch on or off, for the eye and for a screen reader both.
+ *
+ * The ghost class has to come off for active to show: ghost sets a literal
+ * transparent background, while active swaps --color-btn, which the base
+ * button paints with, so the two together cancel out. Kept in one place
+ * rather than at each switch, which is how one of them came to disagree.
+ */
+export function setPressed(btn, on) {
+    if (!btn) return;
+    btn.setAttribute('aria-pressed', String(on));
+    btn.classList.toggle('fj:me-btn-ghost', !on);
+    btn.classList.toggle('fj:me-btn-active', on);
+}
+
+/**
  * Where stretches of the textarea's text sit, in pixels.
  *
  * A textarea will not tell you where any of its text is, so this lays the same

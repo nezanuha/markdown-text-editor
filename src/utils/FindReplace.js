@@ -1,4 +1,4 @@
-import { overlayHost, clearScrollbar, measureOffsets } from './overlay.js';
+import { overlayHost, clearScrollbar, setPressed, measureOffsets } from './overlay.js';
 
 // Past this many matches the marks cost more than they are worth: a thousand
 // elements over text nobody can take in at once. Only the current one is drawn
@@ -515,19 +515,9 @@ export default class FindReplace {
         this._gutterObserver.observe(this.editor.usertextarea);
     }
 
-    /**
-     * Turns a switch on or off, for the eye and for a screen reader both.
-     *
-     * The ghost class has to come off for active to show: ghost sets a literal
-     * transparent background, while active swaps --color-btn, which the base
-     * button paints with, so the two together cancel out. Kept here rather
-     * than at each switch, which is how one of them came to disagree.
-     */
+    /** @see setPressed, which the table bar's align switches share. */
     _setPressed(btn, on) {
-        if (!btn) return;
-        btn.setAttribute('aria-pressed', String(on));
-        btn.classList.toggle('fj:me-btn-ghost', !on);
-        btn.classList.toggle('fj:me-btn-active', on);
+        setPressed(btn, on);
     }
 
     /**

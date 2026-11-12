@@ -642,6 +642,212 @@ check('the table controls act on the column and row the cursor is in', () => {
     return widened === 5 && even;
 });
 
+check('the table bar wraps rather than running off a narrow editor', () => {
+    const e = makeEditor({ toolbar: FULL_BAR },
+        ['| a | b | c |', '| --- | --- | --- |', '| 1 | 2 | 3 |'].join('\n'));
+    const ta = e.usertextarea;
+    const at = ta.value.indexOf('| 1') + 2;
+    ta.setSelectionRange(at, at);
+    ta.dispatchEvent(new window.MouseEvent('mouseup', { bubbles: true }));
+    const pop = e.editorContainer.querySelector('.table-popover');
+
+    // Eight controls in a row are wider than a phone, and the bar was capped
+    // at the pane width with nowhere for the rest to go, so the last controls
+    // were simply cut off. Each group is one flex child, so a wrap breaks
+    // between groups rather than through the middle of one.
+    const wraps = pop.className.includes('fj:flex-wrap');
+
+    // Placement needs real geometry, which happy-dom does not have, so the
+    // clamp is checked in a browser. What is checked here is that it stays
+    // out of trouble when every measurement reads zero.
+    e.tablePopover._place();
+    const top = parseInt(pop.style.top, 10);
+    const survivesPageScroll = (() => {
+        window.dispatchEvent(new Event('scroll'));
+        return !pop.hidden;
+    })();
+
+    return wraps && Number.isFinite(top) && top >= 4 && survivesPageScroll;
+});
+
+check('the table controls can be reached and driven from the keyboard', () => {
+    const e = makeEditor({ toolbar: FULL_BAR },
+        ['| Name | Role |', '| --- | --- |', '| Alice | Engineer |'].join('\n'));
+    const ta = e.usertextarea;
+    const pop = e.editorContainer.querySelector('.table-popover');
+    const at = ta.value.indexOf('Alice') + 2;
+    ta.focus();
+    ta.setSelectionRange(at, at);
+
+    // Until now the only way in was a click, so none of this existed for
+    // anyone working from the keyboard. Matched on `code`, because Alt
+    // composes a character on macOS and gives a different `key`.
+    ta.dispatchEvent(new KeyboardEvent('keydown',
+        { key: 't', code: 'KeyT', altKey: true, bubbles: true, cancelable: true }));
+    if (pop.hidden || !pop.contains(document.activeElement)) return false;
+
+    const buttons = [...pop.querySelectorAll('button')];
+    // one tab stop, arrows inside it: the toolbar pattern
+    if (buttons.filter(b => b.tabIndex === 0).length !== 1) return false;
+
+    const first = document.activeElement;
+    pop.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+    const second = document.activeElement;
+    if (second === first || !pop.contains(second)) return false;
+    if (second.tabIndex !== 0 || first.tabIndex !== -1) return false;
+
+    pop.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    return pop.hidden && document.activeElement === ta;
+});
+
+check('the table bar reads as named groups, not loose words', () => {
+    const e = makeEditor({ toolbar: FULL_BAR },
+        ['| Name | Role |', '| --- | --- |', '| Alice | Engineer |'].join('\n'));
+    const ta = e.usertextarea;
+    const at = ta.value.indexOf('Alice') + 2;
+    ta.setSelectionRange(at, at);
+    ta.dispatchEvent(new window.MouseEvent('mouseup', { bubbles: true }));
+    const pop = e.editorContainer.querySelector('.table-popover');
+
+    // The words Column and Row used to sit beside the buttons as text, which
+    // a screen reader read out before a button that already says "column".
+    // They are group names now, and the pictures are hidden.
+    const named = [...pop.querySelectorAll('[role="group"]')]
+        .map(g => g.getAttribute('aria-label')).join(',');
+    const loose = [...pop.querySelectorAll('span')]
+        .filter(x => x.textContent.trim() && x.getAttribute('aria-hidden') !== 'true');
+
+    return named === 'Column,Row'
+        && loose.length === 0
+        && [...pop.querySelectorAll('button')].every(b => b.getAttribute('aria-label') && b.title);
+});
+
+check('a table with one column is a table like any other', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, ['| A |', '| --- |', '| a |'].join('\n'));
+    const ta = e.usertextarea;
+    const at = ta.value.indexOf('| A') + 2;
+    ta.setSelectionRange(at, at);
+    ta.dispatchEvent(new window.MouseEvent('mouseup', { bubbles: true }));
+
+    // The delimiter pattern wanted a cell before the last one, so `| --- |`
+    // never matched: no controls, no Tab between cells, no alignment. The size
+    // grid offers one column, so the editor could write a table it then
+    // refused to recognise.
+    const barOpened = e.tablePopover.isOpen;
+
+    [...e.editorContainer.querySelectorAll('.table-popover button')]
+        .find(b => b.getAttribute('aria-label') === 'Align center').click();
+
+    return barOpened && /:-+:/.test(ta.value.split('\n')[1]);
+});
+
+check('a centred column still lines its pipes up, however narrow', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, ['| A | Role |', '| --- | --- |', '| a | b |'].join('\n'));
+    const ta = e.usertextarea;
+    const at = ta.value.indexOf('| A') + 2;
+    ta.setSelectionRange(at, at);
+    ta.dispatchEvent(new window.MouseEvent('mouseup', { bubbles: true }));
+
+    [...e.editorContainer.querySelectorAll('.table-popover button')]
+        .find(b => b.getAttribute('aria-label') === 'Align center').click();
+
+    // `:---:` is five characters at its shortest, so a column narrower than
+    // that has to widen to fit it. Letting the marker overflow left the pipes
+    // out of line in a way Tidy could never put right, because this is what
+    // Tidy writes.
+    const rows = ta.value.split('\n').filter(l => l.startsWith('|'));
+    return rows.every(l => l.length === rows[0].length);
+});
+
+check('an alignment stays with its column when another is inserted', () => {
+    const e = makeEditor({ toolbar: FULL_BAR },
+        ['| A | B | C |', '| --- | --- | --- |', '| a | b | c |'].join('\n'));
+    const ta = e.usertextarea;
+    const press = label => [...e.editorContainer.querySelectorAll('.table-popover button')]
+        .find(b => b.getAttribute('aria-label') === label).click();
+    const put = needle => {
+        const at = ta.value.indexOf(needle) + 2;
+        ta.setSelectionRange(at, at);
+        ta.dispatchEvent(new window.MouseEvent('mouseup', { bubbles: true }));
+    };
+    const markedColumn = () => ta.value.split('\n')[1]
+        .split('|').slice(1, -1).map(c => c.trim()).findIndex(c => /-+:$/.test(c));
+
+    put('| B'); press('Align right');
+    if (markedColumn() !== 1) return false;
+
+    put('| A'); press('Insert column after');     // inserts at index 1
+    if (markedColumn() !== 2) return false;       // pushes the marked one right
+
+    put('| A'); press('Delete column');           // and back again
+    return markedColumn() === 1;
+});
+
+check('Tidy greys out when the pipes already line up', () => {
+    const ragged = ['Intro.', '', '| Name | Role |', '| --- | --- |', '| Alexandra | Engineer |'].join('\n');
+    const e = makeEditor({ toolbar: FULL_BAR }, ragged);
+    const ta = e.usertextarea;
+    const pop = e.editorContainer.querySelector('.table-popover');
+    const tidy = [...pop.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === 'Tidy the table');
+
+    const at = ta.value.indexOf('Alexandra') + 2;
+    ta.setSelectionRange(at, at);
+    ta.dispatchEvent(new window.MouseEvent('mouseup', { bubbles: true }));
+    const liveWhileRagged = !tidy.disabled;
+
+    tidy.click();
+
+    // Every other control writes the table back through serialise, which lines
+    // the pipes up on the way, so Tidy is usually a button that changes nothing
+    // and says nothing. Now it shows that there is nothing to act on.
+    return liveWhileRagged && tidy.disabled;
+});
+
+check('the align switches show which alignment the column is set to', () => {
+    const e = makeEditor({ toolbar: FULL_BAR },
+        ['Intro.', '', '| a | b |', '| --- | ---: |', '| 1 | 2 |'].join('\n'));
+    const ta = e.usertextarea;
+    const pop = e.editorContainer.querySelector('.table-popover');
+    const btn = label => [...pop.querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === label);
+    const lit = () => ['Align left', 'Align center', 'Align right']
+        .filter(l => btn(l).getAttribute('aria-pressed') === 'true');
+
+    // column 1 has no alignment of its own, so none of the three is lit
+    const first = ta.value.indexOf('| 1') + 2;
+    ta.setSelectionRange(first, first);
+    ta.dispatchEvent(new window.MouseEvent('mouseup', { bubbles: true }));
+    const noneAtFirst = lit().length === 0;
+
+    // arrowing into column 2, which the delimiter row aligns right, moves the
+    // highlight without reopening the bar
+    const second = ta.value.indexOf('| 2') + 2;
+    ta.setSelectionRange(second, second);
+    ta.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowRight', bubbles: true }));
+    const rightAtSecond = lit().join() === 'Align right';
+
+    // and pressing another one moves it again
+    btn('Align center').click();
+    const centerAfterPress = lit().join() === 'Align center';
+
+    return noneAtFirst && rightAtSecond && centerAfterPress;
+});
+
+check('a column alignment survives rendering into the preview', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, preview: true });
+    const html = e.renderMarkdown(
+        ['| L | C | R |', '| :--- | :---: | ---: |', '| a | b | c |'].join('\n'));
+
+    // The renderer writes the alignment as a presentational attribute and the
+    // sanitizer has to leave it alone, or the stylesheet has nothing to act on.
+    // Whether it is then painted is a cascade question, which happy-dom does
+    // not answer: that half is checked in a browser.
+    return html.includes('align="left"')
+        && html.includes('align="center"')
+        && html.includes('align="right"');
+});
+
 check('a table edit leaves the cursor in the cell it was in', () => {
     const rows = ['Intro.', '', '| Name | Role |', '|---|---|', '| Alice | Engineer |'].join('\n');
     const e = makeEditor({ toolbar: FULL_BAR }, rows);
@@ -699,6 +905,207 @@ check('the table button offers a grid of sizes, and inserts the one picked', () 
     return grid.querySelectorAll('button').length === 64
         && lines.length === 4
         && lines[0].split('|').length === 6;
+});
+
+check('the size grid shows where the pointer is, not just how big', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const grid = e.editorContainer.querySelector('.table-size-grid');
+    const cell = (c, r) => grid.querySelector(`button[data-col="${c}"][data-row="${r}"]`);
+
+    cell(3, 2).dispatchEvent(new window.Event('mouseenter', { bubbles: false }));
+
+    const all = [...grid.querySelectorAll('button')];
+    const block = all.filter(b => b.className.includes('bg-primary-700'));
+    const under = all.filter(b => b.className.includes('bg-primary-active'));
+
+    // A fingertip covers its own square, so a block of one flat colour leaves
+    // you picking blind. The corner under the pointer is darker, and is not
+    // also in the block, or the two backgrounds would fight.
+    return under.length === 1
+        && under[0] === cell(3, 2)
+        && block.length === 5              // six cells in a 3x2, less the corner
+        && !block.includes(cell(3, 2));
+});
+
+check('the size grid is set up to be dragged, and still works by keyboard', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const grid = e.editorContainer.querySelector('.table-size-grid');
+    const cell = (c, r) => grid.querySelector(`button[data-col="${c}"][data-row="${r}"]`);
+
+    // Hovering has no touch equivalent, so a tap had to be aimed at one small
+    // square with no preview of what it would produce. Two things make the
+    // drag possible, and both are easy to delete by accident:
+    //   touch-none  — or the browser reads the first finger movement as a page
+    //                 scroll, takes the gesture over and fires pointercancel
+    //   coarse size — 16px is a mouse target, a finger gets 28
+    // The gesture itself needs real geometry and elementFromPoint, neither of
+    // which happy-dom has, so it is checked in a browser.
+    const dragReady = grid.className.includes('fj:touch-none')
+        && cell(1, 1).className.includes('fj:pointer-coarse:size-7')
+        && grid.style.gridTemplateColumns.includes('auto');
+
+    // Capturing the pointer retargets the click to the grid, so a release does
+    // the inserting now. The click handler stays for the keyboard, where there
+    // is no pointer and no capture, and this is the path that proves it.
+    cell(4, 3).click();
+    const lines = e.usertextarea.value.split('\n').filter(x => x.trim().startsWith('|'));
+
+    return dragReady && lines.length === 4 && lines[0].split('|').length - 2 === 4;
+});
+
+check('a table inserted below another is a second table, not more rows', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const pick = (cols, rows) => e.editorContainer.querySelector('.table-size-grid')
+        .querySelector(`button[data-col="${cols}"][data-row="${rows}"]`).click();
+
+    pick(4, 2);
+    pick(7, 4);                   // from wherever the first insert left the caret
+
+    const lines = e.usertextarea.value.split('\n');
+    // Without a blank line between them the second table was swallowed by the
+    // first: one table of seven rows, with columns 5 to 7 dropped in silence
+    // because the first table only declares four.
+    return lines[3] === ''
+        && lines[4].split('|').length === 9      // seven columns, kept
+        && lines[2].split('|').length === 6;     // the first table still has four
+});
+
+check('a table inserted above text leaves it a paragraph, not a third row', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'next paragraph');
+    e.usertextarea.setSelectionRange(0, 0);
+    e.editorContainer.querySelector('.table-size-grid')
+        .querySelector('button[data-col="2"][data-row="2"]').click();
+
+    // A GFM table runs on until a blank line. With no newline at all the
+    // paragraph was welded onto the last row as `|   |   |next paragraph`;
+    // with one it became a third row. It takes a blank line to end the block.
+    const lines = e.usertextarea.value.split('\n');
+    return lines.length === 5
+        && lines[3] === ''
+        && lines[4] === 'next paragraph'
+        // and the caret is left in the table, not on the line below it
+        && e.usertextarea.selectionStart === e.usertextarea.value.indexOf('\n\n');
+});
+
+check('leaving a fresh table with Enter keeps every row it was given', () => {
+    // a separator row is the one carrying dashes; the rest are the header and
+    // the body rows, so the body count is one short of what is left
+    const bodyRows = ta => ta.value.split('\n')
+        .filter(l => l.trim().startsWith('|') && !l.includes('---')).length - 1;
+
+    // Every size the grid offers, because the first fix only covered a table
+    // with a single row and an 8 x 4 still lost one.
+    for (let rows = 2; rows <= 8; rows++) {
+        const e = makeEditor({ toolbar: FULL_BAR });
+        e.editorContainer.querySelector('.table-size-grid')
+            .querySelector(`button[data-col="8"][data-row="${rows}"]`).click();
+        const ta = e.usertextarea;
+        const asked = bodyRows(ta);
+
+        ta.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+
+        // Enter leaves a table from an empty row, but a row the size grid was
+        // asked for is not Enter's to take back.
+        if (bodyRows(ta) !== asked) return false;
+        // and the caret clears the table and the blank line under it, so what
+        // is typed next is a paragraph rather than another row
+        const line = ta.value.slice(0, ta.selectionStart).split('\n').pop();
+        if (line.startsWith('|') || ta.selectionStart !== ta.value.length) return false;
+    }
+    return true;
+});
+
+check('Enter takes back the row it made, and leaves the ones it did not', () => {
+    const bodyRows = ta => ta.value.split('\n')
+        .filter(l => l.trim().startsWith('|') && !l.includes('---')).length - 1;
+    const e = makeEditor({ toolbar: FULL_BAR },
+        ['| a | b |', '| --- | --- |', '| 1 | 2 |', '| 3 | 4 |', ''].join('\n'));
+    const ta = e.usertextarea;
+    const enter = () => ta.dispatchEvent(new KeyboardEvent('keydown',
+        { key: 'Enter', bubbles: true, cancelable: true }));
+
+    const at = ta.value.indexOf('| 3') + 3;
+    ta.setSelectionRange(at, at);
+    enter();                       // the last filled row -> a row Enter made
+    const made = bodyRows(ta);
+    enter();                       // empty, and Enter's own, so it goes
+
+    return made === 3 && bodyRows(ta) === 2;
+});
+
+check('two tables with no blank line between them are two tables', () => {
+    const first = ['| a1 | a2 | a3 |', '| -- | -- | -- |', '|    |    |    |'].join('\n');
+    const second = ['| b1 | b2 |', '| -- | -- |', '|    |    |'].join('\n');
+    const e = makeEditor({ toolbar: FULL_BAR }, first + '\n' + second);
+    const ta = e.usertextarea;
+
+    // A table has exactly one delimiter row, so the second one starts another
+    // table. Reading the run as one table put the cursor halfway down it, so
+    // Enter could never step out of the first, and any edit to the first
+    // rewrote the second: widened to match, its delimiter left showing as a
+    // row of dashes.
+    ta.setSelectionRange(first.length, first.length);
+    ta.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+
+    // stepping out of the first separates them, and leaves the second as it was
+    return ta.value.includes(second)
+        && ta.value.includes('\n\n')
+        && ta.value.indexOf('b1') > ta.value.indexOf('\n\n');
+});
+
+check('Enter steps out of a table onto a line prose can go on, whatever follows', async () => {
+    const table = ['| a | b |', '| --- | --- |', '| 1 | 2 |', '|   |   |'].join('\n');
+    const other = ['| c | d | e |', '| --- | --- | --- |', '|   |   |   |'].join('\n');
+
+    // The caret needs an empty line with a blank line above it: the line right
+    // under a table is still the table, and the line past the gap is already
+    // taken when something else is there.
+    for (const below of ['', '\n', '\n\n', '\n\n\n\n',
+                         '\nnext paragraph', '\n\nnext paragraph',
+                         '\n\n' + other, '\n' + other,
+                         '\n\n## Heading', '\n\n- one\n- two']) {
+        const e = makeEditor({ toolbar: FULL_BAR }, table + below);
+        const ta = e.usertextarea;
+        ta.setSelectionRange(table.length, table.length);
+        ta.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+
+        const lines = ta.value.slice(0, ta.selectionStart).split('\n');
+        const onEmptyLine = lines[lines.length - 1] === ''
+            && ta.value.slice(ta.selectionStart).split('\n')[0] === '';
+        const blankAbove = lines[lines.length - 2] === '';
+        if (!onEmptyLine || !blankAbove) return false;
+
+        // the table kept its two rows, and whatever was below is untouched
+        const rows = ta.value.split('\n')
+            .filter(l => l.trim().startsWith('|') && !l.includes('---'));
+        if (rows.length < 3) return false;
+        if (below.trim() && !ta.value.includes(below.trim())) return false;
+    }
+    return true;
+});
+
+check('stepping out of a table twice does not stack up blank lines', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, ['| a | b |', '| --- | --- |', '| 1 | 2 |', ''].join('\n'));
+    const ta = e.usertextarea;
+    const enter = () => ta.dispatchEvent(new KeyboardEvent('keydown',
+        { key: 'Enter', bubbles: true, cancelable: true }));
+
+    // re-found each time, because writing the table back aligns the pipes
+    // and every offset in it moves
+    const intoTheRow = () => {
+        const at = ta.value.indexOf('| 1') + 3;
+        ta.setSelectionRange(at, at);
+    };
+
+    intoTheRow();
+    enter();                      // the last filled row -> a new empty one
+    enter();                      // the empty one -> out, dropping it
+    const once = ta.value;
+
+    intoTheRow();
+    enter();
+    enter();
+    return ta.value === once;
 });
 
 check('the panel lays itself out from its own width, in CSS', () => {
@@ -1521,6 +1928,104 @@ check('it is reported once per page, not once per editor', () => {
     const before = cssErrors.length;
     makeEditor(); makeEditor();
     return cssErrors.length === before;
+});
+
+// --- turning features off ----------------------------------------------------
+//
+// One option per feature, `false` to turn it off. None of this gating was
+// covered before, in either direction, so these pin both: that each feature is
+// built by default, and that turning it off actually stops it being built.
+
+const BAR_NO_TABLE = BASE_BAR.filter(t => t !== 'table');
+const clickIn = (e, needle) => {
+    const ta = e.usertextarea;
+    const at = ta.value.indexOf(needle) + 2;
+    ta.setSelectionRange(at, at);
+    ta.dispatchEvent(new window.MouseEvent('mouseup', { bubbles: true }));
+};
+const TABLE_DOC = ['| a | b |', '|---|---|', '| x | y |'].join('\n');
+
+check('find and the footer are both built by default', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    return !!e.findReplace
+        && !!e.editorContainer.querySelector('.editor-footer');
+});
+
+check('find: false leaves Ctrl+F to the browser', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, find: false });
+    e.usertextarea.dispatchEvent(new window.KeyboardEvent('keydown', {
+        key: 'f', code: 'KeyF', ctrlKey: true, bubbles: true, cancelable: true,
+    }));
+    // Not built, and nothing left behind that a stray handler could open.
+    return e.findReplace === undefined
+        && e.editorContainer.querySelector('.find-replace-panel') === null;
+});
+
+check('the table bar follows the toolbar when nothing says otherwise', () => {
+    const withTable = makeEditor({ toolbar: FULL_BAR }, TABLE_DOC);
+    const without = makeEditor({ toolbar: BAR_NO_TABLE }, TABLE_DOC);
+    clickIn(withTable, '| a');
+    clickIn(without, '| a');
+    return withTable.tablePopover.isOpen && without.tablePopover === undefined;
+});
+
+check('tableBar: true offers the bar without the table button', () => {
+    const e = makeEditor({ toolbar: BAR_NO_TABLE, tableBar: true }, TABLE_DOC);
+    const built = !!e.tablePopover;
+    clickIn(e, '| a');
+    // The gap this closes: content can hold tables on a toolbar that offers
+    // no way to insert one, and alignment was unreachable there.
+    return built && e.tablePopover.isOpen
+        && e.editorContainer.querySelector('.table-btn') === null;
+});
+
+check('tableBar: false wins over the table button', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, tableBar: false }, TABLE_DOC);
+    clickIn(e, '| a');
+    const alt = new window.KeyboardEvent('keydown', {
+        key: 't', code: 'KeyT', altKey: true, bubbles: true, cancelable: true,
+    });
+    e.usertextarea.dispatchEvent(alt);
+    return e.tablePopover === undefined
+        && e.editorContainer.querySelector('.table-popover') === null
+        && !!e.editorContainer.querySelector('.table-btn');
+});
+
+check('Tab between cells still works with the bar turned off', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, tableBar: false }, TABLE_DOC);
+    const ta = e.usertextarea;
+    const at = ta.value.indexOf('| a') + 2;
+    ta.setSelectionRange(at, at);
+    ta.dispatchEvent(new window.KeyboardEvent('keydown', {
+        key: 'Tab', bubbles: true, cancelable: true,
+    }));
+    // Documented promise: the keys are markdown editing, not the tool.
+    return ta.selectionStart > at;
+});
+
+check('the old tablePopover name says where it went', () => {
+    const said = [];
+    const quiet = console.error;
+    console.error = (...a) => { if (!String(a[0]).includes('Stylesheet')) said.push(a[0]); };
+    const e = makeEditor({ toolbar: FULL_BAR, tableBar: true, tablePopover: false });
+    console.error = quiet;
+    // Renamed, not aliased: beta.3 is not a contract. But silence would read
+    // as the bar being broken, so the old name has to point somewhere.
+    return said.length === 1
+        && said[0].includes('tableBar: false')
+        && !!e.tablePopover;
+});
+
+check('footer keeps the name and the shape it has had since 1.x', () => {
+    // It already followed the convention the other two now match: `false` off,
+    // an object to configure. Nothing about it changed, so this is the guard
+    // that nothing about it moved either.
+    const on = makeEditor({ toolbar: FULL_BAR, footer: { words: true } }, 'one two');
+    const hidden = makeEditor({ toolbar: FULL_BAR, footer: false });
+    return on.footerOptions.words === true
+        && !!on.editorContainer.querySelector('.editor-footer')
+        && hidden.footerOptions === null
+        && hidden.editorContainer.querySelector('.editor-footer') === null;
 });
 
 // --- report -----------------------------------------------------------------

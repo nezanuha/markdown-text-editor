@@ -46,6 +46,15 @@ const translated: MarkdownEditorOptions = {
     labels: { Bold: 'Negrita', 'Insert variable': 'Insertar variable', 'Uploading...': 'Subiendo...' },
 };
 const noFooter: MarkdownEditorOptions = { footer: false };
+
+const switches: MarkdownEditorOptions = { find: false, tableBar: true, footer: { words: true } };
+const barOff: MarkdownEditorOptions = { tableBar: false };
+// @ts-expect-error  tablePopover was renamed to tableBar in 2.0.0
+const renamedOption: MarkdownEditorOptions = { tablePopover: true };
+// @ts-expect-error  the bar is on or off, not configured
+const badBar: MarkdownEditorOptions = { tableBar: { align: true } };
+// @ts-expect-error  find is on or off
+const badFind: MarkdownEditorOptions = { find: 'always' };
 const customTheme: MarkdownEditorOptions = { theme: 'my-brand' };
 const altDisabled: MarkdownEditorOptions = { toolbar: [{ image: { altInput: false } }] };
 const altRequired: MarkdownEditorOptions = { toolbar: [{ image: { altInput: { required: true } } }] };

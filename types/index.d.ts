@@ -150,6 +150,11 @@ export interface FooterOptions {
     words?: boolean;
 }
 
+/**
+ * One option per feature, named after the feature. `false` turns it off, and
+ * an object configures it where there is anything to configure. New features
+ * follow the same shape, so there is never a question of where one goes.
+ */
 export interface MarkdownEditorOptions {
     /**
      * `'hybrid'` renders formatting live as you type, `'plain'` shows raw
@@ -169,12 +174,17 @@ export interface MarkdownEditorOptions {
     /** Status bar configuration, or `false` to hide it. */
     footer?: false | FooterOptions;
 
+    /** Find and replace, `Ctrl+F`. Set `false` to leave the shortcut to the
+     * browser. Default `true`. */
+    find?: boolean;
+
     /**
-     * Table controls, which open beside a table when you click inside one.
-     * They need the `table` tool on the toolbar. Set `false` to edit the pipes
-     * by hand; Tab between cells works either way.
+     * Table controls, which open beside a table when you click inside one, or
+     * on `Alt+T`. Omit to follow the toolbar, where they come with the `table`
+     * tool. `true` offers them without that tool, for content that already
+     * holds tables; `false` never. Tab between cells works either way.
      */
-    tablePopover?: boolean;
+    tableBar?: boolean;
 
     /**
      * Overrides the theme. Without it the editor inherits `data-theme` from the

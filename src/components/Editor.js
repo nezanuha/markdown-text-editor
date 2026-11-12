@@ -31,6 +31,10 @@ class MarkdownEditor {
         this.options = options;
         this.mode = options.mode || 'plain';
         this.preview = (this.options.toolbar) ? this.options.toolbar.includes('preview') : true;
+        // One option per feature, named after the feature: `false` turns it
+        // off, an object configures it. Keeping them at the top level rather
+        // than under a group means a new feature never raises the question of
+        // which side of the group it belongs on.
         this.footerOptions = this._parseFooterOptions(options.footer);
         this.variables = this._parseVariables(options.toolbar);
         this.imageUpload = this._parseImageUpload(options.toolbar);
@@ -43,17 +47,20 @@ class MarkdownEditor {
         this.listManager = new ListManager(this);
         this.indentManager = new IndentManager(this);
         this.shortcutManager = new ShortcutManager(this);
-        this.findReplace = new FindReplace(this);
+        // `find: false` leaves Ctrl+F to the browser. Nothing else reaches for
+        // the panel, so not building it is enough to turn it off.
+        if (options.find !== false) this.findReplace = new FindReplace(this);
         this.pasteManager = new PasteManager(this);
-        // Only worth building where tables are offered at all, and
-        // `tablePopover: false` turns it off for anyone who would rather edit
-        // the pipes by hand.
-        if (this.options.tablePopover !== false
-            && this.editorContainer.querySelector('.table-btn')) {
-            this.tablePopover = new TablePopover(this);
-        }
+        // Omitted, the bar follows the toolbar: it is only worth offering
+        // where tables are. `true` asks for it anyway, for content that
+        // already holds tables on a toolbar without the button; `false`
+        // never builds it, for anyone who would rather edit the pipes by hand.
+        const tableBar = options.tableBar
+            ?? !!this.editorContainer.querySelector('.table-btn');
+        if (tableBar) this.tablePopover = new TablePopover(this);
         this._warnIfStylesheetMissing();
         this._warnIfLocaleIsACode();
+        this._warnIfOptionRenamed();
     }
 
     /**
@@ -71,6 +78,21 @@ class MarkdownEditor {
             `[MarkdownEditor] locale: '${code}' has no effect. It takes the strings, not a code:\n` +
             `  import ${/^[a-z]{2}$/i.test(code) ? code : 'strings'} from 'markdown-text-editor/locale/${code}.js'\n` +
             `  new MarkdownEditor(el, { locale: ${/^[a-z]{2}$/i.test(code) ? code : 'strings'} })`
+        );
+    }
+
+    /**
+     * `tablePopover` only ever existed in 2.0.0-beta.3, so it is renamed rather
+     * than aliased the way `labels` is: a beta is not a contract. It was public
+     * long enough to reach the docs, though, and silently ignoring it would
+     * read as the bar being broken rather than renamed.
+     */
+    _warnIfOptionRenamed() {
+        if (this.options.tablePopover === undefined) return;
+
+        console.error(
+            `[MarkdownEditor] tablePopover is now tableBar:\n` +
+            `  new MarkdownEditor(el, { tableBar: ${this.options.tablePopover} })`
         );
     }
 
