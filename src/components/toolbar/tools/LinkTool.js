@@ -1,5 +1,6 @@
 import Tool from '../Tool.js';
 import { modal } from '../../modal.js';
+import { escapeHtml } from '../../../utils/escapeHtml.js';
 
 class LinkTool extends Tool {
     constructor(editor) {
@@ -46,8 +47,8 @@ class LinkTool extends Tool {
             </div>
             <form method="post">
                 <div class="fj:flex fj:flex-col fj:justify-center fj:gap-y-4.5 fj:mt-4">
-                    <input type="url" placeholder="${this.editor.label('URL')}" class="link-input fj:me-input fj:w-full" value="${prefillUrl}" required>
-                    <input type="text" placeholder="${this.editor.label('Link text')}" class="link-text-input fj:me-input fj:w-full" value="${prefillText}" required>
+                    <input type="url" placeholder="${this.editor.label('URL')}" class="link-input fj:me-input fj:w-full" value="${escapeHtml(prefillUrl)}" required>
+                    <input type="text" placeholder="${this.editor.label('Link text')}" class="link-text-input fj:me-input fj:w-full" value="${escapeHtml(prefillText)}" required>
                     <button type="submit" class="submit-link fj:me-btn fj:me-btn-sm fj:self-end">${this.editor.label('Apply')}</button>
                 </div>
             </form>`;

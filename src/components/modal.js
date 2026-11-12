@@ -1,3 +1,5 @@
+import { escapeHtml } from '../utils/escapeHtml.js';
+
 export function modal(event, size, bodyHTML, label = '') {
     const self = event.target;
     const mde = self.closest(".markdown-editor-wrapper");
@@ -5,7 +7,10 @@ export function modal(event, size, bodyHTML, label = '') {
         mde.querySelector(".markdown-modal").remove();
     }
 
-    const ariaAttr = label ? `aria-label="${label}"` : '';
+    // `modal` is public, so a custom tool may well pass something that came
+    // from the document or from its own fields. `bodyHTML` is markup by
+    // contract and the caller owns it; the label is plain text and is not.
+    const ariaAttr = label ? `aria-label="${escapeHtml(label)}"` : '';
     const modalHTML = `
         <dialog class="markdown-modal fj:me-modal fj:me-modal-top fj:lg:me-modal-middle fj:me-modal-center" id="nezanuha_toggleModal" ${ariaAttr}>
             <div class="fj:me-modal-content ${size}">
