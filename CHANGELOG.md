@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.5] - 2026-11-12
+
+### Security
+
+- **Link and image dialogs could run script from the document**: Selected text went into the dialog's HTML unescaped, so crafted markdown ran in the browser of whoever was editing it. Affects 1.8.0 to 1.9.4
+
+
 ## [1.9.4] - 2026-10-30
 
 ### Fixed
@@ -469,7 +476,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.4...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.5...HEAD
+[1.9.5]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.4...v1.9.5
 [1.9.4]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.3...v1.9.4
 [1.9.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.2...v1.9.3
 [1.9.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.1...v1.9.2

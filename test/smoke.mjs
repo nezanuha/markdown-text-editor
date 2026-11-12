@@ -735,6 +735,54 @@ await checkAsync('the upload placeholder is translatable', async () => {
     return during.includes('Subiendo...');
 });
 
+// --- the link and image dialogs prefill from the document --------------------
+//
+// Both dialogs are built by concatenation and inserted with
+// insertAdjacentHTML, and both prefill their fields from the text around the
+// cursor. The alt and link-text fields fall back to whatever is selected, so
+// any document text reached an HTML attribute unescaped: selecting
+// `"><img src=x onerror=...>` and pressing the button closed the value and ran
+// the handler, in the session of whoever was editing rather than whoever
+// wrote it. Confirmed exploitable in Edge before this fix.
+
+const PAYLOAD = '"><img src=x onerror="window.__xss=1">';
+
+const openDialog = (tool, btnClass, value, select) => {
+    const e = makeEditor({ toolbar: ['bold', tool] }, value);
+    const ta = e.usertextarea;
+    const at = ta.value.indexOf(select);
+    ta.setSelectionRange(at, at + select.length);
+    e.editorContainer.querySelector('.' + btnClass).click();
+    return e;
+};
+
+for (const [tool, btnClass] of [['link', 'link-btn'], ['image', 'image-link-btn']]) {
+    check(`the ${tool} dialog does not execute text from the document`, () => {
+        const e = openDialog(tool, btnClass, 'before ' + PAYLOAD + ' after', PAYLOAD);
+        const dialog = e.editorContainer.querySelector('.markdown-modal');
+        // The escaped text still contains the word "onerror", which is
+        // harmless; what matters is that no element carries it as an
+        // attribute, and that nothing was built from the payload.
+        const handlers = dialog
+            ? [...dialog.querySelectorAll('*')].filter(n => n.hasAttribute('onerror'))
+            : [];
+        return !!dialog
+            && dialog.querySelectorAll('img').length === 0
+            && handlers.length === 0;
+    });
+
+    check(`the ${tool} dialog still prefills the text it was given`, () => {
+        // Escaping must not corrupt a legitimate value: the browser decodes
+        // the entities when parsing the attribute, so the field reads back
+        // exactly what was selected.
+        const awkward = "Tom & Jerry's <big> day & night";
+        const e = openDialog(tool, btnClass, 'x ' + awkward + ' y', awkward);
+        const field = e.editorContainer.querySelector(
+            tool === 'link' ? '.link-text-input' : '.img-link-alt-input');
+        return field?.value === awkward;
+    });
+}
+
 // --- report -----------------------------------------------------------------
 
 await Promise.all(pending);

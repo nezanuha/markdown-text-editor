@@ -1,5 +1,6 @@
 import Tool from '../Tool.js';
 import { modal } from '../../modal.js';
+import { escapeHtml } from '../../../utils/escapeHtml.js';
 import { uploadImage } from '../../../utils/imageUpload.js';
 
 class ImageTool extends Tool {
@@ -54,7 +55,7 @@ class ImageTool extends Tool {
         let fileInputTag = '';
         if (this.fileInputConfig) {
             fileInputTag = `
-                <input type="file" accept="${acceptFormats}" class="img-file-input fj:me-input fj:w-full">
+                <input type="file" accept="${escapeHtml(acceptFormats)}" class="img-file-input fj:me-input fj:w-full">
                 <div class="fj:me-divider fj:my-1">OR</div>
             `;
         }
@@ -68,8 +69,8 @@ class ImageTool extends Tool {
             </div>
             <div class="fj:mt-4 fj:flex fj:flex-col fj:gap-y-4">
                 ${fileInputTag}
-                <input type="url" placeholder="${editor.label('URL')}" class="img-link-input fj:me-input fj:w-full" value="${prefillUrl}" required>
-                <input type="text" placeholder="${editor.label('Alt text')}" class="img-link-alt-input fj:me-input fj:w-full" value="${prefillAlt}" ${isAltRequired ? 'required' : ''}>
+                <input type="url" placeholder="${editor.label('URL')}" class="img-link-input fj:me-input fj:w-full" value="${escapeHtml(prefillUrl)}" required>
+                <input type="text" placeholder="${editor.label('Alt text')}" class="img-link-alt-input fj:me-input fj:w-full" value="${escapeHtml(prefillAlt)}" ${isAltRequired ? 'required' : ''}>
                 <button type="button" class="submit-img-link fj:me-btn fj:me-btn-sm fj:self-end">${editor.label('Apply')}</button>
             </div>`;
 

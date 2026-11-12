@@ -1,3 +1,5 @@
+import { escapeHtml } from '../utils/escapeHtml.js';
+
 export function modal(event, size, bodyHTML, label = '') {
     const self = event.target;
     const mde = self.closest(".markdown-editor-wrapper");
@@ -5,7 +7,7 @@ export function modal(event, size, bodyHTML, label = '') {
         mde.querySelector(".markdown-modal").remove();
     }
 
-    const ariaAttr = label ? `aria-label="${label}"` : '';
+    const ariaAttr = label ? `aria-label="${escapeHtml(label)}"` : '';
     const modalHTML = `
         <dialog class="markdown-modal fj:me-modal fj:me-modal-top fj:lg:me-modal-middle fj:me-modal-center" id="nezanuha_toggleModal" ${ariaAttr}>
             <div class="fj:me-modal-content ${size}">
