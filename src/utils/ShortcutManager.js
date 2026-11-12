@@ -5,6 +5,7 @@ import CodeTool from '../components/toolbar/tools/CodeTool.js';
 import LinkTool from '../components/toolbar/tools/LinkTool.js';
 import HeadingTool from '../components/toolbar/tools/HeadingTool.js';
 import ULTool from '../components/toolbar/tools/ULTool.js';
+import MathTool from '../components/toolbar/tools/MathTool.js';
 
 const DEFAULT_SHORTCUTS = [
     { key: 'b', ctrl: true,  shift: false, ToolClass: BoldTool,          label: 'Ctrl+B',       btnClass: 'bold-btn' },
@@ -13,6 +14,12 @@ const DEFAULT_SHORTCUTS = [
     { key: '`', ctrl: true,  shift: false, ToolClass: CodeTool,          label: 'Ctrl+`',       btnClass: 'code-btn' },
     { key: 's', ctrl: true,  shift: true,  ToolClass: StrikethroughTool, label: 'Ctrl+Shift+S', btnClass: 'strikethrough-btn' },
     { key: 'l', ctrl: true,  shift: false, ToolClass: ULTool,            label: 'Ctrl+L',       btnClass: 'ul-btn' },
+    // Alt rather than Ctrl+Shift, which is where this editor puts its own
+    // features (Alt+T for the table bar, Alt+C and friends in the find panel).
+    // Typora uses Ctrl+Shift+M and Notion Ctrl+Shift+E, but Firefox spends both
+    // on devtools, and a page does not get to argue. Matched on `code`, because
+    // Alt composes a character on macOS and `key` would be 'µ'.
+    { code: 'KeyM', alt: true, ctrl: false, shift: false, ToolClass: MathTool, label: 'Alt+M', btnClass: 'math-btn' },
 ];
 
 /** Turns 'Ctrl+Shift+K' into something comparable against a keydown event. */
@@ -84,7 +91,12 @@ export default class ShortcutManager {
         }
 
         for (const shortcut of DEFAULT_SHORTCUTS) {
-            if (key === shortcut.key && ctrl === shortcut.ctrl && shift === shortcut.shift) {
+            // An entry gives either `key` or `code`: `code` for the Alt ones,
+            // where macOS composes a character and `key` is no longer the
+            // letter that was pressed.
+            const hit = shortcut.code ? e.code === shortcut.code : key === shortcut.key;
+            if (hit && ctrl === shortcut.ctrl && shift === shortcut.shift
+                && e.altKey === !!shortcut.alt) {
                 e.preventDefault();
                 new shortcut.ToolClass(this.editor).applySyntax(e);
                 return;
@@ -116,6 +128,7 @@ export default class ShortcutManager {
         }
         const previewBtn = this.editor.editorContainer.querySelector('.preview-btn');
         if (previewBtn) previewBtn.title += ' (F11)';
+
 
         // Tool-declared shortcuts get the same treatment as the built-ins
         for (const { tool } of this.toolShortcuts) {

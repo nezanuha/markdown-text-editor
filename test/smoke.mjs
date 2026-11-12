@@ -444,6 +444,73 @@ check('the maths tool with nothing selected leaves the caret between the markers
     return e.usertextarea.value === '$$' && e.usertextarea.selectionStart === 1;
 });
 
+check('maths unwraps when the markers are outside the selection', () => {
+    // Selecting the contents and pressing the button is the likely action, and
+    // it used to wrap again: `$x^2$` became `$$x^2$$`, which is display maths,
+    // so a toggle quietly changed what kind of maths it was. Bold, italic and
+    // code all handled this; maths did not.
+    const e = makeEditor({ toolbar: ['bold', 'math'] }, '$x^2$');
+    const at = e.usertextarea.value.indexOf('x^2');
+    e.usertextarea.setSelectionRange(at, at + 3);
+    e.editorContainer.querySelector('.math-btn').click();
+    return e.usertextarea.value === 'x^2';
+});
+
+check('code unwraps the same way, through the shared helper', () => {
+    const e = makeEditor({ toolbar: ['bold', 'code'] }, '`thing`');
+    const at = e.usertextarea.value.indexOf('thing');
+    e.usertextarea.setSelectionRange(at, at + 5);
+    e.editorContainer.querySelector('.code-btn').click();
+    return e.usertextarea.value === 'thing';
+});
+
+check('a lone backtick is not sliced away to nothing', () => {
+    // No length guard before, so startsWith and endsWith both matched the one
+    // character and slice(1, -1) emptied it.
+    const e = makeEditor({ toolbar: ['bold', 'code'] }, '`');
+    e.usertextarea.setSelectionRange(0, 1);
+    e.editorContainer.querySelector('.code-btn').click();
+    return e.usertextarea.value.includes('`') && e.usertextarea.value !== '';
+});
+
+check('a block of maths comes back to what it started as', () => {
+    const e = makeEditor({ toolbar: ['bold', 'math'] }, 'a\nb');
+    const ta = e.usertextarea;
+    const btn = e.editorContainer.querySelector('.math-btn');
+
+    ta.setSelectionRange(0, 3);
+    btn.click();
+    const wrapped = ta.value;
+
+    ta.setSelectionRange(0, ta.value.length);
+    btn.click();
+    // The wrap writes the markers on their own lines, so the unwrap has to take
+    // those newlines with them. It did not, so every toggle added a blank line
+    // above and below and the block grew each time.
+    return wrapped === '$$\na\nb\n$$' && ta.value === 'a\nb';
+});
+
+check('a block unwraps from inside too', () => {
+    const e = makeEditor({ toolbar: ['bold', 'math'] }, '$$\na\nb\n$$');
+    const ta = e.usertextarea;
+    const at = ta.value.indexOf('a');
+    ta.setSelectionRange(at, at + 3);
+    e.editorContainer.querySelector('.math-btn').click();
+    return ta.value === 'a\nb';
+});
+
+check('the maths probe reads overlapping dollar pairs', () => {
+    const said = [];
+    const real = console.warn;
+    console.warn = (...a) => said.push(a.join(' '));
+    // The maths is the second pair, not the first. The pattern this replaced
+    // found it by trying every start position; the loop has to step one dollar
+    // at a time to match that.
+    makeEditor({ toolbar: ['bold'] }).renderMarkdown('$a$b_c$');
+    console.warn = real;
+    return said.some(m => m.includes('Maths syntax'));
+});
+
 check('maths that nothing renders says so, once, and not for prices', () => {
     const said = [];
     const real = console.warn;
@@ -2027,6 +2094,49 @@ check('footer keeps the name and the shape it has had since 1.x', () => {
         && hidden.footerOptions === null
         && hidden.editorContainer.querySelector('.editor-footer') === null;
 });
+
+// The maths warning fires whenever marked renders maths it cannot read, which
+// is every one of these. It is asserted on its own elsewhere; here it is noise.
+const quietly = (fn) => {
+    const real = console.warn;
+    console.warn = () => {};
+    try { return fn(); } finally { console.warn = real; }
+};
+// `math` is opt-in rather than part of the default toolbar, so it has to be
+// asked for by name.
+const MATH_BAR = [...FULL_BAR, 'math'];
+
+check('Alt+M wraps the selection in maths', () => quietly(() => {
+    const e = makeEditor({ toolbar: MATH_BAR }, 'see x^2 here');
+    const ta = e.usertextarea;
+    const at = ta.value.indexOf('x^2');
+    ta.setSelectionRange(at, at + 3);
+    // code, not key: Alt composes a character on macOS, where key would be 'µ'
+    ta.dispatchEvent(new window.KeyboardEvent('keydown',
+        { key: 'm', code: 'KeyM', altKey: true, bubbles: true, cancelable: true }));
+    return ta.value === 'see $x^2$ here';
+}));
+
+check('Alt+M toggles back off', () => quietly(() => {
+    const e = makeEditor({ toolbar: MATH_BAR }, 'see $x^2$ here');
+    const ta = e.usertextarea;
+    const at = ta.value.indexOf('x^2');
+    ta.setSelectionRange(at, at + 3);
+    ta.dispatchEvent(new window.KeyboardEvent('keydown',
+        { key: 'm', code: 'KeyM', altKey: true, bubbles: true, cancelable: true }));
+    return ta.value === 'see x^2 here';
+}));
+
+check('plain M, and Ctrl+M, are left alone', () => quietly(() => {
+    const e = makeEditor({ toolbar: MATH_BAR }, 'x^2');
+    const ta = e.usertextarea;
+    ta.setSelectionRange(0, 3);
+    for (const mods of [{}, { ctrlKey: true }]) {
+        ta.dispatchEvent(new window.KeyboardEvent('keydown',
+            { key: 'm', code: 'KeyM', bubbles: true, cancelable: true, ...mods }));
+    }
+    return ta.value === 'x^2';
+}));
 
 // --- report -----------------------------------------------------------------
 

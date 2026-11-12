@@ -20,10 +20,41 @@ import { applyVariableSamples } from '../utils/variables.js';
 // singleton and silently change behaviour for a host app that also uses marked.
 const defaultRenderer = new Marked({ breaks: true });
 
-// Block maths, or inline maths carrying a TeX character. Used on the markdown
-// and again on the rendered HTML, so the warning only fires when the syntax
-// came through unrendered.
-const MATHS = /\$\$|\$[^$\n]*[\\^_{][^$\n]*\$/;
+const TEX_CHAR = /[\\^_{]/;
+
+/**
+ * Block maths, or inline maths carrying a TeX character. Used on the markdown
+ * and again on the rendered HTML, so the warning only fires when the syntax
+ * came through unrendered.
+ *
+ * Walks the dollar signs rather than matching a pattern. The pattern this
+ * replaces, `\$[^$\n]*[\\^_{][^$\n]*\$`, had a greedy quantifier either side of
+ * the TeX character and a closing `\$` that could fail, so a long line with an
+ * opening dollar and no closing one backtracked quadratically: 119ms at 16k
+ * characters, on a path that runs on every render until it warns once. This is
+ * linear, since the spans it reads are adjacent and it never retries one.
+ *
+ * Pairs are taken overlapping, which is what the old pattern did by trying
+ * every start position: in `$a$b_c$` the maths is the second pair, not the
+ * first.
+ */
+function hasMaths(text) {
+    if (text.includes('$$')) return true;
+
+    let from = 0;
+    for (;;) {
+        const open = text.indexOf('$', from);
+        if (open === -1) return false;
+        const close = text.indexOf('$', open + 1);
+        if (close === -1) return false;
+
+        const inner = text.slice(open + 1, close);
+        // Inline maths is one line, and has to carry a TeX character so that
+        // prices stay prose: "$5 to $10" is not maths, "$x^2$" is.
+        if (!inner.includes('\n') && TEX_CHAR.test(inner)) return true;
+        from = open + 1;
+    }
+}
 
 class MarkdownEditor {
     constructor(selector, options = {}) {
@@ -447,7 +478,7 @@ class MarkdownEditor {
         // Prices are the false positive to avoid, so inline maths has to carry
         // a TeX character rather than merely sit between two dollar signs:
         // "$5 to $10" is not maths, "$x^2$" is.
-        if (!this._mathWarned && MATHS.test(source) && MATHS.test(html)) {
+        if (!this._mathWarned && hasMaths(source) && hasMaths(html)) {
             this._mathWarned = true;
             console.warn('[MarkdownEditor] Maths syntax found, but nothing rendered it. TeX is not part of markdown, so pass a renderer that understands it and load that renderer\'s stylesheet, e.g. renderer: md => markdownIt().use(katex).render(md)');
         }

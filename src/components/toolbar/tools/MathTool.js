@@ -12,9 +12,19 @@ import Tool from '../Tool.js';
  *     import markdownIt from 'markdown-it';
  *     import katex from '@vscode/markdown-it-katex';
  *     import 'katex/dist/katex.min.css';
+ *     import DOMPurify from 'dompurify';
  *
  *     new MarkdownEditor('#editor', {
  *         renderer: md => markdownIt().use(katex).render(md),
+ *         // The default sanitizer keeps KaTeX's MathML but drops <semantics>
+ *         // and <annotation>, and the annotation is where the original TeX
+ *         // lives: it is what a screen reader and a copy out of the preview
+ *         // read. Allowing the two tags back gives KaTeX's output through
+ *         // untouched. Checked in Edge, not assumed.
+ *         sanitizer: html => DOMPurify.sanitize(html, {
+ *             ADD_TAGS: ['semantics', 'annotation'],
+ *             ADD_ATTR: ['encoding'],
+ *         }),
  *     });
  */
 class MathTool extends Tool {
@@ -28,29 +38,25 @@ class MathTool extends Tool {
     applySyntax() {
         this.trimSelection();
         const textarea = this.editor.usertextarea;
-        const { selectionStart, selectionEnd } = textarea;
-        const selected = textarea.value.substring(selectionStart, selectionEnd);
+        const selected = textarea.value.slice(textarea.selectionStart, textarea.selectionEnd);
+
+        // The block markers carry the newlines that put them on their own
+        // lines. Taking only the dollars back off left those newlines behind,
+        // so a block gained a blank line above and below on every toggle and
+        // never came back to what you started with.
+        const BLOCK = { open: '$$\n', close: '\n$$' };
+        const INLINE = { open: '$', close: '$' };
+
+        // Whichever pair is already there wins, so selecting one line inside a
+        // block unwraps the block rather than nesting an inline span in it.
+        const existing = [BLOCK, INLINE].find(fence => this.fencedBy(fence));
+        if (existing) {
+            this.toggleFence(existing);
+            return;
+        }
 
         // A block of maths sits on its own lines, inline maths does not
-        const block = selected.includes('\n');
-        const fence = block ? '$$' : '$';
-
-        // already wrapped, so unwrap
-        if (selected.startsWith(fence) && selected.endsWith(fence)
-            && selected.length > fence.length * 2) {
-            this.editor.insertText(selected.slice(fence.length, -fence.length));
-            return;
-        }
-
-        if (!selected) {
-            this.editor.insertText(`${fence}${fence}`, fence.length, fence.length);
-            return;
-        }
-
-        const text = block
-            ? `${fence}\n${selected}\n${fence}`
-            : `${fence}${selected}${fence}`;
-        this.editor.insertText(text, fence.length + (block ? 1 : 0), fence.length + (block ? 1 : 0));
+        this.toggleFence(selected.includes('\n') ? BLOCK : INLINE);
     }
 }
 

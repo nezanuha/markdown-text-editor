@@ -37,6 +37,64 @@ class Tool {
         }
     }
 
+    /**
+     * Where a pair of markers sits relative to the selection, or null.
+     *
+     * `inside` means the selection holds the markers, so taking them off the
+     * selected text is enough. `outside` means they sit just beyond it, which
+     * is what you get by double-clicking the word in `**word**` or `$x^2$`, and
+     * unwrapping has to widen the selection to swallow them first.
+     *
+     * `open` and `close` differ for block maths, whose markers are written on
+     * their own lines.
+     */
+    fencedBy({ open, close = open }) {
+        const { selectionStart, selectionEnd, value } = this.editor.usertextarea;
+        const selected = value.slice(selectionStart, selectionEnd);
+
+        if (selected.length > open.length + close.length
+            && selected.startsWith(open) && selected.endsWith(close)) return 'inside';
+
+        // A negative slice start counts from the end of the string, so guard
+        // rather than let a selection near the start read from the far end.
+        if (selectionStart >= open.length
+            && value.slice(selectionStart - open.length, selectionStart) === open
+            && value.slice(selectionEnd, selectionEnd + close.length) === close) return 'outside';
+
+        return null;
+    }
+
+    /**
+     * Toggles a pair of markers around the selection, handling all three cases
+     * fencedBy distinguishes.
+     *
+     * Bold, italic, code and maths each worked this out separately, and maths
+     * was written without the `outside` case: selecting the contents of `$x^2$`
+     * and pressing the button wrapped it again, which turns inline maths into
+     * display maths. Bold and italic keep their own versions, because they also
+     * have to unpick `***bold italic***` into one marker or the other, and that
+     * does not generalise.
+     */
+    toggleFence({ open, close = open, placeholder = '' }) {
+        const textarea = this.editor.usertextarea;
+        const { selectionStart, selectionEnd, value } = textarea;
+        const selected = value.slice(selectionStart, selectionEnd);
+
+        switch (this.fencedBy({ open, close })) {
+            case 'inside':
+                this.editor.insertText(selected.slice(open.length, -close.length));
+                return;
+            case 'outside':
+                textarea.setSelectionRange(selectionStart - open.length,
+                                           selectionEnd + close.length);
+                this.editor.insertText(selected);
+                return;
+        }
+
+        const body = selected || placeholder;
+        this.editor.insertText(open + body + close, open.length, close.length);
+    }
+
     // Create a button element (can be overridden in child classes)
     createButton(iconHtml) {
         const btn = document.createElement('button');
