@@ -22,15 +22,22 @@ export function overlayHost(editor) {
 /**
  * Keeps an overlay clear of the textarea's scrollbar.
  *
- * An overlay is pinned to the right of the editor, but the textarea reserves a
- * scrollbar gutter inside that, so the overlay's right corner sat under it and
+ * An overlay is pinned to the far end of the editor, but the textarea reserves
+ * a scrollbar gutter inside that, so the overlay's corner sat under it and
  * looked clipped. The gutter is whatever the platform makes it, nothing to
  * hardcode: it is zero where scrollbars overlay the content and about fifteen
- * pixels where they take up space.
+ * pixels where they take up space. Its width is the same whichever side the
+ * scrollbar is on, so only the side has to be worked out.
+ *
+ * `inset-inline-end`, not `right`, so the overlay follows the text. Under
+ * `dir="rtl"` it resolves to `left`, which is both where the scrollbar has
+ * moved to and where the overlay belongs: RTL text starts at the right, so an
+ * overlay pinned there covered the beginning of every line instead of the
+ * ragged ends it covers in LTR.
  */
 export function clearScrollbar(textarea, el) {
     const gutter = textarea.offsetWidth - textarea.clientWidth;
-    el.style.right = (gutter + 4) + 'px';
+    el.style.insetInlineEnd = (gutter + 4) + 'px';
 }
 
 /**

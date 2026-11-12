@@ -22,6 +22,20 @@ const DEFAULT_SHORTCUTS = [
     { code: 'KeyM', alt: true, ctrl: false, shift: false, ToolClass: MathTool, label: 'Alt+M', btnClass: 'math-btn' },
 ];
 
+/**
+ * Keys these tools already answer to, owned by another manager.
+ *
+ * Undo and redo belong to UndoRedoManager, indent and outdent to
+ * IndentManager, so this one never saw them and their tooltips advertised
+ * nothing. The keys worked; there was just no way to find out.
+ */
+const BORROWED_HINTS = [
+    { btnClass: 'undo-btn',    label: 'Ctrl+Z' },
+    { btnClass: 'redo-btn',    label: 'Ctrl+Shift+Z' },
+    { btnClass: 'indent-btn',  label: 'Tab' },
+    { btnClass: 'outdent-btn', label: 'Shift+Tab' },
+];
+
 /** Turns 'Ctrl+Shift+K' into something comparable against a keydown event. */
 function parseShortcut(spec) {
     const parts = String(spec).split('+').map(s => s.trim().toLowerCase());
@@ -129,10 +143,25 @@ export default class ShortcutManager {
         const previewBtn = this.editor.editorContainer.querySelector('.preview-btn');
         if (previewBtn) previewBtn.title += ' (F11)';
 
+        for (const { btnClass, label } of BORROWED_HINTS) {
+            const btn = this.editor.editorContainer.querySelector(`.${btnClass}`);
+            if (btn) btn.title += ` (${label})`;
+        }
 
         // Tool-declared shortcuts get the same treatment as the built-ins
         for (const { tool } of this.toolShortcuts) {
             if (tool.button) tool.button.title += ` (${tool.shortcut})`;
+        }
+
+        // The title is the accessible name for most tools, since the icon is
+        // aria-hidden and there is no text in the button. It works, but it is
+        // the weakest source in the naming algorithm, and the three tools that
+        // build their own buttons set aria-label instead, so the toolbar was
+        // named two different ways. Mirroring here rather than in createButton
+        // is what keeps the shortcut in the name: the hints above are appended
+        // after the button is built.
+        for (const btn of this.editor.editorContainer.querySelectorAll('.markdown-btn')) {
+            if (btn.title) btn.setAttribute('aria-label', btn.title);
         }
     }
 

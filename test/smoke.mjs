@@ -1175,6 +1175,25 @@ check('stepping out of a table twice does not stack up blank lines', () => {
     return ta.value === once;
 });
 
+check('the panel is pinned logically, so it follows the text direction', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    e.findReplace.open();
+    const panel = e.editorContainer.querySelector('.find-replace-panel');
+
+    // Pinned with `right`, the panel stayed top-right under dir="rtl" while
+    // the scrollbar moved to the left: the gutter was reserved on the side
+    // that no longer had a scrollbar, and the panel sat over the start of
+    // every line instead of the ragged ends it covers in LTR.
+    //
+    // happy-dom has no layout and no cascade, so this guards the property
+    // rather than the geometry. The mirroring itself was measured in Edge:
+    // LTR keeps a 19px gap on the right, RTL moves it to the left.
+    return panel.style.insetInlineEnd !== ''
+        && panel.style.right === ''
+        && panel.className.includes('fj:start-auto')
+        && !panel.className.includes('fj:left-auto');
+});
+
 check('the panel lays itself out from its own width, in CSS', () => {
     const e = makeEditor({ toolbar: FULL_BAR });
     e.findReplace.open();
@@ -2095,6 +2114,128 @@ check('footer keeps the name and the shape it has had since 1.x', () => {
         && hidden.editorContainer.querySelector('.editor-footer') === null;
 });
 
+// --- accessibility of the two table controls --------------------------------
+
+check('the size grid is one tab stop, not sixty-four', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const cells = [...e.editorContainer.querySelectorAll('.table-size-grid button')];
+    const stops = cells.filter(c => c.tabIndex >= 0);
+    return cells.length === 64 && stops.length === 1 && stops[0] === cells[0];
+});
+
+check('the arrow keys walk the size grid in both axes', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const cells = [...e.editorContainer.querySelectorAll('.table-size-grid button')];
+    const grid = e.editorContainer.querySelector('.table-size-grid');
+    const press = key => grid.dispatchEvent(new window.KeyboardEvent('keydown',
+        { key, bubbles: true, cancelable: true }));
+    const size = () => {
+        const c = document.activeElement;
+        return c?.getAttribute('aria-label') ?? null;
+    };
+
+    cells[0].focus();
+    const start = size();
+    press('ArrowRight');
+    const right = size();
+    press('ArrowDown');
+    const down = size();
+    press('End');
+    const end = size();
+    press('Home');
+    const home = size();
+
+    // role="menu" promised arrow keys and delivered none, so the grid could
+    // not be driven by keyboard at all under a screen reader.
+    return start === '1 × 1' && right === '2 × 1' && down === '2 × 2'
+        && end === '8 × 8' && home === '1 × 1';
+});
+
+check('the size grid stops at its edges instead of wrapping', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const cells = [...e.editorContainer.querySelectorAll('.table-size-grid button')];
+    const grid = e.editorContainer.querySelector('.table-size-grid');
+    cells[0].focus();
+    for (const key of ['ArrowLeft', 'ArrowUp']) {
+        grid.dispatchEvent(new window.KeyboardEvent('keydown',
+            { key, bubbles: true, cancelable: true }));
+    }
+    return document.activeElement.getAttribute('aria-label') === '1 × 1';
+});
+
+check('every size is announced, not just left as a square', () =>
+    [...makeEditor({ toolbar: FULL_BAR })
+        .editorContainer.querySelectorAll('.table-size-grid button')]
+        .every(c => /^\d+ × \d+$/.test(c.getAttribute('aria-label') ?? '')));
+
+check('every toolbar button carries the name its tooltip shows', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const btns = [...e.editorContainer.querySelectorAll('.markdown-btn')];
+    // The icon is aria-hidden and there is no text, so without this the name
+    // came from `title` alone, which is the weakest source in the algorithm --
+    // and the three tools that build their own buttons set aria-label, so the
+    // toolbar was named two different ways.
+    return btns.length > 10
+        && btns.every(b => b.getAttribute('aria-label') === b.title && b.title);
+});
+
+check('the toolbar is one tab stop, not one per tool', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const bar = e.editorContainer.querySelector('[role=toolbar]');
+    const btns = [...bar.querySelectorAll('.markdown-btn')];
+    const stops = btns.filter(b => b.tabIndex >= 0);
+    // It declared role="toolbar" from the start, which promises the arrow keys
+    // move between tools. Every button was its own tab stop instead.
+    return btns.length > 15 && stops.length === 1 && stops[0] === btns[0];
+});
+
+check('the arrow keys walk the toolbar, and wrap', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const bar = e.editorContainer.querySelector('[role=toolbar]');
+    const btns = [...bar.querySelectorAll('.markdown-btn')].filter(b => !b.disabled);
+    const press = key => document.activeElement.dispatchEvent(
+        new window.KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+
+    btns[0].focus();
+    press('ArrowRight');
+    const second = document.activeElement === btns[1];
+    press('ArrowLeft');
+    const back = document.activeElement === btns[0];
+    press('ArrowLeft');
+    const wrapped = document.activeElement === btns[btns.length - 1];
+    press('Home');
+    const home = document.activeElement === btns[0];
+    press('End');
+    const end = document.activeElement === btns[btns.length - 1];
+    return second && back && wrapped && home && end;
+});
+
+check('the tab stop follows wherever the arrows left it', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const bar = e.editorContainer.querySelector('[role=toolbar]');
+    const btns = [...bar.querySelectorAll('.markdown-btn')].filter(b => !b.disabled);
+    btns[0].focus();
+    document.activeElement.dispatchEvent(new window.KeyboardEvent('keydown',
+        { key: 'ArrowRight', bubbles: true, cancelable: true }));
+    // Tab away and back lands where you were, not back at the first tool.
+    return btns.filter(b => b.tabIndex === 0).length === 1
+        && btns[1].tabIndex === 0 && btns[0].tabIndex === -1;
+});
+
+check('the toolbar leaves its popover menus their own arrow keys', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const bar = e.editorContainer.querySelector('[role=toolbar]');
+    const cell = e.editorContainer.querySelector('.table-size-grid button');
+    cell.focus();
+    const before = document.activeElement;
+    // The size grid is inside the toolbar, so a toolbar handler that did not
+    // check its target would steal this and walk the tools instead.
+    cell.dispatchEvent(new window.KeyboardEvent('keydown',
+        { key: 'ArrowRight', bubbles: true, cancelable: true }));
+    return before !== document.activeElement
+        && document.activeElement.getAttribute('aria-label') === '2 × 1';
+});
+
 // The maths warning fires whenever marked renders maths it cannot read, which
 // is every one of these. It is asserted on its own elsewhere; here it is noise.
 const quietly = (fn) => {
@@ -2137,6 +2278,26 @@ check('plain M, and Ctrl+M, are left alone', () => quietly(() => {
     }
     return ta.value === 'x^2';
 }));
+
+check('the keys the other managers own are advertised too', () => {
+    const e = makeEditor({ toolbar: MATH_BAR });
+    const at = cls => e.editorContainer.querySelector(cls)?.title ?? '';
+    // These worked all along; the tooltip just never said so, because the
+    // keys belong to UndoRedoManager and IndentManager.
+    return at('.undo-btn').includes('Ctrl+Z')
+        && at('.redo-btn').includes('Ctrl+Shift+Z')
+        && at('.indent-btn').includes('Tab')
+        && at('.outdent-btn').includes('Shift+Tab')
+        && at('.math-btn').includes('Alt+M');
+});
+
+check('a shortcut stays part of the accessible name', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const bold = e.editorContainer.querySelector('.bold-btn');
+    // Mirroring in createButton would have named it "Bold", losing the hint
+    // the title gains afterwards.
+    return /Ctrl\+B|⌘B/.test(bold.getAttribute('aria-label'));
+});
 
 // --- report -----------------------------------------------------------------
 

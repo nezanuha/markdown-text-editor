@@ -43,6 +43,8 @@ class Toolbar {
     /** Lets the editor tear down tools that registered listeners of their own. */
     destroy() {
         this.tools.forEach(tool => tool.destroy?.());
+        if (this._onFocusIn) this.toolbar.removeEventListener('focusin', this._onFocusIn);
+        if (this._onKey) this.toolbar.removeEventListener('keydown', this._onKey);
     }
 
     init() {
@@ -100,8 +102,9 @@ class Toolbar {
         });
 
         // A standalone toolbar belongs to someone else's textarea: no preview
-        // button, and the caller decides where to put it.
-        if (this.standalone) return;
+        // button, and the caller decides where to put it. It still gets the
+        // keyboard handling, since it is the same control.
+        if (this.standalone) { this._keyboard(); return; }
 
         // Append preview button at the end
         if (this.options.includes('preview')) {
@@ -111,6 +114,71 @@ class Toolbar {
         }
 
         this.editor.editorContainer.insertBefore(this.toolbar, this.editor.markdownEditorDiv);
+        this._keyboard();
+    }
+
+    /** Every tool button, in the order they sit in the bar. */
+    _buttons() {
+        // Only the toolbar's own buttons: the menu items inside the heading,
+        // variables and table popovers are not `markdown-btn`, and walking into
+        // them would take the arrow keys away from the menus.
+        return [...this.toolbar.querySelectorAll('.markdown-btn')];
+    }
+
+    /**
+     * One tab stop for the whole toolbar, the arrow keys inside it.
+     *
+     * It has declared `role="toolbar"` all along, which tells a screen reader
+     * the arrow keys move between the tools. They did not: every button was its
+     * own tab stop, so crossing the toolbar cost nineteen presses of Tab on the
+     * default set, and a screen reader in its own navigation mode captured the
+     * arrows and nothing happened. This is the pattern the table bar already
+     * follows.
+     */
+    _keyboard() {
+        const roving = (target) => {
+            const items = this._buttons();
+            const enabled = items.filter(b => !b.disabled);
+            // A disabled tool must not hold the only tab stop, or the toolbar
+            // cannot be entered at all. Preview disables itself on a phone.
+            const chosen = (target && !target.disabled) ? target
+                : (enabled.includes(this._stop) ? this._stop : enabled[0]);
+            this._stop = chosen;
+            for (const b of items) b.tabIndex = b === chosen ? 0 : -1;
+        };
+        roving(null);
+
+        this._onFocusIn = (e) => {
+            if (e.target.classList?.contains('markdown-btn')) roving(e.target);
+        };
+        this._onKey = (e) => {
+            // Ignore anything coming from inside a popover this toolbar owns:
+            // those menus want their own arrow keys.
+            if (!e.target.classList?.contains('markdown-btn')) return;
+
+            const items = this._buttons().filter(b => !b.disabled);
+            const i = items.indexOf(e.target);
+            if (i === -1) return;
+
+            const to = {
+                ArrowRight: i + 1,
+                ArrowLeft: i - 1,
+                Home: 0,
+                End: items.length - 1,
+            }[e.key];
+            if (to === undefined) return;
+
+            e.preventDefault();
+            // Wraps, unlike the size grid: a toolbar is a ring of equals, where
+            // the grid is a shape whose corners mean something.
+            const next = items[(to + items.length) % items.length];
+            roving(next);
+            next.focus();
+        };
+
+        this.toolbar.addEventListener('focusin', this._onFocusIn);
+        this.toolbar.addEventListener('keydown', this._onKey);
+        this._roving = roving;
     }
 }
 

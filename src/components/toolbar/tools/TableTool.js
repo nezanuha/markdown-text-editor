@@ -55,6 +55,19 @@ class TableTool extends Tool {
         readout.textContent = this.editor.label('Table size');
 
         const cells = [];
+        /**
+         * One tab stop for the whole grid, the arrow keys inside it.
+         *
+         * Every cell was focusable, so sixty-four tab stops sat between the
+         * table button and the next tool, and `role="menu"` promised arrow
+         * keys that did nothing at all — in a screen reader's menu mode the
+         * arrows are captured, so the grid was unusable rather than merely
+         * tedious. Reaching a size by keyboard was a regression against 1.x,
+         * where the button inserted a fixed table in one press.
+         */
+        const roving = (target) => {
+            for (const c of cells) c.tabIndex = c === target ? 0 : -1;
+        };
         const highlight = (cols, rows) => {
             for (const c of cells) {
                 // The whole block shows the size; the one under the pointer is
@@ -85,7 +98,10 @@ class TableTool extends Tool {
                 // grid of unlabelled squares.
                 cell.setAttribute('aria-label', `${col} × ${row}`);
                 cell.addEventListener('mouseenter', () => highlight(col, row));
-                cell.addEventListener('focus', () => highlight(col, row));
+                cell.addEventListener('focus', () => {
+                    roving(cell);
+                    highlight(col, row);
+                });
                 // Reached by the keyboard, and by a pointer only when capture
                 // did not take; a release handles the pointer otherwise.
                 cell.addEventListener('click', () => {
@@ -97,6 +113,39 @@ class TableTool extends Tool {
                 grid.appendChild(cell);
             }
         }
+        roving(cells[0]);
+
+        // Two axes, because the thing is two-dimensional: left and right walk
+        // the columns, up and down the rows. Home and End jump to the smallest
+        // and largest table rather than to the ends of one row, which is the
+        // size a keyboard user is most likely to be reaching for.
+        grid.addEventListener('keydown', (e) => {
+            const i = cells.indexOf(document.activeElement);
+            if (i === -1) return;
+
+            const col = i % MAX_COLS;
+            const row = Math.floor(i / MAX_COLS);
+            const to = {
+                ArrowRight: [row, col + 1],
+                ArrowLeft:  [row, col - 1],
+                ArrowDown:  [row + 1, col],
+                ArrowUp:    [row - 1, col],
+                Home:       [0, 0],
+                End:        [MAX_ROWS - 1, MAX_COLS - 1],
+            }[e.key];
+            if (!to) return;
+
+            const [r, c] = to;
+            if (r < 0 || r >= MAX_ROWS || c < 0 || c >= MAX_COLS) {
+                // Stop at the edges rather than wrapping: the grid is a shape
+                // being sized, and wrapping from 8 columns back to 1 reads as
+                // the control losing your place.
+                e.preventDefault();
+                return;
+            }
+            e.preventDefault();
+            cells[r * MAX_COLS + c].focus();
+        });
 
         // Drag to size, which is how a finger uses this.
         //
@@ -180,7 +229,14 @@ class TableTool extends Tool {
 
         grid.addEventListener('mouseleave', () => highlight(0, 0));
         pop.addEventListener('toggle', (e) => {
-            if (e.newState === 'open') { highlight(0, 0); pointerDidIt = false; dragFrom = null; }
+            if (e.newState === 'open') {
+                highlight(0, 0);
+                // Back to 1x1, so the tab stop is where a keyboard user starts
+                // rather than wherever the last pick left it.
+                roving(cells[0]);
+                pointerDidIt = false;
+                dragFrom = null;
+            }
         });
 
         pop.append(grid, readout);

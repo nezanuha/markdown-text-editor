@@ -246,7 +246,7 @@ export default class FindReplace {
         // panel is the same size whatever editor it is embedded in.
         panel.className = `
             find-replace-panel fj:@container
-            fj:absolute fj:top-1 fj:left-auto fj:z-20
+            fj:absolute fj:top-1 fj:start-auto fj:z-20
             fj:w-96 fj:max-w-[calc(100%_-_0.5rem)]
             fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:shadow-lg
             fj:flex fj:flex-col fj:gap-1 fj:p-1
