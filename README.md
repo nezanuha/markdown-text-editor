@@ -44,7 +44,7 @@ Most JavaScript markdown editors (EasyMDE, SimpleMDE, CodeMirror-based editors) 
 | Swap the markdown parser | ✅ | ❌ |
 | Keyboard shortcuts | ✅ | Partial |
 | Dark mode / theming | ✅ | Limited |
-| Bundle size, gzipped | 57 KB (JS + CSS) | 107 KB (JS + CSS) |
+| Bundle size, gzipped | 66 KB (JS + CSS) | 107 KB (JS + CSS) |
 
 ## 🚀 Quick Start
 
@@ -134,7 +134,7 @@ That is the whole breaking change. `labels` was renamed to `locale` and still wo
 - 🟦 **TypeScript Ready** — Definitions ship with the package. Options, toolbar entries and variable shapes are all checked, so a mistyped tool name is a compile error rather than a silently missing button
 - 🖥️ **SSR Safe** — Importing it on the server doesn't throw, so Next.js, Remix and Nuxt need no `dynamic(..., { ssr: false })` wrapper. The `<textarea>` is in the server HTML with its content, and the editor enhances it after hydration, so there's no markup mismatch and nothing pops in
 - 📦 **Universal Module Support** — ESM, CommonJS, UMD, and IIFE. Works with Vite, webpack, Rollup, or directly via `<script src>` CDN — no configuration needed
-- 🚀 **High Performance** — ~43KB gzipped JS plus ~14KB gzipped CSS, cached separately. Debounced preview, cached layout calculations, conflict-free Tab/Enter handling for large documents
+- 🚀 **High Performance** — ~51KB gzipped JS plus ~15KB gzipped CSS, cached separately. Debounced preview, cached layout calculations, conflict-free Tab/Enter handling
 
 ## 🛠 Developer Workflow
 

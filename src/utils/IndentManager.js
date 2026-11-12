@@ -11,11 +11,19 @@ export default class IndentManager {
             '"': '"',
             "'": "'"
         };
+        // The closing halves, for stepping over one that is already there.
+        // Kept as a set because the check runs on every paired keystroke.
+        this.closers = new Set(Object.values(this.pairs));
         this.init();
     }
 
     init() {
-        this.textarea.addEventListener('keydown', (e) => {
+        // Held on the instance rather than passed inline, so destroy() has
+        // something to remove. An anonymous handler could never be taken off,
+        // and the textarea outlives the editor: an app that builds and tears
+        // down editors as it navigates left one of these behind every time,
+        // each still answering Tab and each holding its dead editor alive.
+        this._onKeyDown = (e) => {
             switch (e.key) {
                 case 'Tab':
                     e.preventDefault();
@@ -29,9 +37,20 @@ export default class IndentManager {
                     this.handleBackspace(e);
                     break;
                 default:
-                    if (this.pairs[e.key]) this.handlePairs(e);
+                    // Closing characters as well as opening ones. `pairs` is
+                    // keyed by the opening half, so testing it alone never let
+                    // `)`, `]`, `}` or `>` through and the step-over below was
+                    // unreachable for them: typing the `]` of `[text]` gave
+                    // `[text]]`. Quotes happened to work, being both halves of
+                    // their own pair.
+                    if (this.pairs[e.key] || this.closers.has(e.key)) this.handlePairs(e);
             }
-        });
+        };
+        this.textarea.addEventListener('keydown', this._onKeyDown);
+    }
+
+    destroy() {
+        this.textarea.removeEventListener('keydown', this._onKeyDown);
     }
 
     handlePairs(e) {
@@ -42,8 +61,7 @@ export default class IndentManager {
         // 1. Overtyping Logic
         // If the cursor is right before the closing character and the user types it
         if (selectionStart === selectionEnd && value[selectionStart] === char) {
-            const isClosingChar = Object.values(this.pairs).includes(char);
-            if (isClosingChar) {
+            if (this.closers.has(char)) {
                 e.preventDefault();
                 const newPos = selectionStart + 1;
                 textarea.setSelectionRange(newPos, newPos);

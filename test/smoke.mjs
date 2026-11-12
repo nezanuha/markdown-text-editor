@@ -353,6 +353,49 @@ check('destroy reaches toolbar tools', () => {
     return torn;
 });
 
+check('two editors on a page do not put the same id on their dialogs', () => {
+    // The dialog carried a fixed id that nothing referenced, so two editors
+    // with a dialog open each produced a duplicate id in the document.
+    const a = makeEditor({ toolbar: ['bold', 'link'] }, 'a');
+    const b = makeEditor({ toolbar: ['bold', 'link'] }, 'b');
+    a.editorContainer.querySelector('.link-btn').click();
+    b.editorContainer.querySelector('.link-btn').click();
+
+    const dialogs = [...document.querySelectorAll('.markdown-modal')];
+    const ids = dialogs.map(d => d.id).filter(Boolean);
+    return dialogs.length === 2 && new Set(ids).size === ids.length;
+});
+
+check('destroy leaves nothing listening on the textarea it was given', () => {
+    // The wrapper's own elements go when the wrapper does, so only the user's
+    // textarea matters: it outlives the editor. IndentManager used to attach
+    // Tab handling with an anonymous function and had no destroy at all, so an
+    // app that rebuilt editors as it navigated left one behind each time, each
+    // still answering Tab and each holding its dead editor alive through the
+    // closure.
+    const ta = document.createElement('textarea');
+    ta.id = 'teardown' + (++seq);
+    document.body.appendChild(ta);
+
+    const net = new Map();
+    let adds = 0;          // counted separately: the net is 0 when balanced,
+                           // which is exactly the case this must not mistake
+                           // for "nothing was instrumented"
+    const add = ta.addEventListener.bind(ta);
+    const remove = ta.removeEventListener.bind(ta);
+    ta.addEventListener = (type, fn, o) => {
+        adds++; net.set(type, (net.get(type) ?? 0) + 1); return add(type, fn, o);
+    };
+    ta.removeEventListener = (type, fn, o) => {
+        net.set(type, (net.get(type) ?? 0) - 1); return remove(type, fn, o);
+    };
+
+    new MarkdownEditor(ta, { toolbar: FULL_BAR, footer: { words: true } }).destroy();
+
+    const leaked = [...net.entries()].filter(([, n]) => n > 0);
+    return adds > 10 && leaked.length === 0;
+});
+
 check('Tool and modal are reachable without a named export', () =>
     typeof MarkdownEditor.Tool === 'function' && typeof MarkdownEditor.modal === 'function');
 
@@ -2355,6 +2398,117 @@ check('escapeHtml covers the characters that matter in an attribute', async () =
         && escapeHtml('&lt;') === '&amp;lt;'
         && escapeHtml(null) === ''
         && escapeHtml(undefined) === '';
+});
+
+// --- editing behaviour the suite had been missing ----------------------------
+//
+// V8 coverage of a test run showed these two managers almost entirely
+// unexecuted: autoIndent, handlePairs, handleBackspace, outdent, undo, redo.
+// They own Tab, Enter, Backspace and Ctrl+Z -- the keys most used in the
+// editor -- and a listener leak had already been sitting in one of them.
+
+const typeKey = (e, key, extra = {}) => {
+    const ev = new window.KeyboardEvent('keydown',
+        { key, bubbles: true, cancelable: true, ...extra });
+    e.usertextarea.dispatchEvent(ev);
+    return ev;
+};
+
+check('typing an opening bracket closes it', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, '');
+    const ta = e.usertextarea;
+    ta.setSelectionRange(0, 0);
+    typeKey(e, '(');
+    // The pair is inserted and the caret sits between the two halves.
+    return ta.value === '()' && ta.selectionStart === 1;
+});
+
+check('wrapping a selection in brackets keeps the selection', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'word');
+    const ta = e.usertextarea;
+    ta.setSelectionRange(0, 4);
+    typeKey(e, '(');
+    return ta.value === '(word)';
+});
+
+check('typing a closing bracket steps over the one already there', () => {
+    // `pairs` is keyed by the opening half, so the dispatcher never let `)`,
+    // `]`, `}` or `>` reach handlePairs and the step-over was dead code for
+    // them. Typing the `]` of `[text]` produced `[text]]`, which is the most
+    // common thing anyone writes in markdown. Quotes worked, being both
+    // halves of their own pair. Measured with real key presses in Edge.
+    return [')', ']', '}', '>', '"', "'"].every(close => {
+        const open = { ')': '(', ']': '[', '}': '{', '>': '<', '"': '"', "'": "'" }[close];
+        const e = makeEditor({ toolbar: FULL_BAR }, open + close);
+        const ta = e.usertextarea;
+        ta.setSelectionRange(1, 1);
+        const ev = typeKey(e, close);
+        // The editor must claim the key, so the browser does not also type it.
+        return ev.defaultPrevented && ta.selectionStart === 2;
+    });
+});
+
+check('backspace between a pair takes both halves', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'a()b');
+    const ta = e.usertextarea;
+    ta.setSelectionRange(2, 2);
+    typeKey(e, 'Backspace');
+    return ta.value === 'ab';
+});
+
+check('Enter keeps the indent of the line above', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, '    indented');
+    const ta = e.usertextarea;
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+    typeKey(e, 'Enter');
+    return ta.value === '    indented\n    ';
+});
+
+check('Enter after a list item is left to the list manager', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, '- item');
+    const ta = e.usertextarea;
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+    typeKey(e, 'Enter');
+    // The list manager continues the bullet; autoIndent must not also fire
+    // and leave a bare indent instead.
+    return ta.value.split('\n').length === 2 && /- $/.test(ta.value);
+});
+
+check('Shift+Tab removes one level of indent', () => {
+    // One level is four spaces, so outdenting the only level correctly leaves
+    // none -- the first version of this expected a space to survive.
+    const one = makeEditor({ toolbar: FULL_BAR }, '    text');
+    one.usertextarea.setSelectionRange(6, 6);
+    typeKey(one, 'Tab', { shiftKey: true });
+
+    const two = makeEditor({ toolbar: FULL_BAR }, '        deep');
+    two.usertextarea.setSelectionRange(10, 10);
+    typeKey(two, 'Tab', { shiftKey: true });
+
+    return one.usertextarea.value === 'text'
+        && two.usertextarea.value === '    deep';
+});
+
+check('undo puts back what was there, and redo takes it away again', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'first');
+    const ta = e.usertextarea;
+    e.undoRedoManager._saveState();
+
+    ta.value = 'first second';
+    ta.dispatchEvent(new window.Event('input', { bubbles: true }));
+    e.undoRedoManager._saveState();
+
+    e.undoRedoManager.undo();
+    const undone = ta.value;
+    e.undoRedoManager.redo();
+    return undone === 'first' && ta.value === 'first second';
+});
+
+check('undo with nothing to undo leaves the text alone', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'only');
+    e.undoRedoManager.undo();
+    e.undoRedoManager.undo();
+    return e.usertextarea.value === 'only';
 });
 
 // --- report -----------------------------------------------------------------

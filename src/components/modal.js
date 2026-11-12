@@ -12,7 +12,7 @@ export function modal(event, size, bodyHTML, label = '') {
     // contract and the caller owns it; the label is plain text and is not.
     const ariaAttr = label ? `aria-label="${escapeHtml(label)}"` : '';
     const modalHTML = `
-        <dialog class="markdown-modal fj:me-modal fj:me-modal-top fj:lg:me-modal-middle fj:me-modal-center" id="nezanuha_toggleModal" ${ariaAttr}>
+        <dialog class="markdown-modal fj:me-modal fj:me-modal-top fj:lg:me-modal-middle fj:me-modal-center" ${ariaAttr}>
             <div class="fj:me-modal-content ${size}">
                 ${bodyHTML}
             </div>

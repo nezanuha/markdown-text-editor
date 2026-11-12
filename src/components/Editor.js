@@ -719,6 +719,7 @@ class MarkdownEditor {
         this.previewTool?.destroy();
         this.undoRedoManager?.destroy();
         this.listManager?.destroy();
+        this.indentManager?.destroy();
         this.pasteManager?.destroy();
         // Reaches toolbar tools, including custom ones that added listeners
         this.toolbarInstance?.destroy();
