@@ -15,6 +15,7 @@ import ShortcutManager from '../utils/ShortcutManager.js';
 import FindReplace from '../utils/FindReplace.js';
 import PasteManager from '../utils/PasteManager.js';
 import { applyVariableSamples } from '../utils/variables.js';
+import { escapeHtml } from '../utils/escapeHtml.js';
 
 // Own instance rather than marked.setOptions(), which would mutate the shared
 // singleton and silently change behaviour for a host app that also uses marked.
@@ -481,8 +482,26 @@ class MarkdownEditor {
     }
 
     _renderMarkdown(markdown) {
-        const render   = this.options.renderer  ?? (md   => defaultRenderer.parse(md));
-        const sanitize = this.options.sanitizer ?? (html => DOMPurify.sanitize(html));
+        const configured = this.options.renderer ?? (md => defaultRenderer.parse(md));
+        const sanitize   = this.options.sanitizer ?? (html => DOMPurify.sanitize(html));
+
+        // A renderer that throws must not take the editor with it. Yours might
+        // have a bug, and so might the default one: marked overflows its stack
+        // on a few thousand nested blockquotes, which is a document someone can
+        // paste. The text people are writing matters more than the preview of
+        // it, so the preview degrades to escaped plain text and says why.
+        const render = (md) => {
+            try {
+                return configured(md);
+            } catch (err) {
+                if (!this._rendererWarned) {
+                    this._rendererWarned = true;
+                    console.error('[MarkdownEditor] The renderer threw, so the preview is '
+                        + 'showing plain text. The document itself is untouched.', err);
+                }
+                return '<pre>' + escapeHtml(md) + '</pre>';
+            }
+        };
 
         // Variables that declare a sample are shown as that sample in the preview.
         // Only this copy is affected; the textarea keeps the real placeholders.
@@ -558,6 +577,17 @@ class MarkdownEditor {
     }
 
     addToolbar() {
+        // `toolbar: 'bold'` instead of `['bold']` is an easy slip, and it used
+        // to take the whole editor down with "this.options.forEach is not a
+        // function". Say what was wrong and fall back to the default, the way
+        // a junk `levels` value does.
+        if (this.options.toolbar !== undefined && !Array.isArray(this.options.toolbar)) {
+            console.warn('[MarkdownEditor] toolbar takes an array of tools, got '
+                + (this.options.toolbar === null ? 'null' : typeof this.options.toolbar)
+                + '. Using the default toolbar.');
+            this.options = { ...this.options, toolbar: undefined };
+        }
+
         this.toolbarInstance = new Toolbar(
             this,
             this.options.toolbar ||

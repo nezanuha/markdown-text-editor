@@ -87,10 +87,21 @@ class Toolbar {
                 // Declarative: { custom: { title, icon, action } }, no class needed
                 ToolClass = CustomTool;
                 config = tool.custom;
-            } else if (typeof tool === 'object') {
+            } else if (tool && typeof tool === 'object') {
+                // `tool &&` because typeof null is 'object', and Object.keys
+                // on it threw "Cannot convert undefined or null to object" --
+                // one stray comma in the array and the editor was gone.
                 const toolName = Object.keys(tool)[0];
                 config = tool[toolName];
                 ToolClass = toolMapping[toolName];
+            }
+
+            // An entry nothing recognises is skipped rather than silently
+            // dropped, so a typo in a tool name is findable.
+            if (!ToolClass && tool !== undefined && tool !== null) {
+                console.warn('[MarkdownEditor] toolbar: no tool matches '
+                    + JSON.stringify(typeof tool === 'object' ? Object.keys(tool)[0] : tool)
+                    + ', skipping it.');
             }
 
             if (ToolClass) {

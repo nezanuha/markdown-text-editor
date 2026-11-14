@@ -2699,6 +2699,74 @@ check('hybrid highlight dims a bold marker twice over', () => {
         .includes('dim[accent[dim["*"] dim["*"]]]');
 });
 
+// --- surviving input nobody meant to write ------------------------------------
+//
+// Found by fuzzing: hostile documents, hostile options, hostile find
+// patterns. 193 cases, of which five used to throw. These are the five.
+
+const quietly2 = (fn) => {
+    const warn = console.warn, error = console.error;
+    console.warn = () => {}; console.error = () => {};
+    try { return fn(); } finally { console.warn = warn; console.error = error; }
+};
+
+check('a toolbar that is not an array falls back instead of throwing', () =>
+    quietly2(() => {
+        // `toolbar: 'bold'` instead of `['bold']` threw "this.options.forEach
+        // is not a function" and left no editor at all.
+        const e = makeEditor({ toolbar: 'bold' }, 'x');
+        return e.editorContainer.querySelectorAll('.markdown-btn').length > 10;
+    }));
+
+check('junk entries in the toolbar are skipped, not fatal', () =>
+    quietly2(() => {
+        // typeof null is 'object', so Object.keys(null) threw: one stray
+        // comma in the array and the editor was gone.
+        const e = makeEditor({ toolbar: [null, undefined, 42, {}, 'bold', 'nosuchtool'] }, 'x');
+        return !!e.editorContainer.querySelector('.bold-btn');
+    }));
+
+check('a renderer that throws leaves the editor working', () =>
+    quietly2(() => {
+        const e = makeEditor({
+            toolbar: FULL_BAR,
+            renderer: () => { throw new Error('renderer exploded'); },
+        }, '# hello');
+        // The preview degrades to plain text; the document is untouched.
+        const html = e.renderMarkdown('# hello');
+        return e.usertextarea.value === '# hello' && html.includes('hello');
+    }));
+
+check('a renderer that throws escapes what it falls back to', () =>
+    quietly2(() => {
+        const e = makeEditor({
+            toolbar: ['bold'],
+            renderer: () => { throw new Error('nope'); },
+        }, 'x');
+        const html = e.renderMarkdown('<img src=x onerror=alert(1)>');
+        return !/<img/.test(html) && html.includes('&lt;img');
+    }));
+
+check('deeply nested blockquotes do not take the editor down', () =>
+    quietly2(() => {
+        // marked overflows its own stack here, and this is a document someone
+        // can paste. The text matters more than the preview of it.
+        const e = makeEditor({ toolbar: ['bold'] }, '');
+        const html = e.renderMarkdown('> '.repeat(3000));
+        return typeof html === 'string';
+    }));
+
+check('documents made of punctuation do not throw', () =>
+    quietly2(() => {
+        const e = makeEditor({ mode: 'hybrid', toolbar: FULL_BAR });
+        for (const doc of ['*'.repeat(3000), '`'.repeat(3000), '~'.repeat(3000),
+                           '['.repeat(1000) + ']'.repeat(1000), '|' + '-|'.repeat(1000)]) {
+            e._highlight(doc);
+            e.renderMarkdown(doc);
+        }
+        return true;
+    }));
+
 // --- report -----------------------------------------------------------------
 
 await Promise.all(pending);
