@@ -4,7 +4,7 @@
   "type": "module",
   "description": "A markdown editor that enhances your textarea instead of replacing it, so form submission, validation and required fields keep working. WYSIWYG hybrid mode, live preview, find and replace, RTL, TypeScript types. Works with any backend.",
   "funding": "https://ko-fi.com/nezanuha",
-  "main": "./dist/markdown-text-editor.umd.js",
+  "main": "./dist/markdown-text-editor.cjs",
   "module": "./dist/markdown-text-editor.es.js",
   "browser": "./dist/markdown-text-editor.min.js",
   "unpkg": "./dist/markdown-text-editor.min.js",
@@ -13,8 +13,8 @@
     ".": {
       "types": "./types/index.d.ts",
       "import": "./dist/markdown-text-editor.es.js",
-      "require": "./dist/markdown-text-editor.umd.js",
-      "default": "./dist/markdown-text-editor.umd.js"
+      "require": "./dist/markdown-text-editor.cjs",
+      "default": "./dist/markdown-text-editor.cjs"
     },
     "./style.css": "./dist/markdown-text-editor.css",
     "./locale/*.js": {
@@ -48,7 +48,7 @@
     "locale:check": "node scripts/locale-check.mjs",
     "version": "node scripts/check-changelog.mjs",
     "postversion": "git push origin HEAD --follow-tags",
-    "test": "node test/smoke.mjs && node scripts/locale-check.mjs",
+    "test": "node test/smoke.mjs && node scripts/locale-check.mjs && node scripts/package-check.mjs",
     "typecheck": "tsc --noEmit --strict --lib es2020,dom --moduleResolution bundler --module esnext test/types.test.ts"
   },
   "publishConfig": {

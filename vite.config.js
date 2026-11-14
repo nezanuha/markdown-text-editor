@@ -130,7 +130,15 @@ export default defineConfig({
             entry: 'src/components/Editor.js',
             name: 'MarkdownEditor',
             formats: ['es', 'umd', 'iife'],
-            fileName: (format) => format === 'iife' ? 'markdown-text-editor.min.js' : `markdown-text-editor.${format}.js`,
+            // The UMD build is the one `require()` reaches, and this package
+            // is "type": "module", so a .js file is ESM to Node: the wrapper's
+            // `typeof module !== "undefined"` test was false, nothing was
+            // assigned, and require() handed back an empty object. The .cjs
+            // extension is what tells Node to read it as CommonJS regardless.
+            fileName: (format) => ({
+                iife: 'markdown-text-editor.min.js',
+                umd: 'markdown-text-editor.cjs',
+            })[format] ?? `markdown-text-editor.${format}.js`,
         },
         cssCodeSplit: false,
         sourcemap: true,
