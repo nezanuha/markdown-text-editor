@@ -2511,6 +2511,194 @@ check('undo with nothing to undo leaves the text alone', () => {
     return e.usertextarea.value === 'only';
 });
 
+// --- what the hybrid highlighter produces ------------------------------------
+//
+// _highlight runs about ten regex passes over the WHOLE document on every
+// keystroke, which costs 260ms at 150KB. Before that is rewritten to work a
+// line at a time, these pin what it produces today so the rewrite has
+// something exact to be judged against: seven of its nine patterns cannot
+// match across a newline, so a line-based version must leave their output
+// untouched.
+//
+// Compared as a structural signature rather than raw HTML, so a failure is
+// readable. `dim[...]` is opacity-40, `faint` 30, `half` 50, and the colours
+// are the fj text utilities.
+
+const NEWLINE = String.fromCharCode(10);
+
+const SPAN_NAMES = {
+    'fj:text-primary': 'primary',
+    'fj:text-secondary': 'secondary',
+    'fj:text-accent': 'accent',
+    'fj:opacity-40': 'dim',
+    'fj:opacity-30': 'faint',
+    'fj:opacity-50': 'half',
+    'faux-bold': 'bold',
+    'fj:line-through fj:opacity-70': 'strike',
+    'fj:underline fj:opacity-50': 'linkurl',
+};
+
+const signature = (html) => {
+    const box = document.createElement('div');
+    box.innerHTML = html;
+    const walk = (node) => [...node.childNodes].map(n => {
+        if (n.nodeType === 3) return JSON.stringify(n.textContent);
+        const cls = n.getAttribute('class');
+        return (SPAN_NAMES[cls] ?? ('?' + cls)) + '[' + walk(n).join(' ') + ']';
+    });
+    return walk(box).join(' ');
+};
+
+const HIGHLIGHT_CASES = [
+    ["heading h1", "# Title",
+     "primary[dim[\"# \"] bold[\"Title\"]]"],
+    ["heading h3", "### Deep",
+     "primary[dim[\"### \"] bold[\"Deep\"]]"],
+    ["bold", "**loud**",
+     "secondary[dim[accent[dim[\"*\"] dim[\"*\"]]] bold[\"loud\"] dim[accent[dim[\"*\"] dim[\"*\"]]]]"],
+    ["italic star", "*soft*",
+     "accent[dim[\"*\"] \"soft\" dim[\"*\"]]"],
+    ["italic underscore", "_soft_",
+     "accent[dim[\"_\"] \"soft\" dim[\"_\"]]"],
+    ["inline code", "`x = 1`",
+     "dim[\"`\"] accent[\"x = 1\"] dim[\"`\"]"],
+    ["strike double", "~~gone~~",
+     "strike[dim[\"~~\"] \"gone\" dim[\"~~\"]]"],
+    ["strike single", "~gone~",
+     "strike[dim[\"~\"] \"gone\" dim[\"~\"]]"],
+    ["bullet", "- item",
+     "primary[\"- \"] \"item\""],
+    ["ordered", "1. item",
+     "primary[\"1. \"] \"item\""],
+    ["task", "[ ] todo",
+     "primary[\"[ ] \"] \"todo\""],
+    ["link", "[text](https://a.b)",
+     "dim[\"[\"] primary[\"text\"] dim[\"](\"] linkurl[\"https://a.b\"] half[\")\"]"],
+    ["image", "![alt](https://a.b/i.png)",
+     "dim[\"![\"] primary[\"alt\"] dim[\"](\"] linkurl[\"https://a.b/i.png\"] half[\")\"]"],
+    ["escapes", "<script>a & b</script>",
+     "\"<script>a & b</script>\""],
+    ["bold then italic", "**a** and *b*",
+     "secondary[dim[accent[dim[\"*\"] dim[\"*\"]]] bold[\"a\"] dim[accent[dim[\"*\"] dim[\"*\"]]]] \" and \" accent[dim[\"*\"] \"b\" dim[\"*\"]]"],
+    ["code inside bold", "**a `c` b**",
+     "secondary[dim[accent[dim[\"*\"] dim[\"*\"]]] bold[\"a \" dim[\"`\"] accent[\"c\"] dim[\"`\"] \" b\"] dim[accent[dim[\"*\"] dim[\"*\"]]]]"],
+    ["two lines", "one\ntwo",
+     "\"one\\ntwo\""],
+    ["trailing newline", "one\n",
+     "\"one\\n \""],
+    ["fence", "```js\ncode();\n```",
+     "faint[\"```js\"] \"\\ncode();\\n\" faint[\"```\"]"],
+    ["fence with md", "```\n**not bold**\n# not heading\n```",
+     "faint[\"```\"] \"\\n**not bold**\\n# not heading\\n\" faint[\"```\"]"],
+    ["plain", "nothing special here",
+     "\"nothing special here\""],
+];
+
+for (const [name, input, expected] of HIGHLIGHT_CASES) {
+    check('hybrid highlight: ' + name, () => {
+        const e = makeEditor({ mode: 'hybrid', toolbar: ['bold'] });
+        return signature(e._highlight(input)) === expected;
+    });
+}
+
+check('auto-grow stops measuring once the height is pinned', () => {
+    // Measuring is almost the whole cost of a keystroke, because any geometry
+    // read lays out the entire document first. Past maxHeight the container
+    // cannot grow further and typing cannot shorten it, so the measurement is
+    // skipped while the text only gets longer.
+    //
+    // happy-dom has no layout, so this checks the bookkeeping rather than the
+    // pixels. The heights were measured in Edge: growing, capping, shrinking
+    // back and re-measuring after a width change all still work.
+    const e = makeEditor({ toolbar: FULL_BAR }, 'short');
+    e._pinnedAt = 5;                       // pretend we hit the ceiling here
+
+    e.usertextarea.value = 'short plus more';
+    e._autoGrow();
+    const keptWhileGrowing = e._pinnedAt === 5;
+
+    e.usertextarea.value = 'tiny';         // shorter: the answer may differ now
+    e._autoGrow();
+    const reconsideredWhenShorter = e._pinnedAt !== 5;
+
+    return keptWhileGrowing && reconsideredWhenShorter;
+});
+
+check('the width observer is set up and torn down', () => {
+    // The pin is cleared by this observer rather than by _autoGrow reading
+    // the width, which would cost exactly what the skip saves. That it
+    // actually re-measures after a resize was checked in Edge: the same text
+    // measured 567px wide and 1695px once the editor was narrowed.
+    if (typeof ResizeObserver === 'undefined') return true;   // not simulated
+    const e = makeEditor({ toolbar: FULL_BAR }, 'x');
+    const watching = !!e._widthObserver;
+
+    let disconnected = false;
+    const real = e._widthObserver.disconnect.bind(e._widthObserver);
+    e._widthObserver.disconnect = () => { disconnected = true; return real(); };
+    e.destroy();
+
+    return watching && disconnected;
+});
+
+check('hybrid highlight keeps the line count, which the DOM diff relies on', () => {
+    // renderHybrid pairs highlighted lines against the previous render by
+    // index, so a pass that merged or split a line would corrupt the overlay.
+    const e = makeEditor({ mode: 'hybrid', toolbar: ['bold'] });
+    return ['a\nb\nc', '# h\n- i\n`c`', '```\nx\n```', '', 'one']
+        .every(src => e._highlight(src).split('\n').length === src.split('\n').length);
+});
+
+check('hybrid highlight escapes markup before anything else', () => {
+    const e = makeEditor({ mode: 'hybrid', toolbar: ['bold'] });
+    const out = e._highlight('<img src=x onerror=alert(1)> & <b>');
+    // The display layer is written with innerHTML, so this is the guard that
+    // stops a document styling itself into real elements.
+    return !/<img|<b>/.test(out)
+        && out.includes('&lt;img')
+        && out.includes('&amp;');
+});
+
+check('hybrid highlight leaves a fenced block as code', () => {
+    // It used to style it: the fence pattern matched first and the inline
+    // passes then swept the whole string, fenced content included, so `**x**`
+    // inside a code block came out bold and `# x` came out as a heading.
+    // Per line, a line inside a fence skips every inline pass.
+    const e = makeEditor({ mode: 'hybrid', toolbar: ['bold'] });
+    const out = e._highlight('```' + NEWLINE + '**not bold**' + NEWLINE + '# no' + NEWLINE + '```');
+    return !/faux-bold/.test(out) && !/fj:text-primary/.test(out)
+        // the fence markers themselves are still marked
+        && (out.match(/fj:opacity-30/g) ?? []).length === 2;
+});
+
+check('hybrid highlight marks a fence you are still typing', () => {
+    // The old pattern needed the closing fence before it styled anything, so
+    // a block being typed stayed plain until it was finished.
+    const e = makeEditor({ mode: 'hybrid', toolbar: ['bold'] });
+    return /fj:opacity-30/.test(e._highlight('```js' + NEWLINE + 'code()'));
+});
+
+check('hybrid highlight does not read backticks in prose as a fence', () => {
+    const e = makeEditor({ mode: 'hybrid', toolbar: ['bold'] });
+    return e._highlight('text ``` more') === 'text ``` more';
+});
+
+check('hybrid highlight no longer strikes a tilde across two lines', () => {
+    // The single-tilde pattern's `[^~]+` used to reach over a newline. Per
+    // line it cannot, which is the second deliberate change.
+    const e = makeEditor({ mode: 'hybrid', toolbar: ['bold'] });
+    return e._highlight('~a' + NEWLINE + 'b~') === '~a' + NEWLINE + 'b~';
+});
+
+check('hybrid highlight dims a bold marker twice over', () => {
+    // Also recorded rather than endorsed. The emphasis pass re-processes the
+    // asterisks the bold pass already wrapped, so the marker ends up inside
+    // two opacity-40 spans and renders at about 0.16 -- almost invisible.
+    const e = makeEditor({ mode: 'hybrid', toolbar: ['bold'] });
+    return signature(e._highlight('**x**'))
+        .includes('dim[accent[dim["*"] dim["*"]]]');
+});
+
 // --- report -----------------------------------------------------------------
 
 await Promise.all(pending);

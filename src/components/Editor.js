@@ -22,6 +22,11 @@ const defaultRenderer = new Marked({ breaks: true });
 
 const TEX_CHAR = /[\\^_{]/;
 
+// A line that opens or closes a fenced code block: indent, then three
+// backticks. Anchored, so `text ``` more` is prose with backticks in it and
+// not a fence, which is how the pattern this replaced behaved too.
+const FENCE_EDGE = /^\s*```/;
+
 /**
  * Block maths, or inline maths carrying a TeX character. Used on the markdown
  * and again on the rendered HTML, so the warning only fires when the syntax
@@ -372,6 +377,30 @@ class MarkdownEditor {
 
         this.usertextarea.addEventListener('input', this._inputHandler);
         this.usertextarea.addEventListener('scroll', this._scrollHandler);
+        this._watchWidth();
+    }
+
+    /**
+     * Forgets the pinned height when the editor changes width.
+     *
+     * Width decides where the text wraps, so a narrower editor is a taller
+     * one: toggling the preview halves it, dragging the window changes it,
+     * fullscreen changes it. Height is ignored here, because _autoGrow sets
+     * the height itself and watching it would be a loop.
+     *
+     * The callback runs before paint rather than inside the keystroke, so the
+     * measurement it allows is paid once per resize instead of once per key.
+     */
+    _watchWidth() {
+        if (typeof ResizeObserver === 'undefined') return;
+
+        this._widthObserver = new ResizeObserver(entries => {
+            const width = entries[0]?.contentRect?.width;
+            if (width === undefined || width === this._lastWidth) return;
+            this._lastWidth = width;
+            this._pinnedAt = undefined;
+        });
+        this._widthObserver.observe(this.usertextarea);
     }
 
     debouncedPreview() {
@@ -607,15 +636,20 @@ class MarkdownEditor {
     scrollToView() {}
 
 
-    _highlight(rawValue) {
-        let out = rawValue
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-
-        out = out
-            .replace(/```(\w+)?\n([\s\S]*?)```/g,
-                '<span class="fj:opacity-30">```$1</span>\n$2<span class="fj:opacity-30">```</span>')
+    /**
+     * Highlights one line, which is all any of these patterns can see.
+     *
+     * Seven of the eight cannot match across a newline -- `.` does not, and
+     * the anchored ones are /m -- so running them per line gives the same
+     * result as running them over the whole document, and lets an edit
+     * re-highlight only the lines it touched. The exception is the single
+     * tilde, whose `[^~]+` used to reach across lines; it no longer does.
+     *
+     * The order is load-bearing and unchanged: the emphasis pass deliberately
+     * runs after bold and re-processes the asterisks bold has already wrapped.
+     */
+    _highlightLine(line) {
+        return line
             .replace(/`([^`\n]+)`/g,
                 '<span class="fj:opacity-40">`</span><span class="fj:text-accent">$1</span><span class="fj:opacity-40">`</span>')
             .replace(/^(#+ )(.*)$/gm,
@@ -632,9 +666,62 @@ class MarkdownEditor {
                 '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-40">$1</span>$2<span class="fj:opacity-40">$1</span></span>')
             .replace(/(!?\[)(.*?)(\]\()(.*?)(\))/g,
                 '<span class="fj:opacity-40">$1</span><span class="fj:text-primary">$2</span><span class="fj:opacity-40">$3</span><span class="fj:underline fj:opacity-50">$4</span><span class="fj:opacity-50">$5</span>');
+    }
 
-        if (rawValue.endsWith('\n')) out += ' ';
-        return out;
+    /** Escapes a line for the display layer, which is written with innerHTML. */
+    _escapeLine(line) {
+        return line
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    /**
+     * Which lines open or close a fenced block.
+     *
+     * A line of optional indent and three backticks toggles the state. Cheap
+     * enough to redo for the whole document on every keystroke -- one test per
+     * line, no capture, no replacement -- which is what makes it possible to
+     * know, before doing any real work, which lines need highlighting again.
+     *
+     * The old whole-document pattern needed a closing fence before it would
+     * style anything, so a block you were still typing stayed plain. This
+     * styles the opening fence as soon as it is there.
+     */
+    _fenceStates(lines) {
+        const states = new Array(lines.length);
+        let inside = false;
+        for (let i = 0; i < lines.length; i++) {
+            const edge = FENCE_EDGE.test(lines[i]);
+            // The edge line itself is the marker, not content.
+            states[i] = edge ? 'edge' : (inside ? 'code' : 'text');
+            if (edge) inside = !inside;
+        }
+        return states;
+    }
+
+    _highlight(rawValue) {
+        const lines = rawValue.split('\n');
+        const states = this._fenceStates(lines);
+        const out = lines
+            .map((line, i) => this._highlightOne(line, states[i]))
+            .join('\n');
+
+        return rawValue.endsWith('\n') ? out + ' ' : out;
+    }
+
+    /** One line, given what the fence scan decided it is. */
+    _highlightOne(line, state) {
+        const escaped = this._escapeLine(line);
+        if (state === 'edge') {
+            return '<span class="fj:opacity-30">' + escaped + '</span>';
+        }
+        // Inside a fence the text is code, so none of the markdown passes run.
+        // They used to: the fence pattern matched first and the inline passes
+        // then swept the whole string, fenced content included, so `**x**` in
+        // a code block came out bold.
+        if (state === 'code') return escaped;
+        return this._highlightLine(escaped);
     }
 
     renderHybrid() {
@@ -644,8 +731,37 @@ class MarkdownEditor {
         if (rawValue === this._lastRaw) return;
         this._lastRaw = rawValue;
 
-        const highlighted = this._highlight(rawValue);
-        const newLines = highlighted.split('\n');
+        // Highlight only the lines that need it.
+        //
+        // The whole document used to go through every pass on every keystroke,
+        // which is where the cost was: a line of prose is cheap, a hundred
+        // thousand of them are not. A line's result depends on just two
+        // things, its text and whether it sits inside a fence, so a line whose
+        // text and fence state are both unchanged can keep the HTML it already
+        // had. Working out the fence states is one anchored test per line with
+        // no replacement, cheap enough to redo in full.
+        const sourceLines = rawValue.split('\n');
+        const states = this._fenceStates(sourceLines);
+        const lastSource = this._lastSource;
+        const lastStates = this._lastStates;
+
+        const newLines = sourceLines.map((line, i) => {
+            const reusable = lastSource
+                && lastSource[i] === line
+                && lastStates[i] === states[i]
+                && this._lastLines?.[i] !== undefined;
+            return reusable ? this._lastLines[i] : this._highlightOne(line, states[i]);
+        });
+
+        // The trailing space the old whole-document version appended, kept so
+        // a document ending in a newline still shows that last empty line.
+        if (rawValue.endsWith('\n') && newLines.length) {
+            newLines[newLines.length - 1] += ' ';
+        }
+
+        this._lastSource = sourceLines;
+        this._lastStates = states;
+
         const lastLines = this._lastLines;
 
         if (!lastLines || lastLines.length !== newLines.length) {
@@ -681,12 +797,32 @@ class MarkdownEditor {
         if (this._userResized) return;
 
         const textarea = this.usertextarea;
+        const length = textarea.value.length;
+
+        // Once the content is taller than maxHeight the container is pinned
+        // there, and typing cannot make it shorter: at a fixed width, more
+        // characters never occupy fewer lines. So while the text only grows,
+        // the answer is already known and there is nothing to measure.
+        //
+        // Worth the bookkeeping because measuring is almost the whole cost of
+        // a keystroke. Any geometry read -- scrollHeight, clientWidth, it does
+        // not matter which -- makes the browser lay out the entire document
+        // first: about 170ms at 150k characters, against 10ms for everything
+        // else put together. Checking a string's length costs nothing and
+        // touches no layout, which is the point.
+        //
+        // Width is the one thing that invalidates this, since it changes where
+        // the text wraps. That arrives through the observer below rather than
+        // by reading the width here, which would cost exactly what it saves.
+        if (this._pinnedAt !== undefined && length >= this._pinnedAt) return;
+
         // Shrink to 1px to measure natural content height (bypasses h-full)
         textarea.style.height = '1px';
         const contentHeight = textarea.scrollHeight;
         textarea.style.height = ''; // restore — h-full class takes over
 
         const maxHeight = this.options.maxHeight ?? 500;
+        this._pinnedAt = contentHeight >= maxHeight ? length : undefined;
         const height = Math.min(contentHeight, maxHeight) + this._toolbarH + this._footerH + 1;
 
         // The first call comes from the constructor, before the toolbar and
@@ -721,6 +857,7 @@ class MarkdownEditor {
         this.listManager?.destroy();
         this.indentManager?.destroy();
         this.pasteManager?.destroy();
+        this._widthObserver?.disconnect();
         // Reaches toolbar tools, including custom ones that added listeners
         this.toolbarInstance?.destroy();
         this.tableKeys?.destroy();
