@@ -81,8 +81,9 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
 
     <div class="border-t mt-10 pt-5 space-y-3">
         <strong class="font-medium mt-3 block">Translated interface (<code>locale</code>)</strong>
-        <p class="text-sm opacity-70">Same editor, Spanish tooltips and modal text. Hover a button, or open
-           the link dialog. The CSS class names are unchanged.</p>
+        <p class="text-sm opacity-70">Same editor, one import: <code>locale/es.js</code>. Hover a button, open
+           the link dialog, press <code>Ctrl+F</code>, or read the counts along the bottom. The CSS class
+           names are unchanged.</p>
         <textarea class="translated h-32" rows="4">Pasa el cursor sobre los botones.</textarea>
     </div>
 
@@ -98,6 +99,9 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
     <script type="module">
         import MarkdownEditor from '/src/components/Editor.js';
         import DOMPurify from 'dompurify';
+        // One of the 56 shipped translations. Only the language you import
+        // reaches your bundle.
+        import es from '/locale/es.js';
 
         window.addEventListener('DOMContentLoaded', () => {
         const options = {
@@ -236,20 +240,12 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
                     { image: { fileInput: { uploadUrl: '/api/upload' } } },
                     'preview'
                 ],
-                locale: {
-                    'Heading': 'Titulo',
-                    'Bold': 'Negrita',
-                    'Italic': 'Cursiva',
-                    'Link': 'Enlace',
-                    'Image': 'Imagen',
-                    'Preview': 'Vista previa',
-                    'URL': 'Direccion',
-                    'Link text': 'Texto del enlace',
-                    'Alt text': 'Texto alternativo',
-                    'Apply': 'Aplicar',
-                    'Close': 'Cerrar',
-                    'Uploading...': 'Subiendo...',
-                },
+                // The whole interface, not a hand-written subset: tooltips,
+                // the dialogs, the find panel and the footer's counts. A
+                // partial object also works, and anything left out of it
+                // stays in English.
+                locale: es,
+                footer: { words: true },
             });
 
             // H1 belongs to the page in a CMS body field, so only offer H2 and below
