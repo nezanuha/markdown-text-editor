@@ -2521,7 +2521,7 @@ check('undo with nothing to undo leaves the text alone', () => {
 // untouched.
 //
 // Compared as a structural signature rather than raw HTML, so a failure is
-// readable. `dim[...]` is opacity-40, `faint` 30, `half` 50, and the colours
+// readable. `dim[...]` is opacity-60, `half` 50, and the colours
 // are the fj text utilities.
 
 const NEWLINE = String.fromCharCode(10);
@@ -2530,8 +2530,7 @@ const SPAN_NAMES = {
     'fj:text-primary': 'primary',
     'fj:text-secondary': 'secondary',
     'fj:text-accent': 'accent',
-    'fj:opacity-40': 'dim',
-    'fj:opacity-30': 'faint',
+    'fj:opacity-60': 'dim',
     'fj:opacity-50': 'half',
     'faux-bold': 'bold',
     'fj:line-through fj:opacity-70': 'strike',
@@ -2555,7 +2554,7 @@ const HIGHLIGHT_CASES = [
     ["heading h3", "### Deep",
      "primary[dim[\"### \"] bold[\"Deep\"]]"],
     ["bold", "**loud**",
-     "secondary[dim[accent[dim[\"*\"] dim[\"*\"]]] bold[\"loud\"] dim[accent[dim[\"*\"] dim[\"*\"]]]]"],
+     "secondary[dim[\"**\"] bold[\"loud\"] dim[\"**\"]]"],
     ["italic star", "*soft*",
      "accent[dim[\"*\"] \"soft\" dim[\"*\"]]"],
     ["italic underscore", "_soft_",
@@ -2579,17 +2578,17 @@ const HIGHLIGHT_CASES = [
     ["escapes", "<script>a & b</script>",
      "\"<script>a & b</script>\""],
     ["bold then italic", "**a** and *b*",
-     "secondary[dim[accent[dim[\"*\"] dim[\"*\"]]] bold[\"a\"] dim[accent[dim[\"*\"] dim[\"*\"]]]] \" and \" accent[dim[\"*\"] \"b\" dim[\"*\"]]"],
+     "secondary[dim[\"**\"] bold[\"a\"] dim[\"**\"]] \" and \" accent[dim[\"*\"] \"b\" dim[\"*\"]]"],
     ["code inside bold", "**a `c` b**",
-     "secondary[dim[accent[dim[\"*\"] dim[\"*\"]]] bold[\"a \" dim[\"`\"] accent[\"c\"] dim[\"`\"] \" b\"] dim[accent[dim[\"*\"] dim[\"*\"]]]]"],
+     "secondary[dim[\"**\"] bold[\"a \" dim[\"`\"] accent[\"c\"] dim[\"`\"] \" b\"] dim[\"**\"]]"],
     ["two lines", "one\ntwo",
      "\"one\\ntwo\""],
     ["trailing newline", "one\n",
      "\"one\\n \""],
     ["fence", "```js\ncode();\n```",
-     "faint[\"```js\"] \"\\ncode();\\n\" faint[\"```\"]"],
+     "dim[\"```js\"] \"\\ncode();\\n\" dim[\"```\"]"],
     ["fence with md", "```\n**not bold**\n# not heading\n```",
-     "faint[\"```\"] \"\\n**not bold**\\n# not heading\\n\" faint[\"```\"]"],
+     "dim[\"```\"] \"\\n**not bold**\\n# not heading\\n\" dim[\"```\"]"],
     ["plain", "nothing special here",
      "\"nothing special here\""],
 ];
@@ -2668,14 +2667,14 @@ check('hybrid highlight leaves a fenced block as code', () => {
     const out = e._highlight('```' + NEWLINE + '**not bold**' + NEWLINE + '# no' + NEWLINE + '```');
     return !/faux-bold/.test(out) && !/fj:text-primary/.test(out)
         // the fence markers themselves are still marked
-        && (out.match(/fj:opacity-30/g) ?? []).length === 2;
+        && (out.match(/fj:opacity-60/g) ?? []).length === 2;
 });
 
 check('hybrid highlight marks a fence you are still typing', () => {
     // The old pattern needed the closing fence before it styled anything, so
     // a block being typed stayed plain until it was finished.
     const e = makeEditor({ mode: 'hybrid', toolbar: ['bold'] });
-    return /fj:opacity-30/.test(e._highlight('```js' + NEWLINE + 'code()'));
+    return /fj:opacity-60/.test(e._highlight('```js' + NEWLINE + 'code()'));
 });
 
 check('hybrid highlight does not read backticks in prose as a fence', () => {
@@ -2690,13 +2689,26 @@ check('hybrid highlight no longer strikes a tilde across two lines', () => {
     return e._highlight('~a' + NEWLINE + 'b~') === '~a' + NEWLINE + 'b~';
 });
 
-check('hybrid highlight dims a bold marker twice over', () => {
-    // Also recorded rather than endorsed. The emphasis pass re-processes the
-    // asterisks the bold pass already wrapped, so the marker ends up inside
-    // two opacity-40 spans and renders at about 0.16 -- almost invisible.
+check('a bold marker is dimmed once, not twice', () => {
+    // The emphasis pass used to re-process the asterisks the bold pass had
+    // already wrapped, so a marker sat inside two opacity spans and rendered
+    // at about 0.16 -- all but invisible, and 2.49:1 against the background in
+    // the light theme, under even the 3:1 for interface parts. The bold pass
+    // writes its asterisks as entities now, which the emphasis pattern cannot
+    // match, and the markers read at 4.54:1.
     const e = makeEditor({ mode: 'hybrid', toolbar: ['bold'] });
     return signature(e._highlight('**x**'))
-        .includes('dim[accent[dim["*"] dim["*"]]]');
+        === 'secondary[dim["**"] bold["x"] dim["**"]]';
+});
+
+check('no marker is left at the contrast that failed', () => {
+    // Measured in Edge by painting the oklch colours to a canvas and reading
+    // the pixels back: opacity-40 composites to 2.49:1 in light, opacity-60 to
+    // 4.54:1. happy-dom has no cascade, so this pins the class instead.
+    const e = makeEditor({ mode: 'hybrid', toolbar: ['bold'] });
+    const out = e._highlight('# h' + NEWLINE + '**b** `c` [t](u)' + NEWLINE + '```');
+    return !/fj:opacity-40/.test(out) && !/fj:opacity-30/.test(out)
+        && /fj:opacity-60/.test(out);
 });
 
 // --- surviving input nobody meant to write ------------------------------------

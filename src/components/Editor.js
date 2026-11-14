@@ -681,21 +681,21 @@ class MarkdownEditor {
     _highlightLine(line) {
         return line
             .replace(/`([^`\n]+)`/g,
-                '<span class="fj:opacity-40">`</span><span class="fj:text-accent">$1</span><span class="fj:opacity-40">`</span>')
+                '<span class="fj:opacity-60">`</span><span class="fj:text-accent">$1</span><span class="fj:opacity-60">`</span>')
             .replace(/^(#+ )(.*)$/gm,
-                '<span class="fj:text-primary"><span class="fj:opacity-40">$1</span><span class="faux-bold">$2</span></span>')
+                '<span class="fj:text-primary"><span class="fj:opacity-60">$1</span><span class="faux-bold">$2</span></span>')
             .replace(/\*\*(.*?)\*\*/g,
-                '<span class="fj:text-secondary"><span class="fj:opacity-40">**</span><span class="faux-bold">$1</span><span class="fj:opacity-40">**</span></span>')
+                '<span class="fj:text-secondary"><span class="fj:opacity-60">&#42;&#42;</span><span class="faux-bold">$1</span><span class="fj:opacity-60">&#42;&#42;</span></span>')
             .replace(/^([\s]*)([\-\*] |[\d]+\. |\[[\s xX]\] )(.*)$/gm,
                 '$1<span class="fj:text-primary">$2</span>$3')
             .replace(/(\*|_)(.*?)\1/g,
-                '<span class="fj:text-accent"><span class="fj:opacity-40">$1</span>$2<span class="fj:opacity-40">$1</span></span>')
+                '<span class="fj:text-accent"><span class="fj:opacity-60">$1</span>$2<span class="fj:opacity-60">$1</span></span>')
             .replace(/~~(.*?)~~/g,
-                '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-40">~~</span>$1<span class="fj:opacity-40">~~</span></span>')
+                '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-60">~~</span>$1<span class="fj:opacity-60">~~</span></span>')
             .replace(/(?<!~)(~)([^~]+)\1(?!~)/g,
-                '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-40">$1</span>$2<span class="fj:opacity-40">$1</span></span>')
+                '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-60">$1</span>$2<span class="fj:opacity-60">$1</span></span>')
             .replace(/(!?\[)(.*?)(\]\()(.*?)(\))/g,
-                '<span class="fj:opacity-40">$1</span><span class="fj:text-primary">$2</span><span class="fj:opacity-40">$3</span><span class="fj:underline fj:opacity-50">$4</span><span class="fj:opacity-50">$5</span>');
+                '<span class="fj:opacity-60">$1</span><span class="fj:text-primary">$2</span><span class="fj:opacity-60">$3</span><span class="fj:underline fj:opacity-50">$4</span><span class="fj:opacity-50">$5</span>');
     }
 
     /** Escapes a line for the display layer, which is written with innerHTML. */
@@ -744,7 +744,7 @@ class MarkdownEditor {
     _highlightOne(line, state) {
         const escaped = this._escapeLine(line);
         if (state === 'edge') {
-            return '<span class="fj:opacity-30">' + escaped + '</span>';
+            return '<span class="fj:opacity-60">' + escaped + '</span>';
         }
         // Inside a fence the text is code, so none of the markdown passes run.
         // They used to: the fence pattern matched first and the inline passes
