@@ -21,6 +21,7 @@ export default {
     "Bold": "Grassetto",
     "Check list": "Elenco di controllo",
     "Close": "Chiudi",
+    "Close preview": "Chiudi anteprima",
     "Code": "Codice",
     "Code Block": "Blocco di codice",
     "Col {n}": "Col {n}",

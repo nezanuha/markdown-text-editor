@@ -21,6 +21,7 @@ export default {
     "Bold": "Trash",
     "Check list": "Listë kontrolli",
     "Close": "Mbyll",
+    "Close preview": "Mbyll pamjen paraprake",
     "Code": "Kod",
     "Code Block": "Bllok kodi",
     "Col {n}": "Kol {n}",

@@ -21,6 +21,7 @@ export default {
     "Bold": "جلی",
     "Check list": "چیک لسٹ",
     "Close": "بند کریں",
+    "Close preview": "پیش منظر بند کریں",
     "Code": "کوڈ",
     "Code Block": "کوڈ بلاک",
     "Col {n}": "کالم {n}",

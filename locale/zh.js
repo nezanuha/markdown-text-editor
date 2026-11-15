@@ -21,6 +21,7 @@ export default {
     "Bold": "粗体",
     "Check list": "任务列表",
     "Close": "关闭",
+    "Close preview": "关闭预览",
     "Code": "代码",
     "Code Block": "代码块",
     "Col {n}": "列 {n}",

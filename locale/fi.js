@@ -21,6 +21,7 @@ export default {
     "Bold": "Lihavoitu",
     "Check list": "Tehtävälista",
     "Close": "Sulje",
+    "Close preview": "Sulje esikatselu",
     "Code": "Koodi",
     "Code Block": "Koodilohko",
     "Col {n}": "Sar {n}",

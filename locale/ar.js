@@ -21,6 +21,7 @@ export default {
     "Bold": "عريض",
     "Check list": "قائمة مهام",
     "Close": "إغلاق",
+    "Close preview": "إغلاق المعاينة",
     "Code": "كود",
     "Code Block": "كتلة كود",
     "Col {n}": "عمود {n}",

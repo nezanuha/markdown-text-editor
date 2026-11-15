@@ -21,6 +21,7 @@ export default {
     "Bold": "粗體",
     "Check list": "待辦清單",
     "Close": "關閉",
+    "Close preview": "關閉預覽",
     "Code": "程式碼",
     "Code Block": "程式碼區塊",
     "Col {n}": "欄 {n}",

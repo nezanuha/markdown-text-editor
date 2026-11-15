@@ -21,6 +21,7 @@ export default {
     "Bold": "درشت",
     "Check list": "فهرست وارسی",
     "Close": "بستن",
+    "Close preview": "بستن پیش‌نمایش",
     "Code": "کد",
     "Code Block": "بلوک کد",
     "Col {n}": "ستون {n}",

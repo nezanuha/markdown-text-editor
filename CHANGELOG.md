@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`labels` is now `locale`**: The same object of translations under a better name, since many of the keys are messages and counts rather than button labels. `labels` keeps working, so nothing breaks. The option also covers the whole interface now: the find panel, the footer and the preview pane were left in English before. Passing a language code instead of the strings, `locale: 'es'`, now says so in the console
 - **Tables in the preview are drawn as a grid**: A border around the table and a rule down every column, where before there was only a line under the heads and one between the rows
+- **The preview button shows when the preview is open**: The icon fills in, and the tooltip changes to `Close preview (Esc)` — Escape already closed it, but nothing said so
 - **The stylesheet is now a separate file**: Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css` with a bundler. This is the breaking part of the release: an existing setup keeps working but renders unstyled until you add that line, and the editor now says so in the console. It also lets the editor run under a strict Content Security Policy, which refused the old injected `<style>` element whatever nonce it carried ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))
 
 ## [1.9.5] - 2026-11-12

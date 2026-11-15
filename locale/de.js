@@ -21,6 +21,7 @@ export default {
     "Bold": "Fett",
     "Check list": "Aufgabenliste",
     "Close": "Schließen",
+    "Close preview": "Vorschau schließen",
     "Code": "Code",
     "Code Block": "Codeblock",
     "Col {n}": "Sp {n}",

@@ -21,6 +21,7 @@ export default {
     "Bold": "Tebal",
     "Check list": "Senarai semak",
     "Close": "Tutup",
+    "Close preview": "Tutup pratonton",
     "Code": "Kod",
     "Code Block": "Blok kod",
     "Col {n}": "Ljr {n}",

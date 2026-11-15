@@ -21,6 +21,7 @@ export default {
     "Bold": "Negreta",
     "Check list": "Llista de tasques",
     "Close": "Tanca",
+    "Close preview": "Tanca la previsualització",
     "Code": "Codi",
     "Code Block": "Bloc de codi",
     "Col {n}": "Col {n}",

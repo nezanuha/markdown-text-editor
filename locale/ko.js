@@ -21,6 +21,7 @@ export default {
     "Bold": "굵게",
     "Check list": "체크리스트",
     "Close": "닫기",
+    "Close preview": "미리보기 닫기",
     "Code": "코드",
     "Code Block": "코드 블록",
     "Col {n}": "열 {n}",

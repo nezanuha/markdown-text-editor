@@ -21,6 +21,7 @@ export default {
     "Bold": "Tebal",
     "Check list": "Daftar tugas",
     "Close": "Tutup",
+    "Close preview": "Tutup pratinjau",
     "Code": "Kode",
     "Code Block": "Blok kode",
     "Col {n}": "Kol {n}",

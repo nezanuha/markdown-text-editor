@@ -21,6 +21,7 @@ export default {
     "Bold": "Makapal",
     "Check list": "Checklist",
     "Close": "Isara",
+    "Close preview": "Isara ang preview",
     "Code": "Code",
     "Code Block": "Code block",
     "Col {n}": "Hanay {n}",

@@ -21,6 +21,7 @@ export default {
     "Bold": "Pogrubienie",
     "Check list": "Lista zadań",
     "Close": "Zamknij",
+    "Close preview": "Zamknij podgląd",
     "Code": "Kod",
     "Code Block": "Blok kodu",
     "Col {n}": "Kol {n}",

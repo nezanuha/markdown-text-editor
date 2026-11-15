@@ -21,6 +21,7 @@ export default {
     "Bold": "Թավ",
     "Check list": "Ստուգացանկ",
     "Close": "Փակել",
+    "Close preview": "Փակել նախադիտումը",
     "Code": "Կոդ",
     "Code Block": "Կոդի բլոկ",
     "Col {n}": "Սյ {n}",

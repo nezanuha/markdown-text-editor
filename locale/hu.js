@@ -21,6 +21,7 @@ export default {
     "Bold": "Félkövér",
     "Check list": "Feladatlista",
     "Close": "Bezárás",
+    "Close preview": "Előnézet bezárása",
     "Code": "Kód",
     "Code Block": "Kódblokk",
     "Col {n}": "Oszl {n}",

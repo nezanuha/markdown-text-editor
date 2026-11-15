@@ -21,6 +21,7 @@ export default {
     "Bold": "Feitletrað",
     "Check list": "Gátlisti",
     "Close": "Loka",
+    "Close preview": "Loka forskoðun",
     "Code": "Kóði",
     "Code Block": "Kóðablokk",
     "Col {n}": "Dálkur {n}",

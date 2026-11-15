@@ -21,6 +21,7 @@ export default {
     "Bold": "Подебљано",
     "Check list": "Листа задатака",
     "Close": "Затвори",
+    "Close preview": "Затвори преглед",
     "Code": "Код",
     "Code Block": "Блок кода",
     "Col {n}": "Кол {n}",

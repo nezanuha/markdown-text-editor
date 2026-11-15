@@ -21,6 +21,7 @@ export default {
     "Bold": "Pusjuodis",
     "Check list": "Užduočių sąrašas",
     "Close": "Uždaryti",
+    "Close preview": "Uždaryti peržiūrą",
     "Code": "Kodas",
     "Code Block": "Kodo blokas",
     "Col {n}": "Stlp {n}",

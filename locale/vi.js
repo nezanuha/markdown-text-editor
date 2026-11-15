@@ -21,6 +21,7 @@ export default {
     "Bold": "Đậm",
     "Check list": "Danh sách kiểm",
     "Close": "Đóng",
+    "Close preview": "Đóng xem trước",
     "Code": "Mã",
     "Code Block": "Khối mã",
     "Col {n}": "Cột {n}",

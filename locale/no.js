@@ -21,6 +21,7 @@ export default {
     "Bold": "Fet",
     "Check list": "Sjekkliste",
     "Close": "Lukk",
+    "Close preview": "Lukk forhåndsvisning",
     "Code": "Kode",
     "Code Block": "Kodeblokk",
     "Col {n}": "Kol {n}",

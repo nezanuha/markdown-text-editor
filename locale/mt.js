@@ -21,6 +21,7 @@ export default {
     "Bold": "Grassett",
     "Check list": "Lista ta' kontroll",
     "Close": "Agħlaq",
+    "Close preview": "Agħlaq il-previżjoni",
     "Code": "Kodiċi",
     "Code Block": "Blokk ta' kodiċi",
     "Col {n}": "Kol {n}",

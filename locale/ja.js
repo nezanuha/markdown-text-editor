@@ -21,6 +21,7 @@ export default {
     "Bold": "太字",
     "Check list": "チェックリスト",
     "Close": "閉じる",
+    "Close preview": "プレビューを閉じる",
     "Code": "コード",
     "Code Block": "コードブロック",
     "Col {n}": "列 {n}",

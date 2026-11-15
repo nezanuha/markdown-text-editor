@@ -21,6 +21,7 @@ export default {
     "Bold": "Fet",
     "Check list": "Checklista",
     "Close": "Stäng",
+    "Close preview": "Stäng förhandsgranskning",
     "Code": "Kod",
     "Code Block": "Kodblock",
     "Col {n}": "Kol {n}",

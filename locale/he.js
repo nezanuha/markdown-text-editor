@@ -21,6 +21,7 @@ export default {
     "Bold": "מודגש",
     "Check list": "רשימת משימות",
     "Close": "סגור",
+    "Close preview": "סגור תצוגה מקדימה",
     "Code": "קוד",
     "Code Block": "בלוק קוד",
     "Col {n}": "טור {n}",

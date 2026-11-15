@@ -21,6 +21,7 @@ export default {
     "Bold": "Vet",
     "Check list": "Takenlijst",
     "Close": "Sluiten",
+    "Close preview": "Voorbeeld sluiten",
     "Code": "Code",
     "Code Block": "Codeblok",
     "Col {n}": "Kol {n}",

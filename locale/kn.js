@@ -21,6 +21,7 @@ export default {
     "Bold": "ದಪ್ಪ",
     "Check list": "ಪರಿಶೀಲನಾ ಪಟ್ಟಿ",
     "Close": "ಮುಚ್ಚು",
+    "Close preview": "ಮುನ್ನೋಟ ಮುಚ್ಚು",
     "Code": "ಕೋಡ್",
     "Code Block": "ಕೋಡ್ ಬ್ಲಾಕ್",
     "Col {n}": "ಕಾಲಂ {n}",

@@ -21,6 +21,7 @@ export default {
     "Bold": "Negrita",
     "Check list": "Lista de tareas",
     "Close": "Cerrar",
+    "Close preview": "Cerrar vista previa",
     "Code": "Código",
     "Code Block": "Bloque de código",
     "Col {n}": "Col {n}",

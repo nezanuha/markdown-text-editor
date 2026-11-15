@@ -1757,6 +1757,53 @@ check('typing does not reset a preview the reader scrolled', () => {
         () => resolve(e.previewContent.scrollTop === 120), 250));
 });
 
+check('the preview tooltip follows the state and the name does not', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, '# one');
+    const btn = e.editorContainer.querySelector('.preview-btn');
+    if (!btn) return 'no preview button';
+
+    const closed = btn.title;
+    const name = btn.getAttribute('aria-label');
+
+    btn.click();
+    const openTitle = btn.title;
+    const openName = btn.getAttribute('aria-label');
+    const openPressed = btn.getAttribute('aria-pressed');
+
+    btn.click();
+
+    // The tooltip says what the click will do; the name a screen reader hears
+    // stays still, because aria-pressed is already carrying the state and a
+    // name that moved with it would contradict that.
+    return closed === 'Preview (F11)'
+        && openTitle === 'Close preview (Esc)'
+        && openPressed === 'true'
+        && openName === name
+        && btn.getAttribute('aria-label') === name
+        // and it goes back whole, shortcut hint and all
+        && btn.title === closed
+        && btn.getAttribute('aria-pressed') === 'false';
+});
+
+check('the preview tooltip is translated, the key is not', () => {
+    const e = makeEditor({
+        toolbar: FULL_BAR,
+        locale: { 'Preview': 'Vista previa', 'Close preview': 'Cerrar vista previa' },
+    }, '# one');
+    const btn = e.editorContainer.querySelector('.preview-btn');
+
+    const closed = btn.title;
+    btn.click();
+    const open = btn.title;
+    btn.click();
+
+    // Esc and F11 are the same keys in every language, so they are not looked
+    // up; only the words around them are.
+    return closed === 'Vista previa (F11)'
+        && open === 'Cerrar vista previa (Esc)'
+        && btn.title === closed;
+});
+
 // --- selection trimming (#47) -----------------------------------------------
 
 // Double-clicking a word takes the space after it, and triple-clicking a line

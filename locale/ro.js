@@ -21,6 +21,7 @@ export default {
     "Bold": "Aldin",
     "Check list": "Listă de verificare",
     "Close": "Închide",
+    "Close preview": "Închide previzualizarea",
     "Code": "Cod",
     "Code Block": "Bloc de cod",
     "Col {n}": "Col {n}",

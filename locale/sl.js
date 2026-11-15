@@ -21,6 +21,7 @@ export default {
     "Bold": "Krepko",
     "Check list": "Kontrolni seznam",
     "Close": "Zapri",
+    "Close preview": "Zapri predogled",
     "Code": "Koda",
     "Code Block": "Blok kode",
     "Col {n}": "Stolp {n}",

@@ -28,6 +28,7 @@ export default {
     "Bold": "Bold",
     "Check list": "Check list",
     "Close": "Close",
+    "Close preview": "Close preview",
     "Code": "Code",
     "Code Block": "Code Block",
     "Col {n}": "Col {n}",

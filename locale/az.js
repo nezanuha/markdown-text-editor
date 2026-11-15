@@ -21,6 +21,7 @@ export default {
     "Bold": "Qalın",
     "Check list": "Yoxlama siyahısı",
     "Close": "Bağla",
+    "Close preview": "Önizləməni bağla",
     "Code": "Kod",
     "Code Block": "Kod bloku",
     "Col {n}": "Sütun {n}",

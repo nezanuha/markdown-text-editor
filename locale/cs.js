@@ -21,6 +21,7 @@ export default {
     "Bold": "Tučné",
     "Check list": "Seznam úkolů",
     "Close": "Zavřít",
+    "Close preview": "Zavřít náhled",
     "Code": "Kód",
     "Code Block": "Blok kódu",
     "Col {n}": "Sl {n}",

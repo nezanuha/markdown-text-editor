@@ -21,6 +21,7 @@ export default {
     "Bold": "தடிமன்",
     "Check list": "சரிபார்ப்புப் பட்டியல்",
     "Close": "மூடு",
+    "Close preview": "முன்னோட்டத்தை மூடு",
     "Code": "குறியீடு",
     "Code Block": "குறியீட்டுத் தொகுதி",
     "Col {n}": "நிரல் {n}",

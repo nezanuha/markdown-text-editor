@@ -21,6 +21,7 @@ export default {
     "Bold": "Trom",
     "Check list": "Seicliosta",
     "Close": "Dún",
+    "Close preview": "Dún an réamhamharc",
     "Code": "Cód",
     "Code Block": "Bloc cóid",
     "Col {n}": "Col {n}",

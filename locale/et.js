@@ -21,6 +21,7 @@ export default {
     "Bold": "Paks",
     "Check list": "Kontrollnimekiri",
     "Close": "Sulge",
+    "Close preview": "Sulge eelvaade",
     "Code": "Kood",
     "Code Block": "Koodiplokk",
     "Col {n}": "Vrg {n}",

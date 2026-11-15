@@ -21,6 +21,7 @@ export default {
     "Bold": "Treknraksts",
     "Check list": "Kontrolsaraksts",
     "Close": "Aizvērt",
+    "Close preview": "Aizvērt priekšskatījumu",
     "Code": "Kods",
     "Code Block": "Koda bloks",
     "Col {n}": "Kol {n}",

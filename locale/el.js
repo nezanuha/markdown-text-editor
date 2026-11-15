@@ -21,6 +21,7 @@ export default {
     "Bold": "Έντονα",
     "Check list": "Λίστα ελέγχου",
     "Close": "Κλείσιμο",
+    "Close preview": "Κλείσιμο προεπισκόπησης",
     "Code": "Κώδικας",
     "Code Block": "Μπλοκ κώδικα",
     "Col {n}": "Στ {n}",

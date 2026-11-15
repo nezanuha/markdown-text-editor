@@ -21,6 +21,7 @@ export default {
     "Bold": "Tučné",
     "Check list": "Zoznam úloh",
     "Close": "Zavrieť",
+    "Close preview": "Zavrieť náhľad",
     "Code": "Kód",
     "Code Block": "Blok kódu",
     "Col {n}": "Stĺ {n}",

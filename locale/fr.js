@@ -21,6 +21,7 @@ export default {
     "Bold": "Gras",
     "Check list": "Liste de tâches",
     "Close": "Fermer",
+    "Close preview": "Fermer l'aperçu",
     "Code": "Code",
     "Code Block": "Bloc de code",
     "Col {n}": "Col {n}",

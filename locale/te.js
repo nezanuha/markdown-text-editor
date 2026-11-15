@@ -21,6 +21,7 @@ export default {
     "Bold": "మందం",
     "Check list": "తనిఖీ జాబితా",
     "Close": "మూసివేయి",
+    "Close preview": "పరిదృశ్యం మూసివేయి",
     "Code": "కోడ్",
     "Code Block": "కోడ్ బ్లాక్",
     "Col {n}": "నిలువు {n}",

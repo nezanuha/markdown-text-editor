@@ -21,6 +21,7 @@ export default {
     "Bold": "Nene",
     "Check list": "Orodha ya kukagua",
     "Close": "Funga",
+    "Close preview": "Funga hakiki",
     "Code": "Msimbo",
     "Code Block": "Kizuizi cha msimbo",
     "Col {n}": "Safu {n}",

@@ -21,6 +21,7 @@ export default {
     "Bold": "Напівжирний",
     "Check list": "Список завдань",
     "Close": "Закрити",
+    "Close preview": "Закрити попередній перегляд",
     "Code": "Код",
     "Code Block": "Блок коду",
     "Col {n}": "Стовп {n}",

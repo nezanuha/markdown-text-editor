@@ -21,6 +21,7 @@ export default {
     "Bold": "Podebljano",
     "Check list": "Lista zadataka",
     "Close": "Zatvori",
+    "Close preview": "Zatvori pregled",
     "Code": "Kod",
     "Code Block": "Blok koda",
     "Col {n}": "Kol {n}",

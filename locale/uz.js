@@ -21,6 +21,7 @@ export default {
     "Bold": "Qalin",
     "Check list": "Tekshiruv ro'yxati",
     "Close": "Yopish",
+    "Close preview": "Ko'rib chiqishni yopish",
     "Code": "Kod",
     "Code Block": "Kod bloki",
     "Col {n}": "Ust {n}",

@@ -21,6 +21,7 @@ export default {
     "Bold": "বোল্ড",
     "Check list": "চেকলিস্ট",
     "Close": "বন্ধ করুন",
+    "Close preview": "প্রিভিউ বন্ধ করুন",
     "Code": "কোড",
     "Code Block": "কোড ব্লক",
     "Col {n}": "কলাম {n}",

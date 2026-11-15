@@ -21,6 +21,7 @@ export default {
     "Bold": "Полужирный",
     "Check list": "Список задач",
     "Close": "Закрыть",
+    "Close preview": "Закрыть предпросмотр",
     "Code": "Код",
     "Code Block": "Блок кода",
     "Col {n}": "Стлб {n}",

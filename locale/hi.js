@@ -21,6 +21,7 @@ export default {
     "Bold": "बोल्ड",
     "Check list": "चेकलिस्ट",
     "Close": "बंद करें",
+    "Close preview": "पूर्वावलोकन बंद करें",
     "Code": "कोड",
     "Code Block": "कोड ब्लॉक",
     "Col {n}": "स्तंभ {n}",

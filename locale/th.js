@@ -21,6 +21,7 @@ export default {
     "Bold": "ตัวหนา",
     "Check list": "รายการตรวจสอบ",
     "Close": "ปิด",
+    "Close preview": "ปิดตัวอย่าง",
     "Code": "โค้ด",
     "Code Block": "บล็อกโค้ด",
     "Col {n}": "คอลัมน์ {n}",
