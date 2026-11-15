@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **The stylesheet is now a separate file**: Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css` with a bundler. This is the breaking change. An existing setup keeps working, but it renders unstyled until you add that line, and the editor says so in the console. It also lets the editor run under a strict Content Security Policy, which refused the old injected `<style>` tag whatever nonce it carried ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))
 - **`labels` is now `locale`**: Same translations under a better name. Plenty of the keys are messages and counts, not labels. `labels` still works. The option covers the find panel, the footer and the preview pane too, which were stuck in English before
+- **marked can reach you without a release here**: Its range was `~18.1.2`, which let patches through and held minors back. It's `^18.2.0` now. What marked turns markdown into is pinned by 35 cases, so a version that changes your preview fails the build instead of turning up in it
 - **Tables in the preview are drawn as a grid**: A border around the table and a rule down every column. Before there was a line under the heads, one between the rows, and nothing else
 - **The preview button shows when the preview is open**: The icon fills in and the tooltip turns into `Close preview (Esc)`. Escape always closed it, but nothing said so
 

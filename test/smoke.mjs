@@ -1804,6 +1804,102 @@ check('the preview tooltip is translated, the key is not', () => {
         && btn.title === closed;
 });
 
+// --- what marked turns markdown into ----------------------------------------
+
+// The preview is marked's output, so a marked release can change what every
+// user sees without a line of this project changing. The range is a caret,
+// which lets a minor reach them before it reaches a release here. These pin
+// the output exactly, so the version that moves it fails here, naming the
+// case, instead of arriving in someone's preview.
+//
+// Sanitising is switched off on purpose. What is under watch is marked, and
+// DOMPurify under happy-dom drops the tags of the first element it is handed
+// -- "<h1>One</h1>" comes back as "One" -- which a browser does not do. The
+// XSS tests cover the sanitiser; these cover the parser.
+//
+// Regenerate deliberately, never to make a failure go away: read the diff
+// first and decide whether the new output is the one you want to ship.
+const RENDER_CASES = [
+    ["headings", "# One\n## Two\n###### Six",
+     "<h1>One</h1>\n<h2>Two</h2>\n<h6>Six</h6>\n"],
+    ["setext headings", "One\n===\n\nTwo\n---",
+     "<h1>One</h1>\n<h2>Two</h2>\n"],
+    ["emphasis", "*a* _b_ **c** __d__ ***e*** ~~f~~",
+     "<p><em>a</em> <em>b</em> <strong>c</strong> <strong>d</strong> <em><strong>e</strong></em> <del>f</del></p>\n"],
+    ["emphasis edges", "a*b*c  a_b_c  **a**b  snake_case_word",
+     "<p>a<em>b</em>c  a_b_c  <strong>a</strong>b  snake_case_word</p>\n"],
+    ["inline code", "`x` ``a ` b`` `` ` ``",
+     "<p><code>x</code> <code>a ` b</code> <code>`</code></p>\n"],
+    ["fence with info", "```js\nconst a = 1;\n```",
+     "<pre><code class=\"language-js\">const a = 1;\n</code></pre>\n"],
+    ["fence tilde", "~~~\nplain\n~~~",
+     "<pre><code>plain\n</code></pre>\n"],
+    ["fence nested", "````\n```\ninner\n```\n````",
+     "<pre><code>```\ninner\n```\n</code></pre>\n"],
+    ["indented code", "    four spaces",
+     "<pre><code>four spaces\n</code></pre>\n"],
+    ["list tight", "- a\n- b",
+     "<ul>\n<li>a</li>\n<li>b</li>\n</ul>\n"],
+    ["list loose", "- a\n\n- b",
+     "<ul>\n<li><p>a</p>\n</li>\n<li><p>b</p>\n</li>\n</ul>\n"],
+    ["list numbered", "3. a\n4. b",
+     "<ol start=\"3\">\n<li>a</li>\n<li>b</li>\n</ol>\n"],
+    ["list nested", "- a\n  - b\n    - c",
+     "<ul>\n<li>a<ul>\n<li>b<ul>\n<li>c</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n"],
+    ["task list", "- [ ] todo\n- [x] done",
+     "<ul>\n<li><input disabled=\"\" type=\"checkbox\"> todo</li>\n<li><input checked=\"\" disabled=\"\" type=\"checkbox\"> done</li>\n</ul>\n"],
+    ["blockquote", "> a\n> b\n\n> > nested",
+     "<blockquote>\n<p>a<br>b</p>\n</blockquote>\n<blockquote>\n<blockquote>\n<p>nested</p>\n</blockquote>\n</blockquote>\n"],
+    ["table", "| a | b |\n| --- | --- |\n| 1 | 2 |",
+     "<table>\n<thead>\n<tr>\n<th>a</th>\n<th>b</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>1</td>\n<td>2</td>\n</tr>\n</tbody></table>\n"],
+    ["table aligned", "| a | b | c |\n| :-- | :-: | --: |\n| 1 | 2 | 3 |",
+     "<table>\n<thead>\n<tr>\n<th align=\"left\">a</th>\n<th align=\"center\">b</th>\n<th align=\"right\">c</th>\n</tr>\n</thead>\n<tbody><tr>\n<td align=\"left\">1</td>\n<td align=\"center\">2</td>\n<td align=\"right\">3</td>\n</tr>\n</tbody></table>\n"],
+    ["table escapes", "| a \\| b | c |\n| --- | --- |\n| `x|y` | 2 |",
+     "<table>\n<thead>\n<tr>\n<th>a | b</th>\n<th>c</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>`x</td>\n<td>y`</td>\n</tr>\n</tbody></table>\n"],
+    ["link", "[t](https://a.b \"ti\")",
+     "<p><a href=\"https://a.b\" title=\"ti\">t</a></p>\n"],
+    ["link reference", "[t][r]\n\n[r]: https://a.b",
+     "<p><a href=\"https://a.b\">t</a></p>\n"],
+    ["autolink", "<https://a.b> https://c.d",
+     "<p><a href=\"https://a.b\">https://a.b</a> <a href=\"https://c.d\">https://c.d</a></p>\n"],
+    ["image", "![alt](https://a.b/i.png \"ti\")",
+     "<p><img src=\"https://a.b/i.png\" alt=\"alt\" title=\"ti\"></p>\n"],
+    ["thematic breaks", "---\n\n***\n\n___",
+     "<hr>\n<hr>\n<hr>\n"],
+    ["html block", "<div><p>raw</p></div>",
+     "<div><p>raw</p></div>"],
+    ["html inline", "a <span>b</span> c",
+     "<p>a <span>b</span> c</p>\n"],
+    ["entities", "&amp; &copy; &#35; &lt;tag&gt;",
+     "<p>&amp; &copy; # &lt;tag&gt;</p>\n"],
+    ["escapes", "\\* \\_ \\# \\[ \\\\",
+     "<p>* _ # [ \\</p>\n"],
+    ["hard break", "a  \nb",
+     "<p>a<br>b</p>\n"],
+    ["backslash break", "a\\\nb",
+     "<p>a<br>b</p>\n"],
+    ["soft break", "a\nb",
+     "<p>a<br>b</p>\n"],
+    ["footnote syntax", "text[^1]\n\n[^1]: note",
+     "<p>text<a href=\"note\">^1</a></p>\n"],
+    ["everything", "# T\n\n> q *i*\n\n- [x] **d** `c`\n\n| a |\n| - |\n| 1 |",
+     "<h1>T</h1>\n<blockquote>\n<p>q <em>i</em></p>\n</blockquote>\n<ul>\n<li><input checked=\"\" disabled=\"\" type=\"checkbox\"> <strong>d</strong> <code>c</code></li>\n</ul>\n<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>1</td>\n</tr>\n</tbody></table>\n"],
+    ["unicode", "déjà – em—dash … “smart” ‘q’",
+     "<p>déjà – em—dash … “smart” ‘q’</p>\n"],
+    ["empty", "",
+     ""],
+    ["whitespace only", "   \n   ",
+     ""],
+];
+
+for (const [name, input, expected] of RENDER_CASES) {
+    check('renders: ' + name, () => {
+        const e = makeEditor({ toolbar: ['bold'], sanitizer: (html) => html });
+        const got = e._renderMarkdown(input);
+        return got === expected || ('got ' + JSON.stringify(got));
+    });
+}
+
 // --- selection trimming (#47) -----------------------------------------------
 
 // Double-clicking a word takes the space after it, and triple-clicking a line
