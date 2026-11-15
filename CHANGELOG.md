@@ -18,7 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **The link and image dialogs could run script from the document**: Both prefill their fields from the text around the cursor, and the alt and link-text fields fall back to whatever is selected, so any text in the document reached the dialog's markup unescaped. Markdown holding the right characters ran when someone selected it and pressed the button — in the session of whoever was editing the document, not whoever wrote it. The values are escaped now, and still read back exactly as they were written
 - **`destroy()` left a key handler on your textarea**: Tab and bracket handling was attached with a function the editor kept no reference to, so it could never be taken off again. An app that builds and tears down editors as it navigates left one behind each time, still answering Tab and still holding the dead editor in memory
 - **Odd input could take the whole editor down**: A `toolbar` that was not an array, a stray `null` among the tools, or a `renderer` that threw each left you with no editor at all rather than a complaint in the console. The first two now say what was wrong and carry on, and a renderer that throws — including the default one, which runs out of stack on a few thousand nested blockquotes — leaves the preview showing plain text while your document stays exactly as you wrote it
 - **`require()` returned an empty object**: The package is ESM, so Node read the build meant for `require` as ESM too and its CommonJS branch never ran — anyone using `require('markdown-text-editor')` got `{}` rather than the editor. That file is now `dist/markdown-text-editor.cjs`, which is what tells Node to read it as CommonJS. `import` was unaffected. If you were reaching past the package for `dist/markdown-text-editor.umd.js`, that name is gone
@@ -37,6 +36,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`labels` is now `locale`**: The same object of translations under a better name, since many of the keys are messages and counts rather than button labels. `labels` keeps working, so nothing breaks. The option also covers the whole interface now: the find panel, the footer and the preview pane were left in English before. Passing a language code instead of the strings, `locale: 'es'`, now says so in the console
 - **The stylesheet is now a separate file**: Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css` with a bundler. This is the breaking part of the release: an existing setup keeps working but renders unstyled until you add that line, and the editor now says so in the console. It also lets the editor run under a strict Content Security Policy, which refused the old injected `<style>` element whatever nonce it carried ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))
+
+## [1.9.5] - 2026-11-12
+
+### Security
+
+- **Link and image dialogs could run script from the document**: Selected text went into the dialog's HTML unescaped, so crafted markdown ran in the browser of whoever was editing it. Affects 1.8.0 to 1.9.4
+
 
 ## [1.9.4] - 2026-10-30
 
@@ -500,7 +506,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.4...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.5...HEAD
+[1.9.5]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.4...v1.9.5
 [1.9.4]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.3...v1.9.4
 [1.9.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.2...v1.9.3
 [1.9.2]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.1...v1.9.2
