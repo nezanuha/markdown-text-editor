@@ -2073,6 +2073,70 @@ check('script tags are stripped by default', () => {
     return !/<script/i.test(e.previewContent.innerHTML);
 });
 
+// What these can and cannot show, so nobody spends an afternoon on a bug that
+// is not there.
+//
+// DOMPurify does not work under happy-dom. It strips the tags of the first
+// element it is handed and lets everything after it through untouched:
+//
+//     "<p>hello</p><script>alert(1)</script>"
+//         -> "hello<script>alert(1)</script>"
+//
+// Chrome does the right thing with the same editor and the same input: the
+// script is removed, onerror is stripped off the image, and nothing runs.
+// Checked over CDP against the running editor, not reasoned about.
+//
+// So the two checks above pass because of that mangling rather than because
+// anything was sanitised, and a payload placed anywhere but first would fail
+// here against code that is correct. Do not add one.
+//
+// Whether DOMPurify strips scripts is DOMPurify's business and their suite's.
+// What belongs here is the seam on either side of it: everything the renderer
+// produces has to reach the sanitiser, and only what the sanitiser hands back
+// may reach the DOM. Neither needs a working sanitiser to test.
+
+check('everything the renderer produces reaches the sanitiser', () => {
+    const produced = '<p>one</p><script>two</scr' + 'ipt><img src=x onerror=three>';
+    const seen = [];
+    const e = makeEditor({
+        toolbar: FULL_BAR,
+        renderer: () => produced,
+        sanitizer: (html) => { seen.push(html); return 'clean'; },
+    }, 'anything');
+
+    // Nothing may be trimmed, split or pre-filtered on the way in: the
+    // sanitiser has to see the whole string, dangerous parts and all.
+    return seen.length > 0 && seen.every((html) => html === produced);
+});
+
+check('only what the sanitiser returns reaches the preview', () => {
+    const e = makeEditor({
+        toolbar: FULL_BAR,
+        renderer: () => '<p>dangerous</p>',
+        sanitizer: () => '<em>safe</em>',
+    }, 'x');
+
+    const html = e.previewContent.innerHTML;
+    return html.includes('safe') && !html.includes('dangerous');
+});
+
+check('the sanitiser runs again on every edit, not just the first render', () => {
+    let calls = 0;
+    const e = makeEditor({
+        toolbar: FULL_BAR,
+        renderer: (md) => '<p>' + md + '</p>',
+        sanitizer: (html) => { calls += 1; return html; },
+    }, 'first');
+
+    const afterFirst = calls;
+    e.usertextarea.value = 'second';
+    e.render();
+
+    // A sanitiser that only ran once would leave every later keystroke
+    // unsanitised, which is the shape this bug takes when it happens.
+    return afterFirst > 0 && calls > afterFirst;
+});
+
 // --- image upload via paste and drop ----------------------------------------
 
 const checkAsync = async (name, fn) => {
