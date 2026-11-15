@@ -21,6 +21,68 @@ const SHORTCUTS = {
     toggleReplace: 'Control+H',
 };
 
+// --- the panel's parts -----------------------------------------------------
+// Pure DOM, no editor state. Each one is the same on the find line as on the
+// replace line, which is the reason they are out here: the builder reads as
+// the panel's shape rather than as forty calls to createElement.
+
+const line = () => {
+    const el = document.createElement('div');
+    el.className = 'find-replace-row fj:flex fj:flex-wrap fj:justify-end fj:items-center fj:gap-1 fj:pointer-coarse:gap-0.5';
+    return el;
+};
+
+// A box with its switches inside it, the way an editor's find widget draws
+// one: the component's own input, worn by the wrapper so the buttons sit
+// within the frame, and a bare field inside it.
+const field = (input, ...inside) => {
+    const box = document.createElement('div');
+    box.className = 'find-replace-field fj:me-input fj:me-input-xs'
+        + ' fj:flex fj:items-center fj:gap-0.5 fj:flex-1 fj:min-w-24 fj:ps-2 fj:pe-0.5';
+    input.className = 'fj:flex-1 fj:min-w-0 fj:bg-transparent fj:border-0 fj:p-0'
+        + ' fj:outline-none fj:[font:inherit] fj:text-inherit';
+    box.append(input, ...inside);
+    return box;
+};
+
+// frutjam's divider rather than a bordered span, so the rule is the same
+// weight and colour as every other rule in the editor. Its own margin is
+// 1rem, which is a gap and a half in a bar this size.
+const divider = () => {
+    const d = document.createElement('span');
+    d.className = 'fj:me-divider fj:me-divider-vertical fj:mx-0';
+    d.setAttribute('aria-hidden', 'true');
+    return d;
+};
+
+// A row's icons travel as one group. On a narrow editor the group wraps onto
+// a line of its own and fills it, which leaves the box the whole width above
+// instead of squeezing it to five characters and folding the icons one at a
+// time. Flex wrapping does that by itself, so there is no width to measure
+// and no breakpoint to choose.
+const controlGroup = (...children) => {
+    const el = document.createElement('div');
+    el.className = 'find-replace-controls fj:flex fj:flex-wrap fj:justify-end fj:items-center fj:gap-1 fj:pointer-coarse:gap-0.5';
+    el.append(...children);
+    return el;
+};
+
+// The switches that live inside a box, against its right edge, where every
+// editor keeps them. Under 22rem of panel there is no room for them beside a
+// box worth typing in, so they wait behind the chevron that already discloses
+// the replace row.
+//
+// The panel's own width decides that, not the viewport's and not the
+// pointer's: a narrow editor on a desktop has the same problem as a phone,
+// and the panel is the thing that has to hold them.
+const optionGroup = (...children) => {
+    const el = document.createElement('div');
+    el.className = 'find-replace-options fj:flex fj:items-center fj:gap-0.5'
+        + ' fj:@max-[22rem]:hidden fj:@max-[22rem]:[.is-expanded_&]:flex';
+    el.append(...children);
+    return el;
+};
+
 export default class FindReplace {
     constructor(editor) {
         this.editor = editor;
@@ -230,20 +292,25 @@ export default class FindReplace {
         this._setPressed(this._inSelectionBtn, false);
     }
 
-    _buildPanel() {
-        // One box with a rule across it, rather than two bordered boxes inside
-        // a third. The inputs have no frame of their own: the panel is the
-        // frame, the rule separates finding from replacing, and the vertical
-        // rules group the controls. It also ends the business of nesting one
-        // radius inside another, since there is one border left to get right.
+    /**
+     * The box the panel is drawn as.
+     *
+     * One box with a rule across it, rather than two bordered boxes inside a
+     * third. The inputs have no frame of their own: the panel is the frame,
+     * the rule separates finding from replacing, and the vertical rules group
+     * the controls. It also ends the business of nesting one radius inside
+     * another, since there is one border left to get right.
+     *
+     * Laid out as an editor's find widget is: one chevron down the left
+     * spanning both rows, each row a box with its own switches inside it, and
+     * the actions for that row outside on the right.
+     *
+     * 24rem, which is what the panel came to in 1.9.4 when it sized itself to
+     * its contents. A figure rather than a fraction, so the panel is the same
+     * size whatever editor it is embedded in.
+     */
+    _panelShell() {
         const panel = document.createElement('div');
-        // Laid out as an editor's find widget is: one chevron down the left
-        // spanning both rows, each row a box with its own switches inside it,
-        // and the actions for that row outside on the right.
-        //
-        // 24rem, which is what the panel came to in 1.9.4 when it sized
-        // itself to its contents. A figure rather than a fraction, so the
-        // panel is the same size whatever editor it is embedded in.
         panel.className = `
             find-replace-panel fj:@container
             fj:absolute fj:top-1 fj:start-auto fj:z-20
@@ -251,42 +318,41 @@ export default class FindReplace {
             fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:shadow-lg
             fj:flex fj:flex-col fj:gap-1 fj:p-1
         `;
-        const replaceRowId = `find-replace-row-${Math.random().toString(36).slice(2, 7)}`;
         panel.setAttribute('role', 'search');
         panel.setAttribute('aria-label', this.editor.label('Find and replace'));
+        return panel;
+    }
 
-        const line = () => {
-            const el = document.createElement('div');
-            el.className = 'find-replace-row fj:flex fj:flex-wrap fj:justify-end fj:items-center fj:gap-1 fj:pointer-coarse:gap-0.5';
-            return el;
-        };
+    /**
+     * One of the switches: match case, whole word, regular expression,
+     * preserve case. All four are built here, so the set reads as one.
+     *
+     * Pressed takes the ghost off and puts me-btn-active on. Ghost writes a
+     * literal transparent background, while active works by swapping
+     * --color-btn, which the base button paints with: the two together cancel
+     * out and the switch looks the same on as off.
+     */
+    _toggleBtn(text, label, key, shortcut) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost';
+        btn.textContent = text;
+        btn.setAttribute('aria-label', this.editor.label(label));
+        btn.setAttribute('aria-pressed', 'false');
+        this._shortcut(btn, shortcut);
+        btn.addEventListener('click', () => {
+            this[key] = !this[key];
+            this._setPressed(btn, this[key]);
+            this._search();
+        });
+        return btn;
+    }
 
-        // A box with its switches inside it, the way an editor's find widget
-        // draws one: the component's own input, worn by the wrapper so the
-        // buttons sit within the frame, and a bare field inside it.
-        const field = (input, ...inside) => {
-            const box = document.createElement('div');
-            box.className = 'find-replace-field fj:me-input fj:me-input-xs'
-                + ' fj:flex fj:items-center fj:gap-0.5 fj:flex-1 fj:min-w-24 fj:ps-2 fj:pe-0.5';
-            input.className = 'fj:flex-1 fj:min-w-0 fj:bg-transparent fj:border-0 fj:p-0'
-                + ' fj:outline-none fj:[font:inherit] fj:text-inherit';
-            box.append(input, ...inside);
-            return box;
-        };
-
-        // frutjam's divider rather than a bordered span, so the rule is the
-        // same weight and colour as every other rule in the editor. Its own
-        // margin is 1rem, which is a gap and a half in a bar this size.
-        const divider = () => {
-            const d = document.createElement('span');
-            d.className = 'fj:me-divider fj:me-divider-vertical fj:mx-0';
-            d.setAttribute('aria-hidden', 'true');
-            return d;
-        };
-
-        // -- Find line -----------------------------------------------
-        const findLine = line();
-
+    /**
+     * The find box: the field, the running count, and the three switches that
+     * sit inside its frame.
+     */
+    _buildFindField() {
         this._findInput = document.createElement('input');
         this._findInput.type = 'text';
         this._findInput.placeholder = this.editor.label('Find');
@@ -308,6 +374,27 @@ export default class FindReplace {
         // for it, once the typing stops.
         this._countEl.setAttribute('aria-hidden', 'true');
 
+        this._caseSensitiveBtn = this._toggleBtn('Aa', 'Match case', '_caseSensitive', SHORTCUTS.caseSensitive);
+        this._wholeWordBtn = this._toggleBtn('ab', 'Whole word', '_wholeWord', SHORTCUTS.wholeWord);
+        this._regexBtn = this._toggleBtn('.*', 'Regular expression', '_useRegex', SHORTCUTS.regex);
+
+        const findLine = line();
+        findLine.append(field(
+            this._findInput,
+            this._countEl,
+            optionGroup(this._caseSensitiveBtn, this._wholeWordBtn, this._regexBtn),
+        ));
+        return findLine;
+    }
+
+    /**
+     * The icons under the box, grouped by what they do: the disclosure, then
+     * moving between matches, then leaving.
+     *
+     * A line of their own, so the box above keeps the panel's whole width
+     * however many icons end up here.
+     */
+    _buildFindControls(panel, replaceRowId) {
         const prevBtn = this._iconBtn(
             'Previous match',
             `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>`
@@ -323,37 +410,6 @@ export default class FindReplace {
         this._nextBtn = nextBtn;
         this._shortcut(nextBtn, SHORTCUTS.next);
         nextBtn.addEventListener('click', () => this._next());
-
-        // Match case, whole word and regular expression, built the same way
-        // so the three read as one set.
-        //
-        // Pressed takes the ghost off and puts me-btn-active on. Ghost writes
-        // a literal transparent background, while active works by swapping
-        // --color-btn, which the base button paints with: the two together
-        // cancel out and the switch looks the same on as off.
-        const toggle = (text, label, key, shortcut) => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost';
-            btn.textContent = text;
-            btn.setAttribute('aria-label', this.editor.label(label));
-            btn.setAttribute('aria-pressed', 'false');
-            this._shortcut(btn, shortcut);
-            btn.addEventListener('click', () => {
-                this[key] = !this[key];
-                this._setPressed(btn, this[key]);
-                this._search();
-            });
-            return btn;
-        };
-
-        this._caseSensitiveBtn = toggle('Aa', 'Match case', '_caseSensitive', SHORTCUTS.caseSensitive);
-        this._wholeWordBtn = toggle('ab', 'Whole word', '_wholeWord', SHORTCUTS.wholeWord);
-        this._regexBtn = toggle('.*', 'Regular expression', '_useRegex', SHORTCUTS.regex);
-
-        // Replaces "Cat" with "Dog" and "CAT" with "DOG", rather than making
-        // everything lower case because that is how the replacement was typed.
-        this._preserveCaseBtn = toggle('AB', 'Preserve case', '_preserveCase', SHORTCUTS.preserveCase);
 
         // Search only what is selected. The range is taken when the switch
         // goes on, because a selection does not survive clicking into the
@@ -397,44 +453,24 @@ export default class FindReplace {
         this._shortcut(closeBtn, SHORTCUTS.close);
         closeBtn.addEventListener('click', () => this.close());
 
-        // The controls travel as one group. On a narrow editor the group wraps
-        // onto a line of its own and fills it, which leaves the box the whole
-        // width above instead of squeezing it to five characters and folding
-        // the icons one at a time. Flex wrapping does that by itself, so there
-        // is no width to measure and no breakpoint to choose.
-        const findControls = document.createElement('div');
-        findControls.className = 'find-replace-controls fj:flex fj:flex-wrap fj:justify-end fj:items-center fj:gap-1 fj:pointer-coarse:gap-0.5';
-
-        // Match case, whole word and regular expression sit inside the box,
-        // against its right edge, where every editor keeps them. Under 26rem
-        // of panel there is no room for them beside a box worth typing in, so
-        // they wait behind the chevron that already discloses the replace row.
-        //
-        // The panel's own width decides that, not the viewport's and not the
-        // pointer's: a narrow editor on a desktop has the same problem as a
-        // phone, and the panel is the thing that has to hold them.
-        const options = document.createElement('div');
-        options.className = 'find-replace-options fj:flex fj:items-center fj:gap-0.5'
-            + ' fj:@max-[22rem]:hidden fj:@max-[22rem]:[.is-expanded_&]:flex';
-        options.append(this._caseSensitiveBtn, this._wholeWordBtn, this._regexBtn);
-
-        // The buttons live on a row of their own under the box, grouped by
-        // what they do: the disclosure, then moving between matches, then
-        // leaving. The box above them gets the whole width.
-        findControls.append(
+        const findControls = controlGroup(
             replaceToggle, divider(),
             this._inSelectionBtn, prevBtn, nextBtn, divider(),
             closeBtn,
         );
         findControls.classList.add('fj:w-full');
 
-        findLine.append(field(this._findInput, this._countEl, options));
-
         const controlLine = line();
         controlLine.classList.add('is-controls');
         controlLine.append(findControls);
 
-        // -- Replace line --------------------------------------------
+        return controlLine;
+    }
+
+    /**
+     * The replace line, hidden until the chevron on the find line is pressed.
+     */
+    _buildReplaceRow(replaceRowId) {
         this._replaceRow = line();
         this._replaceRow.id = replaceRowId;
         this._replaceRow.classList.add('is-replace');
@@ -447,6 +483,10 @@ export default class FindReplace {
         this._replaceInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') this._replace();
         });
+
+        // Replaces "Cat" with "Dog" and "CAT" with "DOG", rather than making
+        // everything lower case because that is how the replacement was typed.
+        this._preserveCaseBtn = this._toggleBtn('AB', 'Preserve case', '_preserveCase', SHORTCUTS.preserveCase);
 
         // Lucide's own replace and replace-all, the same family as the rest of
         // the editor's icons, at stroke 2 rather than 2.5: they carry more
@@ -468,16 +508,23 @@ export default class FindReplace {
         this._shortcut(replaceAllBtn, SHORTCUTS.replaceAll);
         replaceAllBtn.addEventListener('click', () => this._replaceAll());
 
-        const replaceControls = document.createElement('div');
-        replaceControls.className = 'find-replace-controls fj:flex fj:flex-wrap fj:justify-end fj:items-center fj:gap-1 fj:pointer-coarse:gap-0.5';
-        replaceControls.append(replaceBtn, replaceAllBtn);
+        this._replaceRow.append(
+            field(this._replaceInput, optionGroup(this._preserveCaseBtn)),
+            controlGroup(replaceBtn, replaceAllBtn),
+        );
 
-        const replaceOptions = document.createElement('div');
-        replaceOptions.className = 'find-replace-options fj:flex fj:items-center fj:gap-0.5'
-            + ' fj:@max-[22rem]:hidden fj:@max-[22rem]:[.is-expanded_&]:flex';
-        replaceOptions.append(this._preserveCaseBtn);
+        return this._replaceRow;
+    }
 
-        this._replaceRow.append(field(this._replaceInput, replaceOptions), replaceControls);
+    _buildPanel() {
+        const panel = this._panelShell();
+        // The chevron and the row it discloses have to agree on a name, and
+        // more than one editor can be on a page.
+        const replaceRowId = `find-replace-row-${Math.random().toString(36).slice(2, 7)}`;
+
+        const findLine = this._buildFindField();
+        const controlLine = this._buildFindControls(panel, replaceRowId);
+        const replaceRow = this._buildReplaceRow(replaceRowId);
 
         // What a screen reader hears. Off screen, last in the panel so the
         // rows stay first, and never updated faster than someone can listen.
@@ -490,7 +537,7 @@ export default class FindReplace {
         // tabbed to a switch had no way out.
         panel.addEventListener('keydown', (e) => this._onPanelKeyDown(e));
 
-        panel.append(findLine, controlLine, this._replaceRow, this._liveEl);
+        panel.append(findLine, controlLine, replaceRow, this._liveEl);
         overlayHost(this.editor).appendChild(panel);
         this._panel = panel;
     }
