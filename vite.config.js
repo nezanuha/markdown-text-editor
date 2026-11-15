@@ -115,36 +115,70 @@ function mockUploadEndpoint() {
     };
 }
 
-export default defineConfig({
-    plugins: [
-        tailwindcss(),
-        mockUploadEndpoint(),
-    ],
-    css: {
-        postcss: {
-            plugins: [scopeGlobalCss()],
+// marked and DOMPurify, which the editor imports and every build has to get
+// from somewhere.
+const RUNTIME_DEPS = ['marked', 'dompurify'];
+
+/**
+ * Two builds, because the two kinds of user need opposite things.
+ *
+ * `vite build` makes the package builds, es and cjs, and leaves the runtime
+ * dependencies out of them. Whoever installs the package installs those too,
+ * so their bundler resolves them, dedupes them against its own copy, and a
+ * fix to either reaches them with `npm update` instead of waiting for a
+ * release here. That last part is the reason: DOMPurify is what stands
+ * between a document and the person reading it, and a sanitiser the user
+ * cannot patch on their own is a sanitiser that stays unpatched.
+ *
+ * `vite build --mode standalone` makes the iife build with both deps inside
+ * it, because a <script src> has nothing to resolve anything with. It writes
+ * the one file and does not empty the folder on the way in.
+ *
+ * Together, from `npm run build`. Either alone leaves dist/ half written.
+ */
+export default defineConfig(({ mode }) => {
+    const standalone = mode === 'standalone';
+
+    return {
+        plugins: [
+            tailwindcss(),
+            mockUploadEndpoint(),
+        ],
+        css: {
+            postcss: {
+                plugins: [scopeGlobalCss()],
+            },
         },
-    },
-    build: {
-        lib: {
-            entry: 'src/components/Editor.js',
-            name: 'MarkdownEditor',
-            formats: ['es', 'umd', 'iife'],
-            // The UMD build is the one `require()` reaches, and this package
-            // is "type": "module", so a .js file is ESM to Node: the wrapper's
-            // `typeof module !== "undefined"` test was false, nothing was
-            // assigned, and require() handed back an empty object. The .cjs
-            // extension is what tells Node to read it as CommonJS regardless.
-            fileName: (format) => ({
-                iife: 'markdown-text-editor.min.js',
-                umd: 'markdown-text-editor.cjs',
-            })[format] ?? `markdown-text-editor.${format}.js`,
+        build: {
+            emptyOutDir: !standalone,
+            lib: {
+                entry: 'src/components/Editor.js',
+                name: 'MarkdownEditor',
+                formats: standalone ? ['iife'] : ['es', 'umd'],
+                // The UMD build is the one `require()` reaches, and this package
+                // is "type": "module", so a .js file is ESM to Node: the wrapper's
+                // `typeof module !== "undefined"` test was false, nothing was
+                // assigned, and require() handed back an empty object. The .cjs
+                // extension is what tells Node to read it as CommonJS regardless.
+                fileName: (format) => ({
+                    iife: 'markdown-text-editor.min.js',
+                    umd: 'markdown-text-editor.cjs',
+                })[format] ?? `markdown-text-editor.${format}.js`,
+            },
+            rollupOptions: standalone ? {} : {
+                external: RUNTIME_DEPS,
+                output: {
+                    // UMD needs a name for each one it leaves out, or it writes
+                    // a global called `marked$1` and reads nothing at runtime.
+                    globals: { marked: 'marked', dompurify: 'DOMPurify' },
+                },
+            },
+            cssCodeSplit: false,
+            sourcemap: true,
         },
-        cssCodeSplit: false,
-        sourcemap: true,
-    },
-    server: {
-        open: '/demo/',
-        port: 3000,
-    },
+        server: {
+            open: '/demo/',
+            port: 3000,
+        },
+    };
 });

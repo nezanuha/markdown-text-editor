@@ -73,6 +73,33 @@ check('the stylesheet sets --mte-css, which the missing-CSS warning reads',
 check('src/ is not published', !(pkg.files ?? []).some(f => f.startsWith('src')),
     JSON.stringify(pkg.files));
 
+// --- each build gets its dependencies the way that build can ------------
+// The package builds leave marked and DOMPurify out, so whoever installs the
+// package resolves them and can patch them without waiting for a release
+// here. The <script src> build has nothing to resolve with, so it carries
+// them. Getting this backwards fails quietly: the standalone file throws
+// "marked is not defined" on the first keystroke, and the package builds
+// ship a second copy of a sanitiser nobody can update.
+const buildSource = (p) => readFileSync(local(p), 'utf8');
+const asks = (src, name) =>
+    new RegExp('(from|require\\()\\s*["\'`]' + name + '["\'`]').test(src);
+
+for (const [label, path] of [['ESM', pkg.module], ['CJS', pkg.main]]) {
+    const src = buildSource(path);
+    for (const dep of ['marked', 'dompurify'])
+        check(label + ' build imports ' + dep + ' instead of inlining it',
+            asks(src, dep), path);
+}
+
+const standalone = buildSource('./dist/markdown-text-editor.min.js');
+for (const dep of ['marked', 'dompurify'])
+    check('the <script> build carries ' + dep + ' rather than importing it',
+        !asks(standalone, dep));
+check('the <script> build is the larger one, because it carries both',
+    standalone.length > buildSource(pkg.module).length,
+    (standalone.length / 1024).toFixed(1) + ' kB vs '
+    + (buildSource(pkg.module).length / 1024).toFixed(1) + ' kB');
+
 console.log('\n  package: ' + passed + ' passed, ' + failures.length + ' failed\n');
 if (failures.length) {
     failures.forEach(f => console.log('  FAIL  ' + f + '\n'));
