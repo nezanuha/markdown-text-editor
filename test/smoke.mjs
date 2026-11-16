@@ -3032,6 +3032,119 @@ check('documents made of punctuation do not throw', () =>
         return true;
     }));
 
+// --- completing a variable as you type --------------------------------------
+
+// The toolbar dropdown is the right answer once. After that, someone writing
+// a template knows the name they want and should not leave the keyboard to
+// pick it out of a menu.
+const typeInto = (editor, text) => {
+    editor.usertextarea.value = text;
+    editor.usertextarea.setSelectionRange(text.length, text.length);
+    editor.usertextarea.dispatchEvent(new window.Event('input', { bubbles: true }));
+};
+
+const menuOf = (editor) => editor.editorContainer.querySelector('.variable-complete');
+const optionsOf = (editor) =>
+    [...(menuOf(editor)?.querySelectorAll('[role="option"]') ?? [])].map(b => b.textContent);
+
+check('typing {{ offers the variables', () => {
+    const e = makeEditor({ toolbar: barWith(VARS) });
+    typeInto(e, 'Hello {{');
+    return menuOf(e) !== null && optionsOf(e).length > 0;
+});
+
+check('typing narrows the list, and a miss closes it', () => {
+    const e = makeEditor({ toolbar: barWith(VARS) });
+    typeInto(e, 'Hello {{');
+    const all = optionsOf(e).length;
+
+    typeInto(e, 'Hello {{invoice');
+    const narrowed = optionsOf(e).length;
+
+    typeInto(e, 'Hello {{zzzzzz');
+    const gone = menuOf(e) === null;
+
+    return all > narrowed && narrowed > 0 && gone;
+});
+
+check('Enter inserts the variable and closes the menu', () => {
+    const e = makeEditor({ toolbar: barWith(VARS) });
+    typeInto(e, 'Hello {{');
+    const first = optionsOf(e)[0];
+    press(e, { key: 'Enter' });
+
+    // The whole `{{` goes, replaced by the placeholder, and the caret lands
+    // after it rather than inside the braces.
+    return menuOf(e) === null
+        && e.usertextarea.value.startsWith('Hello {{')
+        && e.usertextarea.value !== 'Hello {{'
+        && first !== undefined
+        && e.usertextarea.selectionStart === e.usertextarea.value.length;
+});
+
+check('the arrow keys move the selection', () => {
+    const e = makeEditor({ toolbar: barWith(VARS) });
+    typeInto(e, '{{');
+    if (optionsOf(e).length < 2) return 'need at least two variables to test with';
+
+    const selected = () => [...menuOf(e).querySelectorAll('[role="option"]')]
+        .findIndex(b => b.getAttribute('aria-selected') === 'true');
+
+    const first = selected();
+    press(e, { key: 'ArrowDown' });
+    const second = selected();
+    press(e, { key: 'ArrowUp' });
+    const back = selected();
+
+    return first === 0 && second === 1 && back === 0;
+});
+
+check('Escape closes it and leaves the text alone', () => {
+    const e = makeEditor({ toolbar: barWith(VARS) });
+    typeInto(e, 'Hello {{');
+    press(e, { key: 'Escape' });
+    return menuOf(e) === null && e.usertextarea.value === 'Hello {{';
+});
+
+check('Enter does nothing special when the menu is closed', () => {
+    const e = makeEditor({ toolbar: barWith(VARS) });
+    typeInto(e, 'just text');
+    // The list-continuation and indent handlers own these keys the rest of
+    // the time, and this must not take them.
+    return press(e, { key: 'Enter' }).defaultPrevented === false;
+});
+
+check('the menu tells a screen reader which option is current', () => {
+    const e = makeEditor({ toolbar: barWith(VARS) });
+    typeInto(e, '{{');
+    const menu = menuOf(e);
+    const active = e.usertextarea.getAttribute('aria-activedescendant');
+
+    // The caret never leaves the textarea, so the textarea is what points at
+    // the current option.
+    return menu.getAttribute('role') === 'listbox'
+        && active && menu.querySelector('#' + active) !== null;
+});
+
+check('variableComplete: false turns it off', () => {
+    const e = makeEditor({ toolbar: barWith(VARS), variableComplete: false });
+    typeInto(e, 'Hello {{');
+    return menuOf(e) === null && e.variableComplete === undefined;
+});
+
+check('no variables configured means nothing is attached', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    typeInto(e, 'Hello {{');
+    return menuOf(e) === null && e.variableComplete === undefined;
+});
+
+check('destroy() takes the completion handlers with it', () => {
+    const e = makeEditor({ toolbar: barWith(VARS) });
+    typeInto(e, 'Hello {{');
+    e.destroy();
+    return menuOf(e) === null;
+});
+
 // --- pasting formatted text -------------------------------------------------
 
 // Copying from a web page or a word processor puts the formatting on the

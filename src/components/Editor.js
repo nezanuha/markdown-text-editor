@@ -14,6 +14,7 @@ import TablePopover from './TablePopover.js';
 import ShortcutManager from '../utils/ShortcutManager.js';
 import FindReplace from '../utils/FindReplace.js';
 import PasteManager from '../utils/PasteManager.js';
+import VariableComplete from '../utils/VariableComplete.js';
 import { applyVariableSamples } from '../utils/variables.js';
 import { escapeHtml } from '../utils/escapeHtml.js';
 
@@ -88,6 +89,10 @@ class MarkdownEditor {
         // the panel, so not building it is enough to turn it off.
         if (options.find !== false) this.findReplace = new FindReplace(this);
         this.pasteManager = new PasteManager(this);
+        // Only worth attaching when there is something to complete.
+        if (options.variableComplete !== false && this.variables?.length) {
+            this.variableComplete = new VariableComplete(this);
+        }
         // Omitted, the bar follows the toolbar: it is only worth offering
         // where tables are. `true` asks for it anyway, for content that
         // already holds tables on a toolbar without the button; `false`
@@ -900,6 +905,7 @@ class MarkdownEditor {
         this.listManager?.destroy();
         this.indentManager?.destroy();
         this.pasteManager?.destroy();
+        this.variableComplete?.destroy();
         this._widthObserver?.disconnect();
         // Reaches toolbar tools, including custom ones that added listeners
         this.toolbarInstance?.destroy();
