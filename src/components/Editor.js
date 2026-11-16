@@ -481,9 +481,22 @@ class MarkdownEditor {
         return new Toolbar(host, tools, { standalone: true }).toolbar;
     }
 
+    /**
+     * The sanitiser, resolved once in one place.
+     *
+     * The preview is not the only thing that needs it: HTML pasted from
+     * another application is also about to be put through a DOM, and it came
+     * from further away than the preview's own markdown did. Both go through
+     * whatever the host configured, or DOMPurify when it configured nothing.
+     */
+    sanitizeHtml(html) {
+        const sanitize = this.options.sanitizer ?? (dirty => DOMPurify.sanitize(dirty));
+        return sanitize(html);
+    }
+
     _renderMarkdown(markdown) {
         const configured = this.options.renderer ?? (md => defaultRenderer.parse(md));
-        const sanitize   = this.options.sanitizer ?? (html => DOMPurify.sanitize(html));
+        const sanitize   = html => this.sanitizeHtml(html);
 
         // A renderer that throws must not take the editor with it. Yours might
         // have a bug, and so might the default one: marked overflows its stack

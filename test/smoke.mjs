@@ -1998,9 +1998,14 @@ check('a height the reader set by hand survives the next edit', () => {
 
 // --- paste ------------------------------------------------------------------
 
-const paste = (editor, { text = '', files = [] } = {}) => {
+const paste = (editor, { text = '', html = '', files = [] } = {}) => {
     const event = new window.Event('paste', { bubbles: true, cancelable: true });
-    event.clipboardData = { getData: () => text, files, types: files.length ? ['Files'] : ['text/plain'] };
+    const types = files.length ? ['Files'] : ['text/plain', ...(html ? ['text/html'] : [])];
+    event.clipboardData = {
+        getData: (type) => (type === 'text/html' ? html : text),
+        files,
+        types,
+    };
     editor.usertextarea.dispatchEvent(event);
     return event;
 };
@@ -3026,6 +3031,115 @@ check('documents made of punctuation do not throw', () =>
         }
         return true;
     }));
+
+// --- pasting formatted text -------------------------------------------------
+
+// Copying from a web page or a word processor puts the formatting on the
+// clipboard as HTML next to the plain text. Taking the plain text drops every
+// link, heading and list.
+//
+// The conversion walks a sanitised DOM rather than parsing HTML, so these go
+// through the editor's own sanitiser -- the same one the preview uses.
+// Reads back both halves of the result: whether the editor took the paste
+// over, and what the document says afterwards.
+const pasteRich = (editor, opts) => {
+    const event = paste(editor, opts);
+    return { prevented: event.defaultPrevented, value: editor.usertextarea.value };
+};
+
+check('pasted HTML arrives as markdown, not as a wall of text', () => {
+    // Sanitising is bypassed for the same reason the render cases bypass it:
+    // DOMPurify strips the first element's tags under happy-dom, so the <h2>
+    // would vanish here and not in a browser. The wiring is covered below.
+    const e = makeEditor({ toolbar: FULL_BAR, sanitizer: (h) => h });
+    const { prevented, value } = pasteRich(e, {
+        html: '<h2>Title</h2><p>Some <strong>bold</strong> text and <a href="https://a.b">a link</a>.</p>',
+        text: 'Title\nSome bold text and a link.',
+    });
+    return prevented
+        && value.includes('## Title')
+        && value.includes('**bold**')
+        && value.includes('[a link](https://a.b)');
+});
+
+check('pasted lists keep their nesting', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, sanitizer: (h) => h });
+    const { value } = pasteRich(e, {
+        html: '<ul><li>one<ul><li>inner</li></ul></li><li>two</li></ul>',
+        text: 'one inner two',
+    });
+    const N = String.fromCharCode(10);
+    return value.includes('- one' + N + '  - inner' + N + '- two');
+});
+
+check('pasted markdown characters are escaped, so prose stays prose', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, sanitizer: (h) => h });
+    // A paragraph on its own is not worth converting -- the plain text is
+    // already right -- so the prose arrives next to something formatted,
+    // which is how it turns up in practice.
+    const { value } = pasteRich(e, {
+        html: '<h3>Note</h3><p>Use * and _ and [brackets] carefully.</p>',
+        text: 'Note Use * and _ and [brackets] carefully.',
+    });
+    // Without escaping, pasting this and rendering it gives italics and a
+    // broken link reference rather than the sentence that was copied.
+    return value.includes('\\*') && value.includes('\\_') && value.includes('\\[brackets\\]');
+});
+
+check('plain text with no formatting is left to the browser', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    // Some applications wrap plain text in a <div> on the clipboard. There is
+    // nothing to convert, so the browser's own paste is the better one: it
+    // keeps its place in the undo stack.
+    const { prevented } = pasteRich(e, { html: '<div>just text</div>', text: 'just text' });
+    return prevented === false;
+});
+
+check('pasteHtml: false leaves the plain-text paste alone', () => {
+    const e = makeEditor({ toolbar: FULL_BAR, pasteHtml: false });
+    const { prevented } = pasteRich(e, {
+        html: '<h2>Title</h2><p><strong>bold</strong></p>',
+        text: 'Title bold',
+    });
+    return prevented === false;
+});
+
+check('a URL pasted over a selection still wins over the HTML conversion', () => {
+    const e = makeEditor({ toolbar: FULL_BAR }, 'the docs');
+    e.usertextarea.setSelectionRange(0, 8);
+    // Copying a link from a browser's address bar brings an <a> along with it.
+    // Wrapping the selection is the more specific thing to have meant.
+    const { value } = pasteRich(e, {
+        html: '<a href="https://a.b">https://a.b</a>',
+        text: 'https://a.b',
+    });
+    return value === '[the docs](https://a.b)';
+});
+
+check('the paste goes through the configured sanitiser', () => {
+    let saw = null;
+    const e = makeEditor({
+        toolbar: FULL_BAR,
+        sanitizer: (html) => { saw = html; return html; },
+    });
+    pasteRich(e, { html: '<p><strong>x</strong></p>', text: 'x' });
+    // Clipboard HTML comes from another application entirely, and is about to
+    // be put through a DOM. It does not get to skip the sanitiser.
+    return saw !== null && saw.includes('<strong>');
+});
+
+check('a converter that throws still pastes', () => {
+    const e = makeEditor({
+        toolbar: FULL_BAR,
+        sanitizer: (html) => { if (html.includes('<h2')) throw new Error('nope'); return html; },
+    });
+    const { prevented } = quietly2(() => pasteRich(e, {
+        html: '<h2>Title</h2>', text: 'Title',
+    }));
+    // Not preventing the event hands it back to the browser, which pastes the
+    // plain text -- exactly what happened before any of this existed.
+    return prevented === false;
+});
 
 // --- report -----------------------------------------------------------------
 

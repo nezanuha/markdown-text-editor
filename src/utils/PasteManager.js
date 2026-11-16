@@ -1,14 +1,22 @@
 import { uploadImage } from './imageUpload.js';
+import { htmlToMarkdown } from './htmlToMarkdown.js';
 
 // Deliberately strict: only a bare http(s) URL with no whitespace becomes a link.
 // Pasting a sentence that happens to contain a URL should paste as written.
 const BARE_URL = /^https?:\/\/\S+$/i;
+
+// An editor that puts plain text on the clipboard often puts a wrapper of
+// HTML around it too, so the presence of text/html is not enough to act on.
+// These are the tags worth converting: if none appears, the plain text is
+// already the better paste.
+const WORTH_CONVERTING = /<(h[1-6]|strong|b|em|i|del|s|code|pre|a|img|ul|ol|li|blockquote|table|hr)\b/i;
 
 /**
  * Handles pasting and dropping into the textarea:
  *
  *   - image files are uploaded and inserted, when image upload is configured
  *   - a bare URL pasted over a selection becomes [selection](url)
+ *   - formatted HTML becomes markdown, unless `pasteHtml: false`
  *
  * Anything else falls through to the browser's own paste.
  */
@@ -63,7 +71,48 @@ export default class PasteManager {
             const selected = this.textarea.value.slice(selectionStart, selectionEnd);
             const link = `[${selected}](${pasted})`;
             this.editor.insertText(link, link.length, 0);
+            return;
         }
+
+        this._pasteAsMarkdown(event);
+    }
+
+    /**
+     * Copying from a web page or a word processor puts the formatting on the
+     * clipboard as HTML alongside the plain text. Taking the plain text drops
+     * every link, heading and list, and the person puts them back by hand.
+     *
+     * Converting instead, when there is anything worth converting. A URL
+     * pasted over a selection is handled before this and wins, because that
+     * is the more specific thing to have meant.
+     */
+    _pasteAsMarkdown(event) {
+        if (this.editor.options?.pasteHtml === false) return;
+
+        const html = event.clipboardData?.getData('text/html');
+        if (!html || !WORTH_CONVERTING.test(html)) return;
+
+        let markdown;
+        try {
+            // The same sanitiser the preview uses. This HTML came off the
+            // clipboard, which is to say from somewhere else entirely, and it
+            // is about to be put through a DOM to be read.
+            markdown = htmlToMarkdown(html, (dirty) => this.editor.sanitizeHtml(dirty));
+        } catch (err) {
+            // A paste that throws must still paste. Letting the browser have
+            // it gives the plain text, which is what used to happen anyway.
+            console.error('[MarkdownEditor] Could not convert the pasted HTML, '
+                + 'so it was pasted as plain text.', err);
+            return;
+        }
+
+        const plain = event.clipboardData?.getData('text/plain') ?? '';
+        // Nothing gained: let the browser do its own paste, which keeps its
+        // undo entry rather than making one of ours.
+        if (!markdown || markdown === plain.trim()) return;
+
+        event.preventDefault();
+        this.editor.insertText(markdown, markdown.length, 0);
     }
 
     _onDrop(event) {
