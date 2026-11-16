@@ -13,7 +13,7 @@ const DEFAULT_SHORTCUTS = [
     { key: 'k', ctrl: true,  shift: false, ToolClass: LinkTool,          label: 'Ctrl+K',       btnClass: 'link-btn' },
     { key: '`', ctrl: true,  shift: false, ToolClass: CodeTool,          label: 'Ctrl+`',       btnClass: 'code-btn' },
     { key: 's', ctrl: true,  shift: true,  ToolClass: StrikethroughTool, label: 'Ctrl+Shift+S', btnClass: 'strikethrough-btn' },
-    { key: 'l', ctrl: true,  shift: false, ToolClass: ULTool,            label: 'Ctrl+L',       btnClass: 'ul-btn' },
+    { key: 'l', ctrl: true,  shift: false, ToolClass: ULTool,            label: 'Ctrl+L',       btnClass: 'unordered-list-btn' },
     // Alt rather than Ctrl+Shift, which is where this editor puts its own
     // features (Alt+T for the table bar, Alt+C and friends in the find panel).
     // Typora uses Ctrl+Shift+M and Notion Ctrl+Shift+E, but Firefox spends both
@@ -130,27 +130,48 @@ export default class ShortcutManager {
         }
     }
 
+    /**
+     * Writes a shortcut onto a button: into the tooltip, where a pointer
+     * finds it, and into aria-keyshortcuts, where assistive technology does.
+     *
+     * The two want different spellings. A tooltip says Ctrl, because that is
+     * what is printed on the key; aria-keyshortcuts says Control, because the
+     * attribute takes key names rather than abbreviations. It also takes a
+     * space-separated list, which is how the heading button advertises three
+     * shortcuts at once -- "Control+1 Control+2 Control+3" -- where its
+     * tooltip says the shorter Ctrl+1/2/3.
+     *
+     * A screen reader can then offer the key alongside the button's name,
+     * and a user can ask what the shortcuts on a page are and be told.
+     */
+    _hint(btn, tooltip, ariaKeys = tooltip.replace(/\bCtrl\b/g, 'Control')) {
+        if (!btn) return;
+        btn.title += ` (${tooltip})`;
+        btn.setAttribute('aria-keyshortcuts', ariaKeys);
+    }
+
     _updateTooltips() {
+        const find = (cls) => this.editor.editorContainer.querySelector(`.${cls}`);
+
         for (const { btnClass, label } of DEFAULT_SHORTCUTS) {
-            const btn = this.editor.editorContainer.querySelector(`.${btnClass}`);
-            if (btn) btn.title += ` (${label})`;
+            this._hint(find(btnClass), label);
         }
-        const headingBtn = this.editor.editorContainer.querySelector('.heading-btn');
+
         const headingKeys = this.headingLevels.filter(n => n <= 3);
-        if (headingBtn && headingKeys.length) {
-            headingBtn.title += ` (Ctrl+${headingKeys.join('/')})`;
+        if (headingKeys.length) {
+            this._hint(find('heading-btn'), `Ctrl+${headingKeys.join('/')}`,
+                headingKeys.map(n => `Control+${n}`).join(' '));
         }
-        const previewBtn = this.editor.editorContainer.querySelector('.preview-btn');
-        if (previewBtn) previewBtn.title += ' (F11)';
+
+        this._hint(find('preview-btn'), 'F11');
 
         for (const { btnClass, label } of BORROWED_HINTS) {
-            const btn = this.editor.editorContainer.querySelector(`.${btnClass}`);
-            if (btn) btn.title += ` (${label})`;
+            this._hint(find(btnClass), label);
         }
 
         // Tool-declared shortcuts get the same treatment as the built-ins
         for (const { tool } of this.toolShortcuts) {
-            if (tool.button) tool.button.title += ` (${tool.shortcut})`;
+            this._hint(tool.button, tool.shortcut);
         }
 
         // The title is the accessible name for most tools, since the icon is

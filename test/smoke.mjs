@@ -2046,6 +2046,47 @@ check('pasting an image without an upload endpoint warns and does nothing', () =
         && /no upload endpoint is configured/.test(warned);
 });
 
+check('every shortcut is declared to assistive technology, not just drawn in a tooltip', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const buttons = [...e.editorContainer.querySelectorAll('.markdown-btn')];
+    const withKeys = buttons.filter(b => b.hasAttribute('aria-keyshortcuts'));
+
+    // A tooltip says Ctrl, which is what the keycap says. The attribute takes
+    // key names, so it says Control -- and a slash is not a separator in it.
+    const spelled = withKeys.every(b => {
+        const v = b.getAttribute('aria-keyshortcuts');
+        return !/\bCtrl\b/.test(v) && !v.includes('/');
+    });
+
+    // Anything advertising a key in its tooltip has to declare it as well.
+    const tooltipClaims = buttons.filter(b => /\([^)]*(Ctrl|Alt|Shift|Tab|F11)/.test(b.title));
+    const allDeclared = tooltipClaims.every(b => b.hasAttribute('aria-keyshortcuts'));
+
+    // The count is only a guard against the two checks above passing because
+    // the toolbar was empty. FULL_BAR has no strikethrough and no math, so
+    // eleven of its buttons carry a key.
+    return withKeys.length >= 10 && spelled && allDeclared;
+});
+
+check('the heading button declares all three of its shortcuts', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    const btn = e.editorContainer.querySelector('.heading-btn');
+
+    // One button, three keys. The attribute takes a space-separated list,
+    // where the tooltip can use the shorter Ctrl+1/2/3.
+    return btn.getAttribute('aria-keyshortcuts') === 'Control+1 Control+2 Control+3'
+        && btn.title.includes('Ctrl+1/2/3');
+});
+
+check('the unordered list button advertises Ctrl+L', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    // Its class is built from its title, so it is unordered-list-btn and not
+    // ul-btn. The shortcut table said ul-btn, found nothing, and the key
+    // worked while the button said nothing about it.
+    const btn = e.editorContainer.querySelector('.unordered-list-btn');
+    return btn.title.includes('Ctrl+L') && btn.getAttribute('aria-keyshortcuts') === 'Control+L';
+});
+
 // --- renderer / sanitizer ---------------------------------------------------
 
 check('custom renderer is used', () => {
