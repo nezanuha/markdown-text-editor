@@ -139,9 +139,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **PreviewTool**: Fixed a bug introduced in a recent version where toolbar buttons stopped working on desktop when fullscreen preview was active. On mobile they remain disabled since the editor is hidden
 - **HeadingTool**: Heading button is now the same size as other toolbar buttons
-- **LinkTool**: Edited link text was ignored — the modal submitted the original selected text instead of what was typed in the Link text field
+- **LinkTool**: Edited link text was ignored. The modal submitted the original selected text instead of what was typed in the Link text field
 - **LinkTool**: Clicking the link button with only the label selected inside an existing `[text](url)` link caused nested syntax like `[[text](url)](newurl)`. The selection now auto-expands to cover the full link before opening the modal
-- **ImageTool**: Edited alt text was ignored — the modal submitted the original selected text instead of what was typed in the Alt text field
+- **ImageTool**: Edited alt text was ignored. The modal submitted the original selected text instead of what was typed in the Alt text field
 - **ImageTool**: Selecting a full `![alt](url)` image silently stripped it to plain text instead of opening the modal pre-filled for editing
 - **ImageTool**: Selecting only the alt text inside `![alt](url)` caused nested syntax like `![![alt](url)](newurl)`. The selection now auto-expands to cover the full image before opening the modal
 - **Footer**: Configuring `footer` with only `words: true` (and all other options false) showed no footer. The `words` option is now included in the visibility check
@@ -169,8 +169,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **More keyboard shortcuts**: `Ctrl+1` / `Ctrl+2` / `Ctrl+3` for H1–H3 headings, `Ctrl+L` for unordered list, `Ctrl+Shift+F` or `F11` to toggle fullscreen. Shortcut hints added to heading and preview toolbar button tooltips
-- **Find & Replace match highlight**: The current match is now highlighted in the editor with a colored overlay as you type — works in both plain and hybrid modes. The highlight stays visible while the find input keeps focus, and updates as the textarea scrolls
+- **More keyboard shortcuts**: `Ctrl+1` / `Ctrl+2` / `Ctrl+3` for H1-H3 headings, `Ctrl+L` for unordered list, `Ctrl+Shift+F` or `F11` to toggle fullscreen. Shortcut hints added to heading and preview toolbar button tooltips
+- **Find & Replace match highlight**: The current match is now highlighted in the editor with a colored overlay as you type. Works in both plain and hybrid modes. The highlight stays visible while the find input keeps focus, and updates as the textarea scrolls
 - **Find & Replace case-sensitive toggle**: An `Aa` button in the find panel toggles case-sensitive search. Affects both navigation and replace all
 
 ### Fixed
@@ -181,7 +181,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Keyboard shortcuts**: Common formatting actions can now be triggered from the keyboard — `Ctrl+B` (Bold), `Ctrl+I` (Italic), `Ctrl+K` (Link), `Ctrl+\` (inline Code), `Ctrl+Shift+S` (Strikethrough). Each shortcut is displayed in the corresponding toolbar button's tooltip
+- **Keyboard shortcuts**: Common formatting actions can now be triggered from the keyboard. `Ctrl+B` (Bold), `Ctrl+I` (Italic), `Ctrl+K` (Link), `Ctrl+\` (inline Code), `Ctrl+Shift+S` (Strikethrough). Each shortcut is displayed in the corresponding toolbar button's tooltip
 - **Find & Replace**: Press `Ctrl+F` to open a find panel or `Ctrl+H` to open find & replace. Case-insensitive search with a live match counter, next/prev navigation, single replace, and replace all. The panel floats in the top-right corner of the editor and closes with `Escape`
 - **`onChange` option**: Pass an `onChange(value)` callback to be notified whenever the editor content changes
 - **`footer.words` option**: New opt-in word count stat in the status bar. Set `footer: { words: true }` to enable it alongside the existing line, column, and character stats
@@ -195,12 +195,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Auto-grow editor**: The editor now expands vertically as content grows in non-fullscreen mode. A scrollbar appears only once content exceeds the maximum height, which defaults to 500px and can be overridden via the maxHeight option
 - **Resize handle**: The editor has a drag handle at the bottom corner so users can manually resize it taller or shorter
 - **Escape key exits fullscreen**: Pressing Escape while in fullscreen preview mode now exits back to the normal editor view
-- **XSS sanitization**: Preview output is now sanitized via [DOMPurify](https://github.com/cure53/DOMPurify) before being rendered — prevents script injection through crafted markdown input
+- **XSS sanitization**: Preview output is now sanitized via [DOMPurify](https://github.com/cure53/DOMPurify) before being rendered. Prevents script injection through crafted markdown input
 
 ### Fixed
 
-- **Fullscreen layout with long content**: Scrolling in fullscreen preview mode no longer breaks with very long text — the editor and preview panels are correctly bounded to the viewport height ([#29](https://github.com/nezanuha/markdown-text-editor/issues/29))
-- **Crawlable links**: Replaced anchor elements without href in the heading dropdown with button elements — fixes the Links are not crawlable PageSpeed audit
+- **Fullscreen layout with long content**: Scrolling in fullscreen preview mode no longer breaks with very long text. The editor and preview panels are correctly bounded to the viewport height ([#29](https://github.com/nezanuha/markdown-text-editor/issues/29))
+- **Crawlable links**: Replaced anchor elements without href in the heading dropdown with button elements. Fixes the Links are not crawlable PageSpeed audit
 - **Accessibility**: Added proper menu role attributes and labels to the heading popover for correct screen reader semantics
 
 ### Changed
@@ -226,24 +226,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added `iife` build format output as `dist/markdown-text-editor.min.js` for direct CDN `<script src>` use — no module bundler required
+- Added `iife` build format output as `dist/markdown-text-editor.min.js` for direct CDN `<script src>` use. No module bundler required
 - Added `jsdelivr`, `unpkg`, and updated `browser` fields in `package.json` to point to the IIFE build, so bare CDN URLs (without a file path) automatically serve the correct file
 
 ## [1.1.2] - 2026-05-10
 
 ### Added
 
-- **Theme inheritance**: The editor now automatically inherits `data-theme` from the nearest ancestor element at initialisation via `closest('[data-theme]')`. Placing `data-theme="dark"` on `<html>`, `<body>`, or any parent container correctly themes the editor with zero runtime overhead — no observers, no polling
+- **Theme inheritance**: The editor now automatically inherits `data-theme` from the nearest ancestor element at initialisation via `closest('[data-theme]')`. Placing `data-theme="dark"` on `<html>`, `<body>`, or any parent container correctly themes the editor with zero runtime overhead. No observers, no polling
 - **`theme` option**: Pass `theme: 'dark'` (or any frutjam theme name) in the options object to explicitly set the editor's theme, overriding ancestor inheritance
 
 ### Fixed
 
-- **Theme `light-dark()` derived colors**: `--lightningcss-light` / `--lightningcss-dark` polyfill variables are now correctly scoped to each `data-theme` value, so soft and active color variants switch correctly when the theme is set via `data-theme` on the wrapper or an ancestor — not just via `prefers-color-scheme`
+- **Theme `light-dark()` derived colors**: `--lightningcss-light` / `--lightningcss-dark` polyfill variables are now correctly scoped to each `data-theme` value, so soft and active color variants switch correctly when the theme is set via `data-theme` on the wrapper or an ancestor. Not just via `prefers-color-scheme`
 - **Toolbar and footer prose isolation**: Added `not-prose` to the toolbar and footer elements to prevent `@tailwindcss/typography` styles from leaking into the toolbar icons and status bar when the editor is placed inside a `prose`-classed container
 
 ### Changed
 
-- Removed the separate `style` export and `./dist/markdown-text-editor.css` package export — CSS has been injected by JS since v1.1.0 and no standalone stylesheet exists
+- Removed the separate `style` export and `./dist/markdown-text-editor.css` package export. CSS has been injected by JS since v1.1.0 and no standalone stylesheet exists
 - Updated `frutjam` to 2.0.2
 - **Docs**: Added theming section documenting all three ways to set the theme (`theme` option, `data-theme` on the `<textarea>`, `data-theme` on any ancestor) with priority order and examples
 - **Docs**: Added CSS variables reference table so users can build custom themes by overriding `--color-base`, `--color-primary`, `--border-radius`, and other design tokens scoped to `.markdown-editor-wrapper`
@@ -258,20 +258,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **`footer` option**: New status bar displayed below the editor showing the cursor's line number, column number, and total character count — all updated in real time. Visible by default; set `footer: false` to hide entirely, or pass `footer: { line: false, col: false, chars: false }` to toggle individual stats
-- **`code` tool**: New inline code tool — wraps selected text (or inserts a `code` placeholder) in single backticks; clicking a second time removes the backticks
-- **`codeblock` tool**: New fenced code block tool — inserts a triple-backtick block around selected text (or a `code` placeholder); clicking on an existing fenced block removes the fences
-- **`hr` tool**: New horizontal rule tool — inserts a `---` divider at the cursor position on its own line
-- **`table` tool**: New table tool — inserts a starter 2×3 markdown table template at the cursor position
-- **`heading` tool**: Replaced the hidden cycle-through-H1–H6 click behaviour with a popover dropdown — users can now explicitly pick H1–H6 from a visible menu; selecting the same level a second time removes the heading, restoring plain text
-- **Docs**: Corrected get/set content section — removed non-existent `editor.value` API and replaced with the correct native DOM approach; fixed wrong `altInput` comment, filled empty `mode: 'hybrid'` description, added `params` to `fileInput` docs, updated `heading` tool description to reflect the new dropdown
+- **`footer` option**: New status bar displayed below the editor showing the cursor's line number, column number, and total character count. All updated in real time. Visible by default; set `footer: false` to hide entirely, or pass `footer: { line: false, col: false, chars: false }` to toggle individual stats
+- **`code` tool**: New inline code tool. Wraps selected text (or inserts a `code` placeholder) in single backticks; clicking a second time removes the backticks
+- **`codeblock` tool**: New fenced code block tool. Inserts a triple-backtick block around selected text (or a `code` placeholder); clicking on an existing fenced block removes the fences
+- **`hr` tool**: New horizontal rule tool. Inserts a `---` divider at the cursor position on its own line
+- **`table` tool**: New table tool. Inserts a starter 2x3 markdown table template at the cursor position
+- **`heading` tool**: Replaced the hidden cycle-through-H1-H6 click behaviour with a popover dropdown. Users can now explicitly pick H1-H6 from a visible menu; selecting the same level a second time removes the heading, restoring plain text
+- **Docs**: Corrected get/set content section. Removed non-existent `editor.value` API and replaced with the correct native DOM approach; fixed wrong `altInput` comment, filled empty `mode: 'hybrid'` description, added `params` to `fileInput` docs, updated `heading` tool description to reflect the new dropdown
 - The editor now works out of the box via CDN, npm, or any bundler (Vite, webpack, Rollup) with no extra configuration
-- **CSS auto-injection**: CSS is now bundled into the JavaScript output via `vite-plugin-css-injected-by-js`. A single `import MarkdownEditor from 'markdown-text-editor'` is all that is needed — no separate stylesheet import or `<link>` tag required
+- **CSS auto-injection**: CSS is now bundled into the JavaScript output via `vite-plugin-css-injected-by-js`. A single `import MarkdownEditor from 'markdown-text-editor'` is all that is needed. No separate stylesheet import or `<link>` tag required
 - **Accessibility**: The toolbar now has a proper `role="toolbar"` landmark and `aria-label` so screen readers can identify and navigate it
 - **Accessibility**: The preview pane is now a `role="region"` landmark labelled "Preview"
 - **Accessibility**: The editor textarea is automatically given `aria-label="Markdown editor"` when no label is associated, ensuring it always has an accessible name
 - **Accessibility**: The Link and Image modals are now announced with their name ("Link" / "Image") by screen readers via `aria-label` on the `<dialog>` element
-- **`preview`**: Checkboxes in the preview pane are now clickable — toggling them updates the markdown source instantly without leaving preview mode ([#27](https://github.com/nezanuha/markdown-text-editor/discussions/27))
+- **`preview`**: Checkboxes in the preview pane are now clickable. Toggling them updates the markdown source instantly without leaving preview mode ([#27](https://github.com/nezanuha/markdown-text-editor/discussions/27))
 
 ### Fixed
 
@@ -279,20 +279,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Accessibility**: The preview toggle button now exposes its on/off state via `aria-pressed`
 - **Accessibility**: Toolbar buttons are now marked `aria-disabled` when preview is active, not just visually dimmed
 - **Accessibility**: The modal close button has an `aria-label="Close"` and now uses the native `dialog.close()` so focus is correctly returned to the triggering button when dismissed
-- **`bold` / `italic` / `strikethrough` / `blockquote` / `ul` / `ol` / `checklist` tools**: Clicking a tool a second time now correctly removes the syntax markers — each tool now checks the characters surrounding the selection in the textarea, not just the selected text itself, so toggling off works even when only the placeholder text is selected
-- **`bold` / `italic` / `strikethrough` / `blockquote` tools**: Clicking a tool with no text selected now selects only the placeholder text, not the surrounding syntax markers — consistent with the list tools fix. For inline tools (`bold`, `italic`, `strikethrough`), the trailing closing markers are also excluded from the selection (e.g. selects `Bold text`, not `Bold text**`)
+- **`bold` / `italic` / `strikethrough` / `blockquote` / `ul` / `ol` / `checklist` tools**: Clicking a tool a second time now correctly removes the syntax markers. Each tool now checks the characters surrounding the selection in the textarea, not just the selected text itself, so toggling off works even when only the placeholder text is selected
+- **`bold` / `italic` / `strikethrough` / `blockquote` tools**: Clicking a tool with no text selected now selects only the placeholder text, not the surrounding syntax markers. Consistent with the list tools fix. For inline tools (`bold`, `italic`, `strikethrough`), the trailing closing markers are also excluded from the selection (e.g. selects `Bold text`, not `Bold text**`)
 - **`strikethrough` tool**: Now correctly inserts `~~double tildes~~` instead of `~single~`, matching the standard markdown spec and rendering correctly in the preview pane
-- **`indent` / `outdent`**: Pressing Tab no longer triggers two renders — the duplicate internal `_triggerUpdate()` call has been removed
-- **`indent` / `outdent`**: Clicking the toolbar buttons in hybrid mode now correctly refreshes the display layer — the styled text now shifts immediately instead of staying stale until the next keystroke
-- **`lists` + `indent`**: Pressing Enter on an indented list item no longer inserts a double newline — the indent manager now defers to the list manager for all list continuation
+- **`indent` / `outdent`**: Pressing Tab no longer triggers two renders. The duplicate internal `_triggerUpdate()` call has been removed
+- **`indent` / `outdent`**: Clicking the toolbar buttons in hybrid mode now correctly refreshes the display layer. The styled text now shifts immediately instead of staying stale until the next keystroke
+- **`lists` + `indent`**: Pressing Enter on an indented list item no longer inserts a double newline. The indent manager now defers to the list manager for all list continuation
 - **Performance**: `scrollToView` now caches the computed line height instead of recalculating it on every toolbar insert
 - **`bold` / `italic` tools**: Applying italic to bold text (or vice versa) now correctly produces bold+italic (`***text***`) instead of overwriting the existing style ([#22](https://github.com/nezanuha/markdown-text-editor/issues/22))
-- **Style conflicts with other CSS frameworks**: The editor's styles no longer bleed into Bootstrap, Tailwind, or any other framework on the same page. All editor styles are now fully scoped to the `.markdown-editor-wrapper` element — made possible by the new scoping capabilities introduced in [frutjam v2](https://github.com/nezanuha/frutjam) ([#26](https://github.com/nezanuha/markdown-text-editor/discussions/26))
-- **Tailwind preflight leak**: Replaced `@import "tailwindcss"` with `@import "tailwindcss/theme"` + `@import "tailwindcss/utilities"` to exclude Tailwind's base/preflight layer — preventing global element resets (`h1`–`h6`, `a`, `button`, etc.) from bleeding into the host page
+- **Style conflicts with other CSS frameworks**: The editor's styles no longer bleed into Bootstrap, Tailwind, or any other framework on the same page. All editor styles are now fully scoped to the `.markdown-editor-wrapper` element. Made possible by the new scoping capabilities introduced in [frutjam v2](https://github.com/nezanuha/frutjam) ([#26](https://github.com/nezanuha/markdown-text-editor/discussions/26))
+- **Tailwind preflight leak**: Replaced `@import "tailwindcss"` with `@import "tailwindcss/theme"` + `@import "tailwindcss/utilities"` to exclude Tailwind's base/preflight layer. Preventing global element resets (`h1`-`h6`, `a`, `button`, etc.) from bleeding into the host page
 - **`image tool`**: Upload error no longer throws an uncaught exception when the server returns an unexpected response
 - **`preview tool`**: Toggling preview on a page with multiple editor instances no longer disables toolbar buttons in all other instances
 - **`lists`**: Clicking a list toolbar button (UL, OL, checklist) now selects only the placeholder text, not the marker prefix ([#24](https://github.com/nezanuha/markdown-text-editor/issues/24))
-- **`lists`**: Pressing Enter to continue a list no longer selects the newly inserted marker — the cursor lands ready to type ([#25](https://github.com/nezanuha/markdown-text-editor/issues/25))
+- **`lists`**: Pressing Enter to continue a list no longer selects the newly inserted marker. The cursor lands ready to type ([#25](https://github.com/nezanuha/markdown-text-editor/issues/25))
 - **`checklist`**: Pressing Enter after a checklist item now correctly continues with `- [ ] ` instead of just `- ` ([#23](https://github.com/nezanuha/markdown-text-editor/issues/23))
 
 ## [1.0.1] - 2026-02-21
@@ -376,7 +376,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Prefixed all Tailwind CSS and Frutjam classes by utilizing Frutjam’s new component prefixing support (e.g., for components like `.modal`), to avoid design conflicts with other frameworks such as Bootstrap
+- Prefixed all Tailwind CSS and Frutjam classes by utilizing Frutjam's new component prefixing support (e.g., for components like `.modal`), to avoid design conflicts with other frameworks such as Bootstrap
 - Refactored folder hierarchy: reorganized the folder structure to separate files based on functionality
 - Replaced fixed Tailwind background and text color classes with Frutjam Surface component to ensure theme consistency across all Frutjam themes 
 
