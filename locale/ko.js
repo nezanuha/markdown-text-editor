@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "삭제",
+    "Restore": "복원",
+    "Unsaved draft": "저장되지 않은 초안",
     "{n} chars": "{n}자",
     "{n} matches": "{n}개 일치",
     "{n} replaced": "{n}개 바꿈",

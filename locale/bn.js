@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "বাতিল করুন",
+    "Restore": "পুনরুদ্ধার করুন",
+    "Unsaved draft": "অসংরক্ষিত খসড়া",
     "{n} chars": "{n} অক্ষর",
     "{n} matches": "{n} মিল",
     "{n} replaced": "{n} প্রতিস্থাপিত",

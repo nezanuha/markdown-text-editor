@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Renunță",
+    "Restore": "Restaurează",
+    "Unsaved draft": "Ciornă nesalvată",
     "{n} chars": "{n} caractere",
     "{n} matches": "{n} rezultate",
     "{n} replaced": "{n} înlocuite",

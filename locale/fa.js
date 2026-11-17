@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "نادیده گرفتن",
+    "Restore": "بازیابی",
+    "Unsaved draft": "پیش‌نویس ذخیره‌نشده",
     "{n} chars": "{n} نویسه",
     "{n} matches": "{n} مورد",
     "{n} replaced": "{n} مورد جایگزین شد",

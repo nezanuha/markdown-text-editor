@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Zahodit",
+    "Restore": "Obnovit",
+    "Unsaved draft": "Neuložený koncept",
     "{n} chars": "{n} znaků",
     "{n} matches": "{n} výsledků",
     "{n} replaced": "{n} nahrazeno",

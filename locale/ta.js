@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "நிராகரி",
+    "Restore": "மீட்டமை",
+    "Unsaved draft": "சேமிக்கப்படாத வரைவு",
     "{n} chars": "{n} எழுத்துகள்",
     "{n} matches": "{n} பொருத்தங்கள்",
     "{n} replaced": "{n} மாற்றப்பட்டது",

@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "ละทิ้ง",
+    "Restore": "กู้คืน",
+    "Unsaved draft": "ฉบับร่างที่ยังไม่บันทึก",
     "{n} chars": "{n} อักขระ",
     "{n} matches": "ตรงกัน {n} รายการ",
     "{n} replaced": "แทนที่แล้ว {n} รายการ",

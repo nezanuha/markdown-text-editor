@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "ತಿರಸ್ಕರಿಸು",
+    "Restore": "ಮರುಸ್ಥಾಪಿಸು",
+    "Unsaved draft": "ಉಳಿಸದ ಕರಡು",
     "{n} chars": "{n} ಅಕ್ಷರಗಳು",
     "{n} matches": "{n} ಹೊಂದಿಕೆಗಳು",
     "{n} replaced": "{n} ಬದಲಾಯಿಸಲಾಗಿದೆ",

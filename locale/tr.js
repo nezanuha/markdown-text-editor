@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Yoksay",
+    "Restore": "Geri yükle",
+    "Unsaved draft": "Kaydedilmemiş taslak",
     "{n} chars": "{n} karakter",
     "{n} matches": "{n} eşleşme",
     "{n} replaced": "{n} değiştirildi",

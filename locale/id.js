@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Buang",
+    "Restore": "Pulihkan",
+    "Unsaved draft": "Draf belum disimpan",
     "{n} chars": "{n} karakter",
     "{n} matches": "{n} hasil",
     "{n} replaced": "{n} diganti",

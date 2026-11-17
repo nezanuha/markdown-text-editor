@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Elvetés",
+    "Restore": "Visszaállítás",
+    "Unsaved draft": "Nem mentett piszkozat",
     "{n} chars": "{n} karakter",
     "{n} matches": "{n} találat",
     "{n} replaced": "{n} csere történt",

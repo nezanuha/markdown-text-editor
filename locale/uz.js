@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Bekor qilish",
+    "Restore": "Tiklash",
+    "Unsaved draft": "Saqlanmagan qoralama",
     "{n} chars": "{n} belgi",
     "{n} matches": "{n} moslik",
     "{n} replaced": "{n} almashtirildi",

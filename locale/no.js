@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Forkast",
+    "Restore": "Gjenopprett",
+    "Unsaved draft": "Ulagret utkast",
     "{n} chars": "{n} tegn",
     "{n} matches": "{n} treff",
     "{n} replaced": "{n} erstattet",

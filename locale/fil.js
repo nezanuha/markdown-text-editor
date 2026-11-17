@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Itapon",
+    "Restore": "Ibalik",
+    "Unsaved draft": "Hindi na-save na draft",
     "{n} chars": "{n} karakter",
     "{n} matches": "{n} tugma",
     "{n} replaced": "{n} ang napalitan",

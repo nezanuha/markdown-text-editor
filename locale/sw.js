@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Tupa",
+    "Restore": "Rejesha",
+    "Unsaved draft": "Rasimu ambayo haijahifadhiwa",
     "{n} chars": "Herufi {n}",
     "{n} matches": "Matokeo {n}",
     "{n} replaced": "{n} yamebadilishwa",

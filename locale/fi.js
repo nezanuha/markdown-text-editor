@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Hylkää",
+    "Restore": "Palauta",
+    "Unsaved draft": "Tallentamaton luonnos",
     "{n} chars": "{n} merkkiä",
     "{n} matches": "{n} osumaa",
     "{n} replaced": "{n} korvattu",

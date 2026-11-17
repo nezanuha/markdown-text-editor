@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Ləğv et",
+    "Restore": "Bərpa et",
+    "Unsaved draft": "Saxlanılmamış qaralama",
     "{n} chars": "{n} simvol",
     "{n} matches": "{n} uyğunluq",
     "{n} replaced": "{n} əvəz edildi",

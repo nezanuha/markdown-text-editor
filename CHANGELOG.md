@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Editing tables**: Click inside one, or press `Alt+T`, and a small bar appears beside it. Add or delete the column or row you're in, align it, tidy the pipes. Tab moves between cells. The toolbar button opens a size grid instead of the old fixed three-column table. `tableBar: false` turns the bar off
+- **Draft recovery**: `autosave: true` keeps a copy of what you are writing in the browser. If the tab dies, the next load offers it back with the time it was taken, and you choose whether to restore it. It never restores on its own, because the text on the page may be newer. Off by default
 - **Variables complete as you type**: Type `{{` and the list appears under the caret, narrowing as you keep typing. Arrows move, Enter or Tab inserts, Escape closes. The toolbar dropdown is still there. `variableComplete: false` turns this off
 - **Pasting formatted text keeps the formatting**: Copy from a web page or a word processor and the headings, links, lists, code and tables arrive as markdown instead of a wall of plain text. The HTML goes through the same sanitiser as the preview. `pasteHtml: false` turns it off
 - **Find and replace, rebuilt**: Every match is highlighted at once. `AB` keeps the case of what you replace, `[ ]` searches only your selection, and the shortcuts are VS Code's. The panel works by keyboard and screen reader alone. `find: false` turns it off and gives `Ctrl+F` back to the browser

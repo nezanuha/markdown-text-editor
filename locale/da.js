@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Kassér",
+    "Restore": "Gendan",
+    "Unsaved draft": "Ikke-gemt kladde",
     "{n} chars": "{n} tegn",
     "{n} matches": "{n} resultater",
     "{n} replaced": "{n} erstattet",

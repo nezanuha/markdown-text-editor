@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Descartar",
+    "Restore": "Restaurar",
+    "Unsaved draft": "Rascunho não guardado",
     "{n} chars": "{n} caracteres",
     "{n} matches": "{n} resultados",
     "{n} replaced": "{n} substituídos",

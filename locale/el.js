@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Απόρριψη",
+    "Restore": "Επαναφορά",
+    "Unsaved draft": "Μη αποθηκευμένο πρόχειρο",
     "{n} chars": "{n} χαρακτήρες",
     "{n} matches": "{n} αντιστοιχίες",
     "{n} replaced": "{n} αντικαταστάθηκαν",

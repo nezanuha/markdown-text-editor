@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "放弃",
+    "Restore": "恢复",
+    "Unsaved draft": "未保存的草稿",
     "{n} chars": "{n} 个字符",
     "{n} matches": "{n} 个匹配项",
     "{n} replaced": "已替换 {n} 个",

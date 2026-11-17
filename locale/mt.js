@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Warrab",
+    "Restore": "Irrestawra",
+    "Unsaved draft": "Abbozz mhux salvat",
     "{n} chars": "{n} karattri",
     "{n} matches": "{n} riżultati",
     "{n} replaced": "{n} mibdula",

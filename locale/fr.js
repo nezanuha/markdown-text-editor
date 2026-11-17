@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Abandonner",
+    "Restore": "Restaurer",
+    "Unsaved draft": "Brouillon non enregistré",
     "{n} chars": "{n} caractères",
     "{n} matches": "{n} résultats",
     "{n} replaced": "{n} remplacés",

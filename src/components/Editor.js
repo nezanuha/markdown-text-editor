@@ -15,6 +15,7 @@ import ShortcutManager from '../utils/ShortcutManager.js';
 import FindReplace from '../utils/FindReplace.js';
 import PasteManager from '../utils/PasteManager.js';
 import VariableComplete from '../utils/VariableComplete.js';
+import Autosave from '../utils/Autosave.js';
 import { applyVariableSamples } from '../utils/variables.js';
 import { escapeHtml } from '../utils/escapeHtml.js';
 
@@ -89,6 +90,12 @@ class MarkdownEditor {
         // the panel, so not building it is enough to turn it off.
         if (options.find !== false) this.findReplace = new FindReplace(this);
         this.pasteManager = new PasteManager(this);
+        // Off unless asked for: it writes what is being typed to a disk
+        // this library does not own.
+        if (options.autosave) {
+            this.autosave = new Autosave(this,
+                typeof options.autosave === 'object' ? options.autosave : {});
+        }
         // Only worth attaching when there is something to complete.
         if (options.variableComplete !== false && this.variables?.length) {
             this.variableComplete = new VariableComplete(this);
@@ -906,6 +913,7 @@ class MarkdownEditor {
         this.indentManager?.destroy();
         this.pasteManager?.destroy();
         this.variableComplete?.destroy();
+        this.autosave?.destroy();
         this._widthObserver?.disconnect();
         // Reaches toolbar tools, including custom ones that added listeners
         this.toolbarInstance?.destroy();

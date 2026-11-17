@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Отхвърли",
+    "Restore": "Възстанови",
+    "Unsaved draft": "Незапазена чернова",
     "{n} chars": "{n} знака",
     "{n} matches": "{n} съвпадения",
     "{n} replaced": "{n} заменени",

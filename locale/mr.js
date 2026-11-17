@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "टाकून द्या",
+    "Restore": "पुनर्संचयित करा",
+    "Unsaved draft": "जतन न केलेला मसुदा",
     "{n} chars": "{n} वर्ण",
     "{n} matches": "{n} जुळण्या",
     "{n} replaced": "{n} बदलले",

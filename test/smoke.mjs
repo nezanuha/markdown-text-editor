@@ -3254,6 +3254,196 @@ check('a converter that throws still pastes', () => {
     return prevented === false;
 });
 
+// --- draft recovery ---------------------------------------------------------
+
+// The textarea is this editor's only source of truth, which is the point of
+// it. A stored draft is a second copy of the same text, and two copies
+// disagree eventually, so nothing is ever restored without being asked for.
+
+// happy-dom defines window.localStorage as a getter, so it is replaced
+// rather than assigned.
+const put = (value) => {
+    for (const target of [globalThis, window]) {
+        if (!target) continue;
+        Object.defineProperty(target, 'localStorage',
+            { value, writable: true, configurable: true });
+    }
+};
+
+const store = {
+    data: new Map(),
+    install() {
+        const self = this;
+        globalThis.localStorage = {
+            getItem: (k) => (self.data.has(k) ? self.data.get(k) : null),
+            setItem: (k, v) => self.data.set(k, String(v)),
+            removeItem: (k) => self.data.delete(k),
+        };
+        put(globalThis.localStorage);
+    },
+    reset() { this.data.clear(); },
+    keys() { return [...this.data.keys()]; },
+    only() { return this.data.get(this.keys()[0]); },
+};
+store.install();
+
+const typed = (editor, text) => {
+    editor.usertextarea.value = text;
+    editor.usertextarea.dispatchEvent(new window.Event('input', { bubbles: true }));
+};
+const barOf = (editor) => editor.editorContainer.querySelector('.autosave-bar');
+const barBtn = (editor, text) => [...(barOf(editor)?.querySelectorAll('button') ?? [])]
+    .find(b => b.textContent === text);
+
+check('autosave is off unless asked for', () => {
+    store.reset();
+    const e = makeEditor({ toolbar: FULL_BAR }, 'start');
+    typed(e, 'start and more');
+    e.autosave?.save();
+    // Writing what someone types to a disk this library does not own is a
+    // decision for the application, not a default.
+    return e.autosave === undefined && store.keys().length === 0;
+});
+
+check('a draft is stored once something is typed', () => {
+    store.reset();
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k1', debounce: 0 } }, 'start');
+    typed(e, 'start and more');
+    e.autosave.save();
+    const saved = JSON.parse(store.only());
+    return store.keys()[0] === 'mte:draft:k1' && saved.text === 'start and more';
+});
+
+check('text back at its starting value stores nothing', () => {
+    store.reset();
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k2', debounce: 0 } }, 'start');
+    typed(e, 'start and more');
+    e.autosave.save();
+    const had = store.keys().length === 1;
+
+    typed(e, 'start');
+    e.autosave.save();
+    // Identical to what the page put there is not unsaved work.
+    return had && store.keys().length === 0;
+});
+
+check('a stored draft is offered, never restored on its own', () => {
+    store.reset();
+    store.data.set('mte:draft:k3', JSON.stringify({ text: 'the draft', seed: '', at: Date.now() }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k3' } }, 'what the server sent');
+
+    // Restoring here would put an old draft over newer text from the server
+    // and say nothing about it.
+    return e.usertextarea.value === 'what the server sent'
+        && barOf(e) !== null
+        && barBtn(e, 'Restore') !== undefined
+        && barBtn(e, 'Discard') !== undefined;
+});
+
+check('Restore puts the draft in and clears the store', () => {
+    store.reset();
+    store.data.set('mte:draft:k4', JSON.stringify({ text: 'the draft', seed: '', at: Date.now() }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k4' } }, 'server text');
+    barBtn(e, 'Restore').click();
+
+    // Keeping it stored would offer it again next time against text that
+    // already holds it.
+    return e.usertextarea.value === 'the draft'
+        && barOf(e) === null
+        && store.keys().length === 0;
+});
+
+check('Discard leaves the text alone and clears the store', () => {
+    store.reset();
+    store.data.set('mte:draft:k5', JSON.stringify({ text: 'the draft', seed: '', at: Date.now() }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k5' } }, 'server text');
+    barBtn(e, 'Discard').click();
+
+    return e.usertextarea.value === 'server text'
+        && barOf(e) === null
+        && store.keys().length === 0;
+});
+
+check('a draft identical to what is on screen is not offered', () => {
+    store.reset();
+    store.data.set('mte:draft:k6', JSON.stringify({ text: 'same', seed: '', at: Date.now() }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k6' } }, 'same');
+    // Otherwise the strip appears on every single load offering to restore
+    // the text already in front of you.
+    return barOf(e) === null;
+});
+
+check('a draft older than maxAge is dropped rather than offered', () => {
+    store.reset();
+    const old = Date.now() - 1000 * 60 * 60 * 24 * 30;
+    store.data.set('mte:draft:k7', JSON.stringify({ text: 'ancient', seed: '', at: old }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k7' } }, 'current');
+    return barOf(e) === null && store.keys().length === 0;
+});
+
+check('submitting the form clears the draft', () => {
+    store.reset();
+    const form = document.createElement('form');
+    document.body.appendChild(form);
+    const ta = document.createElement('textarea');
+    ta.id = 'autosave-form-ta';
+    ta.value = 'start';
+    form.appendChild(ta);
+
+    const e = new MarkdownEditor(ta, { toolbar: FULL_BAR, autosave: { key: 'k8', debounce: 0 } });
+    typed(e, 'start and more');
+    e.autosave.save();
+    const had = store.keys().length === 1;
+
+    form.dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
+    // The application has the text now, so the local copy has done its job.
+    return had && store.keys().length === 0;
+});
+
+check('storage that refuses does not break typing', () => {
+    store.reset();
+    const real = globalThis.localStorage;
+    put({
+        getItem() { throw new Error('denied'); },
+        setItem() { throw new Error('denied'); },
+        removeItem() { throw new Error('denied'); },
+    });
+
+    try {
+        // Private browsing throws on access rather than returning null, and a
+        // full quota throws on write. Neither is worth interrupting someone
+        // mid-sentence for.
+        const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k9', debounce: 0 } }, 'start');
+        typed(e, 'start and more');
+        e.autosave.save();
+        return e.usertextarea.value === 'start and more' && barOf(e) === null;
+    } finally {
+        put(real);
+    }
+});
+
+check('destroy() takes the bar and the handlers with it', () => {
+    store.reset();
+    store.data.set('mte:draft:k10', JSON.stringify({ text: 'draft', seed: '', at: Date.now() }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k10' } }, 'server');
+    const had = barOf(e) !== null;
+    e.destroy();
+    return had && barOf(e) === null;
+});
+
+check('two editors on a page keep separate drafts', () => {
+    store.reset();
+    const a = makeEditor({ toolbar: FULL_BAR, autosave: { debounce: 0 } }, 'one');
+    const b = makeEditor({ toolbar: FULL_BAR, autosave: { debounce: 0 } }, 'two');
+    typed(a, 'one changed');
+    typed(b, 'two changed');
+    a.autosave.save();
+    b.autosave.save();
+    // The default key is built from the path and the field's own name, which
+    // is what tells two editors on one page apart.
+    return store.keys().length === 2;
+});
+
 // --- report -----------------------------------------------------------------
 
 await Promise.all(pending);

@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Atmesti",
+    "Restore": "Atkurti",
+    "Unsaved draft": "Neįrašytas juodraštis",
     "{n} chars": "{n} simb.",
     "{n} matches": "{n} atitikčių",
     "{n} replaced": "{n} pakeista",

@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Հրաժարվել",
+    "Restore": "Վերականգնել",
+    "Unsaved draft": "Չպահպանված սևագիր",
     "{n} chars": "{n} նիշ",
     "{n} matches": "{n} համապատասխանություն",
     "{n} replaced": "{n} փոխարինվեց",

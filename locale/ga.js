@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Cuir i leataobh",
+    "Restore": "Athchóirigh",
+    "Unsaved draft": "Dréacht gan sábháil",
     "{n} chars": "{n} carachtar",
     "{n} matches": "{n} toradh",
     "{n} replaced": "{n} ionadaithe",

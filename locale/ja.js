@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "破棄",
+    "Restore": "復元",
+    "Unsaved draft": "未保存の下書き",
     "{n} chars": "{n} 文字",
     "{n} matches": "{n} 件一致",
     "{n} replaced": "{n} 件置換",

@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Atmest",
+    "Restore": "Atjaunot",
+    "Unsaved draft": "Nesaglabāts melnraksts",
     "{n} chars": "{n} rakstzīmes",
     "{n} matches": "{n} atbilstības",
     "{n} replaced": "{n} aizstāti",

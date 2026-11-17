@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Одбаци",
+    "Restore": "Врати",
+    "Unsaved draft": "Несачувана скица",
     "{n} chars": "{n} знакова",
     "{n} matches": "{n} резултата",
     "{n} replaced": "{n} замењено",

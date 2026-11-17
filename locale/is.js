@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Henda",
+    "Restore": "Endurheimta",
+    "Unsaved draft": "Óvistuð drög",
     "{n} chars": "{n} stafir",
     "{n} matches": "{n} samsvaranir",
     "{n} replaced": "{n} skipt út",

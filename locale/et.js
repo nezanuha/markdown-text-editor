@@ -7,6 +7,9 @@
 export const reviewed = false;
 
 export default {
+    "Discard": "Loobu",
+    "Restore": "Taasta",
+    "Unsaved draft": "Salvestamata mustand",
     "{n} chars": "{n} märki",
     "{n} matches": "{n} vastet",
     "{n} replaced": "{n} asendatud",
