@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Cuir i leataobh",
     "Restore": "Athchóirigh",
+    "The document has changed since then": "Tá an cháipéis athraithe ó shin",
     "Unsaved draft": "Dréacht gan sábháil",
     "{n} chars": "{n} carachtar",
     "{n} matches": "{n} toradh",

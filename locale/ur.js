@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "رد کریں",
     "Restore": "بحال کریں",
+    "The document has changed since then": "اس کے بعد دستاویز تبدیل ہو چکی ہے",
     "Unsaved draft": "غیر محفوظ مسودہ",
     "{n} chars": "{n} حروف",
     "{n} matches": "{n} مماثلتیں",

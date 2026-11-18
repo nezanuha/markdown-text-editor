@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Yoksay",
     "Restore": "Geri yükle",
+    "The document has changed since then": "Belge o zamandan beri değişti",
     "Unsaved draft": "Kaydedilmemiş taslak",
     "{n} chars": "{n} karakter",
     "{n} matches": "{n} eşleşme",

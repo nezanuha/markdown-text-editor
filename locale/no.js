@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Forkast",
     "Restore": "Gjenopprett",
+    "The document has changed since then": "Dokumentet er endret siden",
     "Unsaved draft": "Ulagret utkast",
     "{n} chars": "{n} tegn",
     "{n} matches": "{n} treff",

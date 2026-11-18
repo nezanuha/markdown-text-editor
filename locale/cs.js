@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Zahodit",
     "Restore": "Obnovit",
+    "The document has changed since then": "Dokument se od té doby změnil",
     "Unsaved draft": "Neuložený koncept",
     "{n} chars": "{n} znaků",
     "{n} matches": "{n} výsledků",

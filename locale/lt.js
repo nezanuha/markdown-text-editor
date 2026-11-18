@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Atmesti",
     "Restore": "Atkurti",
+    "The document has changed since then": "Dokumentas nuo to laiko pasikeitė",
     "Unsaved draft": "Neįrašytas juodraštis",
     "{n} chars": "{n} simb.",
     "{n} matches": "{n} atitikčių",

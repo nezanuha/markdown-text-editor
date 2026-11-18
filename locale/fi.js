@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Hylkää",
     "Restore": "Palauta",
+    "The document has changed since then": "Asiakirja on muuttunut sen jälkeen",
     "Unsaved draft": "Tallentamaton luonnos",
     "{n} chars": "{n} merkkiä",
     "{n} matches": "{n} osumaa",

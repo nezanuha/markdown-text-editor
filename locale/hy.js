@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Հրաժարվել",
     "Restore": "Վերականգնել",
+    "The document has changed since then": "Փաստաթուղթը այդ ժամանակից փոխվել է",
     "Unsaved draft": "Չպահպանված սևագիր",
     "{n} chars": "{n} նիշ",
     "{n} matches": "{n} համապատասխանություն",

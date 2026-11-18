@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Hidhe",
     "Restore": "Rikthe",
+    "The document has changed since then": "Dokumenti ka ndryshuar që atëherë",
     "Unsaved draft": "Skicë e paruajtur",
     "{n} chars": "{n} karaktere",
     "{n} matches": "{n} përputhje",

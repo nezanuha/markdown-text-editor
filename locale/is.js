@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Henda",
     "Restore": "Endurheimta",
+    "The document has changed since then": "Skjalið hefur breyst síðan",
     "Unsaved draft": "Óvistuð drög",
     "{n} chars": "{n} stafir",
     "{n} matches": "{n} samsvaranir",

@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "విస్మరించు",
     "Restore": "పునరుద్ధరించు",
+    "The document has changed since then": "అప్పటి నుండి పత్రం మారింది",
     "Unsaved draft": "సేవ్ చేయని చిత్తుప్రతి",
     "{n} chars": "{n} అక్షరాలు",
     "{n} matches": "{n} సరిపోలికలు",

@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Zavrzi",
     "Restore": "Obnovi",
+    "The document has changed since then": "Dokument se je medtem spremenil",
     "Unsaved draft": "Neshranjen osnutek",
     "{n} chars": "{n} znakov",
     "{n} matches": "{n} zadetkov",

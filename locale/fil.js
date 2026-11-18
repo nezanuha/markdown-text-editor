@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Itapon",
     "Restore": "Ibalik",
+    "The document has changed since then": "Nagbago ang dokumento mula noon",
     "Unsaved draft": "Hindi na-save na draft",
     "{n} chars": "{n} karakter",
     "{n} matches": "{n} tugma",

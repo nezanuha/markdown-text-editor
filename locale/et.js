@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Loobu",
     "Restore": "Taasta",
+    "The document has changed since then": "Dokument on vahepeal muutunud",
     "Unsaved draft": "Salvestamata mustand",
     "{n} chars": "{n} märki",
     "{n} matches": "{n} vastet",

@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Kassér",
     "Restore": "Gendan",
+    "The document has changed since then": "Dokumentet er ændret siden",
     "Unsaved draft": "Ikke-gemt kladde",
     "{n} chars": "{n} tegn",
     "{n} matches": "{n} resultater",

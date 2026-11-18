@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "התעלם",
     "Restore": "שחזר",
+    "The document has changed since then": "המסמך השתנה מאז",
     "Unsaved draft": "טיוטה שלא נשמרה",
     "{n} chars": "{n} תווים",
     "{n} matches": "{n} תוצאות",

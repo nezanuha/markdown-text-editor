@@ -72,6 +72,7 @@ export default {
     "Strikethrough": "Strikethrough",
     "Table": "Table",
     "Table size": "Table size",
+    "The document has changed since then": "The document has changed since then",
     "Tidy the table": "Tidy the table",
     "Toggle replace row": "Toggle replace row",
     "Undo": "Undo",

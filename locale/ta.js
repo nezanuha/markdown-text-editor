@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "நிராகரி",
     "Restore": "மீட்டமை",
+    "The document has changed since then": "அதன் பிறகு ஆவணம் மாறியுள்ளது",
     "Unsaved draft": "சேமிக்கப்படாத வரைவு",
     "{n} chars": "{n} எழுத்துகள்",
     "{n} matches": "{n} பொருத்தங்கள்",

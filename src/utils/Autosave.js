@@ -86,14 +86,37 @@ export default class Autosave {
 
     /**
      * Two documents being edited on one page are two drafts, and the same
-     * document at two URLs is usually two records. The path and the field's
-     * own name are what tell them apart without the application saying so.
+     * document at two addresses is usually two records. The address and the
+     * field's own name tell them apart without the application saying so.
+     *
+     * The whole address, not just the path. Plenty of applications put the
+     * record in the query string or behind a hash, and on the path alone
+     * `/edit?id=7` and `/edit?id=9` are one key -- so opening the second
+     * would offer the first one's draft against it. A key that is too
+     * specific loses an offer; a key that is too general offers the wrong
+     * draft, and only one of those can destroy anything.
+     *
+     * The cost is that a URL carrying anything incidental, a campaign
+     * parameter say, reads as a different document. Pass `key` where that
+     * happens; the application knows what identifies its record and this
+     * does not.
      */
     _defaultKey() {
-        const path = (window.location?.pathname ?? '').replace(/\/+$/, '') || '/';
-        const field = this.textarea.id || this.textarea.name
-            || String([...document.querySelectorAll('textarea')].indexOf(this.textarea));
-        return path + ':' + field;
+        const at = window.location ?? {};
+        const path = (at.pathname ?? '').replace(/\/+$/, '') || '/';
+        const address = path + (at.search ?? '') + (at.hash ?? '');
+
+        if (this.textarea.id || this.textarea.name) {
+            return address + ':' + (this.textarea.id || this.textarea.name);
+        }
+
+        // Falling back to position. It works until a textarea is added or
+        // removed above this one, at which point two drafts change places.
+        const index = [...document.querySelectorAll('textarea')].indexOf(this.textarea);
+        console.warn('[MarkdownEditor] autosave has no id or name to key the draft on, '
+            + "so it is using this field's position on the page. Adding an id, or "
+            + 'passing autosave: { key }, keeps the draft attached to the right field.');
+        return address + ':' + index;
     }
 
     _schedule() {
@@ -131,23 +154,60 @@ export default class Autosave {
         const saved = this.read();
         if (!saved) return;
 
+        // Whether the page has moved on underneath this draft.
+        //
+        // The seed is the text the textarea held when the draft was taken.
+        // If the textarea starts with something else today, somebody saved
+        // in between, and this draft was written against a version that no
+        // longer exists: restoring it drops whatever they added. The editor
+        // cannot tell which text is wanted, but it can say that the choice
+        // costs something, which is the difference between an informed
+        // decision and a surprised one.
+        //
+        // Drafts written before this field existed have no seed. Unknown is
+        // not the same as changed, so they are left alone.
+        const stale = typeof saved.seed === 'string' && saved.seed !== this.seed;
+
+        // frutjam's alert, rather than a row of utilities that imitates one:
+        // it is the component for exactly this, and it takes the theme's
+        // colours with it. Two changes to its defaults. It sizes to its
+        // content, and this spans the editor, so w-full. It has a radius,
+        // and this sits flush against the top corners of the editor, so
+        // rounded-none and a rule along the bottom instead.
         const bar = document.createElement('div');
-        bar.className = 'autosave-bar fj:flex fj:flex-wrap fj:items-center fj:gap-2'
-            + ' fj:px-2 fj:py-1 fj:text-sm fj:me-surface fj:me-surface-outline'
+        bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft'
+            + (stale ? ' fj:me-alert-warning' : ' fj:me-alert-info')
+            + ' fj:me-alert-sm fj:w-full fj:rounded-none'
+            // The alert lays its children out in a row, which on a phone
+            // leaves the message about seventy pixels wide while the two
+            // buttons keep their full width. Stacked below 40rem, in a row
+            // above it.
+            + ' fj:me-alert-vertical fj:sm:me-alert-horizontal'
             + ' fj:border-base-soft fj:border-0 fj:border-b';
         bar.setAttribute('role', 'status');
 
         const label = document.createElement('span');
         label.textContent = this.editor.label('Unsaved draft');
 
+        // Second child, which is the one the alert's grid lets grow, so the
+        // buttons are pushed to the end without a spacer element.
         const when = document.createElement('span');
-        when.className = 'fj:opacity-60 fj:text-xs';
+        when.className = 'fj:text-xs';
+
+        const taken = document.createElement('span');
+        taken.className = 'fj:opacity-70';
         // The browser's own formatting, so the date reads the way the rest of
         // the operating system writes dates.
-        when.textContent = new Date(saved.at).toLocaleString();
+        taken.textContent = new Date(saved.at).toLocaleString();
+        when.append(taken);
 
-        const spacer = document.createElement('span');
-        spacer.className = 'fj:flex-1';
+        if (stale) {
+            const note = document.createElement('span');
+            note.className = 'fj:ms-2';
+            note.textContent = this.editor.label('The document has changed since then');
+            when.append(note);
+        }
+
 
         // The text is translated at the call site rather than inside the
         // helper. locale-extract reads the source for label calls whose
@@ -155,20 +215,51 @@ export default class Autosave {
         // helper is invisible to it: the string would be missing from the
         // template and so from every translation, falling back to English
         // in silence.
-        const button = (text, onClick, extra = '') => {
+        const button = (text, onClick, variant) => {
             const b = document.createElement('button');
             b.type = 'button';
-            b.className = 'fj:me-btn fj:me-btn-xs ' + extra;
+            // The buttons borrow the colour they are standing on rather than
+            // carrying one of their own. A button painted from the base
+            // palette is a grey rectangle on an amber strip, visibly from
+            // somewhere else, and it would need saying twice: once for the
+            // informational strip and again for the warning one.
+            //
+            // The component as it comes. Pointing its colour variables at
+            // the alert did make the two match, but it meant this file
+            // knowing which variables frutjam paints a button from, which is
+            // frutjam's detail to change and would go wrong quietly here if
+            // it ever did.
+            b.className = 'fj:me-btn fj:me-btn-xs ' + variant;
             b.textContent = text;
             b.addEventListener('click', onClick);
             return b;
         };
 
-        bar.append(
-            label, when, spacer,
-            button(this.editor.label('Restore'), () => this.restore(saved), 'fj:me-btn-primary'),
+        // The two buttons travel as one child. The alert puts a 1rem gutter
+        // between its children, which is right between the message and the
+        // choice and far too much between the two halves of that choice.
+        const actions = document.createElement('div');
+        actions.className = 'fj:flex fj:items-center fj:gap-1';
+        // Restore takes the strip's own colour, so the two belong together.
+        // A button left on the base palette lands on a tinted alert as a
+        // grey block from another room; this is the same hue, filled, which
+        // reads as part of the notice rather than something dropped on it.
+        //
+        // Both class names are written out in full on purpose. Tailwind
+        // finds classes by reading the source, so a name assembled at
+        // runtime -- 'fj:me-btn-' + state -- is never emitted, and the
+        // button silently loses its colour instead of failing.
+        const accent = stale ? 'fj:me-btn-warning' : 'fj:me-btn-info';
+
+        // Discard stays a ghost. It is the other answer, not the lesser one,
+        // and two filled buttons would be the editor insisting that one of
+        // them is right when it cannot know.
+        actions.append(
+            button(this.editor.label('Restore'), () => this.restore(saved), accent),
             button(this.editor.label('Discard'), () => this.clear(), 'fj:me-btn-ghost'),
         );
+
+        bar.append(label, when, actions);
 
         this.bar = bar;
         const container = this.editor.editorContainer;

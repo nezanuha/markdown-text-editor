@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Buang",
     "Restore": "Pulihkan",
+    "The document has changed since then": "Dokumen telah berubah sejak itu",
     "Unsaved draft": "Draf belum disimpan",
     "{n} chars": "{n} aksara",
     "{n} matches": "{n} padanan",

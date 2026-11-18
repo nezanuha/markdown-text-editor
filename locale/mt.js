@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Warrab",
     "Restore": "Irrestawra",
+    "The document has changed since then": "Id-dokument inbidel minn dakinhar",
     "Unsaved draft": "Abbozz mhux salvat",
     "{n} chars": "{n} karattri",
     "{n} matches": "{n} riżultati",

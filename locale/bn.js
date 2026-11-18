@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "বাতিল করুন",
     "Restore": "পুনরুদ্ধার করুন",
+    "The document has changed since then": "এরপর নথিটি পরিবর্তিত হয়েছে",
     "Unsaved draft": "অসংরক্ষিত খসড়া",
     "{n} chars": "{n} অক্ষর",
     "{n} matches": "{n} মিল",

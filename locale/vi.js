@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Bỏ qua",
     "Restore": "Khôi phục",
+    "The document has changed since then": "Tài liệu đã thay đổi kể từ đó",
     "Unsaved draft": "Bản nháp chưa lưu",
     "{n} chars": "{n} ký tự",
     "{n} matches": "{n} kết quả",

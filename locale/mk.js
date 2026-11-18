@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Отфрли",
     "Restore": "Врати",
+    "The document has changed since then": "Документот е променет оттогаш",
     "Unsaved draft": "Незачувана скица",
     "{n} chars": "{n} знаци",
     "{n} matches": "{n} совпаѓања",

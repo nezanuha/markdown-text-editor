@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Bekor qilish",
     "Restore": "Tiklash",
+    "The document has changed since then": "Hujjat o'shandan beri o'zgargan",
     "Unsaved draft": "Saqlanmagan qoralama",
     "{n} chars": "{n} belgi",
     "{n} matches": "{n} moslik",

@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Verwerpen",
     "Restore": "Herstellen",
+    "The document has changed since then": "Het document is sindsdien gewijzigd",
     "Unsaved draft": "Niet-opgeslagen concept",
     "{n} chars": "{n} tekens",
     "{n} matches": "{n} resultaten",

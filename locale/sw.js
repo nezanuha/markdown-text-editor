@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Tupa",
     "Restore": "Rejesha",
+    "The document has changed since then": "Hati imebadilika tangu wakati huo",
     "Unsaved draft": "Rasimu ambayo haijahifadhiwa",
     "{n} chars": "Herufi {n}",
     "{n} matches": "Matokeo {n}",

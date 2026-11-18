@@ -3396,6 +3396,53 @@ check('Discard leaves the text alone and clears the store', () => {
         && store.keys().length === 0;
 });
 
+check('a draft taken against older text says the document has moved on', () => {
+    store.reset();
+    // You typed, left without saving, and somebody else saved in between.
+    // The draft is good work, but it was written against a version that no
+    // longer exists: restoring it drops whatever they added.
+    store.data.set('mte:draft:k11', JSON.stringify({
+        text: 'some text here and more',
+        seed: 'some text here',
+        at: Date.now(),
+    }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k11' } },
+        'some text here and more and more');
+
+    const bar = barOf(e);
+    return bar !== null
+        && bar.textContent.includes('changed since')
+        && bar.className.includes('me-alert-warning')
+        && !bar.className.includes('me-alert-info');
+});
+
+check('a draft taken against the same text does not cry wolf', () => {
+    store.reset();
+    store.data.set('mte:draft:k12', JSON.stringify({
+        text: 'the draft',
+        seed: 'what the server sent',
+        at: Date.now(),
+    }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k12' } }, 'what the server sent');
+
+    const bar = barOf(e);
+    return bar !== null
+        && !bar.textContent.includes('changed since')
+        && bar.className.includes('me-alert-info');
+});
+
+check('a draft with no seed recorded is not called stale', () => {
+    store.reset();
+    // Written by a version before the seed existed. Unknown is not the same
+    // as changed, and warning about every old draft would teach people to
+    // ignore the warning.
+    store.data.set('mte:draft:k13', JSON.stringify({ text: 'the draft', at: Date.now() }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k13' } }, 'server text');
+
+    const bar = barOf(e);
+    return bar !== null && !bar.textContent.includes('changed since');
+});
+
 check('a draft identical to what is on screen is not offered', () => {
     store.reset();
     store.data.set('mte:draft:k6', JSON.stringify({ text: 'same', seed: '', at: Date.now() }));
@@ -3461,6 +3508,44 @@ check('destroy() takes the bar and the handlers with it', () => {
     const had = barOf(e) !== null;
     e.destroy();
     return had && barOf(e) === null;
+});
+
+check('the draft key covers the whole address, not just the path', () => {
+    store.reset();
+    const at = (search, hash) => {
+        // The editor reads window.location, so the probe moves it. Two
+        // records behind a query string or a hash share a path, and sharing
+        // a key there means one record's draft offered against another's
+        // text -- the exact thing this feature exists to avoid.
+        const real = { search: window.location.search, hash: window.location.hash };
+        try {
+            Object.defineProperty(window.location, 'search', { value: search, configurable: true });
+            Object.defineProperty(window.location, 'hash', { value: hash, configurable: true });
+            const ta = document.createElement('textarea');
+            ta.id = 'keyed';
+            document.body.appendChild(ta);
+            return new MarkdownEditor(ta, { toolbar: ['bold'], autosave: true }).autosave.key;
+        } finally {
+            Object.defineProperty(window.location, 'search', { value: real.search, configurable: true });
+            Object.defineProperty(window.location, 'hash', { value: real.hash, configurable: true });
+        }
+    };
+
+    const seven = at('?id=7', '');
+    const nine = at('?id=9', '');
+    const routeA = at('', '#/posts/7');
+    const routeB = at('', '#/posts/9');
+
+    return seven !== nine && routeA !== routeB && seven.includes('id=7');
+});
+
+check('two editors on one page keep separate drafts without ids', () => {
+    store.reset();
+    // Position is the last resort and it says so in the console, because two
+    // drafts change places if a textarea is added above them.
+    const a = quietly2(() => makeEditor({ toolbar: FULL_BAR, autosave: { debounce: 0 } }, 'one'));
+    const b = quietly2(() => makeEditor({ toolbar: FULL_BAR, autosave: { debounce: 0 } }, 'two'));
+    return a.autosave.key !== b.autosave.key;
 });
 
 check('two editors on a page keep separate drafts', () => {

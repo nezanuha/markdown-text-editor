@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "टाकून द्या",
     "Restore": "पुनर्संचयित करा",
+    "The document has changed since then": "तेव्हापासून दस्तऐवज बदलला आहे",
     "Unsaved draft": "जतन न केलेला मसुदा",
     "{n} chars": "{n} वर्ण",
     "{n} matches": "{n} जुळण्या",

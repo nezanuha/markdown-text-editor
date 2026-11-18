@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Descarta",
     "Restore": "Restaura",
+    "The document has changed since then": "El document ha canviat des de llavors",
     "Unsaved draft": "Esborrany no desat",
     "{n} chars": "{n} caràcters",
     "{n} matches": "{n} coincidències",

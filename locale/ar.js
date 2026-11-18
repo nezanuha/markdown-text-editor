@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "تجاهل",
     "Restore": "استعادة",
+    "The document has changed since then": "تم تغيير المستند منذ ذلك الحين",
     "Unsaved draft": "مسودة غير محفوظة",
     "{n} chars": "{n} حرف",
     "{n} matches": "{n} مطابقة",

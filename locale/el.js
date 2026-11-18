@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Απόρριψη",
     "Restore": "Επαναφορά",
+    "The document has changed since then": "Το έγγραφο άλλαξε από τότε",
     "Unsaved draft": "Μη αποθηκευμένο πρόχειρο",
     "{n} chars": "{n} χαρακτήρες",
     "{n} matches": "{n} αντιστοιχίες",

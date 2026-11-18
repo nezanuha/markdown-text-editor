@@ -9,6 +9,7 @@ export const reviewed = false;
 export default {
     "Discard": "Отхвърли",
     "Restore": "Възстанови",
+    "The document has changed since then": "Документът е променен оттогава",
     "Unsaved draft": "Незапазена чернова",
     "{n} chars": "{n} знака",
     "{n} matches": "{n} съвпадения",
