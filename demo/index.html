@@ -96,6 +96,37 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
         <textarea class="heading-levels h-28" rows="3">Put the caret on this line and try the dropdown.</textarea>
     </div>
 
+
+    <div class="border-t mt-10 pt-5 space-y-3">
+        <strong class="font-medium mt-3 block">Paste formatted text (<code>pasteHtml</code>)</strong>
+        <p class="text-sm opacity-70">Copy a few paragraphs from any web page, with a heading, a link and a
+           list in them, and paste here. They arrive as markdown. Copying from a code block keeps the
+           fence and its language. Set <code>pasteHtml: false</code> and the same paste drops to plain
+           text, which is how it worked before.</p>
+        <textarea class="paste-html h-32" rows="4">Paste something formatted here.</textarea>
+    </div>
+
+    <div class="border-t mt-10 pt-5 space-y-3">
+        <strong class="font-medium mt-3 block">Variable completion (<code>{{</code>)</strong>
+        <p class="text-sm opacity-70">Type <code>&#123;&#123;</code> and the list opens under the cursor.
+           Keep typing to narrow it, arrow keys to move, <code>Enter</code> to insert. The toolbar has the
+           same list behind its button for the first time you meet a template.</p>
+        <textarea class="var-complete h-28" rows="3">Hi </textarea>
+    </div>
+
+    <div class="border-t mt-10 pt-5 space-y-3">
+        <strong class="font-medium mt-3 block">Draft recovery (<code>autosave</code>)</strong>
+        <p class="text-sm opacity-70">Type in either box, wait a second, then reload the page. A strip
+           appears above the toolbar offering that draft back, with the time it was taken. It never
+           restores on its own: the text on the page may be newer than the draft. Restore or Discard both
+           clear it.</p>
+        <p class="text-sm opacity-70">Two editors, two drafts. The key is built from the page address and
+           each field's own <code>id</code>, so editing one leaves the other alone. Type in both, reload,
+           and each strip offers back its own text.</p>
+        <textarea class="autosave-demo h-20" rows="2" id="autosave-summary">Summary. Type here, then reload.</textarea>
+        <textarea class="autosave-demo h-28" rows="3" id="autosave-body">Body. Type here too, then reload.</textarea>
+    </div>
+
     <script type="module">
         import MarkdownEditor from '/src/components/Editor.js';
         import DOMPurify from 'dompurify';
@@ -251,6 +282,37 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
             // H1 belongs to the page in a CMS body field, so only offer H2 and below
             new MarkdownEditor(".heading-levels", {
                 toolbar: [{ heading: { levels: [2, 3, 4] } }, 'bold', 'italic', 'preview'],
+            });
+
+
+            // Nothing to configure: formatted text pasted from anywhere
+            // becomes markdown.
+            new MarkdownEditor(".paste-html", {
+                toolbar: ['heading', 'bold', 'italic', 'link', 'table', 'preview'],
+            });
+
+            new MarkdownEditor(".var-complete", {
+                toolbar: ['bold', 'italic',
+                    { variables: [
+                        { label: 'Customer Name', value: '{{customer.name}}', sample: 'Hannes' },
+                        { label: 'Customer Email', value: '{{customer.email}}' },
+                        { label: 'Invoice No',    value: '{{invoice.number}}' },
+                        { label: 'Invoice Total', value: '{{invoice.total}}' },
+                        { label: 'Today',         value: '{{today}}' }
+                    ]},
+                    'preview'
+                ],
+            });
+
+            // Off by default everywhere else: it writes what you type to this
+            // browser's storage, which is the application's call to make.
+            // Two of them, to show the drafts stay apart. Each textarea has
+            // its own id, which is what the key is built from.
+            document.querySelectorAll(".autosave-demo").forEach((el) => {
+                new MarkdownEditor(el, {
+                    toolbar: ['bold', 'italic', 'link', 'preview'],
+                    autosave: true,
+                });
             });
 
             document.querySelector(".get-markdown").addEventListener("click", function(e){
