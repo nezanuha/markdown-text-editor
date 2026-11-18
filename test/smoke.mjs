@@ -3067,6 +3067,38 @@ check('typing narrows the list, and a miss closes it', () => {
     return all > narrowed && narrowed > 0 && gone;
 });
 
+check('a space after the braces keeps the list open', () => {
+    const e = makeEditor({ toolbar: barWith(VARS) });
+    // Handlebars writes {{today}}, Django and Jinja write {{ today }} and
+    // print it that way in their own documentation. Someone used to the
+    // second types the space out of habit.
+    typeInto(e, 'Hi {{ ');
+    const open = menuOf(e) !== null;
+
+    typeInto(e, 'Hi {{ invoice');
+    const narrowed = optionsOf(e).length;
+
+    return open && narrowed > 0;
+});
+
+check('two spaces is prose, not a variable', () => {
+    const e = makeEditor({ toolbar: barWith(VARS) });
+    // A menu that stays open through a sentence is worse than one that
+    // closes early.
+    typeInto(e, 'Hi {{  ');
+    return menuOf(e) === null;
+});
+
+check('a spaced value inserts whole, spaces and all', () => {
+    const e = makeEditor({
+        toolbar: barWith([{ label: 'Today', value: '{{ today }}' }]),
+    });
+    typeInto(e, 'Sent {{ tod');
+    press(e, { key: 'Enter' });
+    // The braces already typed are replaced rather than left in front.
+    return e.usertextarea.value === 'Sent {{ today }}';
+});
+
 check('Enter inserts the variable and closes the menu', () => {
     const e = makeEditor({ toolbar: barWith(VARS) });
     typeInto(e, 'Hello {{');

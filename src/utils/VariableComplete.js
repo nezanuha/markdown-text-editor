@@ -18,9 +18,19 @@ import { overlayHost, measureOffsets } from './overlay.js';
  * Opt out with `variableComplete: false`.
  */
 
-// Up to the caret: two braces, then the characters a variable name is made
-// of. A space ends it, because a sentence should not keep a menu open.
-const TRIGGER = /\{\{([\w.-]*)$/;
+// Up to the caret: two braces, one optional space, then the characters a
+// variable name is made of.
+//
+// The space is there because both spellings are in use and neither is wrong:
+// Handlebars and Mustache write `{{today}}`, while Django, Jinja and Liquid
+// write `{{ today }}` and print it that way throughout their documentation.
+// Somebody used to the second types the space out of habit, and without this
+// the menu closed on them mid-word.
+//
+// One space, not any amount: two spaces is prose that happens to follow a
+// brace, and a menu that stays open through a sentence is worse than one
+// that closes early.
+const TRIGGER = /\{\{ ?([\w.-]*)$/;
 
 const MAX_ITEMS = 8;
 
@@ -95,10 +105,18 @@ export default class VariableComplete {
             this.menu = document.createElement('ul');
             this.menu.className = 'variable-complete fj:me-menu fj:me-surface'
                 + ' fj:me-surface-outline fj:me-surface-rounded fj:shadow-lg'
-                + ' fj:absolute fj:z-30 fj:p-1 fj:max-w-64'
+                + ' fj:absolute fj:z-30 fj:p-1 fj:max-w-72'
                 // Eight entries is taller than a short editor, so the list
                 // scrolls rather than hanging out of the bottom of one.
-                + ' fj:max-h-48 fj:overflow-y-auto';
+                // Only downwards: a placeholder longer than the menu is wide
+                // put a horizontal scrollbar across the bottom of it.
+                //
+                // flex-nowrap matters more than it looks. The menu class lays
+                // its children out as a flex column, and a flex column with a
+                // height it cannot fit wraps into a second column rather than
+                // scrolling: the fifth variable appeared beside the first one,
+                // half outside the box.
+                + ' fj:flex-nowrap fj:max-h-48 fj:overflow-y-auto fj:overflow-x-hidden';
             this.menu.setAttribute('role', 'listbox');
             this.menu.setAttribute('aria-label', this.editor.label('Variables'));
             // The caret stays in the textarea, so the menu must never take
@@ -117,13 +135,16 @@ export default class VariableComplete {
             btn.type = 'button';
             btn.setAttribute('role', 'option');
             btn.setAttribute('aria-selected', String(i === 0));
-            btn.className = 'fj:me-menu-item fj:w-full fj:text-start';
+            btn.className = 'fj:me-menu-item fj:w-full fj:text-start'
+                + ' fj:flex fj:items-center fj:whitespace-nowrap';
             btn.tabIndex = -1;
 
             const name = document.createElement('span');
             name.textContent = entry.label;
             const value = document.createElement('span');
-            value.className = 'fj:opacity-60 fj:text-xs fj:ms-2';
+            // The label is what someone reads; the placeholder is there to
+            // confirm the choice, so it is the half that gives way.
+            value.className = 'fj:opacity-60 fj:text-xs fj:ms-2 fj:min-w-0 fj:truncate';
             value.textContent = entry.value;
             btn.append(name, value);
 
