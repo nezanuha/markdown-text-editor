@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Buang",
+    "Markdown editor": "Editor Markdown",
     "Restore": "Pulihkan",
     "The document has changed since then": "Dokumen telah berubah sejak itu",
     "Unsaved draft": "Draf belum disimpan",

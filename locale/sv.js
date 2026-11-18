@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Kasta",
+    "Markdown editor": "Markdown-redigerare",
     "Restore": "Återställ",
     "The document has changed since then": "Dokumentet har ändrats sedan dess",
     "Unsaved draft": "Osparat utkast",

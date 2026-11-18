@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Kassér",
+    "Markdown editor": "Markdown-editor",
     "Restore": "Gendan",
     "The document has changed since then": "Dokumentet er ændret siden",
     "Unsaved draft": "Ikke-gemt kladde",

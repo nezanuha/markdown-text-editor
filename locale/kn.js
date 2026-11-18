@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "ತಿರಸ್ಕರಿಸು",
+    "Markdown editor": "ಮಾರ್ಕ್‌ಡೌನ್ ಸಂಪಾದಕ",
     "Restore": "ಮರುಸ್ಥಾಪಿಸು",
     "The document has changed since then": "ಅಂದಿನಿಂದ ದಾಖಲೆ ಬದಲಾಗಿದೆ",
     "Unsaved draft": "ಉಳಿಸದ ಕರಡು",

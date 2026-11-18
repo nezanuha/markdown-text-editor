@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Հրաժարվել",
+    "Markdown editor": "Markdown խմբագրիչ",
     "Restore": "Վերականգնել",
     "The document has changed since then": "Փաստաթուղթը այդ ժամանակից փոխվել է",
     "Unsaved draft": "Չպահպանված սևագիր",

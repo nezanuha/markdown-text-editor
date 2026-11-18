@@ -18,27 +18,51 @@ import { overlayHost, measureOffsets } from './overlay.js';
  * Opt out with `variableComplete: false`.
  */
 
-// Up to the caret: two braces, one optional space, then the characters a
-// variable name is made of.
-//
-// The space is there because both spellings are in use and neither is wrong:
-// Handlebars and Mustache write `{{today}}`, while Django, Jinja and Liquid
-// write `{{ today }}` and print it that way throughout their documentation.
-// Somebody used to the second types the space out of habit, and without this
-// the menu closed on them mid-word.
-//
-// One space, not any amount: two spaces is prose that happens to follow a
-// brace, and a menu that stays open through a sentence is worse than one
-// that closes early.
-const TRIGGER = /\{\{ ?([\w.-]*)$/;
-
 const MAX_ITEMS = 8;
+
+const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * What a variable is wrapped in, read off the variable itself.
+ *
+ * The placeholder is the host's to write. `{{today}}` is Handlebars and
+ * Mustache, `{{ today }}` is Django, Jinja and Liquid, and nothing stops a
+ * host using `<< today >>` or `[[today]]` for its own reasons. A trigger
+ * fixed at `{{` would quietly work for some of those and not others, which
+ * is the kind of inconsistency nobody reports because it just looks broken.
+ *
+ * So the opening is whatever punctuation the value starts with, and the
+ * closing is whatever it ends with. A value with no punctuation around it
+ * cannot be completed by typing -- there would be nothing to type -- and is
+ * left to the toolbar button.
+ */
+const delimitersOf = (entries) => {
+    const pairs = new Map();
+    for (const entry of entries) {
+        const open = /^[^\w\s]+/.exec(entry.value)?.[0];
+        if (!open) continue;
+        const close = /[^\w\s]+$/.exec(entry.value)?.[0] ?? '';
+        if (!pairs.has(open)) pairs.set(open, close);
+    }
+    return pairs;
+};
 
 export default class VariableComplete {
     constructor(editor) {
         this.editor = editor;
         this.textarea = editor.usertextarea;
         this.entries = flattenVariables(editor.variables ?? []);
+
+        // Longest first, so `[[` is tried before `[` where a host uses both.
+        this.delimiters = delimitersOf(this.entries);
+        const openings = [...this.delimiters.keys()].sort((a, b) => b.length - a.length);
+        // One optional space after the opening: somebody used to Django types
+        // it out of habit. One, not any number -- two spaces is prose that
+        // happens to follow a brace, and a menu that stays open through a
+        // sentence is worse than one that closes early.
+        this.trigger = openings.length
+            ? new RegExp('(' + openings.map(escape).join('|') + ') ?([\\w.-]*)$')
+            : null;
 
         this.menu = null;
         this.items = [];
@@ -72,16 +96,27 @@ export default class VariableComplete {
 
     /** The `{{...}}` being typed at the caret, if there is one. */
     _query() {
+        if (!this.trigger) return null;
         const { selectionStart, selectionEnd } = this.textarea;
         if (selectionStart !== selectionEnd) return null;
-        const match = TRIGGER.exec(this.textarea.value.slice(0, selectionStart));
+        const match = this.trigger.exec(this.textarea.value.slice(0, selectionStart));
         if (!match) return null;
-        return { text: match[1], from: selectionStart - match[0].length };
+        return {
+            open: match[1],
+            text: match[2],
+            from: selectionStart - match[0].length,
+        };
     }
 
-    _matches(text) {
+    /**
+     * Only the variables written with the opening that was typed. A host
+     * mixing `{{...}}` with `<<...>>` means the two for different things,
+     * and typing one should not offer the other.
+     */
+    _matches(open, text) {
         const needle = text.toLowerCase();
         return this.entries
+            .filter(e => e.value.startsWith(open))
             .filter(e => !needle
                 || e.label.toLowerCase().includes(needle)
                 || e.value.toLowerCase().includes(needle))
@@ -93,7 +128,7 @@ export default class VariableComplete {
         const query = this._query();
         if (!query) return this.close();
 
-        const matches = this._matches(query.text);
+        const matches = this._matches(query.open, query.text);
         if (!matches.length) return this.close();
 
         this.from = query.from;
@@ -193,7 +228,19 @@ export default class VariableComplete {
         const menuHeight = this.menu.offsetHeight || 0;
         const room = host.clientHeight - below;
 
-        this.menu.style.insetInlineStart = Math.max(0, box.left) + 'px';
+        // Physical left, not inset-inline-start. The mirror measures where
+        // the caret actually is, in physical coordinates, and in a
+        // right-to-left document inset-inline-start counts from the other
+        // edge: feeding it a left-hand distance put the menu two hundred
+        // pixels outside the editor. The find panel's highlights, measured
+        // by the same mirror, use left for the same reason.
+        // Kept inside the editor at both edges. The caret can be against
+        // the far side of the line -- always, in a right-to-left document,
+        // where it starts there -- and a menu placed at the caret would
+        // then hang outside the box by most of its width.
+        const menuWidth = this.menu.offsetWidth || 0;
+        const furthest = Math.max(0, host.clientWidth - menuWidth);
+        this.menu.style.left = Math.min(Math.max(0, box.left), furthest) + 'px';
         this.menu.style.top = (menuHeight && room < menuHeight
             ? Math.max(0, below - lineHeight - menuHeight)
             : below) + 'px';
@@ -244,10 +291,15 @@ export default class VariableComplete {
         const { value } = this.textarea;
         const caret = this.textarea.selectionStart;
         const before = value.slice(0, this.from);
+
         // Anything already typed after the caret that belongs to this
-        // placeholder -- the closing braces someone's editor auto-inserted,
-        // most often -- is replaced rather than left behind as `}}}}`.
-        const after = value.slice(caret).replace(/^\}{1,2}/, '');
+        // placeholder is replaced rather than left behind as `}}}}`. The
+        // closing comes off the entry being inserted, so a host writing
+        // `<< today >>` has its `>>` swallowed the same way a brace is.
+        const closing = /[^\w\s]+$/.exec(entry.value)?.[0] ?? '';
+        const after = closing && value.slice(caret).startsWith(closing)
+            ? value.slice(caret + closing.length)
+            : value.slice(caret);
 
         this.close();
         this.textarea.value = before + entry.value + after;

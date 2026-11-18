@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "رد کریں",
+    "Markdown editor": "مارک ڈاؤن ایڈیٹر",
     "Restore": "بحال کریں",
     "The document has changed since then": "اس کے بعد دستاویز تبدیل ہو چکی ہے",
     "Unsaved draft": "غیر محفوظ مسودہ",

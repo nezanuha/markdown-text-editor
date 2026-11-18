@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Atmest",
+    "Markdown editor": "Markdown redaktors",
     "Restore": "Atjaunot",
     "The document has changed since then": "Dokuments kopš tā laika ir mainījies",
     "Unsaved draft": "Nesaglabāts melnraksts",

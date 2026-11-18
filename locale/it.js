@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Scarta",
+    "Markdown editor": "Editor Markdown",
     "Restore": "Ripristina",
     "The document has changed since then": "Il documento è cambiato da allora",
     "Unsaved draft": "Bozza non salvata",

@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Descarta",
+    "Markdown editor": "Editor de Markdown",
     "Restore": "Restaura",
     "The document has changed since then": "El document ha canviat des de llavors",
     "Unsaved draft": "Esborrany no desat",

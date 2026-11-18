@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Itapon",
+    "Markdown editor": "Markdown editor",
     "Restore": "Ibalik",
     "The document has changed since then": "Nagbago ang dokumento mula noon",
     "Unsaved draft": "Hindi na-save na draft",

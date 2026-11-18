@@ -2092,6 +2092,33 @@ check('the unordered list button advertises Ctrl+L', () => {
     return btn.title.includes('Ctrl+L') && btn.getAttribute('aria-keyshortcuts') === 'Control+L';
 });
 
+check("the editor announces itself in the reader's language", () => {
+    const spanish = { 'Markdown editor': 'Editor de Markdown' };
+
+    // Every button translated while the field they all act on said
+    // "Markdown editor" in English. It is the first thing a screen reader
+    // reads and the one that says what the thing is.
+    const plain = makeEditor({ toolbar: FULL_BAR });
+    const translated = makeEditor({ toolbar: FULL_BAR, locale: spanish });
+    const named = makeEditor({ toolbar: FULL_BAR, locale: spanish, label: 'Cuerpo' });
+
+    return plain.usertextarea.getAttribute('aria-label') === 'Markdown editor'
+        && translated.usertextarea.getAttribute('aria-label') === 'Editor de Markdown'
+        // `label` is a name for this particular field, so it wins over both.
+        && named.usertextarea.getAttribute('aria-label') === 'Cuerpo';
+});
+
+check('a textarea that is already labelled is left alone', () => {
+    const e = makeEditor({ toolbar: FULL_BAR });
+    e.destroy();
+    const ta = document.createElement('textarea');
+    ta.setAttribute('aria-label', 'Set by the page');
+    document.body.appendChild(ta);
+    new MarkdownEditor(ta, { toolbar: FULL_BAR, label: 'ignored' });
+    // The page knows its own form better than this does.
+    return ta.getAttribute('aria-label') === 'Set by the page';
+});
+
 // --- renderer / sanitizer ---------------------------------------------------
 
 check('custom renderer is used', () => {
@@ -3065,6 +3092,71 @@ check('typing narrows the list, and a miss closes it', () => {
     const gone = menuOf(e) === null;
 
     return all > narrowed && narrowed > 0 && gone;
+});
+
+check('the completion follows whatever delimiter the values use', () => {
+    // The placeholder is the host's to write. A trigger fixed at two braces
+    // worked for Handlebars and quietly did nothing for anyone who chose
+    // something else, which is the kind of thing nobody reports.
+    const e = makeEditor({
+        toolbar: barWith([{ label: 'Today', value: '<< today >>' }]),
+    });
+    typeInto(e, 'Sent <<');
+    const opened = menuOf(e) !== null;
+
+    press(e, { key: 'Enter' });
+    return opened && e.usertextarea.value === 'Sent << today >>';
+});
+
+check('a closing of any shape is swallowed, not doubled', () => {
+    const e = makeEditor({
+        toolbar: barWith([{ label: 'Today', value: '<< today >>' }]),
+    });
+    // What an editor that auto-closes brackets leaves behind.
+    e.usertextarea.value = 'Sent <<>>';
+    e.usertextarea.setSelectionRange(7, 7);
+    e.usertextarea.dispatchEvent(new window.Event('input', { bubbles: true }));
+    press(e, { key: 'Enter' });
+    return e.usertextarea.value === 'Sent << today >>';
+});
+
+check('two delimiters on one editor stay apart', () => {
+    const e = makeEditor({
+        toolbar: barWith([
+            { label: 'Customer', value: '{{customer.name}}' },
+            { label: 'Today', value: '<< today >>' },
+        ]),
+    });
+    typeInto(e, 'Hi {{');
+    const braces = optionsOf(e);
+    typeInto(e, 'Hi <<');
+    const angles = optionsOf(e);
+
+    // A host mixing the two means them for different things.
+    return braces.length === 1 && braces[0].includes('Customer')
+        && angles.length === 1 && angles[0].includes('Today');
+});
+
+check('a value with no delimiter is left to the button', () => {
+    const e = makeEditor({ toolbar: barWith([{ label: 'Today', value: 'today' }]) });
+    typeInto(e, 'Sent t');
+    // There is nothing to type that would mean "a variable starts here".
+    return menuOf(e) === null && e.variableComplete.trigger === null;
+});
+
+check('the completion menu is placed in physical coordinates', () => {
+    const e = makeEditor({ toolbar: barWith(VARS) });
+    typeInto(e, 'Hi {{');
+    const menu = menuOf(e);
+
+    // The caret is measured by a mirror, which reports physical pixels.
+    // inset-inline-start counts from the other edge in a right-to-left
+    // document, so using it put the menu outside the editor by most of its
+    // width. happy-dom has no layout, so this checks which property is
+    // being set; the position itself was measured in Chrome, both ways.
+    return menu !== null
+        && menu.style.left !== ''
+        && menu.style.insetInlineStart === '';
 });
 
 check('a space after the braces keeps the list open', () => {

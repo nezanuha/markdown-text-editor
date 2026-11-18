@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Cuir i leataobh",
+    "Markdown editor": "Eagarthóir Markdown",
     "Restore": "Athchóirigh",
     "The document has changed since then": "Tá an cháipéis athraithe ó shin",
     "Unsaved draft": "Dréacht gan sábháil",

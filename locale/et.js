@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Loobu",
+    "Markdown editor": "Markdowni redaktor",
     "Restore": "Taasta",
     "The document has changed since then": "Dokument on vahepeal muutunud",
     "Unsaved draft": "Salvestamata mustand",

@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Відхилити",
+    "Markdown editor": "Редактор Markdown",
     "Restore": "Відновити",
     "The document has changed since then": "Документ відтоді змінився",
     "Unsaved draft": "Незбережений чернетка",

@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "破棄",
+    "Markdown editor": "Markdown エディター",
     "Restore": "復元",
     "The document has changed since then": "その後、文書が変更されました",
     "Unsaved draft": "未保存の下書き",

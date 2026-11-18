@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Zavrzi",
+    "Markdown editor": "Urejevalnik Markdown",
     "Restore": "Obnovi",
     "The document has changed since then": "Dokument se je medtem spremenil",
     "Unsaved draft": "Neshranjen osnutek",

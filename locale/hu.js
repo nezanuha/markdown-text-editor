@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Elvetés",
+    "Markdown editor": "Markdown-szerkesztő",
     "Restore": "Visszaállítás",
     "The document has changed since then": "A dokumentum azóta megváltozott",
     "Unsaved draft": "Nem mentett piszkozat",

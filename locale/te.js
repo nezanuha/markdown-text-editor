@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "విస్మరించు",
+    "Markdown editor": "మార్క్‌డౌన్ ఎడిటర్",
     "Restore": "పునరుద్ధరించు",
     "The document has changed since then": "అప్పటి నుండి పత్రం మారింది",
     "Unsaved draft": "సేవ్ చేయని చిత్తుప్రతి",

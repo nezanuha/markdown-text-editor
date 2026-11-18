@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Warrab",
+    "Markdown editor": "Editur Markdown",
     "Restore": "Irrestawra",
     "The document has changed since then": "Id-dokument inbidel minn dakinhar",
     "Unsaved draft": "Abbozz mhux salvat",

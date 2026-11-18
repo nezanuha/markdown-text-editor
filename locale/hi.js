@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "खारिज करें",
+    "Markdown editor": "मार्कडाउन संपादक",
     "Restore": "पुनर्स्थापित करें",
     "The document has changed since then": "तब से दस्तावेज़ बदल गया है",
     "Unsaved draft": "सहेजा न गया ड्राफ़्ट",

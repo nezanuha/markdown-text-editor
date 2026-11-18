@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Hylkää",
+    "Markdown editor": "Markdown-editori",
     "Restore": "Palauta",
     "The document has changed since then": "Asiakirja on muuttunut sen jälkeen",
     "Unsaved draft": "Tallentamaton luonnos",

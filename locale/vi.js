@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Bỏ qua",
+    "Markdown editor": "Trình soạn thảo Markdown",
     "Restore": "Khôi phục",
     "The document has changed since then": "Tài liệu đã thay đổi kể từ đó",
     "Unsaved draft": "Bản nháp chưa lưu",

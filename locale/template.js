@@ -53,6 +53,7 @@ export default {
     "Link": "Link",
     "Link text": "Link text",
     "Ln {n}": "Ln {n}",
+    "Markdown editor": "Markdown editor",
     "Match case": "Match case",
     "Math": "Math",
     "Next match": "Next match",

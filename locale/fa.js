@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "نادیده گرفتن",
+    "Markdown editor": "ویرایشگر مارک‌داون",
     "Restore": "بازیابی",
     "The document has changed since then": "سند از آن زمان تغییر کرده است",
     "Unsaved draft": "پیش‌نویس ذخیره‌نشده",

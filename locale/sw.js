@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Tupa",
+    "Markdown editor": "Kihariri cha Markdown",
     "Restore": "Rejesha",
     "The document has changed since then": "Hati imebadilika tangu wakati huo",
     "Unsaved draft": "Rasimu ambayo haijahifadhiwa",

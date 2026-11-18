@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Renunță",
+    "Markdown editor": "Editor Markdown",
     "Restore": "Restaurează",
     "The document has changed since then": "Documentul s-a schimbat între timp",
     "Unsaved draft": "Ciornă nesalvată",

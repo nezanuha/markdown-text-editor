@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Απόρριψη",
+    "Markdown editor": "Επεξεργαστής Markdown",
     "Restore": "Επαναφορά",
     "The document has changed since then": "Το έγγραφο άλλαξε από τότε",
     "Unsaved draft": "Μη αποθηκευμένο πρόχειρο",

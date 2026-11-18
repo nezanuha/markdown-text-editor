@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Henda",
+    "Markdown editor": "Markdown-ritill",
     "Restore": "Endurheimta",
     "The document has changed since then": "Skjalið hefur breyst síðan",
     "Unsaved draft": "Óvistuð drög",

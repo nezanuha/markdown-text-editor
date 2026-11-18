@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Odbaci",
+    "Markdown editor": "Markdown uređivač",
     "Restore": "Vrati",
     "The document has changed since then": "Dokument je u međuvremenu promijenjen",
     "Unsaved draft": "Nespremljena skica",

@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Yoksay",
+    "Markdown editor": "Markdown düzenleyici",
     "Restore": "Geri yükle",
     "The document has changed since then": "Belge o zamandan beri değişti",
     "Unsaved draft": "Kaydedilmemiş taslak",

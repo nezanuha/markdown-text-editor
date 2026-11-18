@@ -239,7 +239,18 @@ class MarkdownEditor {
             || this.usertextarea.getAttribute('aria-label')
             || this.usertextarea.getAttribute('aria-labelledby');
         if (!hasLabel) {
-            this.usertextarea.setAttribute('aria-label', this.options.label || 'Markdown editor');
+            // Translated like everything else. Every button in a Spanish
+            // editor announced itself in Spanish while the field they all
+            // act on announced itself as "Markdown editor", which is the one
+            // label a screen reader reads first and the one that says what
+            // the thing is.
+            //
+            // `label` is yours to set and wins: it is a name for this
+            // particular field, "Article body" rather than "Markdown
+            // editor", and only you know it. Not to be confused with
+            // `labels`, which was the old name for `locale`.
+            this.usertextarea.setAttribute('aria-label',
+                this.options.label || this.label('Markdown editor'));
             this._addedAriaLabel = true;
         }
 

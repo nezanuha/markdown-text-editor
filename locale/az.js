@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Ləğv et",
+    "Markdown editor": "Markdown redaktoru",
     "Restore": "Bərpa et",
     "The document has changed since then": "Sənəd o vaxtdan dəyişib",
     "Unsaved draft": "Saxlanılmamış qaralama",

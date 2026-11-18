@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Bekor qilish",
+    "Markdown editor": "Markdown muharriri",
     "Restore": "Tiklash",
     "The document has changed since then": "Hujjat o'shandan beri o'zgargan",
     "Unsaved draft": "Saqlanmagan qoralama",

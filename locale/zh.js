@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "放弃",
+    "Markdown editor": "Markdown 编辑器",
     "Restore": "恢复",
     "The document has changed since then": "此后文档已更改",
     "Unsaved draft": "未保存的草稿",

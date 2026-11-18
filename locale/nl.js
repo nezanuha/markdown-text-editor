@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Verwerpen",
+    "Markdown editor": "Markdown-editor",
     "Restore": "Herstellen",
     "The document has changed since then": "Het document is sindsdien gewijzigd",
     "Unsaved draft": "Niet-opgeslagen concept",

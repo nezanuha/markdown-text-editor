@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "התעלם",
+    "Markdown editor": "עורך Markdown",
     "Restore": "שחזר",
     "The document has changed since then": "המסמך השתנה מאז",
     "Unsaved draft": "טיוטה שלא נשמרה",

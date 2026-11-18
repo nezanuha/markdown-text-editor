@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Zahodit",
+    "Markdown editor": "Editor Markdownu",
     "Restore": "Obnovit",
     "The document has changed since then": "Dokument se od té doby změnil",
     "Unsaved draft": "Neuložený koncept",

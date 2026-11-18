@@ -8,6 +8,7 @@ export const reviewed = false;
 
 export default {
     "Discard": "Отклонить",
+    "Markdown editor": "Редактор Markdown",
     "Restore": "Восстановить",
     "The document has changed since then": "Документ с тех пор изменился",
     "Unsaved draft": "Несохранённый черновик",
