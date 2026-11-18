@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Editing tables**: Click inside one, or press `Alt+T`, and a small bar appears beside it. Add or delete the column or row you're in, align it, tidy the pipes. Tab moves between cells. The toolbar button opens a size grid instead of the old fixed three-column table. `tableBar: false` turns the bar off
 - **Draft recovery**: `autosave: true` keeps a copy of what you are writing in the browser. If the tab dies, the next load offers it back with the time it was taken, and you choose whether to restore it. It never restores on its own, because the text on the page may be newer. Off by default
-- **Variables complete as you type**: Type `{{` and the list appears under the caret, narrowing as you keep typing. Arrows move, Enter or Tab inserts, Escape closes. The toolbar dropdown is still there. `variableComplete: false` turns this off
+- **Variables complete as you type**: Start typing a placeholder and the list appears under the caret, narrowing as you keep typing. Arrows move, Enter or Tab inserts, Escape closes. What you type to open it is whatever your own values start with, so `{{today}}`, `{{ today }}` and `<< today >>` each complete from their own opening. The toolbar dropdown is still there. `variableComplete: false` turns this off
 - **Pasting formatted text keeps the formatting**: Copy from a web page or a word processor and the headings, links, lists, code and tables arrive as markdown instead of a wall of plain text. The HTML goes through the same sanitiser as the preview. `pasteHtml: false` turns it off
 - **Find and replace, rebuilt**: Every match is highlighted at once. `AB` keeps the case of what you replace, `[ ]` searches only your selection, and the shortcuts are VS Code's. The panel works by keyboard and screen reader alone. `find: false` turns it off and gives `Ctrl+F` back to the browser
 - **A maths button**: Wraps the selection in `$...$`, or `$$...$$` across several lines. `Alt+M` does the same, and pressing it again takes the delimiters off. The editor doesn't render TeX itself, so pass a `renderer` that does. If nothing rendered, the console says so
@@ -43,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Column alignment did nothing in the preview**: `:---`, `:---:` and `---:` lined the column up everywhere the markdown was published. The preview drew every column to the left
 - **Replace could change the wrong text**: If you edited the document after searching, Replace overwrote the wrong spot and missed the match
 - **Selecting a single backtick and pressing Code deleted it**: It was read as an already-wrapped empty span and emptied
+- **The editor announced itself in English in every language**: A Spanish editor read "Negrita (Ctrl+B)" on every button while the field those buttons act on was still called "Markdown editor". That name is the first thing a screen reader reads. It goes through the translator now, in all fifty-six locales. `label` still wins where you give it, since it names your particular field rather than the kind of thing it is, and a textarea that already carries a label is left alone
+- **The completion menu landed outside the editor in a right-to-left document**: Two hundred pixels outside it, because the menu was placed from the inline edge while the caret measurement reports physical pixels. It is also clamped to the editor now, which a caret near the end of a long line needed in either direction
 
 ## [1.9.5] - 2026-11-12
 
