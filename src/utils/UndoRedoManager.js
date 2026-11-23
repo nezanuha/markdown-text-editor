@@ -134,6 +134,20 @@ export default class UndoRedoManager {
         this.redoStack = []; // Standard: typing new text clears redo history
     }
 
+    /**
+     * Records the current value as one undo step, for a change this manager
+     * did not witness.
+     *
+     * Everything here hangs off DOM events, and assigning `textarea.value`
+     * fires none of them. Anything that writes the value directly -- a draft
+     * restored from storage, a host setting it from its own code -- was
+     * therefore unreachable by Ctrl+Z, which for the draft meant the text it
+     * replaced could not be got back at all.
+     */
+    record() {
+        this._saveState();
+    }
+
     undo() {
         if (this.undoStack.length === 0) return;
 

@@ -4077,6 +4077,102 @@ check('a draft identical to what is on screen is not offered', () => {
     return barOf(e) === null;
 });
 
+// --- the draft comparison ---------------------------------------------------
+//
+// Restore used to be the only way to see what a draft held, so looking and
+// committing were the same action, and the commit could not be undone.
+
+check('lineDiff trims the matching lines off both ends', async () => {
+    const { lineDiff } = await import('../src/utils/lineDiff.js');
+
+    const d = lineDiff('a' + NEWLINE + 'b' + NEWLINE + 'c',
+                       'a' + NEWLINE + 'B' + NEWLINE + 'c');
+    return d.head === 1 && d.tail === 1
+        && d.removed.join() === 'b' && d.added.join() === 'B';
+});
+
+check('lineDiff reports an identical pair as no change at all', async () => {
+    const { lineDiff } = await import('../src/utils/lineDiff.js');
+    const d = lineDiff('same' + NEWLINE + 'text', 'same' + NEWLINE + 'text');
+    return d.removed.length === 0 && d.added.length === 0;
+});
+
+check('lineDiff never counts one line from both ends', async () => {
+    const { lineDiff } = await import('../src/utils/lineDiff.js');
+    // the added line is the only difference, and it matches its neighbours
+    const d = lineDiff('x', 'x' + NEWLINE + 'x');
+    return d.removed.length + d.added.length === 1;
+});
+
+check('Compare shows what Restore would change, without restoring it', () => {
+    const page = 'kept' + NEWLINE + 'theirs';
+    const draft = 'kept' + NEWLINE + 'mine';
+    window.localStorage.setItem('mte:draft:cmp', JSON.stringify(
+        { text: draft, seed: page, at: Date.now() }));
+
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'cmp' } }, page);
+    const panel = e.editorContainer.querySelector('.autosave-compare');
+    const button = [...e.editorContainer.querySelectorAll('.autosave-bar button')]
+        .find(b => b.textContent === 'Compare');
+
+    const hiddenAtFirst = panel.hidden;
+    button.click();
+
+    const shown = panel.textContent;
+    window.localStorage.removeItem('mte:draft:cmp');
+
+    return hiddenAtFirst && !panel.hidden
+        && shown.includes('- theirs') && shown.includes('+ mine')
+        // looking is not committing
+        && e.usertextarea.value === page;
+});
+
+check('the comparison counts both sides, and translates the counts', () => {
+    window.localStorage.setItem('mte:draft:cmp2', JSON.stringify(
+        { text: 'abcd', seed: 'ab', at: Date.now() }));
+
+    const e = makeEditor({
+        toolbar: ['bold'],
+        autosave: { key: 'cmp2' },
+        locale: { 'Page {n} chars': 'Pagina {n}', 'Draft {n} chars': 'Borrador {n}' },
+    }, 'ab');
+    const shown = e.editorContainer.querySelector('.autosave-compare').textContent;
+    window.localStorage.removeItem('mte:draft:cmp2');
+
+    return shown.includes('Pagina 2') && shown.includes('Borrador 4');
+});
+
+check('the document is written as text, never as markup', () => {
+    const payload = '<img src=x onerror=alert(1)>';
+    window.localStorage.setItem('mte:draft:cmp3', JSON.stringify(
+        { text: payload, seed: 'before', at: Date.now() }));
+
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'cmp3' } }, 'before');
+    const panel = e.editorContainer.querySelector('.autosave-compare');
+    window.localStorage.removeItem('mte:draft:cmp3');
+
+    return panel.textContent.includes(payload) && panel.querySelector('img') === null;
+});
+
+check('Ctrl+Z puts back what Restore replaced', () => {
+    const page = 'theirs, saved on the server';
+    window.localStorage.setItem('mte:draft:cmp4', JSON.stringify(
+        { text: 'mine, from Monday', seed: page, at: Date.now() }));
+
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'cmp4' } }, page);
+    const restore = [...e.editorContainer.querySelectorAll('.autosave-bar button')]
+        .find(b => b.textContent === 'Restore');
+    restore.click();
+
+    const afterRestore = e.usertextarea.value;
+    e.undoRedoManager.undo();
+    window.localStorage.removeItem('mte:draft:cmp4');
+
+    // Assigning `value` raises no input event, so nothing reached the undo
+    // stack and this text was gone for good
+    return afterRestore === 'mine, from Monday' && e.usertextarea.value === page;
+});
+
 check('a draft older than maxAge is dropped rather than offered', () => {
     store.reset();
     const old = Date.now() - 1000 * 60 * 60 * 24 * 30;

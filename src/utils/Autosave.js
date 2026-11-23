@@ -1,3 +1,5 @@
+import { lineDiff } from './lineDiff.js';
+
 /**
  * Keeps a copy of what is being written, and offers it back after a crash.
  *
@@ -254,7 +256,17 @@ export default class Autosave {
         // Discard stays a ghost. It is the other answer, not the lesser one,
         // and two filled buttons would be the editor insisting that one of
         // them is right when it cannot know.
+        // Restore used to be the only way to find out what the draft held,
+        // which made looking and committing the same action. On a stale draft
+        // that is the worst possible pairing: the warning says the choice
+        // costs something without saying what, and pressing the button to
+        // find out is what pays.
+        const panel = this._comparison(saved);
+
         actions.append(
+            button(this.editor.label('Compare'), () => {
+                panel.hidden = !panel.hidden;
+            }, 'fj:me-btn-ghost'),
             button(this.editor.label('Restore'), () => this.restore(saved), accent),
             button(this.editor.label('Discard'), () => this.clear(), 'fj:me-btn-ghost'),
         );
@@ -264,6 +276,58 @@ export default class Autosave {
         this.bar = bar;
         const container = this.editor.editorContainer;
         container.insertBefore(bar, container.firstChild);
+        container.insertBefore(panel, bar.nextSibling);
+        this.panel = panel;
+    }
+
+    /**
+     * What Restore would change, hidden until asked for.
+     *
+     * Lines rather than characters: a character diff of two paragraphs is a
+     * confetti of fragments, and the question here is "is this mine", which a
+     * reader answers from whole lines. Both lengths are shown as well, since a
+     * draft that is two thousand characters shorter is usually the answer on
+     * its own.
+     */
+    _comparison(saved) {
+        const panel = document.createElement('div');
+        panel.hidden = true;
+        panel.className = 'autosave-compare fj:bg-base-soft fj:text-xs'
+            + ' fj:border-base-soft fj:border-0 fj:border-b fj:px-3 fj:py-2'
+            + ' fj:max-h-40 fj:overflow-y-auto';
+
+        const sizes = document.createElement('div');
+        sizes.className = 'fj:flex fj:gap-3 fj:opacity-70 fj:mb-1';
+        // Written out in full, both of them, for the reason the button text
+        // below is: locale-extract reads the source for label calls whose
+        // argument is a literal, so a string reaching it through a helper is
+        // missing from the template and from every translation.
+        const onPage = document.createElement('span');
+        onPage.textContent = this.editor.label('Page {n} chars')
+            .replace('{n}', this.textarea.value.length.toLocaleString());
+        const inDraft = document.createElement('span');
+        inDraft.textContent = this.editor.label('Draft {n} chars')
+            .replace('{n}', saved.text.length.toLocaleString());
+        sizes.append(onPage, inDraft);
+        panel.append(sizes);
+
+        const { removed, added } = lineDiff(this.textarea.value, saved.text);
+
+        // textContent, never innerHTML: these lines are the document, and the
+        // document is exactly the text this editor must never let style itself
+        // into elements.
+        const lines = (list, prefix, tone) => {
+            for (const text of list) {
+                const row = document.createElement('div');
+                row.className = tone + ' fj:whitespace-pre-wrap fj:break-all';
+                row.textContent = prefix + text;
+                panel.append(row);
+            }
+        };
+        lines(removed, '- ', 'fj:text-error');
+        lines(added, '+ ', 'fj:text-success');
+
+        return panel;
     }
 
     restore(saved) {
@@ -273,6 +337,11 @@ export default class Autosave {
         this.textarea.setSelectionRange(end, end);
         this.editor.render();
         this.editor.notifyChange();
+        // Ctrl+Z puts the page's text back. Assigning `value` raises no input
+        // event, so without this the undo manager never saw the replacement
+        // and the text that was on screen was gone for good -- in a feature
+        // whose whole purpose is not losing anybody's writing.
+        this.editor.undoRedoManager?.record();
         // The draft is on screen now, so keeping it stored would offer it
         // again on the next load against text that already holds it.
         this.clear();
@@ -281,5 +350,7 @@ export default class Autosave {
     _hide() {
         this.bar?.remove();
         this.bar = null;
+        this.panel?.remove();
+        this.panel = null;
     }
 }
