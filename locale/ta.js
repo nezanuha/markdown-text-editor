@@ -56,6 +56,7 @@ export default {
     "Next match": "அடுத்த பொருத்தம்",
     "No matches": "பொருத்தம் இல்லை",
     "Ordered list": "எண்ணிட்ட பட்டியல்",
+    "OR": "அல்லது",
     "Outdent": "இடைவெளியைக் குறை",
     "Preserve case": "எழுத்து வடிவத்தைத் தக்கவை",
     "Preview": "முன்னோட்டம்",

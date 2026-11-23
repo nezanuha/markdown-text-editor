@@ -56,6 +56,7 @@ export default {
     "Next match": "পরবর্তী মিল",
     "No matches": "কোনো মিল নেই",
     "Ordered list": "সংখ্যাযুক্ত তালিকা",
+    "OR": "অথবা",
     "Outdent": "ইন্ডেন্ট কমান",
     "Preserve case": "অক্ষরের ধরন রাখুন",
     "Preview": "প্রিভিউ",

@@ -56,6 +56,7 @@ export default {
     "Next match": "Susunod na tugma",
     "No matches": "Walang tugma",
     "Ordered list": "Nakanumerong listahan",
+    "OR": "O",
     "Outdent": "Bawasan ang indent",
     "Preserve case": "Panatilihin ang laki ng titik",
     "Preview": "Preview",

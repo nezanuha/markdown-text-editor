@@ -56,6 +56,7 @@ export default {
     "Next match": "An chéad toradh eile",
     "No matches": "Gan torthaí",
     "Ordered list": "Liosta uimhrithe",
+    "OR": "NÓ",
     "Outdent": "Laghdaigh an t-eangú",
     "Preserve case": "Caomhnaigh an cás",
     "Preview": "Réamhamharc",

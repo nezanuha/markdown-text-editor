@@ -56,6 +56,7 @@ export default {
     "Next match": "Volgende resultaat",
     "No matches": "Geen resultaten",
     "Ordered list": "Genummerde lijst",
+    "OR": "OF",
     "Outdent": "Uitspringen",
     "Preserve case": "Hoofdletters behouden",
     "Preview": "Voorbeeld",

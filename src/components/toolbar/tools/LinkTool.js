@@ -41,19 +41,19 @@ class LinkTool extends Tool {
         const bodyHTML = `
             <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
                 <div class="fj:font-medium">${this.editor.label('Link')}</div>
-                <button type="button" class="modal-close-btn fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="${this.editor.label('Close')}">
+                <button type="button" class="modal-close-btn fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="${escapeHtml(this.editor.label('Close'))}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
             <form method="post">
                 <div class="fj:flex fj:flex-col fj:justify-center fj:gap-y-4.5 fj:mt-4">
-                    <input type="url" placeholder="${this.editor.label('URL')}" class="link-input fj:me-input fj:w-full" value="${escapeHtml(prefillUrl)}" required>
-                    <input type="text" placeholder="${this.editor.label('Link text')}" class="link-text-input fj:me-input fj:w-full" value="${escapeHtml(prefillText)}" required>
+                    <input type="url" placeholder="${escapeHtml(this.editor.label('URL'))}" class="link-input fj:me-input fj:w-full" value="${escapeHtml(prefillUrl)}" required>
+                    <input type="text" placeholder="${escapeHtml(this.editor.label('Link text'))}" class="link-text-input fj:me-input fj:w-full" value="${escapeHtml(prefillText)}" required>
                     <button type="submit" class="submit-link fj:me-btn fj:me-btn-sm fj:self-end">${this.editor.label('Apply')}</button>
                 </div>
             </form>`;
 
-        const modalElement = modal(event, 'fj:max-w-sm', bodyHTML, 'Link');
+        const modalElement = modal(event, 'fj:max-w-sm', bodyHTML, this.editor.label('Link'));
 
         modalElement.querySelector(".modal-close-btn").addEventListener("click", () => modalElement.close());
 

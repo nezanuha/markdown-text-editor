@@ -56,6 +56,7 @@ export default {
     "Next match": "अगला मिलान",
     "No matches": "कोई मेल नहीं",
     "Ordered list": "क्रमांकित सूची",
+    "OR": "या",
     "Outdent": "इंडेंट घटाएँ",
     "Preserve case": "केस बनाए रखें",
     "Preview": "पूर्वावलोकन",

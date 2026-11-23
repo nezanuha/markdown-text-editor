@@ -56,6 +56,7 @@ export default {
     "Next match": "Rezultatul următor",
     "No matches": "Niciun rezultat",
     "Ordered list": "Listă numerotată",
+    "OR": "SAU",
     "Outdent": "Micșorează indentarea",
     "Preserve case": "Păstrează literele mari și mici",
     "Preview": "Previzualizare",

@@ -56,6 +56,7 @@ export default {
     "Next match": "Következő találat",
     "No matches": "Nincs találat",
     "Ordered list": "Számozott lista",
+    "OR": "VAGY",
     "Outdent": "Behúzás csökkentése",
     "Preserve case": "Kis- és nagybetűk megőrzése",
     "Preview": "Előnézet",

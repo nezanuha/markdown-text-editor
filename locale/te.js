@@ -56,6 +56,7 @@ export default {
     "Next match": "తదుపరి సరిపోలిక",
     "No matches": "సరిపోలికలు లేవు",
     "Ordered list": "సంఖ్యల జాబితా",
+    "OR": "లేదా",
     "Outdent": "ఇండెంట్ తగ్గించు",
     "Preserve case": "అక్షర పరిమాణం ఉంచు",
     "Preview": "పరిదృశ్యం",

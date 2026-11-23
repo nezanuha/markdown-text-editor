@@ -56,6 +56,7 @@ export default {
     "Next match": "Следващо съвпадение",
     "No matches": "Няма съвпадения",
     "Ordered list": "Номериран списък",
+    "OR": "ИЛИ",
     "Outdent": "Намали отстъпа",
     "Preserve case": "Запази регистъра",
     "Preview": "Преглед",

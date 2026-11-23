@@ -54,30 +54,34 @@ class ImageTool extends Tool {
         if (upload) {
             fileInputTag = `
                 <input type="file" accept="${escapeHtml(acceptFormats)}" class="img-file-input fj:me-input fj:w-full">
-                <div class="fj:me-divider fj:my-1">OR</div>
+                <div class="fj:me-divider fj:my-1">${escapeHtml(editor.label('OR'))}</div>
             `;
         }
 
         const bodyHTML = `
             <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
                 <div class="fj:font-medium">${editor.label('Image')}</div>
-                <button type="button" class="modal-close-btn fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="${editor.label('Close')}">
+                <button type="button" class="modal-close-btn fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="${escapeHtml(editor.label('Close'))}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
             <div class="fj:mt-4 fj:flex fj:flex-col fj:gap-y-4">
                 ${fileInputTag}
-                <input type="url" placeholder="${editor.label('URL')}" class="img-link-input fj:me-input fj:w-full" value="${escapeHtml(prefillUrl)}" required>
-                <input type="text" placeholder="${editor.label('Alt text')}" class="img-link-alt-input fj:me-input fj:w-full" value="${escapeHtml(prefillAlt)}" ${isAltRequired ? 'required' : ''}>
+                <input type="url" placeholder="${escapeHtml(editor.label('URL'))}" class="img-link-input fj:me-input fj:w-full" value="${escapeHtml(prefillUrl)}" required>
+                <input type="text" placeholder="${escapeHtml(editor.label('Alt text'))}" class="img-link-alt-input fj:me-input fj:w-full" value="${escapeHtml(prefillAlt)}" ${isAltRequired ? 'required' : ''}>
+                <p class="img-upload-error fj:me-alert fj:me-alert-soft fj:me-alert-error fj:me-alert-sm" role="alert" hidden></p>
                 <button type="button" class="submit-img-link fj:me-btn fj:me-btn-sm fj:self-end">${editor.label('Apply')}</button>
             </div>`;
 
-        const modalElement = modal(event, 'fj:max-w-sm', bodyHTML, 'Image');
+        const modalElement = modal(event, 'fj:max-w-sm', bodyHTML, editor.label('Image'));
         modalElement.querySelector(".modal-close-btn").addEventListener("click", () => modalElement.close());
         const submitBtn = modalElement.querySelector(".submit-img-link");
 
+        const errorEl = modalElement.querySelector('.img-upload-error');
+
         submitBtn.addEventListener("click", async (e) => {
             e.preventDefault();
+            errorEl.hidden = true;
 
             const fileInputSelector = modalElement.querySelector(".img-file-input");
             const urlInputSelector = modalElement.querySelector(".img-link-input");
@@ -124,11 +128,17 @@ class ImageTool extends Tool {
                     // so a typed description is never silently replaced.
                     if (alt && !imgFileAltInput.value.trim()) imgFileAltInput.value = alt;
                 } catch (err) {
+                    // In the dialog rather than an alert(): a native alert is
+                    // unstyled, ignores the theme, blocks the page and puts the
+                    // message somewhere the file input is not. role="alert"
+                    // announces it without moving focus off the field.
+                    //
                     // A rule the host set rejects with a translated message;
                     // the server's own error arrives worded as the server wrote
                     // it. The detail names the type or the size, which is for
                     // the console and not for whoever picked the file.
-                    alert(err.message || editor.label('Upload failed'));
+                    errorEl.textContent = err.message || editor.label('Upload failed');
+                    errorEl.hidden = false;
                     if (err.detail) console.error('[MarkdownEditor] Upload refused:', err.detail);
                     submitBtn.disabled = false;
                     submitBtn.textContent = editor.label('Apply');

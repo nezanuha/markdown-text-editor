@@ -56,6 +56,7 @@ export default {
     "Next match": "Keyingi moslik",
     "No matches": "Moslik yo'q",
     "Ordered list": "Raqamlangan ro'yxat",
+    "OR": "YOKI",
     "Outdent": "Chekinishni kamaytirish",
     "Preserve case": "Katta-kichik harflarni saqlash",
     "Preview": "Ko'rib chiqish",

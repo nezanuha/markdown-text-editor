@@ -56,6 +56,7 @@ export default {
     "Next match": "Наступний збіг",
     "No matches": "Збігів немає",
     "Ordered list": "Нумерований список",
+    "OR": "АБО",
     "Outdent": "Зменшити відступ",
     "Preserve case": "Зберігати регістр",
     "Preview": "Попередній перегляд",

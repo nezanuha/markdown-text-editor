@@ -375,6 +375,97 @@ check('two editors on a page do not put the same id on their dialogs', () => {
     return dialogs.length === 2 && new Set(ids).size === ids.length;
 });
 
+// --- what the dialogs put in their own markup -------------------------------
+//
+// 1.9.5 fixed an XSS here: the prefills are interpolated into attributes of
+// HTML built as a string. The escaping helper had a unit test, but nothing
+// checked that the dialogs called it, so deleting the call would have passed.
+
+check('the link dialog escapes what it prefills from the document', () => {
+    const payload = '"><img src=x onerror=alert(1)>';
+    const e = makeEditor({ toolbar: ['bold', 'link'] }, payload);
+    e.usertextarea.setSelectionRange(0, payload.length);
+    e.editorContainer.querySelector('.link-btn').click();
+
+    const dialog = e.editorContainer.querySelector('.markdown-modal');
+    // the browser decodes the entities, so the field still holds the original
+    return dialog.querySelector('.link-text-input').value === payload
+        && dialog.querySelector('img') === null;
+});
+
+check('the image dialog escapes what it prefills too', () => {
+    const payload = '"><img src=x onerror=alert(1)>';
+    const e = makeEditor({ toolbar: ['bold', 'image'] }, payload);
+    e.usertextarea.setSelectionRange(0, payload.length);
+    e.editorContainer.querySelector('.image-link-btn').click();
+
+    const dialog = e.editorContainer.querySelector('.markdown-modal');
+    return dialog.querySelector('.img-link-alt-input').value === payload
+        && dialog.querySelector('img') === null;
+});
+
+check('a translation cannot break out of the attribute it lands in', () => {
+    // `locale` is the host's, but a host may load it from a database or from
+    // crowdsourced translations, and every other interpolation here is escaped
+    const e = makeEditor({ toolbar: ['bold', 'link'],
+                           locale: { URL: '" onfocus="steal()' } }, '');
+    e.editorContainer.querySelector('.link-btn').click();
+
+    const input = e.editorContainer.querySelector('.link-input');
+    return input.getAttribute('placeholder') === '" onfocus="steal()'
+        && input.getAttribute('onfocus') === null;
+});
+
+check('a dialog announces itself in the reader language', () => {
+    // The heading was translated and the accessible name was not, so a Spanish
+    // reader saw "Enlace" and heard "Link"
+    const e = makeEditor({ toolbar: ['bold', 'link'], locale: { Link: 'Enlace' } }, '');
+    e.editorContainer.querySelector('.link-btn').click();
+
+    return e.editorContainer.querySelector('.markdown-modal')
+        .getAttribute('aria-label') === 'Enlace';
+});
+
+check('the divider between upload and URL is translated', () => {
+    const e = makeEditor({ toolbar: ['bold', 'image'], upload: '/u',
+                           locale: { OR: 'O BIEN' } }, '');
+    e.editorContainer.querySelector('.image-link-btn').click();
+
+    return e.editorContainer.querySelector('.markdown-modal')
+        .textContent.includes('O BIEN');
+});
+
+check('an upload failure is reported in the dialog, not in an alert()', () => {
+    const e = makeEditor({ toolbar: ['bold', 'image'], upload: '/u' }, '');
+    e.editorContainer.querySelector('.image-link-btn').click();
+
+    const note = e.editorContainer.querySelector('.markdown-modal .img-upload-error');
+    // alert() is unstyled, blocks the page, and puts the message where the
+    // file input is not
+    return note !== null && note.hidden && note.getAttribute('role') === 'alert';
+});
+
+check('modal() says what to pass when the event is not from an editor', () => {
+    let message = '';
+    try {
+        MarkdownEditor.modal({ target: document.body }, 'fj:max-w-sm', '<p>x</p>');
+    } catch (error) {
+        message = error.message;
+    }
+    return message.includes('click event');
+});
+
+check('a textarea id with a quote in it does not take the editor down', () => {
+    // An id may hold almost any character, and `label[for="a\"b"]` is a
+    // SyntaxError thrown from the constructor
+    const ta = document.createElement('textarea');
+    ta.id = 'quote"id';
+    document.body.appendChild(ta);
+
+    const e = new MarkdownEditor(ta, { toolbar: ['bold'] });
+    return e.usertextarea.getAttribute('aria-label') === 'Markdown editor';
+});
+
 check('destroy leaves nothing listening on the textarea it was given', () => {
     // The wrapper's own elements go when the wrapper does, so only the user's
     // textarea matters: it outlives the editor. IndentManager used to attach
@@ -2376,7 +2467,7 @@ await checkAsync('upload takes a bare URL', async () => {
 await checkAsync('paste uploads with no image tool on the toolbar at all', async () => {
     stubUpload({ success: true, image_path: '/m/a.png' });
     const e = makeEditor({ toolbar: ['bold', 'preview'], upload: '/api/upload' }, '');
-    const hasImageButton = !!e.toolbar?.querySelector('.image-btn');
+    const hasImageButton = !!e.toolbar?.querySelector('.image-link-btn');
     paste(e, { files: [pngFile()] });
     await settle(e);
     // The whole point of the move: upload without the button
@@ -2674,8 +2765,8 @@ await checkAsync('onProgress reports the bytes as they go out', async () => {
     return ticks.length === 1 && ticks[0].join() === 'shot.png,1024,1024';
 });
 
-// The modal shows err.message in an alert, so these two are interface text and
-// belong in the locale files with everything else the editor says out loud.
+// The dialog shows err.message to the reader, so these two are interface text
+// and belong in the locale files with everything else the editor says aloud.
 await checkAsync('the size refusal is translated and reads in MB', async () => {
     const e = makeEditor({ toolbar: BASE_BAR, locale: {
         'Maximum file size is {n}': 'Tamano maximo: {n}',
@@ -3323,6 +3414,25 @@ check('hybrid highlight keeps the line count, which the DOM diff relies on', () 
     const e = makeEditor({ mode: 'hybrid', toolbar: ['bold'] });
     return ['a\nb\nc', '# h\n- i\n`c`', '```\nx\n```', '', 'one']
         .every(src => e._highlight(src).split('\n').length === src.split('\n').length);
+});
+
+// Ten tests below read _highlight, which does the whole document in one pass.
+// renderHybrid is what ships, and it reuses the lines an edit did not touch.
+// This is the only thing stopping the two drifting apart, which would leave
+// every one of those ten asserting about code that never runs.
+check('the hybrid path that ships matches the one the tests read', () => {
+    const doc = '# h' + NEWLINE + '**b** `c` [t](u)' + NEWLINE + '```'
+        + NEWLINE + 'x' + NEWLINE + '```' + NEWLINE + '<b> & plain' + NEWLINE;
+    const e = makeEditor({ mode: 'hybrid', toolbar: ['bold'] }, doc);
+
+    const live = [...e.displayLayer.children].map(node => node.innerHTML.replace(/\n$/, ''));
+    // The highlighter writes `&#42;` for an asterisk so a later pass cannot
+    // match it again. Reading innerHTML back gives the character the DOM
+    // decoded it to, so the reference is decoded the same way before comparing.
+    const reference = e._highlight(doc).replace(/&#42;/g, '*').split(NEWLINE);
+
+    return live.length === reference.length
+        && live.every((html, i) => html === reference[i]);
 });
 
 check('hybrid highlight escapes markup before anything else', () => {

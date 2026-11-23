@@ -56,6 +56,7 @@ export default {
     "Next match": "Nästa träff",
     "No matches": "Inga träffar",
     "Ordered list": "Numrerad lista",
+    "OR": "ELLER",
     "Outdent": "Minska indrag",
     "Preserve case": "Behåll gemener och versaler",
     "Preview": "Förhandsgranska",

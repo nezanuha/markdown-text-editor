@@ -326,7 +326,17 @@ class TablePopover {
         this.el.hidden = true;
     }
 
-    /** Where the table starts, ends, and how far right its first line runs. */
+    /**
+     * Where the table starts, ends, and how far along its header line runs.
+     *
+     * `right` is a physical x, measured past the last character of the header,
+     * so in a right-to-left document it lands toward the left of the pane --
+     * which is still the end of the line, and still the far corner from where
+     * the eye and the cursor are. The name reads wrong there; the value does
+     * not, and `_place` clamps to both edges either way. Measured physically
+     * on purpose, since mixing a logical property with a physical measurement
+     * is what put the completion menu outside the editor in RTL.
+     */
     _measure(table) {
         if (this.textarea.value.length > MEASURE_LIMIT) return null;
         const headerEnd = table.start + this.textarea.value

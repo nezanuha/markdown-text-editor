@@ -56,6 +56,7 @@ export default {
     "Next match": "下一个匹配项",
     "No matches": "无匹配项",
     "Ordered list": "有序列表",
+    "OR": "或",
     "Outdent": "减少缩进",
     "Preserve case": "保留大小写",
     "Preview": "预览",

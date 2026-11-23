@@ -56,6 +56,7 @@ export default {
     "Next match": "Järgmine vaste",
     "No matches": "Vasteid ei leitud",
     "Ordered list": "Nummerdatud loend",
+    "OR": "VÕI",
     "Outdent": "Vähenda taanet",
     "Preserve case": "Säilita tähesuurus",
     "Preview": "Eelvaade",

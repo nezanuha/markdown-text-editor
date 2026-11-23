@@ -56,6 +56,7 @@ export default {
     "Next match": "Sljedeće podudaranje",
     "No matches": "Nema rezultata",
     "Ordered list": "Numerisana lista",
+    "OR": "ILI",
     "Outdent": "Smanji uvlaku",
     "Preserve case": "Sačuvaj velika i mala slova",
     "Preview": "Pregled",

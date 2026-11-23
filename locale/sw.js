@@ -56,6 +56,7 @@ export default {
     "Next match": "Linalofuata",
     "No matches": "Hakuna matokeo",
     "Ordered list": "Orodha yenye nambari",
+    "OR": "AU",
     "Outdent": "Punguza nafasi",
     "Preserve case": "Hifadhi herufi kubwa na ndogo",
     "Preview": "Hakiki",

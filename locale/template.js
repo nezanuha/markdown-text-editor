@@ -59,6 +59,7 @@ export default {
     "Maximum file size is {n}": "Maximum file size is {n}",
     "Next match": "Next match",
     "No matches": "No matches",
+    "OR": "OR",
     "Ordered list": "Ordered list",
     "Outdent": "Outdent",
     "Preserve case": "Preserve case",

@@ -56,6 +56,7 @@ export default {
     "Next match": "اگلا نتیجہ",
     "No matches": "کوئی مماثلت نہیں",
     "Ordered list": "نمبر والی فہرست",
+    "OR": "یا",
     "Outdent": "حاشیہ کم کریں",
     "Preserve case": "حروف کی بڑائی چھوٹائی برقرار رکھیں",
     "Preview": "پیش منظر",

@@ -56,6 +56,7 @@ export default {
     "Next match": "Nākamā atbilstība",
     "No matches": "Nav atbilstību",
     "Ordered list": "Numurēts saraksts",
+    "OR": "VAI",
     "Outdent": "Samazināt atkāpi",
     "Preserve case": "Saglabāt reģistru",
     "Preview": "Priekšskatījums",

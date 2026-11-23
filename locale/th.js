@@ -56,6 +56,7 @@ export default {
     "Next match": "ผลลัพธ์ถัดไป",
     "No matches": "ไม่พบรายการที่ตรงกัน",
     "Ordered list": "รายการลำดับเลข",
+    "OR": "หรือ",
     "Outdent": "ลดการเยื้อง",
     "Preserve case": "คงตัวพิมพ์เดิม",
     "Preview": "ตัวอย่าง",

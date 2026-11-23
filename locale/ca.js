@@ -56,6 +56,7 @@ export default {
     "Next match": "Coincidència següent",
     "No matches": "Cap coincidència",
     "Ordered list": "Llista numerada",
+    "OR": "O",
     "Outdent": "Redueix el sagnat",
     "Preserve case": "Conserva majúscules i minúscules",
     "Preview": "Previsualització",

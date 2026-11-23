@@ -56,6 +56,7 @@ export default {
     "Next match": "Seuraava osuma",
     "No matches": "Ei osumia",
     "Ordered list": "Numeroitu luettelo",
+    "OR": "TAI",
     "Outdent": "Vähennä sisennystä",
     "Preserve case": "Säilytä kirjainkoko",
     "Preview": "Esikatselu",

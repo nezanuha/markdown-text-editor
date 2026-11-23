@@ -56,6 +56,7 @@ export default {
     "Next match": "Næsta samsvörun",
     "No matches": "Engar samsvaranir",
     "Ordered list": "Tölusettur listi",
+    "OR": "EÐA",
     "Outdent": "Minnka inndrátt",
     "Preserve case": "Halda stafstærð",
     "Preview": "Forskoðun",

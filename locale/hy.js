@@ -56,6 +56,7 @@ export default {
     "Next match": "Հաջորդ համընկնումը",
     "No matches": "Համապատասխանություն չկա",
     "Ordered list": "Համարակալված ցանկ",
+    "OR": "ԿԱՄ",
     "Outdent": "Նվազեցնել նահանջը",
     "Preserve case": "Պահպանել տառաչափը",
     "Preview": "Նախադիտում",

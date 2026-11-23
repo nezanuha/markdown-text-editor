@@ -56,6 +56,7 @@ export default {
     "Next match": "Næste match",
     "No matches": "Ingen resultater",
     "Ordered list": "Nummereret liste",
+    "OR": "ELLER",
     "Outdent": "Formindsk indrykning",
     "Preserve case": "Bevar store og små bogstaver",
     "Preview": "Forhåndsvisning",

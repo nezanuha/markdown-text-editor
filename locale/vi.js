@@ -56,6 +56,7 @@ export default {
     "Next match": "Kết quả tiếp theo",
     "No matches": "Không có kết quả",
     "Ordered list": "Danh sách đánh số",
+    "OR": "HOẶC",
     "Outdent": "Giảm thụt lề",
     "Preserve case": "Giữ nguyên chữ hoa chữ thường",
     "Preview": "Xem trước",

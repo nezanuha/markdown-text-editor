@@ -56,6 +56,7 @@ export default {
     "Next match": "Следующее совпадение",
     "No matches": "Совпадений нет",
     "Ordered list": "Нумерованный список",
+    "OR": "ИЛИ",
     "Outdent": "Уменьшить отступ",
     "Preserve case": "Сохранять регистр",
     "Preview": "Предпросмотр",

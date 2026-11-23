@@ -56,6 +56,7 @@ export default {
     "Next match": "次の一致",
     "No matches": "一致なし",
     "Ordered list": "番号付きリスト",
+    "OR": "または",
     "Outdent": "インデントを減らす",
     "Preserve case": "大文字と小文字を保持",
     "Preview": "プレビュー",

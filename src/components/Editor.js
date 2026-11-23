@@ -268,7 +268,14 @@ class MarkdownEditor {
     }
 
     applyDefaultAttributes() {
-        const hasLabel = (this.usertextarea.id && document.querySelector(`label[for="${this.usertextarea.id}"]`))
+        // Walked rather than selected. An id is allowed almost any character,
+        // and one quote in `label[for="..."]` is a SyntaxError thrown from the
+        // constructor -- no editor at all, for a textarea that was merely
+        // named oddly. Reading the attribute off each label cannot throw, and
+        // this runs once.
+        const hasLabel = (this.usertextarea.id
+                && [...document.querySelectorAll('label[for]')]
+                    .some(el => el.getAttribute('for') === this.usertextarea.id))
             || this.usertextarea.getAttribute('aria-label')
             || this.usertextarea.getAttribute('aria-labelledby');
         if (!hasLabel) {
@@ -733,7 +740,6 @@ class MarkdownEditor {
      * Holding the existing scroll is both correct and cheaper: an edit at the
      * caret leaves the caret where the reader was already looking.
      */
-    scrollToView() {}
 
 
     /**
@@ -800,15 +806,6 @@ class MarkdownEditor {
         return states;
     }
 
-    _highlight(rawValue) {
-        const lines = rawValue.split('\n');
-        const states = this._fenceStates(lines);
-        const out = lines
-            .map((line, i) => this._highlightOne(line, states[i]))
-            .join('\n');
-
-        return rawValue.endsWith('\n') ? out + ' ' : out;
-    }
 
     /** One line, given what the fence scan decided it is. */
     _highlightOne(line, state) {
@@ -822,6 +819,26 @@ class MarkdownEditor {
         // a code block came out bold.
         if (state === 'code') return escaped;
         return this._highlightLine(escaped);
+    }
+
+    /**
+     * The whole document in one pass, which is what `renderHybrid` did before
+     * it learned to reuse the lines an edit did not touch.
+     *
+     * Kept because ten tests read it: asserting on a joined string is far
+     * clearer than reassembling the display layer's spans, and a highlighting
+     * rule is a property of a line, not of the DOM it lands in. The risk is
+     * that it drifts from the path that ships, so one test walks both and
+     * compares -- if they ever disagree, the suite says so.
+     */
+    _highlight(rawValue) {
+        const lines = rawValue.split('\n');
+        const states = this._fenceStates(lines);
+        const out = lines
+            .map((line, i) => this._highlightOne(line, states[i]))
+            .join('\n');
+
+        return rawValue.endsWith('\n') ? out + ' ' : out;
     }
 
     renderHybrid() {

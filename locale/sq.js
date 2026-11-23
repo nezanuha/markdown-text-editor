@@ -56,6 +56,7 @@ export default {
     "Next match": "Përputhja tjetër",
     "No matches": "Asnjë përputhje",
     "Ordered list": "Listë e numëruar",
+    "OR": "OSE",
     "Outdent": "Zvogëlo kryeradhën",
     "Preserve case": "Ruaj shkronjat e mëdha dhe të vogla",
     "Preview": "Pamje paraprake",

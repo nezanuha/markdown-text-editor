@@ -56,6 +56,7 @@ export default {
     "Next match": "Kitas atitikmuo",
     "No matches": "Nėra atitikčių",
     "Ordered list": "Numeruotas sąrašas",
+    "OR": "ARBA",
     "Outdent": "Sumažinti įtrauką",
     "Preserve case": "Išlaikyti raidžių dydį",
     "Preview": "Peržiūra",

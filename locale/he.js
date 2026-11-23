@@ -56,6 +56,7 @@ export default {
     "Next match": "התוצאה הבאה",
     "No matches": "אין תוצאות",
     "Ordered list": "רשימה ממוספרת",
+    "OR": "או",
     "Outdent": "הקטן כניסה",
     "Preserve case": "שמור אותיות גדולות/קטנות",
     "Preview": "תצוגה מקדימה",

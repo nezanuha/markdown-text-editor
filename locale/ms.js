@@ -56,6 +56,7 @@ export default {
     "Next match": "Padanan seterusnya",
     "No matches": "Tiada padanan",
     "Ordered list": "Senarai bernombor",
+    "OR": "ATAU",
     "Outdent": "Kurangkan inden",
     "Preserve case": "Kekalkan huruf besar kecil",
     "Preview": "Pratonton",

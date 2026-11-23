@@ -56,6 +56,7 @@ export default {
     "Next match": "Další výskyt",
     "No matches": "Žádné výsledky",
     "Ordered list": "Číslovaný seznam",
+    "OR": "NEBO",
     "Outdent": "Zmenšit odsazení",
     "Preserve case": "Zachovat velikost písmen",
     "Preview": "Náhled",

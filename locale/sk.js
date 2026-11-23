@@ -56,6 +56,7 @@ export default {
     "Next match": "Ďalší výskyt",
     "No matches": "Žiadne výsledky",
     "Ordered list": "Číslovaný zoznam",
+    "OR": "ALEBO",
     "Outdent": "Zmenšiť odsadenie",
     "Preserve case": "Zachovať veľkosť písmen",
     "Preview": "Náhľad",

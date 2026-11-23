@@ -56,6 +56,7 @@ export default {
     "Next match": "Növbəti uyğunluq",
     "No matches": "Uyğunluq yoxdur",
     "Ordered list": "Nömrəli siyahı",
+    "OR": "VƏ YA",
     "Outdent": "Girintini azalt",
     "Preserve case": "Hərf registrini saxla",
     "Preview": "Önizləmə",

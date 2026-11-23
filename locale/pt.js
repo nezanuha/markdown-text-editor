@@ -56,6 +56,7 @@ export default {
     "Next match": "Próxima ocorrência",
     "No matches": "Nenhum resultado",
     "Ordered list": "Lista numerada",
+    "OR": "OU",
     "Outdent": "Diminuir recuo",
     "Preserve case": "Preservar maiúsculas e minúsculas",
     "Preview": "Pré-visualização",

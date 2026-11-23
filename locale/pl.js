@@ -56,6 +56,7 @@ export default {
     "Next match": "Następne wystąpienie",
     "No matches": "Brak wyników",
     "Ordered list": "Lista numerowana",
+    "OR": "LUB",
     "Outdent": "Zmniejsz wcięcie",
     "Preserve case": "Zachowaj wielkość liter",
     "Preview": "Podgląd",

@@ -56,6 +56,7 @@ export default {
     "Next match": "पुढील जुळणी",
     "No matches": "जुळणी नाही",
     "Ordered list": "क्रमांकित यादी",
+    "OR": "किंवा",
     "Outdent": "इंडेंट कमी करा",
     "Preserve case": "लहान-मोठी अक्षरे राखा",
     "Preview": "पूर्वावलोकन",

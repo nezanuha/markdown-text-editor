@@ -56,6 +56,7 @@ export default {
     "Next match": "Coincidencia siguiente",
     "No matches": "Sin coincidencias",
     "Ordered list": "Lista ordenada",
+    "OR": "O",
     "Outdent": "Reducir sangría",
     "Preserve case": "Conservar mayúsculas y minúsculas",
     "Preview": "Vista previa",

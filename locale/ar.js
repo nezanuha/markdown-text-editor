@@ -56,6 +56,7 @@ export default {
     "Next match": "النتيجة التالية",
     "No matches": "لا توجد مطابقات",
     "Ordered list": "قائمة مرقمة",
+    "OR": "أو",
     "Outdent": "تقليل المسافة البادئة",
     "Preserve case": "الحفاظ على حالة الأحرف",
     "Preview": "معاينة",

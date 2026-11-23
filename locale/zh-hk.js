@@ -56,6 +56,7 @@ export default {
     "Next match": "下一個相符項",
     "No matches": "沒有相符項目",
     "Ordered list": "編號清單",
+    "OR": "或",
     "Outdent": "減少縮排",
     "Preserve case": "保留大小寫",
     "Preview": "預覽",

@@ -56,6 +56,7 @@ export default {
     "Next match": "Sonraki eşleşme",
     "No matches": "Eşleşme yok",
     "Ordered list": "Numaralı liste",
+    "OR": "VEYA",
     "Outdent": "Girintiyi azalt",
     "Preserve case": "Büyük/küçük harfi koru",
     "Preview": "Önizleme",

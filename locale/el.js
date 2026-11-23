@@ -56,6 +56,7 @@ export default {
     "Next match": "Επόμενο αποτέλεσμα",
     "No matches": "Καμία αντιστοιχία",
     "Ordered list": "Αριθμημένη λίστα",
+    "OR": "Ή",
     "Outdent": "Μείωση εσοχής",
     "Preserve case": "Διατήρηση πεζών-κεφαλαίων",
     "Preview": "Προεπισκόπηση",

@@ -56,6 +56,7 @@ export default {
     "Next match": "ಮುಂದಿನ ಹೊಂದಾಣಿಕೆ",
     "No matches": "ಹೊಂದಿಕೆಗಳಿಲ್ಲ",
     "Ordered list": "ಸಂಖ್ಯೆಯ ಪಟ್ಟಿ",
+    "OR": "ಅಥವಾ",
     "Outdent": "ಇಂಡೆಂಟ್ ಕಡಿಮೆ ಮಾಡಿ",
     "Preserve case": "ಅಕ್ಷರ ಗಾತ್ರ ಉಳಿಸಿಕೊಳ್ಳು",
     "Preview": "ಮುನ್ನೋಟ",

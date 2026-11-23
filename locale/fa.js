@@ -56,6 +56,7 @@ export default {
     "Next match": "مورد بعدی",
     "No matches": "موردی یافت نشد",
     "Ordered list": "فهرست شماره‌دار",
+    "OR": "یا",
     "Outdent": "کاهش تورفتگی",
     "Preserve case": "حفظ بزرگی و کوچکی حروف",
     "Preview": "پیش‌نمایش",

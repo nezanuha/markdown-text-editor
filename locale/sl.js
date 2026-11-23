@@ -56,6 +56,7 @@ export default {
     "Next match": "Naslednje ujemanje",
     "No matches": "Ni zadetkov",
     "Ordered list": "Oštevilčen seznam",
+    "OR": "ALI",
     "Outdent": "Zmanjšaj zamik",
     "Preserve case": "Ohrani velike in male črke",
     "Preview": "Predogled",

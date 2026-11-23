@@ -56,6 +56,7 @@ export default {
     "Next match": "Riżultat li jmiss",
     "No matches": "L-ebda riżultat",
     "Ordered list": "Lista nnumerata",
+    "OR": "JEW",
     "Outdent": "Naqqas l-indentazzjoni",
     "Preserve case": "Żomm l-ittri kbar u żgħar",
     "Preview": "Previżjoni",

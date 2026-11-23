@@ -56,6 +56,7 @@ export default {
     "Next match": "다음 찾기",
     "No matches": "일치 항목 없음",
     "Ordered list": "번호 매기기",
+    "OR": "또는",
     "Outdent": "내어쓰기",
     "Preserve case": "대/소문자 유지",
     "Preview": "미리보기",
