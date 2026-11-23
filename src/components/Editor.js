@@ -14,6 +14,7 @@ import TablePopover from './TablePopover.js';
 import ShortcutManager from '../utils/ShortcutManager.js';
 import FindReplace from '../utils/FindReplace.js';
 import PasteManager from '../utils/PasteManager.js';
+import { resolveUpload } from '../utils/upload.js';
 import VariableComplete from '../utils/VariableComplete.js';
 import Autosave from '../utils/Autosave.js';
 import { applyVariableSamples } from '../utils/variables.js';
@@ -75,8 +76,12 @@ class MarkdownEditor {
         // than under a group means a new feature never raises the question of
         // which side of the group it belongs on.
         this.footerOptions = this._parseFooterOptions(options.footer);
-        this.variables = this._parseVariables(options.toolbar);
-        this.imageUpload = this._parseImageUpload(options.toolbar);
+        // Top level since 2.0: the list is data, read by the preview and the
+        // typed completion as well as the dropdown. The toolbar form is still
+        // read for anything written against 1.7.
+        const variables = this._parseVariableOptions(options);
+        this.variables = variables.items;
+        this.upload = resolveUpload(options, text => this.label(text));
         this.previewTimer = null;
         this.init();
         this.undoRedoManager = new UndoRedoManager(this);
@@ -97,7 +102,7 @@ class MarkdownEditor {
                 typeof options.autosave === 'object' ? options.autosave : {});
         }
         // Only worth attaching when there is something to complete.
-        if (options.variableComplete !== false && this.variables?.length) {
+        if (variables.complete && this.variables.length) {
             this.variableComplete = new VariableComplete(this);
         }
         // Omitted, the bar follows the toolbar: it is only worth offering
@@ -131,18 +136,26 @@ class MarkdownEditor {
     }
 
     /**
-     * `tablePopover` only ever existed in 2.0.0-beta.3, so it is renamed rather
-     * than aliased the way `labels` is: a beta is not a contract. It was public
-     * long enough to reach the docs, though, and silently ignoring it would
-     * read as the bar being broken rather than renamed.
+     * Both of these only ever existed in a 2.0.0 beta, so they are renamed
+     * rather than aliased the way `labels` is: a beta is not a contract. They
+     * were public long enough to reach the docs, though, and silently ignoring
+     * one would read as the feature being broken rather than moved.
      */
     _warnIfOptionRenamed() {
-        if (this.options.tablePopover === undefined) return;
+        if (this.options.tablePopover !== undefined) {
+            console.error(
+                `[MarkdownEditor] tablePopover is now tableBar:\n` +
+                `  new MarkdownEditor(el, { tableBar: ${this.options.tablePopover} })`
+            );
+        }
 
-        console.error(
-            `[MarkdownEditor] tablePopover is now tableBar:\n` +
-            `  new MarkdownEditor(el, { tableBar: ${this.options.tablePopover} })`
-        );
+        if (this.options.variableComplete !== undefined) {
+            console.error(
+                `[MarkdownEditor] variableComplete moved in with the list it belongs to:\n` +
+                `  new MarkdownEditor(el, { variables: { items: [...], `
+                + `complete: ${this.options.variableComplete} } })`
+            );
+        }
     }
 
     /**
@@ -179,21 +192,41 @@ class MarkdownEditor {
     }
 
     /**
-     * Upload settings live in the toolbar as { image: { fileInput: {...} } }, but
-     * paste and drop need them before the toolbar exists. Read them up front, and
-     * only when an upload endpoint is actually configured.
+     * `variables` in either form, falling back to the toolbar entry.
+     *
+     *   variables: [ ... ]
+     *   variables: { items: [ ... ], complete: false }
+     *
+     * One option per feature, which is why `complete` sits in here rather than
+     * at the top level as `variableComplete`. The bare array stays because the
+     * list on its own is what nearly every host wants, the same way `autosave:
+     * true` and `upload: '/url'` read.
      */
-    _parseImageUpload(toolbar) {
-        const entry = (Array.isArray(toolbar) ? toolbar : [])
-            .find(tool => tool && typeof tool === 'object' && tool.image);
-        const fileInput = entry?.image?.fileInput;
-        return fileInput?.uploadUrl ? fileInput : null;
+    _parseVariableOptions(options) {
+        const config = options.variables;
+
+        if (Array.isArray(config)) return { items: config, complete: true };
+
+        if (config && typeof config === 'object') {
+            return {
+                items: Array.isArray(config.items) ? config.items : [],
+                complete: config.complete !== false,
+            };
+        }
+
+        return { items: this._parseVariables(options.toolbar), complete: true };
     }
 
     /**
-     * Variables are configured inline in the toolbar as { variables: [...] },
-     * but the preview needs them before the toolbar exists, since createEditor()
-     * renders first. Read them from the toolbar array at construction instead.
+     * The pre-2.0 home for the variable list: inline in the toolbar, as
+     * `{ variables: [...] }`. Still read, so nothing written against 1.7
+     * breaks.
+     *
+     * That it had to exist is the argument for moving them. The preview needs
+     * the list to swap in `sample` values, and the completion needs it to know
+     * what opens the menu, and both run before the toolbar is built -- so the
+     * editor went digging through the toolbar array for data that was never a
+     * button's business. The upload endpoint left for the same reason.
      */
     _parseVariables(toolbar) {
         const entry = (Array.isArray(toolbar) ? toolbar : [])
@@ -245,12 +278,13 @@ class MarkdownEditor {
             // label a screen reader reads first and the one that says what
             // the thing is.
             //
-            // `label` is yours to set and wins: it is a name for this
-            // particular field, "Article body" rather than "Markdown
-            // editor", and only you know it. Not to be confused with
-            // `labels`, which was the old name for `locale`.
-            this.usertextarea.setAttribute('aria-label',
-                this.options.label || this.label('Markdown editor'));
+            // Only the fallback is the editor's business. Naming this
+            // particular field -- "Article body" rather than "Markdown
+            // editor" -- is the page's, and `aria-label` or a `<label>` on
+            // the textarea already does it, before this runs and whether or
+            // not the script loads. There is no option for it, because an
+            // option would only write the attribute you could have written.
+            this.usertextarea.setAttribute('aria-label', this.label('Markdown editor'));
             this._addedAriaLabel = true;
         }
 

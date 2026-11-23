@@ -45,6 +45,15 @@ console.error = (...args) => {
     else realError(...args);
 };
 
+// The old fileInput form is exercised by a dozen tests below, and it notes
+// once per page what replaced it. Collect that the same way.
+const notes = [];
+const realInfo = console.info;
+console.info = (...args) => {
+    if (String(args[0]).includes('[MarkdownEditor]')) notes.push(args[0]);
+    else realInfo(...args);
+};
+
 let passed = 0;
 const failures = [];
 // A check may return a promise, for the handful of paths that only settle after
@@ -2100,12 +2109,9 @@ check("the editor announces itself in the reader's language", () => {
     // reads and the one that says what the thing is.
     const plain = makeEditor({ toolbar: FULL_BAR });
     const translated = makeEditor({ toolbar: FULL_BAR, locale: spanish });
-    const named = makeEditor({ toolbar: FULL_BAR, locale: spanish, label: 'Cuerpo' });
 
     return plain.usertextarea.getAttribute('aria-label') === 'Markdown editor'
-        && translated.usertextarea.getAttribute('aria-label') === 'Editor de Markdown'
-        // `label` is a name for this particular field, so it wins over both.
-        && named.usertextarea.getAttribute('aria-label') === 'Cuerpo';
+        && translated.usertextarea.getAttribute('aria-label') === 'Editor de Markdown';
 });
 
 check('a textarea that is already labelled is left alone', () => {
@@ -2114,8 +2120,9 @@ check('a textarea that is already labelled is left alone', () => {
     const ta = document.createElement('textarea');
     ta.setAttribute('aria-label', 'Set by the page');
     document.body.appendChild(ta);
-    new MarkdownEditor(ta, { toolbar: FULL_BAR, label: 'ignored' });
-    // The page knows its own form better than this does.
+    new MarkdownEditor(ta, { toolbar: FULL_BAR });
+    // The page knows its own form better than this does, which is also why
+    // there is no option to name the field: the attribute already is one.
     return ta.getAttribute('aria-label') === 'Set by the page';
 });
 
@@ -2225,17 +2232,46 @@ const checkAsync = async (name, fn) => {
 const UPLOAD_BAR = [...BASE_BAR, { image: { fileInput: { uploadUrl: '/api/upload' } } }, 'preview'];
 const pngFile = () => new window.File(['x'], 'shot.png', { type: 'image/png' });
 
-// Replaces fetch for one upload, and records what the editor sent
-const stubUpload = (body) => {
-    const sent = {};
-    globalThis.fetch = async (url, init) => {
-        sent.url = url;
-        sent.method = init?.method;
-        sent.form = init?.body;
-        return { ok: true, json: async () => body };
+// A file that claims a size without allocating it. happy-dom reads size off the
+// blob, so a 6 MB test file would otherwise mean 6 MB of 'x'.
+const bigFile = (bytes) => {
+    const file = new window.File(['x'], 'big.png', { type: 'image/png' });
+    Object.defineProperty(file, 'size', { value: bytes, configurable: true });
+    return file;
+};
+
+// Replaces XMLHttpRequest for one upload, and records what the editor sent.
+// XHR and not fetch because fetch raises no events for a FormData body, so it
+// cannot report progress, which is the whole reason the editor moved off it.
+//
+//   hold    the request stays in flight until sent.finish() is called
+//   forbid  send() throws, for the tests that assert nothing is uploaded
+const stubXhr = ({ body = {}, status = 200, hold = false, forbid = false } = {}) => {
+    const sent = { headers: {} };
+    globalThis.XMLHttpRequest = class {
+        constructor() {
+            this._on = {};
+            this.status = status;
+            this.responseText = JSON.stringify(body);
+            this.upload = { addEventListener: (name, fn) => { this._tick = fn; } };
+        }
+        open(method, url) { sent.method = method; sent.url = url; }
+        setRequestHeader(key, value) { sent.headers[key] = value; }
+        addEventListener(name, fn) { this._on[name] = fn; }
+        send(form) {
+            if (forbid) throw new Error('should not be called');
+            sent.form = form;
+            sent.finish = () => {
+                this._tick?.({ lengthComputable: true, loaded: 1024, total: 1024 });
+                this._on.load?.();
+            };
+            if (!hold) setTimeout(sent.finish, 0);
+        }
     };
     return sent;
 };
+
+const stubUpload = (body) => stubXhr({ body });
 
 // The editor awaits fetch, so yield until the placeholder has been swapped out
 const settle = async (editor) => {
@@ -2254,18 +2290,17 @@ await checkAsync('pasting an image uploads it and inserts the markdown', async (
 });
 
 await checkAsync('a placeholder is shown while the upload is in flight', async () => {
-    let release;
-    globalThis.fetch = () => new Promise(r => { release = r; });
+    const sent = stubXhr({ body: { success: true, image_path: '/m/a.png' }, hold: true });
     const e = makeEditor({ toolbar: UPLOAD_BAR }, '');
     paste(e, { files: [pngFile()] });
     const during = e.usertextarea.value;
-    release({ ok: true, json: async () => ({ success: true, image_path: '/m/a.png' }) });
+    sent.finish();
     await settle(e);
     return during.includes('Uploading...') && e.usertextarea.value === '![](/m/a.png)';
 });
 
 await checkAsync('a failed upload leaves a visible marker, not silence', async () => {
-    globalThis.fetch = async () => ({ ok: false, status: 500, json: async () => ({}) });
+    stubXhr({ status: 500 });
     const quiet = console.error; console.error = () => {};
     const e = makeEditor({ toolbar: UPLOAD_BAR }, 'before');
     paste(e, { files: [pngFile()] });
@@ -2275,7 +2310,7 @@ await checkAsync('a failed upload leaves a visible marker, not silence', async (
 });
 
 await checkAsync('the failure marker is translatable', async () => {
-    globalThis.fetch = async () => ({ ok: false, status: 500, json: async () => ({}) });
+    stubXhr({ status: 500 });
     const quiet = console.error; console.error = () => {};
     const e = makeEditor({ toolbar: UPLOAD_BAR, labels: { 'Upload failed': 'Fallo la subida' } }, '');
     paste(e, { files: [pngFile()] });
@@ -2316,19 +2351,381 @@ await checkAsync('dropping an image uploads it too', async () => {
 });
 
 await checkAsync('the upload placeholder is translatable', async () => {
-    let release;
-    globalThis.fetch = () => new Promise(r => { release = r; });
+    const sent = stubXhr({ body: { success: true, image_path: '/m/a.png' }, hold: true });
     const e = makeEditor({ toolbar: UPLOAD_BAR, labels: { 'Uploading...': 'Subiendo...' } }, '');
     paste(e, { files: [pngFile()] });
     const during = e.usertextarea.value;
-    release({ ok: true, json: async () => ({ success: true, image_path: '/m/a.png' }) });
+    sent.finish();
     await settle(e);
     return during.includes('Subiendo...');
+});
+
+// --- upload, the top level option -------------------------------------
+// 2.0 moves the endpoint out of the toolbar. It was read out of the toolbar
+// array before the toolbar existed, which is the tell: an endpoint is not a
+// button. The toolbar form above still works and is tested there.
+
+await checkAsync('upload takes a bare URL', async () => {
+    const sent = stubUpload({ success: true, image_path: '/m/a.png' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: '/api/upload' }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return e.usertextarea.value === '![](/m/a.png)' && sent.url === '/api/upload';
+});
+
+await checkAsync('paste uploads with no image tool on the toolbar at all', async () => {
+    stubUpload({ success: true, image_path: '/m/a.png' });
+    const e = makeEditor({ toolbar: ['bold', 'preview'], upload: '/api/upload' }, '');
+    const hasImageButton = !!e.toolbar?.querySelector('.image-btn');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    // The whole point of the move: upload without the button
+    return !hasImageButton && e.usertextarea.value === '![](/m/a.png)';
+});
+
+await checkAsync('headers reach the request, which CSRF needs', async () => {
+    const sent = stubUpload({ success: true, image_path: '/m/a.png' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: {
+        url: '/api/upload', headers: { 'X-CSRFToken': 'abc123' },
+    } }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return sent.headers?.['X-CSRFToken'] === 'abc123';
+});
+
+await checkAsync('response adapts a server that answers in its own shape', async () => {
+    stubUpload({ data: { url: '/cdn/x.png' } });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: {
+        url: '/api/upload', response: body => ({ path: body.data.url }),
+    } }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return e.usertextarea.value === '![](/cdn/x.png)';
+});
+
+await checkAsync('field renames the form field', async () => {
+    const sent = stubUpload({ success: true, image_path: '/m/a.png' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: { url: '/u', field: 'file' } }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return sent.form.has('file') && !sent.form.has('image_file');
+});
+
+await checkAsync('the default field is unchanged, so an old endpoint keeps working', async () => {
+    const sent = stubUpload({ success: true, image_path: '/m/a.png' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: '/u' }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return sent.form.has('image_file');
+});
+
+await checkAsync('a function form hands the file to the host', async () => {
+    let got = null;
+    const e = makeEditor({ toolbar: BASE_BAR, upload: async (file) => {
+        got = file.name;
+        return '/s3/signed.png';
+    } }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return got === 'shot.png' && e.usertextarea.value === '![](/s3/signed.png)';
+});
+
+await checkAsync('maxSize is enforced on paste, not just in the file dialog', async () => {
+    const quiet = console.error; console.error = () => {};
+    stubXhr({ forbid: true });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: { url: '/u', maxSize: 10 } }, '');
+    const big = new window.File(['x'.repeat(5000)], 'big.png', { type: 'image/png' });
+    paste(e, { files: [big] });
+    await settle(e);
+    console.error = quiet;
+    return e.usertextarea.value === '![Upload failed]()';
+});
+
+await checkAsync('a type outside accept is ignored on paste, not reported', async () => {
+    stubXhr({ forbid: true });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: { url: '/u', accept: ['jpeg'] } }, 'draft');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    // accept decides what the editor looks at, so a type it was never offered
+    // passes through untouched, the way a dropped PDF always has. Size is the
+    // other way round: an accepted file that is too big did fail, and says so.
+    return e.usertextarea.value === 'draft';
+});
+
+await checkAsync('accept reads a full media type as well as a bare subtype', async () => {
+    stubUpload({ success: true, image_path: '/m/a.png' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: { url: '/u', accept: ['image/png'] } }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return e.usertextarea.value === '![](/m/a.png)';
+});
+
+await checkAsync('paste: false leaves pasting alone while drop still uploads', async () => {
+    stubUpload({ success: true, image_path: '/m/a.png' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: { url: '/u', paste: false } }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    const afterPaste = e.usertextarea.value;
+    drop(e, [pngFile()]);
+    await settle(e);
+    return afterPaste === '' && e.usertextarea.value === '![](/m/a.png)';
+});
+
+await checkAsync('drop: false still swallows the event, or the browser eats the draft', async () => {
+    stubXhr({ forbid: true });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: { url: '/u', drop: false } }, 'my draft');
+    const event = drop(e, [pngFile()]);
+    await settle(e);
+    return event.defaultPrevented && e.usertextarea.value === 'my draft';
+});
+
+await checkAsync('a non-image file is still refused by default', async () => {
+    stubXhr({ forbid: true });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: '/u' }, 'my draft');
+    const pdf = new window.File(['x'], 'spec.pdf', { type: 'application/pdf' });
+    const event = drop(e, [pdf]);
+    await settle(e);
+    // accept defaults to image/*, so nothing changes for a host that says nothing
+    return event.defaultPrevented && e.usertextarea.value === 'my draft';
+});
+
+await checkAsync('accept opens it to other file types, inserted as a link', async () => {
+    stubUpload({ success: true, image_path: '/files/spec.pdf' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: {
+        url: '/u', accept: ['image/*', 'application/pdf'],
+    } }, '');
+    const pdf = new window.File(['x'], 'spec.pdf', { type: 'application/pdf' });
+    drop(e, [pdf]);
+    await settle(e);
+    return e.usertextarea.value === '[spec.pdf](/files/spec.pdf)';
+});
+
+await checkAsync('an image still inserts as an image when other types are allowed', async () => {
+    stubUpload({ success: true, image_path: '/m/a.png', image_alt: 'A shot' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: {
+        url: '/u', accept: ['image/*', 'application/pdf'],
+    } }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return e.usertextarea.value === '![A shot](/m/a.png)';
+});
+
+await checkAsync('insert overrides what is written into the document', async () => {
+    stubUpload({ success: true, image_path: '/files/notes.txt' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: {
+        url: '/u', accept: ['text/plain'],
+        insert: (file, url) => `<a href="${url}" download>${file.name}</a>`,
+    } }, '');
+    const txt = new window.File(['x'], 'notes.txt', { type: 'text/plain' });
+    drop(e, [txt]);
+    await settle(e);
+    return e.usertextarea.value === '<a href="/files/notes.txt" download>notes.txt</a>';
+});
+
+await checkAsync('the in-flight placeholder follows the file type', async () => {
+    const sent = stubXhr({ body: { success: true, image_path: '/f/spec.pdf' }, hold: true });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: {
+        url: '/u', accept: ['application/pdf'],
+    } }, '');
+    const pdf = new window.File(['x'], 'spec.pdf', { type: 'application/pdf' });
+    drop(e, [pdf]);
+    const during = e.usertextarea.value;
+    sent.finish();
+    await settle(e);
+    // a link placeholder, not ![...](), or the preview shows a broken image
+    return during === '[Uploading...]()';
+});
+
+await checkAsync('the image dialog offers images even when more is accepted', async () => {
+    const e = makeEditor({ toolbar: [...BASE_BAR, 'image', 'preview'], upload: {
+        url: '/u', accept: ['image/png', 'application/pdf'],
+    } }, '');
+    return e.upload.accept.join(',') === 'image/png,application/pdf';
+});
+
+// image_path was named when images were all this took. An endpoint that stores
+// a PDF should not have to call its answer that, so url and path are read too.
+await checkAsync('a plain { url } answer is understood, with no success flag', async () => {
+    stubUpload({ url: '/cdn/a.png' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: '/u' }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return e.usertextarea.value === '![](/cdn/a.png)';
+});
+
+await checkAsync('a { path, alt } answer is understood too', async () => {
+    stubUpload({ path: '/cdn/a.png', alt: 'A screenshot' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: '/u' }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return e.usertextarea.value === '![A screenshot](/cdn/a.png)';
+});
+
+await checkAsync('the 1.8 answer is still read', async () => {
+    stubUpload({ success: true, image_path: '/m/a.png', image_alt: 'A shot' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: '/u' }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return e.usertextarea.value === '![A shot](/m/a.png)';
+});
+
+await checkAsync('success: false reports the reason the endpoint gave', async () => {
+    stubUpload({ success: false, error: 'The disk is full' });
+    let logged = '';
+    const quiet = console.error;
+    console.error = (...args) => { logged = args.map(String).join(' '); };
+    const e = makeEditor({ toolbar: BASE_BAR, upload: '/u' }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    console.error = quiet;
+    return e.usertextarea.value === '![Upload failed]()' && logged.includes('The disk is full');
+});
+
+// Nobody widens accept to video hoping for a link, so the default writes the
+// player. markdown has no syntax for one, which is why it is raw HTML.
+await checkAsync('a video arrives as a player, not a link', async () => {
+    stubUpload({ url: '/u/clip.mp4' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: {
+        url: '/u', accept: ['video/mp4'],
+    } }, '');
+    const clip = new window.File(['x'], 'clip.mp4', { type: 'video/mp4' });
+    drop(e, [clip]);
+    await settle(e);
+    return e.usertextarea.value === '<video src="/u/clip.mp4" controls></video>';
+});
+
+await checkAsync('audio does the same', async () => {
+    stubUpload({ url: '/u/a.mp3' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: {
+        url: '/u', accept: ['audio/mpeg'],
+    } }, '');
+    const song = new window.File(['x'], 'a.mp3', { type: 'audio/mpeg' });
+    drop(e, [song]);
+    await settle(e);
+    return e.usertextarea.value === '<audio src="/u/a.mp3" controls></audio>';
+});
+
+await checkAsync('a quote in the URL cannot break out of the attribute', async () => {
+    stubUpload({ url: '/u/a.mp4?x="><script>alert(1)</script>' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: {
+        url: '/u', accept: ['video/mp4'],
+    } }, '');
+    const clip = new window.File(['x'], 'clip.mp4', { type: 'video/mp4' });
+    drop(e, [clip]);
+    await settle(e);
+    const written = e.usertextarea.value;
+    return !written.includes('<script>') && written.includes('&quot;&gt;&lt;script&gt;');
+});
+
+await checkAsync('a PDF is still a link, since markdown cannot embed one', async () => {
+    stubUpload({ url: '/u/spec.pdf' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: {
+        url: '/u', accept: ['application/pdf'],
+    } }, '');
+    const pdf = new window.File(['x'], 'spec.pdf', { type: 'application/pdf' });
+    drop(e, [pdf]);
+    await settle(e);
+    return e.usertextarea.value === '[spec.pdf](/u/spec.pdf)';
+});
+
+check('variables read from the top level, with the button in the toolbar', () => {
+    const e = makeEditor({
+        toolbar: ['bold', 'variables', 'preview'],
+        variables: [{ label: 'Today', value: '{{today}}', sample: '10 September 2026' }],
+    }, 'Sent {{today}}');
+
+    return e.variables.length === 1
+        && !!e.editorContainer.querySelector('.variable-btn')
+        // the preview swaps the sample in, which is why the list cannot live
+        // in the toolbar array: it is needed before the toolbar is built
+        && e.renderMarkdown('Sent {{today}}').includes('10 September 2026');
+});
+
+check('the toolbar form still works, and the top level wins over it', () => {
+    const old = makeEditor({ toolbar: ['bold', { variables: [
+        { label: 'Today', value: '{{today}}' },
+    ] }, 'preview'] }, '');
+
+    const both = makeEditor({
+        toolbar: ['bold', { variables: [{ label: 'Old', value: '{{old}}' }] }, 'preview'],
+        variables: [{ label: 'New', value: '{{new}}' }],
+    }, '');
+
+    return old.variables.length === 1 && old.variables[0].value === '{{today}}'
+        && both.variables.length === 1 && both.variables[0].value === '{{new}}';
+});
+
+await checkAsync('the alt field keeps its name even when the file field is renamed', async () => {
+    const sent = stubUpload({ success: true, image_path: '/m/a.png' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: { url: '/u', field: 'file' } }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return sent.form.has('file') && sent.form.has('image_alt');
+});
+
+await checkAsync('onProgress reports the bytes as they go out', async () => {
+    const ticks = [];
+    stubUpload({ success: true, image_path: '/m/a.png' });
+    const e = makeEditor({ toolbar: BASE_BAR, upload: {
+        url: '/u', onProgress: (file, done, total) => ticks.push([file.name, done, total]),
+    } }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return ticks.length === 1 && ticks[0].join() === 'shot.png,1024,1024';
+});
+
+// The modal shows err.message in an alert, so these two are interface text and
+// belong in the locale files with everything else the editor says out loud.
+await checkAsync('the size refusal is translated and reads in MB', async () => {
+    const e = makeEditor({ toolbar: BASE_BAR, locale: {
+        'Maximum file size is {n}': 'Tamano maximo: {n}',
+    }, upload: { url: '/u', maxSize: 5 * 1024 * 1024 } }, '');
+    const message = await e.upload.upload(bigFile(6 * 1024 * 1024))
+        .then(() => 'it resolved', err => err.message);
+    return message === 'Tamano maximo: 5 MB';
+});
+
+await checkAsync('a sub-megabyte limit reads in kB, not bytes', async () => {
+    const e = makeEditor({ toolbar: BASE_BAR, upload: { url: '/u', maxSize: 500 * 1024 } }, '');
+    const message = await e.upload.upload(bigFile(600 * 1024))
+        .then(() => 'it resolved', err => err.message);
+    return message === 'Maximum file size is 500 kB';
+});
+
+await checkAsync('the type refusal is translated and keeps the MIME out of it', async () => {
+    const e = makeEditor({ toolbar: BASE_BAR, locale: {
+        'This file type is not allowed': 'Tipo no permitido',
+    }, upload: { url: '/u', accept: ['image/jpeg'] } }, '');
+    const error = await e.upload.upload(pngFile()).then(() => null, err => err);
+    // the type and the list go to the console, not to whoever picked the file
+    return error.message === 'Tipo no permitido'
+        && error.detail.includes('image/png')
+        && !error.message.includes('image/png');
+});
+
+await checkAsync('upload wins over the old toolbar form', async () => {
+    const sent = stubUpload({ success: true, image_path: '/m/a.png' });
+    const e = makeEditor({ toolbar: UPLOAD_BAR, upload: '/new/endpoint' }, '');
+    paste(e, { files: [pngFile()] });
+    await settle(e);
+    return sent.url === '/new/endpoint';
 });
 
 // --- the separate stylesheet ------------------------------------------------
 // From 2.0.0 the CSS is a file the host has to load, so forgetting it leaves a
 // working but unstyled editor. These guard the only signal the user gets.
+
+check('the old fileInput form says what replaced it', () => {
+    const about = notes.filter(note => note.includes('image.fileInput'));
+    return about.length === 1 && about[0].includes('upload');
+});
+
+check('it says so once per page, not once per editor', () => {
+    const before = notes.length;
+    makeEditor({ toolbar: UPLOAD_BAR }, '');
+    makeEditor({ toolbar: UPLOAD_BAR }, '');
+    return notes.length === before;
+});
 
 check('a missing stylesheet is reported', () =>
     cssErrors.length === 1 && cssErrors[0].includes("import 'markdown-text-editor/style.css'"));
@@ -3250,8 +3647,30 @@ check('the menu tells a screen reader which option is current', () => {
         && active && menu.querySelector('#' + active) !== null;
 });
 
-check('variableComplete: false turns it off', () => {
-    const e = makeEditor({ toolbar: barWith(VARS), variableComplete: false });
+check('variables takes the object form, list and setting together', () => {
+    const e = makeEditor({
+        toolbar: ['bold', 'variables', 'preview'],
+        variables: { items: VARS },
+    }, '');
+
+    return e.variables.length === VARS.length && e.variableComplete !== undefined;
+});
+
+check('variableComplete says where it went rather than being ignored', () => {
+    const said = [];
+    const quiet = console.error;
+    console.error = (...args) => said.push(args.join(' '));
+    makeEditor({ toolbar: ['bold', 'variables', 'preview'],
+                 variables: VARS, variableComplete: false });
+    console.error = quiet;
+
+    // A beta is not a contract, but a silent no-op reads as a broken feature
+    return said.length === 1
+        && said[0].includes('variables: { items: [...], complete: false }');
+});
+
+check('complete: false turns the typed trigger off', () => {
+    const e = makeEditor({ toolbar: barWith([]), variables: { items: VARS, complete: false } });
     typeInto(e, 'Hello {{');
     return menuOf(e) === null && e.variableComplete === undefined;
 });

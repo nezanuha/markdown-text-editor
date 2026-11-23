@@ -10,14 +10,119 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Editing tables**: Click inside one, or press `Alt+T`, and a small bar appears beside it. Add or delete the column or row you're in, align it, tidy the pipes. Tab moves between cells. The toolbar button opens a size grid instead of the old fixed three-column table. `tableBar: false` turns the bar off
+
+  ```javascript
+  new MarkdownEditor('#editor', { tableBar: false });   // the bar beside a table, on by default
+  ```
+
 - **Draft recovery**: `autosave: true` keeps a copy of what you are writing in the browser. If the tab dies, the next load offers it back with the time it was taken, and you choose whether to restore it. It never restores on its own, because the text on the page may be newer. Off by default
-- **Variables complete as you type**: Start typing a placeholder and the list appears under the caret, narrowing as you keep typing. Arrows move, Enter or Tab inserts, Escape closes. What you type to open it is whatever your own values start with, so `{{today}}`, `{{ today }}` and `<< today >>` each complete from their own opening. The toolbar dropdown is still there. `variableComplete: false` turns this off
+
+  ```javascript
+  new MarkdownEditor('#editor', { autosave: true });
+
+  // or say where the draft is kept, and for how long
+  new MarkdownEditor('#editor', {
+      autosave: { key: 'post-42', maxAge: 24 * 60 * 60 * 1000, debounce: 1000 },
+  });
+  ```
+
+- **Variables moved out of the toolbar**: `variables: [...]` at the top level, with `'variables'` in `toolbar` for the dropdown. They were configured inside the toolbar array, which made the editor dig the list out of it before the toolbar existed, because the preview needs the `sample` values and the completion needs to know what opens the menu. Neither is a button's business. `variables: { items, complete }` takes the one setting there is as well, rather than `variableComplete` naming the same feature a second time at the top level. The toolbar form still works; `variableComplete`, which only existed in the betas, says where it went
+  ```javascript
+  new MarkdownEditor('#editor', {
+      toolbar: ['bold', 'italic', 'variables', 'preview'],
+      variables: [
+          { label: 'Customer Name', value: '{{customer.name}}', sample: 'Hannes' },
+          { label: 'Invoice No',    value: '{{invoice.number}}' },
+      ],
+  });
+  ```
+
+- **Variables complete as you type**: Start typing a placeholder and the list appears under the caret, narrowing as you keep typing. Arrows move, Enter or Tab inserts, Escape closes. What you type to open it is whatever your own values start with, so `{{today}}`, `{{ today }}` and `<< today >>` each complete from their own opening. The toolbar dropdown is still there. `variables: { items: [...], complete: false }` turns this off
+
+  ```javascript
+  new MarkdownEditor('#editor', {
+      variables: {
+          items: [{ label: 'Customer Name', value: '{{customer.name}}' }],
+          complete: false,       // the typed trigger, on by default
+      },
+  });
+  ```
+
+- **One place to say where uploads go**: `upload: '/api/upload'` at the top level, used by the toolbar's image dialog, by pasting and by dropping alike. It was `{ image: { fileInput: { uploadUrl } } }` inside the toolbar before, which meant paste and drop upload could not be had without the image button, and the editor had to dig the endpoint out of the toolbar array before the toolbar existed. The old form still works, and says once per page what replaced it, since what it cannot do is the thing people were turning up to ask for. `headers` carries a CSRF token, a plain `{ url }` or `{ path }` is understood alongside the `{ success, image_path }` of 1.8, since an endpoint storing PDFs should not have to call its answer `image_path`, and `response` reads anything neither shape fits instead of making you write an adapter, and `field`, `maxSize`, `paste` and `drop` cover the rest. Pass a function instead for a presigned URL or an upload library. `accept` widens it past images, which were all it ever took: a video becomes a `<video>`, audio an `<audio>`, a PDF a link, and `insert` writes whatever you want instead where a renderer downstream will not take HTML. A type outside `accept` and a file over `maxSize` are both refused in the editor's own language, with the MIME type and the byte count left to the console, and `onProgress` reports the bytes as they go out
+
+  ```javascript
+  new MarkdownEditor('#editor', { upload: '/api/upload' });
+
+  // or say exactly how
+  new MarkdownEditor('#editor', {
+      upload: {
+          url: '/api/upload',
+          headers: { 'X-CSRFToken': token },          // CSRF where the framework wants it
+          response: body => body.data.url,            // your endpoint's own shape
+          accept: ['image/*', 'video/mp4'],           // defaults to ['image/*']
+          maxSize: 5 * 1024 * 1024,
+          onProgress: (file, loaded, total) => setProgress(loaded / total),
+          drop: false,
+
+          // only where the default is wrong: an image is already ![alt](url),
+          // a video a <video>, audio an <audio>, anything else a link
+          insert: (file, url) => `<a href="${url}" download>${file.name}</a>`,
+      },
+  });
+
+  // or take the request yourself, for a presigned PUT or an upload library
+  new MarkdownEditor('#editor', { upload: async file => (await store.put(file)).url });
+  ```
+
 - **Pasting formatted text keeps the formatting**: Copy from a web page or a word processor and the headings, links, lists, code and tables arrive as markdown instead of a wall of plain text. The HTML goes through the same sanitiser as the preview. `pasteHtml: false` turns it off
+
+  ```javascript
+  new MarkdownEditor('#editor', { pasteHtml: false });
+  ```
+
 - **Find and replace, rebuilt**: Every match is highlighted at once. `AB` keeps the case of what you replace, `[ ]` searches only your selection, and the shortcuts are VS Code's. The panel works by keyboard and screen reader alone. `find: false` turns it off and gives `Ctrl+F` back to the browser
+
+  ```javascript
+  new MarkdownEditor('#editor', { find: false });   // gives Ctrl+F back to the browser
+  ```
+
 - **A maths button**: Wraps the selection in `$...$`, or `$$...$$` across several lines. `Alt+M` does the same, and pressing it again takes the delimiters off. The editor doesn't render TeX itself, so pass a `renderer` that does. If nothing rendered, the console says so
+
+  ```javascript
+  import markdownIt from 'markdown-it';
+  import katex from '@vscode/markdown-it-katex';
+  import 'katex/dist/katex.min.css';
+
+  new MarkdownEditor('#editor', {
+      toolbar: ['bold', 'italic', 'math', 'preview'],
+      renderer: md => markdownIt().use(katex).render(md),
+  });
+  ```
+
 - **Fifty-six languages included**: Import the one you want from `markdown-text-editor/locale/` and pass it as `locale`. Only that language reaches your bundle. None of them have been checked by a native speaker yet. Each file says so, and corrections are welcome
+
+  ```javascript
+  import es from 'markdown-text-editor/locale/es';
+
+  new MarkdownEditor('#editor', { locale: es });
+  ```
+
 - **A list of every translatable string**: `markdown-text-editor/locale/template.js` lists every string the editor can translate, English on both sides. Copy it, translate the values, pass the result
+
+  ```javascript
+  // your own, for a language not in the box or wording that is not ours
+  new MarkdownEditor('#editor', {
+      locale: { 'Bold': 'Fett', 'Upload failed': 'Hochladen fehlgeschlagen' },
+  });
+  ```
+
 - **Choose which heading levels the dropdown offers**: `{ heading: { levels: [2, 3, 4] } }` in the toolbar array. Most CMS body fields want this, since H1 belongs to the page and not the content. `Ctrl+1` to `Ctrl+3` follow the same list. Defaults to all six
+
+  ```javascript
+  new MarkdownEditor('#editor', {
+      toolbar: [{ heading: { levels: [2, 3, 4] } }, 'bold', 'italic', 'preview'],
+  });
+  ```
 
 ### Changed
 
@@ -26,6 +131,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The package builds ask for marked and DOMPurify instead of carrying them**: Your bundler resolves them, dedupes them against its own copy, and you can patch either one without waiting for a release here. That matters most for DOMPurify, which is what stands between a document and whoever reads it. The `<script src>` build still carries both, because it has nothing to resolve with. The ESM build drops from 218 kB to 124 kB
 - **marked can reach you without a release here**: Its range was `~18.1.2`, which let patches through and held minors back. It's `^18.2.0` now. What marked turns markdown into is pinned by 35 cases, so a version that changes your preview fails the build instead of turning up in it
 - **Tables in the preview are drawn as a grid**: A border around the table and a rule down every column. Before there was a line under the heads, one between the rows, and nothing else
+- **Uploads go out over `XMLHttpRequest` rather than `fetch`**: `fetch` raises no events for a `FormData` body, so there was no way to report progress on an upload of any size. The request is otherwise unchanged: the same multipart body, the same same-origin credentials, the same status check, the same errors. Tests of your own that stub `fetch` to catch an upload want `XMLHttpRequest` now
 - **The preview button shows when the preview is open**: The icon fills in and the tooltip turns into `Close preview (Esc)`. Escape always closed it, but nothing said so
 
 ### Fixed
@@ -43,7 +149,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Column alignment did nothing in the preview**: `:---`, `:---:` and `---:` lined the column up everywhere the markdown was published. The preview drew every column to the left
 - **Replace could change the wrong text**: If you edited the document after searching, Replace overwrote the wrong spot and missed the match
 - **Selecting a single backtick and pressing Code deleted it**: It was read as an already-wrapped empty span and emptied
-- **The editor announced itself in English in every language**: A Spanish editor read "Negrita (Ctrl+B)" on every button while the field those buttons act on was still called "Markdown editor". That name is the first thing a screen reader reads. It goes through the translator now, in all fifty-six locales. `label` still wins where you give it, since it names your particular field rather than the kind of thing it is, and a textarea that already carries a label is left alone
+- **The editor announced itself in English in every language**: A Spanish editor read "Negrita (Ctrl+B)" on every button while the field those buttons act on was still called "Markdown editor". That name is the first thing a screen reader reads. It goes through the translator now, in all fifty-six locales. Only the fallback is the editor's to set: a textarea that already carries a `<label>`, an `aria-label` or an `aria-labelledby` is left alone, which is also how you name the field yourself
+- **TypeScript hosts could not pass options that worked**: `autosave` and `pasteHtml` were missing from the declarations altogether, and `footer: true` was rejected although the editor has always accepted it and falls back to the defaults. The type test exercised the shapes of things without ever naming the options, which is how they went missing; it names every one now
+- **The image dialog's upload error was English in every language**: `Upload failed.` was the one string on the upload path that never went through the translator, in a dialog where every other word did. It comes from the locale files now, in all fifty-six
 - **The completion menu landed outside the editor in a right-to-left document**: Two hundred pixels outside it, because the menu was placed from the inline edge while the caret measurement reports physical pixels. It is also clamped to the editor now, which a caret near the end of a long line needed in either direction
 
 ## [1.9.5] - 2026-11-12

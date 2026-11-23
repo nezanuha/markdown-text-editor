@@ -1,13 +1,11 @@
 import Tool from '../Tool.js';
 import { modal } from '../../modal.js';
-import { uploadImage } from '../../../utils/imageUpload.js';
 import { escapeHtml } from '../../../utils/escapeHtml.js';
 
 class ImageTool extends Tool {
     constructor(editor, config = {}) {
         super(editor, 'Image link');
         this.config = config;
-        this.fileInputConfig = config.fileInput || false;
         // Logic: Respect config or default to true
         this.altInputConfig = config.altInput !== undefined ? config.altInput : { required: true };
         
@@ -36,16 +34,16 @@ class ImageTool extends Tool {
 
         const selectedText = fullText.substring(selectionStart, selectionEnd);
 
-        const acceptFormats = this.fileInputConfig.accept
-            ? this.fileInputConfig.accept.map(type => `image/${type}`).join(',')
-            : 'image/*';
+        // Upload is the editor's, not the button's: a host may configure it
+        // top level and never put this tool on the toolbar at all.
+        const upload = editor.upload;
+        // The image button offers images, whatever else `upload` may accept.
+        const imageTypes = upload?.accept.filter(type => type.startsWith('image/')) ?? [];
+        const acceptFormats = imageTypes.length ? imageTypes.join(',') : 'image/*';
 
         const isAltRequired = typeof this.altInputConfig === 'boolean'
             ? this.altInputConfig
             : (this.altInputConfig.required !== false);
-
-        const uploadUrl = this.fileInputConfig.uploadUrl || null;
-        const customParams = this.fileInputConfig.params || {};
 
         const imageRegex = /^!\[([^\]]*)\]\(([^)]+)\)$/;
         const imageMatch = selectedText && selectedText.match(imageRegex);
@@ -53,7 +51,7 @@ class ImageTool extends Tool {
         const prefillUrl  = imageMatch ? imageMatch[2] : '';
 
         let fileInputTag = '';
-        if (this.fileInputConfig) {
+        if (upload) {
             fileInputTag = `
                 <input type="file" accept="${escapeHtml(acceptFormats)}" class="img-file-input fj:me-input fj:w-full">
                 <div class="fj:me-divider fj:my-1">OR</div>
@@ -107,24 +105,31 @@ class ImageTool extends Tool {
             }
 
             // --- 2. ASYNC UPLOAD ---
-            if (hasFile && uploadUrl) {
+            if (hasFile && upload) {
                 const file = fileInputSelector.files[0];
                 submitBtn.disabled = true;
                 submitBtn.textContent = editor.label('Uploading...');
 
                 try {
-                    const { path, alt } = await uploadImage(file, {
-                        uploadUrl,
-                        params: customParams,
-                        alt: imgFileAltInput.value,
-                    });
+                    const { path, alt } = await upload.upload(file, imgFileAltInput.value,
+                        (_file, loaded, total) => {
+                            // A video takes a minute. A button that says nothing
+                            // for a minute reads as a button that is broken.
+                            const percent = Math.round((loaded / total) * 100);
+                            submitBtn.textContent = editor.label('Uploading...') + ' ' + percent + '%';
+                        });
 
                     urlInputSelector.value = path;
                     // Only take the server's suggestion when the user wrote nothing,
                     // so a typed description is never silently replaced.
                     if (alt && !imgFileAltInput.value.trim()) imgFileAltInput.value = alt;
                 } catch (err) {
-                    alert(err.message || 'Upload failed.');
+                    // A rule the host set rejects with a translated message;
+                    // the server's own error arrives worded as the server wrote
+                    // it. The detail names the type or the size, which is for
+                    // the console and not for whoever picked the file.
+                    alert(err.message || editor.label('Upload failed'));
+                    if (err.detail) console.error('[MarkdownEditor] Upload refused:', err.detail);
                     submitBtn.disabled = false;
                     submitBtn.textContent = editor.label('Apply');
                     urlInputSelector.required = true; // Restore

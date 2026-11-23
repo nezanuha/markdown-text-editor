@@ -54,6 +54,23 @@ Hi {{customer.name}} ({{customer.email}}), invoice {{invoice.number}} is dated {
 
         <p class="text-sm font-medium mt-4">2. No image tool in the toolbar at all</p>
         <textarea class="no-image-tool h-28" rows="3">This draft must still be here too.</textarea>
+
+        <p class="text-sm font-medium mt-4">3. <code>upload</code>, no image button
+           &mdash; paste or drop a screenshot, it should upload</p>
+        <textarea class="upload-no-button h-28" rows="3">No image button above. Paste a screenshot anyway.</textarea>
+
+        <p class="text-sm font-medium mt-4">4. <code>drop: false</code> &mdash; pasting uploads,
+           dropping does nothing, and <b>this text must survive the drop</b></p>
+        <textarea class="paste-only h-28" rows="3">Drop an image on me. I should still be here, unchanged.</textarea>
+
+        <p class="text-sm font-medium mt-4">5. <code>accept</code> past images &mdash; drop a PDF,
+           it should come in as a link, not be thrown away</p>
+        <textarea class="any-file h-28" rows="3">Drop a PDF or a text file here.</textarea>
+
+        <p class="text-sm font-medium mt-4">6. <code>accept</code> a video &mdash; drop an mp4
+           and it becomes a <code>&lt;video&gt;</code> the preview plays, with no
+           <code>insert</code> written for it</p>
+        <textarea class="rich-media h-28" rows="3">Drop an mp4 or an mp3 here, then open the preview.</textarea>
     </div>
 
     <div class="border-t mt-10 pt-5 space-y-3">
@@ -140,19 +157,24 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
             mode: 'hybrid', // default plain
             toolbar: [
                 'heading', 'bold', 'italic', 'ul', 'ol', 'checklist', 'link', 'table', 'math',
-                { variables: [
-                    { label: 'Today', value: '{{today}}', sample: '10 September 2026' },
-                    { label: 'Customer', items: [
-                        { label: 'Name',  value: '{{customer.name}}',  sample: 'Hannes' },
-                        { label: 'Email', value: '{{customer.email}}', sample: 'hannes@example.com' },
-                    ]},
-                    { label: 'Invoice No', value: '{{invoice.number}}' }, // no sample, stays raw
-                ]},
-                // /api/upload is mocked by a dev-only plugin in vite.config.js,
-                // with a 1.2s delay so the "Uploading..." placeholder is visible
-                { image: { fileInput: { uploadUrl: '/api/upload' } } },
+                'variables',
+                'image',
                 'preview'
             ],
+            // Top level since 2.0: the preview reads the samples and the typed
+            // completion reads the openings, neither of which waits for a button
+            variables: [
+                { label: 'Today', value: '{{today}}', sample: '10 September 2026' },
+                { label: 'Customer', items: [
+                    { label: 'Name',  value: '{{customer.name}}',  sample: 'Hannes' },
+                    { label: 'Email', value: '{{customer.email}}', sample: 'hannes@example.com' },
+                ]},
+                { label: 'Invoice No', value: '{{invoice.number}}' }, // no sample, stays raw
+            ],
+            // /api/upload is mocked by a dev-only plugin in vite.config.js,
+            // with a 1.2s delay so the "Uploading..." placeholder is visible.
+            // Top level since 2.0: the dialog, paste and drop all read it.
+            upload: '/api/upload',
             // indent: {
             //     useTabs: false, // ❌ no tabs — use spaces
             //     tabSize: 2,     // number of spaces per indent
@@ -176,6 +198,45 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
             // No image tool at all
             new MarkdownEditor(".no-image-tool", {
                 toolbar: ['bold', 'italic', 'preview'],
+            });
+
+            // What moving the endpoint out of the toolbar buys: uploading
+            // without the button, which needed a button: false flag before
+            new MarkdownEditor(".upload-no-button", {
+                toolbar: ['bold', 'italic', 'preview'],
+                upload: '/api/upload',
+            });
+
+            // Paste uploads, drop is refused -- but still swallowed, or the
+            // browser would navigate to the file and lose the text
+            new MarkdownEditor(".paste-only", {
+                toolbar: ['bold', 'italic', 'preview'],
+                upload: { url: '/api/upload', drop: false },
+            });
+
+            // accept widens it past images. A PDF arrives as a link rather
+            // than being swallowed and discarded, which is all it got before.
+            new MarkdownEditor(".any-file", {
+                toolbar: ['bold', 'italic', 'preview'],
+                upload: {
+                    url: '/api/upload',
+                    accept: ['image/*', 'application/pdf', 'text/plain'],
+                },
+            });
+
+            // Widening accept is the whole configuration. Markdown has no
+            // syntax for video, so the default writes the HTML there is --
+            // nobody accepts an mp4 hoping to get a link. insert is for the
+            // other way round, a renderer downstream that escapes HTML.
+            new MarkdownEditor(".rich-media", {
+                toolbar: ['bold', 'italic', 'preview'],
+                upload: {
+                    url: '/api/upload',
+                    accept: ['image/*', 'video/mp4', 'audio/mpeg'],
+                    onProgress: (file, loaded, total) => {
+                        console.log(`${file.name}: ${Math.round((loaded / total) * 100)}%`);
+                    },
+                },
             });
 
             // A class is only needed when the tool builds its own markup. This one
@@ -267,6 +328,7 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
             });
 
             new MarkdownEditor(".translated", {
+                // Deliberately the pre-2.0 form, so the demo keeps exercising it
                 toolbar: ['heading', 'bold', 'italic', 'link',
                     { image: { fileInput: { uploadUrl: '/api/upload' } } },
                     'preview'

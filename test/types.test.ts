@@ -135,6 +135,63 @@ const badTarget = new MarkdownEditor(42);
 // @ts-expect-error label values are strings
 const badLabels: MarkdownEditorOptions = { labels: { Bold: 42 } };
 
+// The options 2.0 added. Each was missing from the declarations while the
+// feature shipped, so a TypeScript host could not pass it without an error.
+const topVariables: MarkdownEditorOptions = {
+    toolbar: ['bold', 'variables', 'preview'],
+    variables: [{ label: 'Today', value: '{{today}}', sample: '10 September 2026' }],
+};
+const roomyFooter: MarkdownEditorOptions = { footer: true };
+const drafts: MarkdownEditorOptions = { autosave: true };
+const draftsTuned: MarkdownEditorOptions = {
+    autosave: { key: 'post-42', maxAge: 86400000, debounce: 500 },
+};
+const noComplete: MarkdownEditorOptions = {
+    variables: { items: [{ label: 'Today', value: '{{today}}' }], complete: false },
+};
+const plainPaste: MarkdownEditorOptions = { pasteHtml: false };
+
+// @ts-expect-error a variable needs a value, wherever the list is written
+const badTopVariable: MarkdownEditorOptions = { variables: [{ label: 'x' }] };
+// @ts-expect-error autosave takes true or its settings
+const badAutosave: MarkdownEditorOptions = { autosave: 'yes' };
+// @ts-expect-error maxAge is milliseconds
+const badMaxAge: MarkdownEditorOptions = { autosave: { maxAge: '1 week' } };
+
+// upload, in each of its three forms
+const uploadUrl: MarkdownEditorOptions = { upload: '/api/upload' };
+const uploadFull: MarkdownEditorOptions = {
+    upload: {
+        url: '/api/upload',
+        field: 'file',
+        headers: { 'X-CSRFToken': 'abc' },
+        params: { album: 'holiday' },
+        response: body => ({ path: body.data.url }),
+        accept: ['image/png', 'webp'],
+        maxSize: 5 * 1024 * 1024,
+        paste: true,
+        drop: false,
+    },
+};
+const uploadFn: MarkdownEditorOptions = { upload: async (file: File) => file.name };
+const uploadFiles: MarkdownEditorOptions = {
+    upload: {
+        url: '/api/upload',
+        accept: ['image/*', 'application/pdf'],
+        insert: (file: File, url: string) => `[${file.name}](${url})`,
+    },
+};
+const uploadFnObject: MarkdownEditorOptions = { upload: () => ({ path: '/a.png', alt: 'A' }) };
+// the pre-2.0 toolbar form still typechecks
+const uploadLegacy: MarkdownEditorOptions = {
+    toolbar: [{ image: { fileInput: { uploadUrl: '/api/upload' } } }],
+};
+
+// @ts-expect-error the object form needs somewhere to post to
+const badUpload: MarkdownEditorOptions = { upload: { headers: {} } };
+// @ts-expect-error maxSize is a number of bytes
+const badMaxSize: MarkdownEditorOptions = { upload: { url: '/u', maxSize: '5MB' } };
+
 export {
     rendered, subToolbar, defaultTools,
     withCustomTool, withDeclarativeTool, noAction, translatedCustom, ShoutTool,
@@ -142,4 +199,9 @@ export {
     full, minimal, noFooter, customTheme, altDisabled, altRequired,
     flat, grouped, entries, bySelector, byElement, textarea, container, markdown,
     badMode, badHeight, badTool, badVariable, badGroup, badRenderer, badSanitizer, badTarget,
+    drafts, draftsTuned, noComplete, plainPaste,
+    topVariables, roomyFooter, badTopVariable,
+    badAutosave, badMaxAge,
+    uploadUrl, uploadFull, uploadFn, uploadFnObject, uploadFiles, uploadLegacy,
+    badUpload, badMaxSize,
 };

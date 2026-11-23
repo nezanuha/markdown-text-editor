@@ -15,7 +15,7 @@ import { overlayHost, measureOffsets } from './overlay.js';
  * inserted unless a key says so, so `{{` typed in the middle of a sentence
  * for its own sake costs a dismissed menu and nothing else.
  *
- * Opt out with `variableComplete: false`.
+ * Opt out with `variables: { items: [...], complete: false }`.
  */
 
 const MAX_ITEMS = 8;
