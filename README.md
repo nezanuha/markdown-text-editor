@@ -41,6 +41,8 @@ Most JavaScript markdown editors (EasyMDE, SimpleMDE, CodeMirror-based editors) 
 | Inline event handlers (CSP) | ✅ None | Some |
 | RTL support | ✅ Built in | Via CodeMirror's `direction` option |
 | Built-in Find & Replace | ✅ | ❌ |
+| Draft recovery that asks before restoring | ✅ | ❌ |
+| Upload from paste and drop, one endpoint | ✅ | Partial |
 | Swap the markdown parser | ✅ | ❌ |
 | Keyboard shortcuts | ✅ | Partial |
 | Dark mode / theming | ✅ | Limited |
@@ -116,8 +118,11 @@ That is the whole breaking change. `labels` was renamed to `locale` and still wo
 - 🔀 **WYSIWYG Hybrid Mode** — Renders bold, italic, headings, and code live as you type while keeping the underlying Markdown. Switch to plain mode for raw syntax editing
 - ⚡ **Live Preview** — Full side-by-side Markdown preview with clickable task list checkboxes that sync back to the source instantly
 - 🔧 **Bring Your Own Renderer** — Swap marked for markdown-it or any other parser so the preview matches whatever your backend renders. The sanitizer is replaceable too, and DOMPurify still runs by default
-- 🏷️ **Variable Dropdown** — Give template authors a menu of readable names that insert placeholders like `{{customer.name}}`. Entries can be grouped, and a sample value can stand in for the placeholder in the preview
-- 🖼️ **Advanced Image Upload** — Upload images directly to your server or S3. Avoids heavy Base64 strings for better performance and SEO
+- 🏷️ **Variables, From a List or as You Type** — Give template authors a menu of readable names that insert placeholders like `{{customer.name}}`, so nobody is typing a precise string from memory. Entries can be grouped, a sample value can stand in for the placeholder in the preview, and typing the opening of a placeholder completes it under the caret. Whatever punctuation your own values use is what opens it
+- 🖼️ **Uploads, in One Place** — `upload: '/api/upload'` and the toolbar button, pasting a screenshot and dropping a file all go to it. A CSRF token in a header, your endpoint's own response shape, a size limit and a progress callback are all options rather than forks. Images by default; widen `accept` and a video arrives as a `<video>`, a PDF as a link. Or hand it a function and upload to S3 yourself, so the bytes never touch your server
+- 💾 **Draft Recovery** — `autosave: true` keeps what is being written in the browser. If the tab dies, the next load *offers* the draft back with the time it was taken and lets the writer choose. It never restores on its own, because the text on the page may be the newer of the two
+- 📊 **Table Editing** — Click inside a table, or press `Alt+T`, and a bar appears beside it: add or delete the row or column you are in, align it, tidy the pipes. `Tab` moves between cells
+- 📋 **Paste Keeps Its Formatting** — Copy from a web page or a word processor and the headings, links, lists, code and tables arrive as markdown instead of a wall of plain text. The HTML goes through the same sanitizer as the preview
 - 🔍 **Find & Replace** — Built-in panel (`Ctrl+F` / `Ctrl+H`) with live match counter, next/prev navigation, case-sensitive toggle, and replace all
 - ⌨️ **Keyboard Shortcuts** — `Ctrl+B`, `Ctrl+I`, `Ctrl+K`, `Ctrl+Z`, `Ctrl+1`–`Ctrl+3` for headings, and more
 - 📝 **Smart List Continuation** — GitHub-style: press `Enter` inside a list and the bullet/number continues automatically
@@ -126,7 +131,7 @@ That is the whole breaking change. `labels` was renamed to `locale` and still wo
 - 🛡️ **XSS Safe** — Preview output sanitized via [DOMPurify](https://github.com/cure53/DOMPurify) before rendering, including the output of a custom renderer
 - 🛡️ **CSP Compatible** — No inline event handlers, no `eval`, and no injected `<style>` element. The stylesheet is a real file you link, so a strict policy needs no `'unsafe-inline'` exception for either `script-src` or `style-src` ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42))
 - 🌍 **RTL Support** — Native Right-to-Left support for Arabic, Urdu, Farsi, and other RTL languages
-- 🗣️ **Translatable Interface** — Every tooltip, menu item, dialog field and screen reader name goes through the `locale` option, keyed by the English string. `locale/template.js` lists all 45 of them so you don't have to go looking. Fifty-six languages ship with the package; you import the one you need
+- 🗣️ **Translatable Interface** — Every tooltip, menu item, dialog field and screen reader name goes through the `locale` option, keyed by the English string. `locale/template.js` lists all 72 of them so you don't have to go looking. Fifty-six languages ship with the package; you import the one you need
 - 🎨 **Inherits Your UI** — Uses the typeface and size of the page it's dropped into, so it matches your forms rather than imposing its own look. Nothing to configure
 - 🌙 **Dark Mode & Theming** — Picks up `data-theme` from any ancestor element, and follows the system setting when there isn't one. Built-in light, dark, snowberry, and darkberry themes. Fully customizable via CSS variables
 - 🧩 **Custom Tools** — Add your own toolbar button with `{ custom: { title, icon, action } }`, or extend `MarkdownEditor.Tool` when it builds its own markup. Keyboard shortcuts, translation and teardown work exactly as they do for the built-ins. No fork, no patching
@@ -158,19 +163,66 @@ const editor = new MarkdownEditor('#markdown-editor', {
 });
 ```
 
-### Auto-save draft to localStorage
+### Recover a draft after the tab dies
 
 ```javascript
-const textarea = document.getElementById('markdown-editor');
-const saved = localStorage.getItem('draft');
-if (saved && !textarea.value) textarea.value = saved;
+new MarkdownEditor('#markdown-editor', { autosave: true });
+```
 
-const editor = new MarkdownEditor('#markdown-editor', {
-    onChange(value) {
-        localStorage.setItem('draft', value);
-    }
+That is the whole thing. The draft is written to `localStorage` as you type and,
+if the tab died with unsaved text, the next load offers it back with the time it
+was taken.
+
+It offers rather than restores, deliberately. The text already on the page came
+from your database and may be the newer of the two, so silently overwriting it
+can lose an edit made somewhere else. The writer sees both and picks.
+
+```javascript
+new MarkdownEditor('#markdown-editor', {
+    autosave: {
+        key: 'post-42',                   // defaults to the URL plus the textarea id
+        maxAge: 7 * 24 * 60 * 60 * 1000,  // older drafts are dropped, not offered
+        debounce: 1000,                   // how long typing pauses before a write
+    },
 });
 ```
+
+### Upload images, pasted screenshots and dropped files
+
+```javascript
+new MarkdownEditor('#markdown-editor', { upload: '/api/upload/' });
+```
+
+Your endpoint receives `image_file` as multipart form data and answers with a
+URL. All three routes in — the toolbar button, a paste, a drop — use it.
+
+```python
+# Django
+@require_POST
+def upload(request):
+    file = request.FILES["image_file"]
+    saved = default_storage.save(f"uploads/{uuid.uuid4().hex}{Path(file.name).suffix}", file)
+    return JsonResponse({"url": default_storage.url(saved)})
+```
+
+A framework that wants its CSRF token in a header, an endpoint that already
+answers in its own shape, a size limit, file types past images:
+
+```javascript
+new MarkdownEditor('#markdown-editor', {
+    upload: {
+        url: '/api/upload/',
+        headers: { 'X-CSRFToken': csrf },        // or X-CSRF-TOKEN for Laravel
+        response: body => body.data.url,         // only if yours differs
+        accept: ['image/*', 'video/mp4'],        // defaults to ['image/*']
+        maxSize: 50 * 1024 * 1024,
+        onProgress: (file, loaded, total) => { bar.value = loaded / total; },
+    },
+});
+```
+
+`accept` and `maxSize` stop a 200 MB file leaving the browser. They stop nothing
+reaching your endpoint by other means, so check both server-side too.
 
 ### Add your own toolbar button
 
