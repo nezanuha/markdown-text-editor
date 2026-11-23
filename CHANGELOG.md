@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+**Breaking:** the stylesheet is a separate file now. Add one line and the rest
+of your setup is untouched; leave it out and the editor works but renders
+unstyled, and says so in the console. Details under Changed.
+
+**Faster:** a keystroke in a 150,000-character document went from about 220ms
+to about 5ms, and the ESM build from 218 kB to 124 kB.
+
 ### Added
 
 - **Editing tables**: Click inside one, or press `Alt+T`, and a small bar appears beside it. Add or delete the column or row you're in, align it, tidy the pipes. Tab moves between cells. The toolbar button opens a size grid instead of the old fixed three-column table. `tableBar: false` turns the bar off
@@ -49,7 +56,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   });
   ```
 
-- **One place to say where uploads go**: `upload: '/api/upload'` at the top level, used by the toolbar's image dialog, by pasting and by dropping alike. It was `{ image: { fileInput: { uploadUrl } } }` inside the toolbar before, which meant paste and drop upload could not be had without the image button, and the editor had to dig the endpoint out of the toolbar array before the toolbar existed. The old form still works, and says once per page what replaced it, since what it cannot do is the thing people were turning up to ask for. `headers` carries a CSRF token, a plain `{ url }` or `{ path }` is understood alongside the `{ success, image_path }` of 1.8, since an endpoint storing PDFs should not have to call its answer `image_path`, and `response` reads anything neither shape fits instead of making you write an adapter, and `field`, `maxSize`, `paste` and `drop` cover the rest. Pass a function instead for a presigned URL or an upload library. `accept` widens it past images, which were all it ever took: a video becomes a `<video>`, audio an `<audio>`, a PDF a link, and `insert` writes whatever you want instead where a renderer downstream will not take HTML. A type outside `accept` and a file over `maxSize` are both refused in the editor's own language, with the MIME type and the byte count left to the console, and `onProgress` reports the bytes as they go out
+- **One place to say where uploads go**: `upload: '/api/upload'` at the top level, used by the toolbar's image dialog, by pasting and by dropping alike. It was `{ image: { fileInput: { uploadUrl } } }` inside the toolbar, which meant paste and drop could not upload without the image button, and left the editor digging an endpoint out of the toolbar array before the toolbar existed. An endpoint is not a button. The old form still works.
+
+  What moving it out makes possible:
+
+    - `headers`, for a CSRF token. It could only go in the body before, so Django's `X-CSRFToken` and Laravel's `X-CSRF-TOKEN` were both out of reach
+    - a plain `{ url }` or `{ path }` answer, read alongside the `{ success, image_path }` of 1.8. An endpoint storing PDFs should not have to call its answer `image_path`, and `response` reads anything neither shape fits, instead of you writing an adapter endpoint to rename two keys
+    - `accept` and `maxSize`, enforced on all three routes in. The file picker enforced `accept` and pasting did not, so the rule you wrote was not the rule you got
+    - files past images: a video arrives as a `<video>`, audio as an `<audio>`, anything else as a link. `insert` overrides that where a renderer downstream will not take HTML
+    - `onProgress`, so a 50 MB upload can say how far along it is
+    - uploading with no image button on the toolbar at all
+
+  A type outside `accept` is ignored, as a dropped PDF always was; a file over `maxSize` is refused and says so, in the editor's own language, with the MIME type and the byte count left to the console. `field`, `paste` and `drop` cover the rest, and passing a function instead of an object hands you the request, for a presigned URL or an upload library
 
   ```javascript
   new MarkdownEditor('#editor', { upload: '/api/upload' });
@@ -128,17 +146,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **The stylesheet is now a separate file**: Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css` with a bundler. This is the breaking change. An existing setup keeps working, but it renders unstyled until you add that line, and the editor says so in the console. It also lets the editor run under a strict Content Security Policy, which refused the old injected `<style>` tag whatever nonce it carried ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))
-- **`label` is deprecated in favour of the attribute**: It still works and still wins, so nothing breaks. But `aria-label` on the textarea, or a `<label for>`, does the same job natively, applies before this script runs, survives the script failing to load, and is what the editor checks for first anyway. The option only wrote that attribute for you, and sat one letter from `labels` while meaning something unrelated to it
-- **`labels` is now `locale`**: Same translations under a better name. Plenty of the keys are messages and counts, not labels. `labels` still works. The option covers the find panel, the footer and the preview pane too, which were stuck in English before
-- **The package builds ask for marked and DOMPurify instead of carrying them**: Your bundler resolves them, dedupes them against its own copy, and you can patch either one without waiting for a release here. That matters most for DOMPurify, which is what stands between a document and whoever reads it. The `<script src>` build still carries both, because it has nothing to resolve with. The ESM build drops from 218 kB to 124 kB
+- **`labels` is now `locale`**: Same translations under a better name, since plenty of the keys are messages and counts rather than labels. The option covers the find panel, the footer and the preview pane too, which were stuck in English before
+- **marked and DOMPurify are peer dependencies**: Your bundler resolves them, dedupes them against its own copy, and you can patch either one without waiting for a release here. That matters most for DOMPurify, which is what stands between a document and whoever reads it. The `<script src>` build still carries both, because it has nothing to resolve with. The ESM build drops from 218 kB to 124 kB
 - **marked can reach you without a release here**: Its range was `~18.1.2`, which let patches through and held minors back. It's `^18.2.0` now. What marked turns markdown into is pinned by 35 cases, so a version that changes your preview fails the build instead of turning up in it
 - **Tables in the preview are drawn as a grid**: A border around the table and a rule down every column. Before there was a line under the heads, one between the rows, and nothing else
 - **Uploads go out over `XMLHttpRequest` rather than `fetch`**: `fetch` raises no events for a `FormData` body, so there was no way to report progress on an upload of any size. The request is otherwise unchanged: the same multipart body, the same same-origin credentials, the same status check, the same errors. Tests of your own that stub `fetch` to catch an upload want `XMLHttpRequest` now
 - **The preview button shows when the preview is open**: The icon fills in and the tooltip turns into `Close preview (Esc)`. Escape always closed it, but nothing said so
 
+### Deprecated
+
+Each of these still works. Nothing has to change today.
+
+- **`labels`**, renamed to `locale`
+- **`label`**, in favour of `aria-label` or a `<label for>` on the textarea. Both are native, apply before this script runs, survive it not loading, and are what the editor looks for first; the option only wrote the attribute for you
+- **`{ image: { fileInput: { uploadUrl } } }`** in the toolbar, in favour of the top-level `upload`. It is the one deprecation that costs you something to keep: paste and drop cannot upload without the image button on the toolbar
+- **`{ variables: [...] }`** in the toolbar, in favour of the top-level `variables`
+
+### Removed
+
+- **`dist/markdown-text-editor.umd.js`**. The UMD build is `dist/markdown-text-editor.cjs` now. Only reaching past the package for that filename is affected; `import` and `require` are not
+
 ### Fixed
 
-- **`require()` returned an empty object**: The package is ESM, so Node read the build meant for `require` as ESM too, and its CommonJS branch never ran. That file is `dist/markdown-text-editor.cjs` instead. `import` was fine throughout. If you reached past the package for `dist/markdown-text-editor.umd.js`, that name is gone
+- **`require()` returned an empty object**: The package is ESM, so Node read the build meant for `require` as ESM too, and its CommonJS branch never ran. That file is `dist/markdown-text-editor.cjs` instead. `import` was fine throughout
 - **Odd input could take the whole editor down**: A `toolbar` that wasn't an array, a stray `null` among the tools, a `renderer` that threw. Any of them left you with no editor at all. They complain in the console and carry on
 - **`destroy()` left a key handler on your textarea**: Tab and bracket handling could never be taken off again. An app that builds and tears down editors left one behind every time, still answering Tab, still holding the dead editor in memory
 - **Typing slowed down as a document grew**: The editor measured its own height on every keystroke, and measuring makes the browser lay out the whole document first. Now it only measures when the text gets shorter or the editor changes width. At 150,000 characters that took a keystroke from about 220ms to about 5ms
@@ -146,7 +176,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The syntax markers in hybrid mode were too faint to read**: The dimmed `**`, backticks and brackets sat at 2.49:1 against the light theme's background. Even an interface part is asked for 3:1. They read at 4.54:1 now
 - **Typing a closing bracket left a second one behind**: `[` gives you `[]`. Type the `]` yourself and you got `[text]]`, so every link written by hand came out wrong. Same for `)`, `}` and `>`. The cursor steps over the half that's already there
 - **The toolbar can be crossed by keyboard**: Arrow keys move along it, Home and End jump to either end, and the whole bar is one tab stop. It used to be nineteen. Every button also announces its shortcut with its name, so Bold reads as "Bold (Ctrl+B)"
-- **The find panel stretched over the preview and hid under the scrollbar**: It stays over the text you're editing. In a right-to-left language it also sat on the right, covering the start of every line. It's pinned to the end of the line instead, so it mirrors with the text
+- **The find panel sat in the wrong place**: It stays over the text you're editing. In a right-to-left language it also sat on the right, covering the start of every line. It's pinned to the end of the line instead, so it mirrors with the text
 - **The editor is now the same size on any page**: On a page without Tailwind it came out 2px taller than you asked for, and the find box 17px wider. `minHeight: 200` means 200 wherever you drop it in
 - **Column alignment did nothing in the preview**: `:---`, `:---:` and `---:` lined the column up everywhere the markdown was published. The preview drew every column to the left
 - **Replace could change the wrong text**: If you edited the document after searching, Replace overwrote the wrong spot and missed the match
@@ -157,9 +187,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **A translation could break out of the attribute it landed in**: The dialogs escape the URL and alt text they prefill from the document, which is what 1.9.5 fixed, but not the placeholder and `aria-label` text they take from `locale`. The bundled locales are vetted files, so this reached nobody; a host loading translations from a database or from contributors is a different matter. Everything interpolated into that markup is escaped now, and both call sites have a regression test using the payload from that advisory, since the helper had one, the places that call it did not
 - **A textarea whose `id` held a quote took the editor down**: Looking for an existing `<label for>` built a selector out of the id, and `label[for="a"b"]` is a `SyntaxError` thrown from the constructor, so a field that was merely named oddly got no editor at all. The labels are walked instead of selected, which cannot throw
 - **An upload failure arrived as a browser `alert()`**: Unstyled, ignoring the theme, blocking the page, and putting the message somewhere the file input is not. It appears in the dialog itself now, in a `role="alert"` region that a screen reader announces without focus leaving the field
-- **`MarkdownEditor.modal()` failed with "Cannot read properties of null"**: It finds the editor from the event it is handed, so a custom tool passing anything else got a message about null rather than about what to pass. It says what to pass
+- **`modal()` failed on an unexpected event**: It finds the editor from the event it is handed, so a custom tool passing anything else got a message about null rather than about what to pass. It says what to pass
 - **The image dialog's upload error was never translated**: `Upload failed.` was the one string on the upload path that never went through the translator, in a dialog where every other word did. It comes from the locale files now, in all fifty-six
-- **The completion menu landed outside the editor in a right-to-left document**: Two hundred pixels outside it, because the menu was placed from the inline edge while the caret measurement reports physical pixels. It is also clamped to the editor now, which a caret near the end of a long line needed in either direction
+- **The completion menu was misplaced in RTL**: Two hundred pixels outside it, because the menu was placed from the inline edge while the caret measurement reports physical pixels. It is also clamped to the editor now, which a caret near the end of a long line needed in either direction
 
 ## [1.9.5] - 2026-11-12
 
