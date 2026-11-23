@@ -2200,9 +2200,14 @@ check("the editor announces itself in the reader's language", () => {
     // reads and the one that says what the thing is.
     const plain = makeEditor({ toolbar: FULL_BAR });
     const translated = makeEditor({ toolbar: FULL_BAR, locale: spanish });
+    // `label` has been public since before 2.0. Deprecated in favour of the
+    // attribute, which is native, but still honoured: dropping it would have
+    // taken the accessible name off a 1.x host without saying so.
+    const named = makeEditor({ toolbar: FULL_BAR, locale: spanish, label: 'Cuerpo' });
 
     return plain.usertextarea.getAttribute('aria-label') === 'Markdown editor'
-        && translated.usertextarea.getAttribute('aria-label') === 'Editor de Markdown';
+        && translated.usertextarea.getAttribute('aria-label') === 'Editor de Markdown'
+        && named.usertextarea.getAttribute('aria-label') === 'Cuerpo';
 });
 
 check('a textarea that is already labelled is left alone', () => {
@@ -2211,9 +2216,8 @@ check('a textarea that is already labelled is left alone', () => {
     const ta = document.createElement('textarea');
     ta.setAttribute('aria-label', 'Set by the page');
     document.body.appendChild(ta);
-    new MarkdownEditor(ta, { toolbar: FULL_BAR });
-    // The page knows its own form better than this does, which is also why
-    // there is no option to name the field: the attribute already is one.
+    new MarkdownEditor(ta, { toolbar: FULL_BAR, label: 'ignored' });
+    // The page knows its own form better than this does, option or no option.
     return ta.getAttribute('aria-label') === 'Set by the page';
 });
 

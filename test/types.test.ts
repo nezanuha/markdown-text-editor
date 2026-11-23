@@ -142,6 +142,7 @@ const topVariables: MarkdownEditorOptions = {
     variables: [{ label: 'Today', value: '{{today}}', sample: '10 September 2026' }],
 };
 const roomyFooter: MarkdownEditorOptions = { footer: true };
+const named: MarkdownEditorOptions = { label: 'Article body' };
 const drafts: MarkdownEditorOptions = { autosave: true };
 const draftsTuned: MarkdownEditorOptions = {
     autosave: { key: 'post-42', maxAge: 86400000, debounce: 500 },
@@ -200,7 +201,7 @@ export {
     flat, grouped, entries, bySelector, byElement, textarea, container, markdown,
     badMode, badHeight, badTool, badVariable, badGroup, badRenderer, badSanitizer, badTarget,
     drafts, draftsTuned, noComplete, plainPaste,
-    topVariables, roomyFooter, badTopVariable,
+    topVariables, roomyFooter, named, badTopVariable,
     badAutosave, badMaxAge,
     uploadUrl, uploadFull, uploadFn, uploadFnObject, uploadFiles, uploadLegacy,
     badUpload, badMaxSize,

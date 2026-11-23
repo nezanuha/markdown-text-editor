@@ -285,13 +285,15 @@ class MarkdownEditor {
             // label a screen reader reads first and the one that says what
             // the thing is.
             //
-            // Only the fallback is the editor's business. Naming this
-            // particular field -- "Article body" rather than "Markdown
-            // editor" -- is the page's, and `aria-label` or a `<label>` on
-            // the textarea already does it, before this runs and whether or
-            // not the script loads. There is no option for it, because an
-            // option would only write the attribute you could have written.
-            this.usertextarea.setAttribute('aria-label', this.label('Markdown editor'));
+            // `label` has been public since before 2.0, so it keeps working.
+            // It is deprecated rather than removed: `aria-label` or a
+            // `<label>` on the textarea does the same thing natively, before
+            // this runs and whether or not the script loads, and this option
+            // only writes an attribute the page could have written. Dropping
+            // it would have taken the accessible name off any 1.x host that
+            // set it, silently, which is the worst way to lose one.
+            this.usertextarea.setAttribute('aria-label',
+                this.options.label || this.label('Markdown editor'));
             this._addedAriaLabel = true;
         }
 

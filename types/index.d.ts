@@ -390,6 +390,19 @@ export interface MarkdownEditorOptions {
     labels?: Record<string, string>;
 
     /**
+     * The accessible name for the textarea, read before anything else by a
+     * screen reader. Without it the editor falls back to a translated
+     * `'Markdown editor'`.
+     *
+     * @deprecated Put `aria-label` on the textarea, or give it a `<label>`.
+     * Either is native, works before this script runs, and is what the editor
+     * checks for first. This option only writes the attribute for you. It
+     * still works, and is not to be confused with `labels`, the old name for
+     * `locale`, or with `editor.label()`, which looks up translations.
+     */
+    label?: string;
+
+    /**
      * Placeholders your users insert rather than type: merge tags, template
      * variables, anything with a fixed spelling they would otherwise get wrong.
      *
