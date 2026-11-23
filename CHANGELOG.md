@@ -7,13 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-**Breaking:** the stylesheet is a separate file now. Add one line and the rest
-of your setup is untouched; leave it out and the editor works but renders
-unstyled, and says so in the console. Details under Changed.
-
-**Faster:** a keystroke in a 150,000-character document went from about 220ms
-to about 5ms, and the ESM build from 218 kB to 124 kB.
-
 ### Added
 
 - **Editing tables**: Click inside one, or press `Alt+T`, and a small bar appears beside it. Add or delete the column or row you're in, align it, tidy the pipes. Tab moves between cells. The toolbar button opens a size grid instead of the old fixed three-column table. `tableBar: false` turns the bar off
@@ -145,7 +138,7 @@ to about 5ms, and the ESM build from 218 kB to 124 kB.
 
 ### Changed
 
-- **The stylesheet is now a separate file**: Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css` with a bundler. This is the breaking change. An existing setup keeps working, but it renders unstyled until you add that line, and the editor says so in the console. It also lets the editor run under a strict Content Security Policy, which refused the old injected `<style>` tag whatever nonce it carried ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))
+- **Breaking: the stylesheet is now a separate file**: Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css` with a bundler. This is the breaking change. An existing setup keeps working, but it renders unstyled until you add that line, and the editor says so in the console. It also lets the editor run under a strict Content Security Policy, which refused the old injected `<style>` tag whatever nonce it carried ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))
 - **`labels` is now `locale`**: Same translations under a better name, since plenty of the keys are messages and counts rather than labels. The option covers the find panel, the footer and the preview pane too, which were stuck in English before
 - **marked and DOMPurify are peer dependencies**: Your bundler resolves them, dedupes them against its own copy, and you can patch either one without waiting for a release here. That matters most for DOMPurify, which is what stands between a document and whoever reads it. The `<script src>` build still carries both, because it has nothing to resolve with. The ESM build drops from 218 kB to 124 kB
 - **marked can reach you without a release here**: Its range was `~18.1.2`, which let patches through and held minors back. It's `^18.2.0` now. What marked turns markdown into is pinned by 35 cases, so a version that changes your preview fails the build instead of turning up in it
