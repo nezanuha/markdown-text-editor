@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Itinapon ang draft",
     "Draft restored": "Naibalik ang draft",
     "Discard": "Itapon",
     "Markdown editor": "Markdown editor",

@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Skica u hodh",
     "Draft restored": "Skica u rikthye",
     "Discard": "Hidhe",
     "Markdown editor": "Redaktues Markdown",

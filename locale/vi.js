@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Đã loại bỏ bản nháp",
     "Draft restored": "Đã khôi phục bản nháp",
     "Discard": "Bỏ qua",
     "Markdown editor": "Trình soạn thảo Markdown",

@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Draf dibuang",
     "Draft restored": "Draf dipulihkan",
     "Discard": "Buang",
     "Markdown editor": "Editor Markdown",

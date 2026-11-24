@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Brouillon supprimé",
     "Draft restored": "Brouillon restauré",
     "Discard": "Abandonner",
     "Markdown editor": "Éditeur Markdown",

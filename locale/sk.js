@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Koncept zahodený",
     "Draft restored": "Koncept obnovený",
     "Discard": "Zahodiť",
     "Markdown editor": "Editor Markdownu",

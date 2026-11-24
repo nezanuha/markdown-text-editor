@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Dréacht caite i leataobh",
     "Draft restored": "Dréacht athchóirithe",
     "Discard": "Cuir i leataobh",
     "Markdown editor": "Eagarthóir Markdown",

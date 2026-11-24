@@ -4025,10 +4025,10 @@ check('Discard leaves the text alone and clears the store', () => {
     const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k5' } }, 'server text');
     answerDraft(e, 'discard');
 
-    // Discard leaves nothing to say
     return e.usertextarea.value === 'server text'
-        && barOf(e) === null
-        && store.keys().length === 0;
+        && store.keys().length === 0
+        // and says so, with the way back, since nothing else can give it back
+        && barOf(e).textContent.includes('Draft discarded');
 });
 
 check('the strip says how long ago, not to the second', () => {
@@ -4061,6 +4061,42 @@ check('the exact time is a hover away, and in the dialog', () => {
     const dialog = e.editorContainer.querySelector('.markdown-modal');
 
     return titled && dialog.textContent.includes(exact);
+});
+
+check('an accidental discard can be taken back too', () => {
+    store.reset();
+    store.data.set('mte:draft:undisc', JSON.stringify(
+        { text: 'the draft', seed: '', at: Date.now() }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'undisc' } }, 'server text');
+
+    barBtn(e, 'Review').click();
+    e.editorContainer.querySelector('.markdown-modal .compare-discard').click();
+
+    // Discard has no document change to reverse, so what it undoes is the
+    // deletion: nothing else can give the draft back.
+    const said = barOf(e).textContent.includes('Draft discarded');
+    barBtn(e, 'Undo').click();
+
+    return said && store.keys().length === 1
+        && barOf(e).textContent.includes('Unsaved draft');
+});
+
+check('the strip that comes back survives the next keystroke', () => {
+    store.reset();
+    store.data.set('mte:draft:survive', JSON.stringify(
+        { text: 'the draft', seed: '', at: Date.now() }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'survive' } }, 'server text');
+
+    barBtn(e, 'Review').click();
+    e.editorContainer.querySelector('.markdown-modal .compare-restore').click();
+    barBtn(e, 'Undo').click();
+
+    e.usertextarea.value += 'x';
+    e.usertextarea.dispatchEvent(new window.Event('input'));
+
+    // The listener that dismisses the "restored" strip used to outlive it and
+    // take the strip that replaced it, so Review vanished on the first key.
+    return barOf(e) !== null && barOf(e).textContent.includes('Unsaved draft');
 });
 
 check('an accidental restore can be taken back from the strip', () => {
@@ -4460,7 +4496,8 @@ check('Discard from the dialog takes the strip with it', () => {
     openCompare(e).querySelector('.compare-discard').click();
 
     const gone = window.localStorage.getItem('mte:draft:disc') === null
-        && e.editorContainer.querySelector('.autosave-bar') === null;
+        && e.editorContainer.querySelector('.autosave-bar')
+            .textContent.includes('Draft discarded');
     window.localStorage.removeItem('mte:draft:disc');
     return gone && e.usertextarea.value === 'theirs';
 });

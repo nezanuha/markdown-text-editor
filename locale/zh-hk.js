@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "草稿已捨棄",
     "Draft restored": "草稿已還原",
     "Discard": "捨棄",
     "Markdown editor": "Markdown 編輯器",

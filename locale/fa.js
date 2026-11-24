@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "پیش‌نویس دور انداخته شد",
     "Draft restored": "پیش‌نویس بازگردانی شد",
     "Discard": "نادیده گرفتن",
     "Markdown editor": "ویرایشگر مارک‌داون",

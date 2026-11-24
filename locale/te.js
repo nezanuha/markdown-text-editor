@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "డ్రాఫ్ట్ విస్మరించబడింది",
     "Draft restored": "డ్రాఫ్ట్ పునరుద్ధరించబడింది",
     "Discard": "విస్మరించు",
     "Markdown editor": "మార్క్‌డౌన్ ఎడిటర్",

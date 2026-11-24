@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "تم تجاهل المسودة",
     "Draft restored": "تمت استعادة المسودة",
     "Discard": "تجاهل",
     "Markdown editor": "محرر ماركداون",

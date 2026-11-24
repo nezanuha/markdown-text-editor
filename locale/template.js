@@ -38,6 +38,7 @@ export default {
     "Delete row": "Delete row",
     "Discard": "Discard",
     "Draft {n} chars": "Draft {n} chars",
+    "Draft discarded": "Draft discarded",
     "Draft restored": "Draft restored",
     "Editor toolbar": "Editor toolbar",
     "Find": "Find",

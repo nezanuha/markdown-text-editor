@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "下書きを破棄しました",
     "Draft restored": "下書きを復元しました",
     "Discard": "破棄",
     "Markdown editor": "Markdown エディター",

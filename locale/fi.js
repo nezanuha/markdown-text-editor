@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Luonnos hylätty",
     "Draft restored": "Luonnos palautettu",
     "Discard": "Hylkää",
     "Markdown editor": "Markdown-editori",

@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "मसुदा टाकून दिला",
     "Draft restored": "मसुदा पुनर्संचयित केला",
     "Discard": "टाकून द्या",
     "Markdown editor": "मार्कडाउन संपादक",

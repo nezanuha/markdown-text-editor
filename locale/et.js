@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Mustand hüljatud",
     "Draft restored": "Mustand taastatud",
     "Discard": "Loobu",
     "Markdown editor": "Markdowni redaktor",

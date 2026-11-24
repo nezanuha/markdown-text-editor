@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Սևագիրը հեռացվեց",
     "Draft restored": "Սևագիրը վերականգնվեց",
     "Discard": "Հրաժարվել",
     "Markdown editor": "Markdown խմբագրիչ",

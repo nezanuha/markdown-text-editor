@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Нацртот е отфрлен",
     "Draft restored": "Нацртот е вратен",
     "Discard": "Отфрли",
     "Markdown editor": "Markdown уредник",

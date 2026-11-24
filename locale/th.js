@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "ทิ้งฉบับร่างแล้ว",
     "Draft restored": "กู้คืนฉบับร่างแล้ว",
     "Discard": "ละทิ้ง",
     "Markdown editor": "ตัวแก้ไข Markdown",

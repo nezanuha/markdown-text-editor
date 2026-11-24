@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Taslak atıldı",
     "Draft restored": "Taslak geri yüklendi",
     "Discard": "Yoksay",
     "Markdown editor": "Markdown düzenleyici",

@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Osnutek zavržen",
     "Draft restored": "Osnutek obnovljen",
     "Discard": "Zavrzi",
     "Markdown editor": "Urejevalnik Markdown",

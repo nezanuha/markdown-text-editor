@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Kladde kasseret",
     "Draft restored": "Kladde gendannet",
     "Discard": "Kassér",
     "Markdown editor": "Markdown-editor",

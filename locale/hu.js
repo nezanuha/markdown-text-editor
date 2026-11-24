@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Vázlat elvetve",
     "Draft restored": "Vázlat visszaállítva",
     "Discard": "Elvetés",
     "Markdown editor": "Markdown-szerkesztő",

@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Utkast kasserat",
     "Draft restored": "Utkast återställt",
     "Discard": "Kasta",
     "Markdown editor": "Markdown-redigerare",

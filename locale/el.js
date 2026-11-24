@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Το πρόχειρο απορρίφθηκε",
     "Draft restored": "Το πρόχειρο επαναφέρθηκε",
     "Discard": "Απόρριψη",
     "Markdown editor": "Επεξεργαστής Markdown",

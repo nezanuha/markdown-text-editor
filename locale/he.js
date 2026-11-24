@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "הטיוטה הושלכה",
     "Draft restored": "הטיוטה שוחזרה",
     "Discard": "התעלם",
     "Markdown editor": "עורך Markdown",

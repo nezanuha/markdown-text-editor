@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Ciornă eliminată",
     "Draft restored": "Ciornă restaurată",
     "Discard": "Renunță",
     "Markdown editor": "Editor Markdown",

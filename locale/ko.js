@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "임시 저장본을 버렸습니다",
     "Draft restored": "임시 저장본을 복원했습니다",
     "Discard": "삭제",
     "Markdown editor": "마크다운 편집기",

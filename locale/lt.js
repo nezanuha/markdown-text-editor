@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Juodraštis atmestas",
     "Draft restored": "Juodraštis atkurtas",
     "Discard": "Atmesti",
     "Markdown editor": "Markdown redaktorius",

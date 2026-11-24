@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "ड्राफ़्ट हटा दिया गया",
     "Draft restored": "ड्राफ़्ट पुनर्स्थापित किया गया",
     "Discard": "खारिज करें",
     "Markdown editor": "मार्कडाउन संपादक",

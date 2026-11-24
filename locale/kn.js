@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "ಕರಡು ತ್ಯಜಿಸಲಾಗಿದೆ",
     "Draft restored": "ಕರಡು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ",
     "Discard": "ತಿರಸ್ಕರಿಸು",
     "Markdown editor": "ಮಾರ್ಕ್‌ಡೌನ್ ಸಂಪಾದಕ",

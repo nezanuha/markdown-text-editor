@@ -432,7 +432,7 @@ export default class Autosave {
         });
         dialog.querySelector('.compare-discard').addEventListener('click', () => {
             dialog.close();
-            this.clear();
+            this.discard(saved);
         });
 
         return dialog;
@@ -486,17 +486,18 @@ export default class Autosave {
     }
 
     /**
-     * Says the draft went in, and offers the way back out.
+     * Says what just happened, and offers the way back.
      *
-     * Restoring is undoable -- the editor records it as one step -- but a
-     * capability nobody is told about is not a safety net. Someone who meant
-     * to press Discard, or who restored and then read it properly, needs the
-     * way back in front of them rather than in the documentation.
+     * Restoring and discarding are both irreversible from the strip's point of
+     * view -- one overwrites the document, the other deletes the only copy of
+     * the draft -- so both leave this behind. Restoring is undoable through
+     * the editor's own history; discarding is not, because no text changed, so
+     * what it undoes is the deletion.
      *
      * It goes when it is used or when the next keystroke arrives, since by
      * then the answer has been given.
      */
-    _showRestored(saved) {
+    _showUndoable(message, onUndo) {
         const bar = document.createElement('div');
         bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft fj:me-alert-success'
             + ' fj:me-alert-sm fj:w-full fj:rounded-none fj:me-alert-horizontal'
@@ -505,24 +506,16 @@ export default class Autosave {
 
         const label = document.createElement('span');
         label.className = 'fj:grow fj:min-w-0';
-        label.textContent = this.editor.label('Draft restored');
+        label.textContent = message;
 
         const undo = document.createElement('button');
         undo.type = 'button';
-        undo.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-success';
+        undo.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-success fj:justify-self-end';
         // Already a key, from the toolbar button that does the same thing.
         undo.textContent = this.editor.label('Undo');
         undo.addEventListener('click', () => {
-            this.editor.undoRedoManager?.undo();
             this._hide();
-            // Put the draft back where it was, too. Restoring deletes it --
-            // it is on screen, so offering it again would be offering text
-            // the page already holds -- but undoing says the restore was not
-            // wanted, and leaving the draft deleted would mean an accidental
-            // click had destroyed it even though nothing was kept. Back in
-            // storage, the strip returns, and the state is the one before
-            // the mistake.
-            storage.set(this.key, saved);
+            onUndo();
             this._offer();
         });
 
@@ -532,11 +525,12 @@ export default class Autosave {
         const container = this.editor.editorContainer;
         container.insertBefore(bar, container.firstChild);
 
-        const dismiss = () => {
-            this.textarea.removeEventListener('input', dismiss);
-            this._hide();
-        };
-        this.textarea.addEventListener('input', dismiss);
+        // Held on the instance and taken off in _hide, because it used to be
+        // neither: the listener outlived the strip it was added for, and the
+        // first keystroke after an undo removed the strip that had just come
+        // back in its place.
+        this._dismiss = () => this._hide();
+        this.textarea.addEventListener('input', this._dismiss);
     }
 
     restore(saved) {
@@ -554,10 +548,35 @@ export default class Autosave {
         // The draft is on screen now, so keeping it stored would offer it
         // again on the next load against text that already holds it.
         this.clear();
-        this._showRestored(saved);
+        this._showUndoable(this.editor.label('Draft restored'), () => {
+            this.editor.undoRedoManager?.undo();
+            // Restoring deleted it, since it was on screen. Undoing says that
+            // was not wanted, so leaving it deleted would mean one accidental
+            // click had destroyed a draft nothing kept.
+            storage.set(this.key, saved);
+        });
+    }
+
+    /**
+     * Discarding, from the dialog, with the way back.
+     *
+     * Not the same as `clear`, which is housekeeping: the form was submitted,
+     * the draft matched the page, the draft was too old. Nobody chose those,
+     * so nobody needs offering them back.
+     */
+    discard(saved) {
+        this.clear();
+        this._showUndoable(this.editor.label('Draft discarded'),
+            () => storage.set(this.key, saved));
     }
 
     _hide() {
+        // Before the strip goes, or this outlives it and takes the next one
+        // with it.
+        if (this._dismiss) {
+            this.textarea.removeEventListener('input', this._dismiss);
+            this._dismiss = null;
+        }
         this.bar?.remove();
         this.bar = null;
         // The dialog belongs to the wrapper and closes with it, and `modal`

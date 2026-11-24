@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Rasimu imetupwa",
     "Draft restored": "Rasimu imerejeshwa",
     "Discard": "Tupa",
     "Markdown editor": "Kihariri cha Markdown",

@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "L-abbozz ġie skartat",
     "Draft restored": "L-abbozz ġie rkuprat",
     "Discard": "Warrab",
     "Markdown editor": "Editur Markdown",

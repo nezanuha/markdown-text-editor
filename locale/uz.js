@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Qoralama o'chirildi",
     "Draft restored": "Qoralama tiklandi",
     "Discard": "Bekor qilish",
     "Markdown editor": "Markdown muharriri",

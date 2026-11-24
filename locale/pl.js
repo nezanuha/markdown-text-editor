@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft discarded": "Odrzucono wersję roboczą",
     "Draft restored": "Przywrócono wersję roboczą",
     "Discard": "Odrzuć",
     "Markdown editor": "Edytor Markdown",
