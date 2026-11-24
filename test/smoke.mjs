@@ -4040,9 +4040,10 @@ check('the strip says how long ago, not to the second', () => {
     const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'ago' } }, 'server text');
     const shown = barOf(e).textContent;
 
-    // Intl does the wording, so this is right in every language the editor
-    // ships and a few it does not, with no key of ours to translate
-    return shown.includes('2 hours ago')
+    // Intl does the wording, in its narrow style, so this is right in every
+    // language the editor ships and a few it does not, with no key of ours
+    // to translate
+    return shown.includes('2h ago')
         && !shown.includes(new Date(twoHours).toLocaleString());
 });
 

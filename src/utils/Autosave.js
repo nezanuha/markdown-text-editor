@@ -59,7 +59,15 @@ function ago(when) {
     const units = [['day', 86400], ['hour', 3600], ['minute', 60], ['second', 1]];
 
     try {
-        const format = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+        // narrow: "5h ago" rather than "5 hours ago". A strip is read in
+        // passing, and the age only has to be close enough to judge whether
+        // the draft is worth opening. Every locale has its own short form --
+        // "hace 5 h", "5時間前", "vor 5 Std." -- so this costs nothing in the
+        // languages that cannot abbreviate the way English does.
+        const format = new Intl.RelativeTimeFormat(undefined, {
+            numeric: 'auto',
+            style: 'narrow',
+        });
         for (const [unit, size] of units) {
             if (Math.abs(seconds) >= size || unit === 'second') {
                 return format.format(Math.round(seconds / size), unit);
@@ -264,16 +272,16 @@ export default class Autosave {
             + ' fj:border-base-soft fj:border-0 fj:border-b';
         bar.setAttribute('role', 'status');
 
-        // What it is and how old it is, stacked on a phone and side by side
-        // once there is room for both on one line. One child rather than two,
-        // so the alert's grid grows this and pushes the button to the end
-        // without a spacer.
+        // One line: "Unsaved draft  5h ago". It fits on a phone now that the
+        // age is abbreviated, so there is nothing to stack. What can still be
+        // too long is the staleness note, and flex-wrap drops that onto a
+        // second line by itself rather than breaking the pair above it.
         //
-        // min-w-0, or a long staleness note refuses to wrap and pushes the
-        // button off the end of a narrow screen.
+        // min-w-0, or that note refuses to wrap at all and pushes the button
+        // off the end of a narrow screen.
         const message = document.createElement('div');
-        message.className = 'fj:grow fj:min-w-0 fj:flex fj:flex-col'
-            + ' fj:sm:flex-row fj:sm:items-baseline fj:sm:gap-2';
+        message.className = 'fj:min-w-0 fj:flex fj:flex-wrap'
+            + ' fj:items-baseline fj:gap-x-2';
 
         const label = document.createElement('span');
         label.textContent = this.editor.label('Unsaved draft');
@@ -289,11 +297,12 @@ export default class Autosave {
         taken.title = new Date(saved.at).toLocaleString();
         when.append(taken);
 
-        if (stale) {
-            const note = document.createElement('span');
-            note.className = 'fj:ms-2';
+        // A sibling of the pair above rather than a child of the age, so
+        // flex-wrap can put it on its own line without taking the age with it.
+        const note = stale ? document.createElement('span') : null;
+        if (note) {
+            note.className = 'fj:text-xs fj:basis-full fj:sm:basis-auto';
             note.textContent = this.editor.label('The document has changed since then');
-            when.append(note);
         }
 
 
@@ -326,8 +335,14 @@ export default class Autosave {
         // The two buttons travel as one child. The alert puts a 1rem gutter
         // between its children, which is right between the message and the
         // choice and far too much between the two halves of that choice.
+        // justify-self-end, because the alert's own grid is what decides
+        // where this lands. Horizontal, with two children, it sets
+        // `grid-template-columns: auto minmax(auto,1fr)` and `justify-items:
+        // start` -- so this column already spans the rest of the bar, and its
+        // content was sitting at the near edge of it, against the message,
+        // rather than at the end of the strip.
         const actions = document.createElement('div');
-        actions.className = 'fj:flex fj:items-center fj:gap-1';
+        actions.className = 'fj:flex fj:items-center fj:gap-1 fj:justify-self-end';
         // Restore takes the strip's own colour, so the two belong together.
         // A button left on the base palette lands on a tinted alert as a
         // grey block from another room; this is the same hue, filled, which
@@ -357,6 +372,7 @@ export default class Autosave {
         );
 
         message.append(label, when);
+        if (note) message.append(note);
         bar.append(message, actions);
 
         this.bar = bar;
