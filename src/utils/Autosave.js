@@ -255,19 +255,29 @@ export default class Autosave {
         bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft'
             + (stale ? ' fj:me-alert-warning' : ' fj:me-alert-info')
             + ' fj:me-alert-sm fj:w-full fj:rounded-none'
-            // The alert lays its children out in a row, which on a phone
-            // leaves the message about seventy pixels wide while the two
-            // buttons keep their full width. Stacked below 40rem, in a row
-            // above it.
-            + ' fj:me-alert-vertical fj:sm:me-alert-horizontal'
+            // A row at every width. It used to stack below 40rem, back when
+            // the strip carried three buttons and a row left the message
+            // about seventy pixels wide. With one button there is room, and
+            // the wrapping that is left belongs inside the message rather
+            // than between the message and the way to answer it.
+            + ' fj:me-alert-horizontal'
             + ' fj:border-base-soft fj:border-0 fj:border-b';
         bar.setAttribute('role', 'status');
+
+        // What it is and how old it is, stacked on a phone and side by side
+        // once there is room for both on one line. One child rather than two,
+        // so the alert's grid grows this and pushes the button to the end
+        // without a spacer.
+        //
+        // min-w-0, or a long staleness note refuses to wrap and pushes the
+        // button off the end of a narrow screen.
+        const message = document.createElement('div');
+        message.className = 'fj:grow fj:min-w-0 fj:flex fj:flex-col'
+            + ' fj:sm:flex-row fj:sm:items-baseline fj:sm:gap-2';
 
         const label = document.createElement('span');
         label.textContent = this.editor.label('Unsaved draft');
 
-        // Second child, which is the one the alert's grid lets grow, so the
-        // buttons are pushed to the end without a spacer element.
         const when = document.createElement('span');
         when.className = 'fj:text-xs';
 
@@ -346,7 +356,8 @@ export default class Autosave {
                 (event) => this._openComparison(event, saved), accent),
         );
 
-        bar.append(label, when, actions);
+        message.append(label, when);
+        bar.append(message, actions);
 
         this.bar = bar;
         const container = this.editor.editorContainer;
@@ -472,13 +483,12 @@ export default class Autosave {
     _showRestored() {
         const bar = document.createElement('div');
         bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft fj:me-alert-success'
-            + ' fj:me-alert-sm fj:w-full fj:rounded-none'
-            + ' fj:me-alert-vertical fj:sm:me-alert-horizontal'
+            + ' fj:me-alert-sm fj:w-full fj:rounded-none fj:me-alert-horizontal'
             + ' fj:border-base-soft fj:border-0 fj:border-b';
         bar.setAttribute('role', 'status');
 
         const label = document.createElement('span');
-        label.className = 'fj:grow';
+        label.className = 'fj:grow fj:min-w-0';
         label.textContent = this.editor.label('Draft restored');
 
         const undo = document.createElement('button');
