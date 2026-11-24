@@ -1,3 +1,27 @@
+/**
+ * What makes rendered markdown look like this editor's preview.
+ *
+ * Exported because the draft comparison renders markdown too, and a second
+ * copy of this list drifted immediately: it was written as three of these
+ * classes and lost `me-prose-frutjam`, the one that points the typography at
+ * frutjam's palette. Without it the plugin's own colours show through, and on
+ * a dark theme that is near-black headings on a near-black background --
+ * legible enough in the editor's own preview that nobody would think to check
+ * the other place.
+ *
+ * Typography only. Where the box sits, how it scrolls and how tall it is are
+ * the caller's, since the pane and the dialog disagree about all three.
+ */
+export const PROSE_CLASSES = `
+    fj:mte-prose fj:mte-prose-sm fj:md:mte-prose-base fj:me-prose-frutjam
+    fj:max-w-full
+    fj:mte-prose-p:first:mt-0
+    fj:mte-prose-table:border-collapse
+    fj:mte-prose-table:border fj:mte-prose-table:border-base-soft
+    fj:mte-prose-th:border fj:mte-prose-th:border-base-soft fj:mte-prose-th:px-2
+    fj:mte-prose-td:border fj:mte-prose-td:border-base-soft fj:mte-prose-td:px-2
+`;
+
 class Preview {
     /**
      * @param label Translator for the pane's own name, the same shape Footer
@@ -33,13 +57,8 @@ class Preview {
         // no frame. With a frame there, the text touched the line.
         this.previewContent.className = `
             preview-content
-            fj:mte-prose fj:mte-prose-sm fj:md:mte-prose-base fj:me-prose-frutjam
-            fj:p-1.5 fj:overflow-y-auto fj:h-full fj:max-w-full
-            fj:mte-prose-p:first:mt-0
-            fj:mte-prose-table:border-collapse
-            fj:mte-prose-table:border fj:mte-prose-table:border-base-soft
-            fj:mte-prose-th:border fj:mte-prose-th:border-base-soft fj:mte-prose-th:px-2
-            fj:mte-prose-td:border fj:mte-prose-td:border-base-soft fj:mte-prose-td:px-2
+            ${PROSE_CLASSES}
+            fj:p-1.5 fj:overflow-y-auto fj:h-full
         `;
         this.previewContainer.appendChild(this.previewContent);
         container.appendChild(this.previewContainer);

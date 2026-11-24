@@ -1,5 +1,6 @@
 import { lineDiff } from './lineDiff.js';
 import { modal } from '../components/modal.js';
+import { PROSE_CLASSES } from '../components/Preview.js';
 import { escapeHtml } from './escapeHtml.js';
 
 /**
@@ -363,11 +364,11 @@ export default class Autosave {
             <div class="autosave-preview fj:mt-2 fj:hidden fj:max-h-80 fj:overflow-y-auto" role="tabpanel">
                 <div>
                     <span class="fj:me-badge fj:me-badge-soft fj:me-badge-sm">${pageSize}</span>
-                    <div class="preview-now fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-1 fj:p-2 fj:mte-prose fj:mte-prose-sm fj:max-w-full"></div>
+                    <div class="preview-now fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-1 fj:p-2 ${PROSE_CLASSES}"></div>
                 </div>
                 <div class="fj:mt-3">
                     <span class="fj:me-badge fj:me-badge-soft fj:me-badge-success fj:me-badge-sm">${draftSize}</span>
-                    <div class="preview-draft fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-1 fj:p-2 fj:mte-prose fj:mte-prose-sm fj:max-w-full"></div>
+                    <div class="preview-draft fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-1 fj:p-2 ${PROSE_CLASSES}"></div>
                 </div>
             </div>
             <div class="fj:mt-4 fj:flex fj:justify-end fj:gap-2">

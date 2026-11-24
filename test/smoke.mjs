@@ -4364,6 +4364,29 @@ check('the dialog offers the draft rendered as well as the difference', () => {
         && shownDraft.includes('Why Shopify') && !shownDraft.includes('##');
 });
 
+check('the dialog renders markdown in the preview pane\'s own typography', () => {
+    window.localStorage.setItem('mte:draft:prose', JSON.stringify(
+        { text: '## Hi', seed: 'x', at: Date.now() }));
+
+    const e = makeEditor({ toolbar: ['bold', 'preview'], autosave: { key: 'prose' } }, 'x');
+    const dialog = openCompare(e);
+
+    // Typography only. Where the box sits and how it scrolls differ between a
+    // pane and a dialog, and should.
+    const typography = (el) => el.className.split(/\s+/)
+        .filter(c => c.startsWith('fj:mte-') || c === 'fj:me-prose-frutjam').sort().join(' ');
+
+    const pane = typography(e.previewContent);
+    window.localStorage.removeItem('mte:draft:prose');
+
+    // The first version of this listed three classes by hand and lost
+    // me-prose-frutjam, which is what points the typography at frutjam's
+    // palette: the headings came out near-black on a dark theme.
+    return pane.includes('fj:me-prose-frutjam')
+        && typography(dialog.querySelector('.preview-now')) === pane
+        && typography(dialog.querySelector('.preview-draft')) === pane;
+});
+
 check('the preview of a draft goes through the configured sanitiser', () => {
     window.localStorage.setItem('mte:draft:san', JSON.stringify(
         { text: '<img src=x onerror=alert(1)>', seed: 'theirs', at: Date.now() }));
