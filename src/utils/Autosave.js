@@ -517,6 +517,18 @@ export default class Autosave {
             this._hide();
             onUndo();
             this._offer();
+
+            // Undoing a restore changes the document, which schedules a save
+            // like any other change. A debounce later that save would find the
+            // text back at what the page loaded with -- because that is what
+            // undoing it means -- and `save` reads that as nothing unsaved
+            // being left, so it would clear the draft and take this strip with
+            // it, about a second after putting both back.
+            //
+            // Rightly, for anyone who typed their way back to the original.
+            // Here nothing has changed since the draft was written, so there
+            // is nothing to write.
+            clearTimeout(this._timer);
         });
 
         bar.append(label, undo);

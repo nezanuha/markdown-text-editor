@@ -4081,6 +4081,30 @@ check('an accidental discard can be taken back too', () => {
         && barOf(e).textContent.includes('Unsaved draft');
 });
 
+// Every other test here is synchronous, so none of them could see this: the
+// strip came back, and a debounce later a save that nobody noticed being
+// scheduled took it away again along with the draft.
+for (const which of ['restore', 'discard']) {
+    await checkAsync(`the strip that comes back survives the debounce after ${which}`, async () => {
+        store.reset();
+        store.data.set('mte:draft:deb', JSON.stringify(
+            { text: 'the draft', seed: '', at: Date.now() }));
+        const e = makeEditor({ toolbar: FULL_BAR,
+            autosave: { key: 'deb', debounce: 5 } }, 'server text');
+
+        barBtn(e, 'Review').click();
+        e.editorContainer.querySelector('.markdown-modal .compare-' + which).click();
+        barBtn(e, 'Undo').click();
+
+        await new Promise(r => setTimeout(r, 30));
+
+        // This key, not the number of keys: editors from earlier tests are
+        // still alive and still have debounced saves of their own.
+        return store.data.has('mte:draft:deb')
+            && barOf(e)?.textContent.includes('Unsaved draft') === true;
+    });
+}
+
 check('the strip that comes back survives the next keystroke', () => {
     store.reset();
     store.data.set('mte:draft:survive', JSON.stringify(
