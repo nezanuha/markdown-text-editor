@@ -3997,12 +3997,13 @@ check('a stored draft is offered, never restored on its own', () => {
 
     // Restoring here would put an old draft over newer text from the server
     // and say nothing about it.
-    // One button, and it opens the dialog. Neither answer is a thing to do
-    // without looking, and the strip costs nothing to ignore.
+    // Review, and a way out that is not an answer. Neither answer is a thing
+    // to do without looking, so neither is on the strip.
+    const buttons = [...barOf(e).querySelectorAll('button')];
     return e.usertextarea.value === 'what the server sent'
-        && barOf(e) !== null
-        && barOf(e).querySelectorAll('button').length === 1
-        && barBtn(e, 'Review') !== undefined;
+        && buttons.length === 2
+        && barBtn(e, 'Review') !== undefined
+        && buttons.some(b => b.getAttribute('aria-label') === 'Close');
 });
 
 check('Restore puts the draft in and clears the store', () => {
@@ -4061,6 +4062,37 @@ check('the exact time is a hover away, and in the dialog', () => {
     const dialog = e.editorContainer.querySelector('.markdown-modal');
 
     return titled && dialog.textContent.includes(exact);
+});
+
+check('closing the strip keeps the draft for next time', () => {
+    store.reset();
+    store.data.set('mte:draft:shut', JSON.stringify(
+        { text: 'the draft', seed: '', at: Date.now() }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'shut' } }, 'server text');
+
+    [...barOf(e).querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === 'Close').click();
+
+    // "not now", not "no". Discarding is the other thing, and it is behind
+    // the dialog where it can say what it is deleting.
+    return barOf(e) === null
+        && e.usertextarea.value === 'server text'
+        && store.data.has('mte:draft:shut');
+});
+
+check('the strip after an answer can be closed as well', () => {
+    store.reset();
+    store.data.set('mte:draft:shut2', JSON.stringify(
+        { text: 'the draft', seed: '', at: Date.now() }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'shut2' } }, 'server text');
+
+    barBtn(e, 'Review').click();
+    e.editorContainer.querySelector('.markdown-modal .compare-restore').click();
+    [...barOf(e).querySelectorAll('button')]
+        .find(b => b.getAttribute('aria-label') === 'Close').click();
+
+    // closing is not undoing: the restore stands
+    return barOf(e) === null && e.usertextarea.value === 'the draft';
 });
 
 check('an accidental discard can be taken back too', () => {

@@ -79,6 +79,26 @@ function ago(when) {
     return new Date(when).toLocaleString();
 }
 
+/**
+ * The way out of a strip without answering it.
+ *
+ * On the offer this means "not now": the draft stays stored and is offered
+ * again on the next load, which is what a reminder about unsaved work should
+ * do. Discarding is the other thing, and it is behind the dialog where it can
+ * say what it is deleting.
+ *
+ * `Close` is already a key, from the dialogs.
+ */
+function closeButton(label, onClose) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-ghost fj:me-btn-circle';
+    button.setAttribute('aria-label', label);
+    button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`;
+    button.addEventListener('click', onClose);
+    return button;
+}
+
 function fingerprint(text) {
     let hash = 5381;
     for (let i = 0; i < text.length; i++) {
@@ -369,6 +389,7 @@ export default class Autosave {
         actions.append(
             button(this.editor.label('Review'),
                 (event) => this._openComparison(event, saved), accent),
+            closeButton(this.editor.label('Close'), () => this._hide()),
         );
 
         message.append(label, when);
@@ -520,7 +541,7 @@ export default class Autosave {
         undo.type = 'button';
         // Ghost, so one button serves both strips without this file knowing
         // which colour each is standing on.
-        undo.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-ghost fj:justify-self-end';
+        undo.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-ghost';
         // Already a key, from the toolbar button that does the same thing.
         undo.textContent = this.editor.label('Undo');
         undo.addEventListener('click', () => {
@@ -541,7 +562,11 @@ export default class Autosave {
             clearTimeout(this._timer);
         });
 
-        bar.append(label, undo);
+        const actions = document.createElement('div');
+        actions.className = 'fj:flex fj:items-center fj:gap-1 fj:justify-self-end';
+        actions.append(undo, closeButton(this.editor.label('Close'), () => this._hide()));
+
+        bar.append(label, actions);
         this.bar = bar;
 
         const container = this.editor.editorContainer;
