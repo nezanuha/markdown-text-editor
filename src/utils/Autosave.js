@@ -90,9 +90,6 @@ export default class Autosave {
         this.bar = null;
         this._timer = null;
 
-        this._onInput = () => this._schedule();
-        this.textarea.addEventListener('input', this._onInput);
-
         // Submitting is the application saving the text for real, so the
         // local copy has done its job.
         this.form = this.textarea.form;
@@ -106,7 +103,6 @@ export default class Autosave {
 
     destroy() {
         clearTimeout(this._timer);
-        this.textarea.removeEventListener('input', this._onInput);
         if (this.form && this._onSubmit) this.form.removeEventListener('submit', this._onSubmit);
         this._hide();
     }
@@ -146,7 +142,12 @@ export default class Autosave {
         return address + ':' + index;
     }
 
-    _schedule() {
+    /**
+     * Called by the editor whenever the document changes, however it changed.
+     * Debounced, so a long paste or a held key writes once at the end of it
+     * rather than on every character.
+     */
+    schedule() {
         clearTimeout(this._timer);
         this._timer = setTimeout(() => this.save(), this.delay);
     }

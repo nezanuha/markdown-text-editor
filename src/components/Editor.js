@@ -955,8 +955,22 @@ class MarkdownEditor {
         this.editorContainer.style.height = this._autoHeight;
     }
 
+    /**
+     * The one place that says the document changed, called by the input
+     * handler and by every path that writes the value itself: insertText and
+     * so every toolbar button, the paste manager, find and replace, the table
+     * editor, list continuation, a task list ticked in the preview.
+     *
+     * Autosave hangs off this rather than off the `input` event, which it used
+     * to, and which no programmatic write raises. Pasting a document and
+     * reloading lost it: the paste goes in through insertText, so nothing told
+     * autosave, and the draft was written only when the next keystroke
+     * happened to arrive. Typing one character afterwards saved the lot, which
+     * is a strange thing to have to know.
+     */
     notifyChange() {
         if (this.options.onChange) this.options.onChange(this.usertextarea.value);
+        this.autosave?.schedule();
     }
 
     render() {

@@ -4077,6 +4077,58 @@ check('a draft identical to what is on screen is not offered', () => {
     return barOf(e) === null;
 });
 
+// --- a draft is kept however the document changed --------------------------
+//
+// Autosave listened to the `input` event, which no programmatic write raises.
+// Everything that goes through insertText -- every toolbar button, a rich
+// paste converted to markdown, find and replace, the table editor -- changed
+// the document without telling it. Paste a long document and reload and it was
+// gone; type one character first and the whole thing was there, which is a
+// strange thing to have to know.
+
+await checkAsync('pasting formatted text keeps a draft of it', async () => {
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'rich', debounce: 0 } }, '');
+
+    // rich enough that the markdown differs from the plain text, which is what
+    // sends it down the insertText path rather than the browser's own paste
+    paste(e, {
+        text: 'Why Shopify\nWe built a great little business.',
+        html: '<h2>Why Shopify</h2><p>We built a <strong>great little</strong> business.</p>',
+    });
+
+    await new Promise(r => setTimeout(r, 0));
+    const stored = JSON.parse(window.localStorage.getItem('mte:draft:rich') ?? 'null');
+    window.localStorage.removeItem('mte:draft:rich');
+
+    // the bold markers are the evidence it went through htmlToMarkdown and
+    // so through insertText, which is the path that told autosave nothing
+    return e.usertextarea.value.includes('**great little**')
+        && stored !== null && stored.text === e.usertextarea.value;
+});
+
+await checkAsync('a toolbar button keeps a draft too', async () => {
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'tool', debounce: 0 } }, 'plain');
+    e.usertextarea.setSelectionRange(0, 5);
+    e.editorContainer.querySelector('.bold-btn').click();
+
+    await new Promise(r => setTimeout(r, 0));
+    const stored = JSON.parse(window.localStorage.getItem('mte:draft:tool') ?? 'null');
+    window.localStorage.removeItem('mte:draft:tool');
+
+    return e.usertextarea.value === '**plain**'
+        && stored !== null && stored.text === '**plain**';
+});
+
+await checkAsync('replacing text keeps a draft as well', async () => {
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'repl', debounce: 0 } }, 'one two');
+    e.insertText('!');   // the same path every programmatic write takes
+
+    await new Promise(r => setTimeout(r, 0));
+    const stored = JSON.parse(window.localStorage.getItem('mte:draft:repl') ?? 'null');
+    window.localStorage.removeItem('mte:draft:repl');
+    return stored !== null && stored.text === e.usertextarea.value;
+});
+
 // --- what the draft costs to store ------------------------------------------
 //
 // The stored record used to carry a full copy of the text the page loaded
