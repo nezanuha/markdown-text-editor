@@ -100,14 +100,52 @@ class PreviewTool extends Tool {
         }
     }
 
+    /**
+     * The classes the split adds and takes away, in one list so the two
+     * halves cannot drift. For a while these lived on the editor, for the
+     * draft comparison to share; that turned out to want a dialog instead, so
+     * they are back where their only caller is.
+     *
+     * Below the medium breakpoint there is room for one of the two panes, and
+     * the preview is the one that was asked for. The toolbar is dimmed and
+     * inert there, because it would be acting on a textarea that is off
+     * screen -- `aria-disabled` rather than `disabled`, so the buttons stay in
+     * the tab order and a screen reader can still cross the toolbar it was
+     * reading.
+     */
+    _layout(previewWrapper, editorDiv, on) {
+        const textareaWrapper = editorDiv.querySelector('.textarea-wrapper');
+        const dimmed = ['fj:pointer-events-none', 'fj:md:pointer-events-auto',
+            'fj:opacity-25', 'fj:md:opacity-100'];
+        const set = (el, classes, state) => el?.classList[state ? 'add' : 'remove'](...classes);
+
+        set(editorDiv.parentNode, ['is-fullscreen'], on);
+        set(editorDiv, ['fj:md:grid-cols-2'], on);
+        set(previewWrapper, ['fj:hidden'], !on);
+        set(previewWrapper, ['fj:min-h-0'], on);
+        set(textareaWrapper, ['fj:hidden', 'fj:md:grid'], on);
+        set(textareaWrapper.querySelector('textarea'), ['fj:h-full!'], on);
+        set(textareaWrapper.querySelector('.display-layer'), ['fj:h-full!'], on);
+        set(document.body, ['fj:overflow-hidden'], on);
+
+        const isMobile = window.matchMedia('(max-width: 767px)').matches;
+        this.editor.editorContainer.querySelectorAll('.markdown-btn').forEach((button) => {
+            if (button.classList.contains('preview-btn')) return;
+            set(button, dimmed, on);
+            if (on) button.setAttribute('aria-disabled', isMobile ? 'true' : 'false');
+            else button.removeAttribute('aria-disabled');
+        });
+    }
+
     // Method to hide the preview (disable it)
     disablePreview(previewWrapper, editorDiv) {
 
         this.preview = true;
 
-        // The layout belongs to the editor, which the draft comparison opens
-        // the same way. Only the button is this tool's to put back.
-        this.editor.closeSplit(previewWrapper);
+        this._layout(previewWrapper, editorDiv, false);
+
+        document.removeEventListener('keydown', this._escHandler);
+        this.editor._autoGrow();
 
         this._btn?.classList.remove('fj:me-btn-active');
         this._btn?.setAttribute('aria-pressed', 'false');
@@ -122,12 +160,18 @@ class PreviewTool extends Tool {
 
         this.preview = false;
 
-        // The preview button keeps working while the split is open, since it
-        // is what closes it again.
-        this.editor.openSplit(previewWrapper, {
-            onEscape: () => this.applySyntax(),
-            active: 'preview-btn',
-        });
+        // Clear the inline height _autoGrow wrote, before the layout goes on:
+        // an inline style would beat the height in the .is-fullscreen rule.
+        this.editor.editorContainer.style.height = '';
+
+        this._layout(previewWrapper, editorDiv, true);
+
+        this._escHandler = (e) => {
+            if (e.key === 'Escape') this.applySyntax();
+        };
+        document.addEventListener('keydown', this._escHandler);
+
+        this.editor.render();
 
         this._btn?.classList.add('fj:me-btn-active');
         this._btn?.setAttribute('aria-pressed', 'true');
@@ -140,10 +184,11 @@ class PreviewTool extends Tool {
     }
 
     destroy() {
-        // Left open, the body is still locked and the editor still holds a
-        // document-level key handler.
+        // Left open, the body stays locked and a document-level key handler
+        // outlives the editor that added it.
         if (!this.preview) {
-            this.editor.closeSplit(this.editor.previewContent.parentNode);
+            document.removeEventListener('keydown', this._escHandler);
+            document.body.classList.remove('fj:overflow-hidden');
         }
     }
 }

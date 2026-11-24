@@ -350,13 +350,14 @@ export default class Autosave {
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <div class="fj:mt-1 fj:flex fj:gap-3 fj:text-xs fj:opacity-70">
-                <span>${draftSize}</span><span>${pageSize}</span>
+            <div class="fj:mt-2 fj:flex fj:gap-2">
+                <span class="fj:me-badge fj:me-badge-soft fj:me-badge-success fj:me-badge-sm">${draftSize}</span>
+                <span class="fj:me-badge fj:me-badge-soft fj:me-badge-sm">${pageSize}</span>
             </div>
-            <div class="autosave-diff fj:mt-3 fj:text-xs fj:font-mono fj:whitespace-pre-wrap fj:break-words fj:max-h-80 fj:overflow-y-auto"></div>
+            <div class="autosave-diff fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-3 fj:p-2 fj:text-xs fj:font-mono fj:whitespace-pre-wrap fj:break-words fj:max-h-80 fj:overflow-y-auto"></div>
             <div class="fj:mt-4 fj:flex fj:justify-end fj:gap-2">
                 <button type="button" class="compare-discard fj:me-btn fj:me-btn-sm fj:me-btn-ghost">${escapeHtml(this.editor.label('Discard'))}</button>
-                <button type="button" class="compare-restore fj:me-btn fj:me-btn-sm">${escapeHtml(this.editor.label('Restore'))}</button>
+                <button type="button" class="compare-restore fj:me-btn fj:me-btn-sm fj:me-btn-primary">${escapeHtml(this.editor.label('Restore'))}</button>
             </div>`;
 
         const dialog = modal(event, 'fj:max-w-3xl', body, this.editor.label('Compare'));
