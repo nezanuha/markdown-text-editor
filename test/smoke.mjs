@@ -4074,7 +4074,11 @@ check('an accidental discard can be taken back too', () => {
 
     // Discard has no document change to reverse, so what it undoes is the
     // deletion: nothing else can give the draft back.
-    const said = barOf(e).textContent.includes('Draft discarded');
+    // Neutral, not the success green the restore strip takes: nothing good
+    // happened, something was deleted.
+    const said = barOf(e).textContent.includes('Draft discarded')
+        && barOf(e).className.includes('fj:me-alert-neutral')
+        && !barOf(e).className.includes('fj:me-alert-success');
     barBtn(e, 'Undo').click();
 
     return said && store.keys().length === 1
