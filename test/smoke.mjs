@@ -4354,10 +4354,14 @@ check('the dialog offers the draft rendered as well as the difference', () => {
         && tabs[1].classList.contains('fj:me-tab-active')
         && !tabs[0].classList.contains('fj:me-tab-active');
 
+    const shownNow = preview.querySelector('.preview-now').textContent;
+    const shownDraft = preview.querySelector('.preview-draft').textContent;
     window.localStorage.removeItem('mte:draft:tabs');
-    // rendered through the editor's own renderer, so the markdown is gone
-    return landed && switched && preview.textContent.includes('Why Shopify')
-        && !preview.textContent.includes('##');
+
+    // both sides rendered, so the markdown is gone from each
+    return landed && switched
+        && shownNow.includes('theirs') && !shownNow.includes('Why Shopify')
+        && shownDraft.includes('Why Shopify') && !shownDraft.includes('##');
 });
 
 check('the preview of a draft goes through the configured sanitiser', () => {
@@ -4372,8 +4376,9 @@ check('the preview of a draft goes through the configured sanitiser', () => {
     const preview = openCompare(e).querySelector('.autosave-preview');
     window.localStorage.removeItem('mte:draft:san');
 
-    // the host's own sanitiser, the same one the preview pane runs
-    return preview.innerHTML === '<em>cleaned</em>';
+    // both halves: the host's own sanitiser, the same one the preview pane runs
+    return preview.querySelector('.preview-now').innerHTML === '<em>cleaned</em>'
+        && preview.querySelector('.preview-draft').innerHTML === '<em>cleaned</em>';
 });
 
 check('Restore and Discard are in the dialog, next to the evidence', () => {

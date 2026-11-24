@@ -360,7 +360,16 @@ export default class Autosave {
                 <button type="button" role="tab" aria-selected="false" class="compare-tab fj:me-tab" data-view="preview">${escapeHtml(this.editor.label('Preview'))}</button>
             </div>
             <div class="autosave-diff fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:text-xs fj:font-mono fj:whitespace-pre-wrap fj:break-words fj:max-h-80 fj:overflow-y-auto" role="tabpanel"></div>
-            <div class="autosave-preview fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:hidden fj:mte-prose fj:mte-prose-sm fj:max-w-full fj:max-h-80 fj:overflow-y-auto" role="tabpanel"></div>
+            <div class="autosave-preview fj:mt-2 fj:hidden fj:max-h-80 fj:overflow-y-auto" role="tabpanel">
+                <div>
+                    <span class="fj:me-badge fj:me-badge-soft fj:me-badge-sm">${pageSize}</span>
+                    <div class="preview-now fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-1 fj:p-2 fj:mte-prose fj:mte-prose-sm fj:max-w-full"></div>
+                </div>
+                <div class="fj:mt-3">
+                    <span class="fj:me-badge fj:me-badge-soft fj:me-badge-success fj:me-badge-sm">${draftSize}</span>
+                    <div class="preview-draft fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-1 fj:p-2 fj:mte-prose fj:mte-prose-sm fj:max-w-full"></div>
+                </div>
+            </div>
             <div class="fj:mt-4 fj:flex fj:justify-end fj:gap-2">
                 <button type="button" class="compare-discard fj:me-btn fj:me-btn-sm fj:me-btn-ghost">${escapeHtml(this.editor.label('Discard'))}</button>
                 <button type="button" class="compare-restore fj:me-btn fj:me-btn-sm fj:me-btn-primary">${escapeHtml(this.editor.label('Restore'))}</button>
@@ -369,16 +378,24 @@ export default class Autosave {
         const dialog = modal(event, 'fj:max-w-3xl', body, this.editor.label('Compare'));
         this._fillDiff(dialog.querySelector('.autosave-diff'), saved.text);
 
-        // What the draft would look like, not what is different about it. The
-        // diff answers "what would I lose" and stays the view you land on;
-        // this answers "is this the version I meant", which for a document of
-        // headings and tables the markdown source answers badly.
+        // What the two versions look like, rather than what is different about
+        // them. The diff answers "what would I lose" and stays the view you
+        // land on; this answers "is this the version I meant", which for a
+        // document of headings and tables the markdown source answers badly.
+        //
+        // Stacked, each at the dialog's full width, rather than in two columns.
+        // Columns would reflow the prose differently in each one, and these are
+        // read in turn rather than line against line, so the height costs
+        // nothing and the width is worth having.
         //
         // innerHTML, with renderMarkdown either side of it: that is the host's
         // own renderer and the host's own sanitiser, the same pair the preview
         // pane runs, so nothing here decides what is safe.
         const preview = dialog.querySelector('.autosave-preview');
-        preview.innerHTML = this.editor.renderMarkdown(saved.text);
+        preview.querySelector('.preview-now').innerHTML =
+            this.editor.renderMarkdown(this.textarea.value);
+        preview.querySelector('.preview-draft').innerHTML =
+            this.editor.renderMarkdown(saved.text);
 
         const diff = dialog.querySelector('.autosave-diff');
         dialog.querySelectorAll('.compare-tab').forEach((tab) => {
