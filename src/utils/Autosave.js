@@ -496,7 +496,7 @@ export default class Autosave {
      * It goes when it is used or when the next keystroke arrives, since by
      * then the answer has been given.
      */
-    _showRestored() {
+    _showRestored(saved) {
         const bar = document.createElement('div');
         bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft fj:me-alert-success'
             + ' fj:me-alert-sm fj:w-full fj:rounded-none fj:me-alert-horizontal'
@@ -515,6 +515,15 @@ export default class Autosave {
         undo.addEventListener('click', () => {
             this.editor.undoRedoManager?.undo();
             this._hide();
+            // Put the draft back where it was, too. Restoring deletes it --
+            // it is on screen, so offering it again would be offering text
+            // the page already holds -- but undoing says the restore was not
+            // wanted, and leaving the draft deleted would mean an accidental
+            // click had destroyed it even though nothing was kept. Back in
+            // storage, the strip returns, and the state is the one before
+            // the mistake.
+            storage.set(this.key, saved);
+            this._offer();
         });
 
         bar.append(label, undo);
@@ -545,7 +554,7 @@ export default class Autosave {
         // The draft is on screen now, so keeping it stored would offer it
         // again on the next load against text that already holds it.
         this.clear();
-        this._showRestored();
+        this._showRestored(saved);
     }
 
     _hide() {

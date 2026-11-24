@@ -4078,7 +4078,13 @@ check('an accidental restore can be taken back from the strip', () => {
     const offered = barOf(e).textContent.includes('Draft restored');
     barBtn(e, 'Undo').click();
 
-    return offered && e.usertextarea.value === 'server text' && barOf(e) === null;
+    // Everything back where it was, the draft included: restoring deletes it,
+    // and leaving it deleted would mean one accidental click had destroyed a
+    // draft that was never kept.
+    return offered
+        && e.usertextarea.value === 'server text'
+        && store.keys().length === 1
+        && barOf(e).textContent.includes('Unsaved draft');
 });
 
 check('the restored strip goes when the next keystroke arrives', () => {
