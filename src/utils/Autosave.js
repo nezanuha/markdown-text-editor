@@ -45,6 +45,33 @@ const WEEK = 7 * 24 * 60 * 60 * 1000;
  * match on both, which for telling "has the page changed underneath this
  * draft" is far past enough.
  */
+/**
+ * How long ago, in words, localised by the browser rather than by this
+ * library: `Intl.RelativeTimeFormat` knows every language the editor ships and
+ * several it does not, and getting "2 hours ago" wrong in fifty-six locales is
+ * a plural-rules problem nobody should take on by hand.
+ *
+ * The exact timestamp is still in the dialog. A strip is a notice, and a
+ * notice wants "2 hours ago"; the second it happened matters only once you are
+ * deciding, and by then you have opened the thing that says it.
+ */
+function ago(when) {
+    const seconds = Math.round((when - Date.now()) / 1000);
+    const units = [['day', 86400], ['hour', 3600], ['minute', 60], ['second', 1]];
+
+    try {
+        const format = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+        for (const [unit, size] of units) {
+            if (Math.abs(seconds) >= size || unit === 'second') {
+                return format.format(Math.round(seconds / size), unit);
+            }
+        }
+    } catch {
+        // Nothing here is worth failing an editor over.
+    }
+    return new Date(when).toLocaleString();
+}
+
 function fingerprint(text) {
     let hash = 5381;
     for (let i = 0; i < text.length; i++) {
@@ -247,9 +274,10 @@ export default class Autosave {
 
         const taken = document.createElement('span');
         taken.className = 'fj:opacity-70';
-        // The browser's own formatting, so the date reads the way the rest of
-        // the operating system writes dates.
-        taken.textContent = new Date(saved.at).toLocaleString();
+        taken.textContent = ago(saved.at);
+        // The exact time, for anyone who wants it, without spending the strip
+        // on fourteen characters of precision nobody reads.
+        taken.title = new Date(saved.at).toLocaleString();
         when.append(taken);
 
         if (stale) {
@@ -349,7 +377,10 @@ export default class Autosave {
 
         const body = `
             <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
-                <div class="fj:font-medium">${escapeHtml(this.editor.label('Compare'))}</div>
+                <div>
+                    <div class="fj:font-medium">${escapeHtml(this.editor.label('Compare'))}</div>
+                    <div class="fj:text-xs fj:opacity-70">${escapeHtml(this.editor.label('Unsaved draft'))} &middot; ${escapeHtml(new Date(saved.at).toLocaleString())}</div>
+                </div>
                 <button type="button" class="modal-close-btn fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="${escapeHtml(this.editor.label('Close'))}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>

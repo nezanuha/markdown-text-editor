@@ -4029,6 +4029,37 @@ check('Discard leaves the text alone and clears the store', () => {
         && store.keys().length === 0;
 });
 
+check('the strip says how long ago, not to the second', () => {
+    store.reset();
+    const twoHours = Date.now() - 2 * 60 * 60 * 1000;
+    store.data.set('mte:draft:ago', JSON.stringify(
+        { text: 'the draft', seed: '', at: twoHours }));
+
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'ago' } }, 'server text');
+    const shown = barOf(e).textContent;
+
+    // Intl does the wording, so this is right in every language the editor
+    // ships and a few it does not, with no key of ours to translate
+    return shown.includes('2 hours ago')
+        && !shown.includes(new Date(twoHours).toLocaleString());
+});
+
+check('the exact time is a hover away, and in the dialog', () => {
+    store.reset();
+    const at = Date.now() - 90 * 1000;
+    store.data.set('mte:draft:exact', JSON.stringify(
+        { text: 'the draft', seed: '', at }));
+
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'exact' } }, 'server text');
+    const exact = new Date(at).toLocaleString();
+    const titled = [...barOf(e).querySelectorAll('span')].some(s => s.title === exact);
+
+    barBtn(e, 'Compare').click();
+    const dialog = e.editorContainer.querySelector('.markdown-modal');
+
+    return titled && dialog.textContent.includes(exact);
+});
+
 check('a draft taken against older text says the document has moved on', () => {
     store.reset();
     // You typed, left without saving, and somebody else saved in between.
