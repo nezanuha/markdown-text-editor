@@ -1,6 +1,5 @@
 import { lineDiff } from './lineDiff.js';
 import { modal } from '../components/modal.js';
-import { PROSE_CLASSES } from '../components/Preview.js';
 import { escapeHtml } from './escapeHtml.js';
 
 /**
@@ -372,7 +371,7 @@ export default class Autosave {
     _openComparison(event, saved) {
         const draftSize = escapeHtml(this.editor.label('Draft {n} chars')
             .replace('{n}', saved.text.length.toLocaleString()));
-        const pageSize = escapeHtml(this.editor.label('Page {n} chars')
+        const pageSize = escapeHtml(this.editor.label('Current {n} chars')
             .replace('{n}', this.textarea.value.length.toLocaleString()));
 
         const body = `
@@ -385,21 +384,11 @@ export default class Autosave {
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <div class="fj:me-tabs fj:me-tabs-underline fj:me-tabs-sm fj:mt-3" role="tablist">
-                <button type="button" role="tab" aria-selected="true" class="compare-tab fj:me-tab fj:me-tab-active" data-view="diff">${escapeHtml(this.editor.label('Changes'))}</button>
-                <button type="button" role="tab" aria-selected="false" class="compare-tab fj:me-tab" data-view="preview">${escapeHtml(this.editor.label('Preview'))}</button>
+            <div class="fj:mt-3 fj:flex fj:gap-2">
+                <span class="fj:me-badge fj:me-badge-soft fj:me-badge-success fj:me-badge-sm">${draftSize}</span>
+                <span class="fj:me-badge fj:me-badge-soft fj:me-badge-sm">${pageSize}</span>
             </div>
-
-            <div class="autosave-view autosave-diff fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:text-xs fj:font-mono fj:whitespace-pre-wrap fj:break-words fj:max-h-80 fj:overflow-y-auto" role="tabpanel" data-view="diff"></div>
-
-            <div class="autosave-view fj:mt-2 fj:hidden" role="tabpanel" data-view="preview">
-                <div class="fj:me-tabs fj:me-tabs-box fj:me-tabs-xs" role="tablist">
-                    <button type="button" role="tab" aria-selected="true" class="compare-sub fj:me-tab fj:me-tab-active" data-sub="draft">${draftSize}</button>
-                    <button type="button" role="tab" aria-selected="false" class="compare-sub fj:me-tab" data-sub="now">${pageSize}</button>
-                </div>
-                <div class="autosave-sub preview-draft fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:max-h-80 fj:overflow-y-auto ${PROSE_CLASSES}" role="tabpanel" data-sub="draft"></div>
-                <div class="autosave-sub preview-now fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:hidden fj:max-h-80 fj:overflow-y-auto ${PROSE_CLASSES}" role="tabpanel" data-sub="now"></div>
-            </div>
+            <div class="autosave-diff fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:text-xs fj:font-mono fj:whitespace-pre-wrap fj:break-words fj:max-h-80 fj:overflow-y-auto"></div>
             <div class="fj:mt-4 fj:flex fj:justify-end fj:gap-2">
                 <button type="button" class="compare-discard fj:me-btn fj:me-btn-sm fj:me-btn-ghost">${escapeHtml(this.editor.label('Discard'))}</button>
                 <button type="button" class="compare-restore fj:me-btn fj:me-btn-sm fj:me-btn-primary">${escapeHtml(this.editor.label('Restore'))}</button>
@@ -407,47 +396,6 @@ export default class Autosave {
 
         const dialog = modal(event, 'fj:max-w-3xl', body, this.editor.label('Compare'));
         this._fillDiff(dialog.querySelector('.autosave-diff'), saved.text);
-
-        // Two levels, because one level could not say both things. Flat, the
-        // row read "Changes, Draft 2,340 chars, Page 1,980 chars": one label
-        // naming a kind of view and two that look like statistics, with
-        // nothing to say the last two were rendered at all.
-        //
-        // The outer pair says what kind of answer you want; the inner pair,
-        // which only exists under Preview, says which document. The counts
-        // read as labels there because their parent has already said what they
-        // are, which is also why this needs no new strings.
-        //
-        // innerHTML, with renderMarkdown either side of it: that is the host's
-        // own renderer and the host's own sanitiser, the same pair the preview
-        // pane runs, so nothing here decides what is safe.
-        dialog.querySelector('.preview-draft').innerHTML =
-            this.editor.renderMarkdown(saved.text);
-        dialog.querySelector('.preview-now').innerHTML =
-            this.editor.renderMarkdown(this.textarea.value);
-
-        // One handler for both rows: a tab marks itself active and shows the
-        // panel whose matching attribute agrees with it.
-        const wire = (tabSelector, panelSelector, attribute) => {
-            const tabs = [...dialog.querySelectorAll(tabSelector)];
-            const panels = [...dialog.querySelectorAll(panelSelector)];
-            tabs.forEach((tab) => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach((other) => {
-                        const on = other === tab;
-                        other.classList.toggle('fj:me-tab-active', on);
-                        other.setAttribute('aria-selected', String(on));
-                    });
-                    panels.forEach((panel) => {
-                        panel.classList.toggle('fj:hidden',
-                            panel.dataset[attribute] !== tab.dataset[attribute]);
-                    });
-                });
-            });
-        };
-
-        wire('.compare-tab', '.autosave-view', 'view');
-        wire('.compare-sub', '.autosave-sub', 'sub');
 
         dialog.querySelector('.modal-close-btn')
             .addEventListener('click', () => dialog.close());

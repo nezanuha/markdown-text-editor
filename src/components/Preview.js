@@ -1,18 +1,18 @@
 /**
  * What makes rendered markdown look like this editor's preview.
  *
- * Exported because the draft comparison renders markdown too, and a second
- * copy of this list drifted immediately: it was written as three of these
- * classes and lost `me-prose-frutjam`, the one that points the typography at
- * frutjam's palette. Without it the plugin's own colours show through, and on
- * a dark theme that is near-black headings on a near-black background --
- * legible enough in the editor's own preview that nobody would think to check
- * the other place.
+ * One list, in one place, because a second copy drifted the moment it existed:
+ * the draft comparison briefly rendered markdown too, wrote three of these
+ * classes by hand, and lost `me-prose-frutjam` -- the one that points the
+ * typography at frutjam's palette. Without it the plugin's own colours come
+ * through, which on a dark theme is near-black headings on a near-black
+ * background. Anything else that renders markdown should read this rather than
+ * list its own.
  *
- * Typography only. Where the box sits, how it scrolls and how tall it is are
- * the caller's, since the pane and the dialog disagree about all three.
+ * Typography only. Where the box sits, how it scrolls and how tall it is
+ * belong to whatever is holding it.
  */
-export const PROSE_CLASSES = `
+const PROSE_CLASSES = `
     fj:mte-prose fj:mte-prose-sm fj:md:mte-prose-base fj:me-prose-frutjam
     fj:max-w-full
     fj:mte-prose-p:first:mt-0

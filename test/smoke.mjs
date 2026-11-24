@@ -4370,88 +4370,26 @@ check('the diff marks what goes and what comes, with context either side', () =>
         && rows.includes('  two') && rows.includes('  four');
 });
 
-check('the dialog asks what kind of answer, then which document', () => {
+check('the dialog shows the difference and both lengths, and nothing else', () => {
     const draft = '## Why Shopify' + NEWLINE + NEWLINE + 'We built a business.';
-    window.localStorage.setItem('mte:draft:tabs', JSON.stringify(
+    window.localStorage.setItem('mte:draft:one', JSON.stringify(
         { text: draft, seed: 'theirs', at: Date.now() }));
 
-    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'tabs' } }, 'theirs');
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'one' } }, 'theirs');
     const dialog = openCompare(e);
+    const shown = dialog.textContent;
+    window.localStorage.removeItem('mte:draft:one');
 
-    const shown = (sel, attr) => [...dialog.querySelectorAll(sel)]
-        .filter(v => !v.classList.contains('fj:hidden'))
-        .map(v => v.dataset[attr]).join();
-
-    const tabs = [...dialog.querySelectorAll('.compare-tab')];
-    const subs = [...dialog.querySelectorAll('.compare-sub')];
-
-    // the outer pair names a kind of view, the inner pair a document. Flat,
-    // the row read "Changes, Draft 2,340 chars, Page 1,980 chars", which is
-    // one label naming a view and two that look like statistics.
-    const landed = tabs.length === 2 && subs.length === 2
-        && shown('.autosave-view', 'view') === 'diff'
-        && shown('.autosave-sub', 'sub') === 'draft';
-
-    tabs[1].click();
-    const onPreview = shown('.autosave-view', 'view') === 'preview'
-        && tabs[1].classList.contains('fj:me-tab-active')
-        && !tabs[0].classList.contains('fj:me-tab-active');
-
-    subs[1].click();
-    const onNow = shown('.autosave-sub', 'sub') === 'now'
-        && subs[1].getAttribute('aria-selected') === 'true'
-        // the outer choice is untouched by the inner one
-        && shown('.autosave-view', 'view') === 'preview';
-
-    const draftText = dialog.querySelector('.preview-draft').textContent;
-    const nowText = dialog.querySelector('.preview-now').textContent;
-    window.localStorage.removeItem('mte:draft:tabs');
-
-    return landed && onPreview && onNow
-        // the counts label the inner pair, which is why this needs no new keys
-        && subs[0].textContent.includes('chars') && subs[1].textContent.includes('chars')
-        && draftText.includes('Why Shopify') && !draftText.includes('##')
-        && nowText.includes('theirs') && !nowText.includes('Why Shopify');
-});
-
-check('the dialog renders markdown in the preview pane\'s own typography', () => {
-    window.localStorage.setItem('mte:draft:prose', JSON.stringify(
-        { text: '## Hi', seed: 'x', at: Date.now() }));
-
-    const e = makeEditor({ toolbar: ['bold', 'preview'], autosave: { key: 'prose' } }, 'x');
-    const dialog = openCompare(e);
-
-    // Typography only. Where the box sits and how it scrolls differ between a
-    // pane and a dialog, and should.
-    const typography = (el) => el.className.split(/\s+/)
-        .filter(c => c.startsWith('fj:mte-') || c === 'fj:me-prose-frutjam').sort().join(' ');
-
-    const pane = typography(e.previewContent);
-    window.localStorage.removeItem('mte:draft:prose');
-
-    // The first version of this listed three classes by hand and lost
-    // me-prose-frutjam, which is what points the typography at frutjam's
-    // palette: the headings came out near-black on a dark theme.
-    return pane.includes('fj:me-prose-frutjam')
-        && typography(dialog.querySelector('.preview-now')) === pane
-        && typography(dialog.querySelector('.preview-draft')) === pane;
-});
-
-check('the preview of a draft goes through the configured sanitiser', () => {
-    window.localStorage.setItem('mte:draft:san', JSON.stringify(
-        { text: '<img src=x onerror=alert(1)>', seed: 'theirs', at: Date.now() }));
-
-    const e = makeEditor({
-        toolbar: ['bold'],
-        autosave: { key: 'san' },
-        sanitizer: () => '<em>cleaned</em>',
-    }, 'theirs');
-    const dialog = openCompare(e);
-    window.localStorage.removeItem('mte:draft:san');
-
-    // both views: the host's own sanitiser, the same one the preview pane runs
-    return dialog.querySelector('.preview-now').innerHTML === '<em>cleaned</em>'
-        && dialog.querySelector('.preview-draft').innerHTML === '<em>cleaned</em>';
+    // One view. A rendered one was here too, under tabs, and answered a
+    // question nobody is asking while deciding whether to keep a draft: the
+    // diff already shows the text, and the reader is in a markdown editor
+    // looking at their own writing.
+    return dialog.querySelector('.autosave-diff') !== null
+        && dialog.querySelectorAll('[role="tablist"]').length === 0
+        && dialog.querySelector('.preview-draft') === null
+        && shown.includes('chars')
+        && dialog.querySelector('.compare-restore') !== null
+        && dialog.querySelector('.compare-discard') !== null;
 });
 
 check('Restore and Discard are in the dialog, next to the evidence', () => {
@@ -4514,6 +4452,28 @@ check('a translation cannot break out of the dialog markup', () => {
         && dialog.textContent.includes('" onfocus="steal()');
 });
 
+// Against a locale that actually ships, not one invented here. The two labels
+// were swapped for a while -- the draft badge carried the page's wording in
+// all fifty-six files -- and the test below could not see it, because it
+// supplied its own translations and so only ever proved that `label()` works.
+await checkAsync('the shipped translations are on the right labels', async () => {
+    const es = (await import('../locale/es.js')).default;
+    window.localStorage.setItem('mte:draft:real', JSON.stringify(
+        { text: 'a draft here', seed: 'y', at: Date.now() }));
+
+    const e = makeEditor({ toolbar: ['bold'], locale: es, autosave: { key: 'real' } }, 'on page');
+    // by position, since the button itself is translated here
+    barOf(e).querySelector('button').click();
+    const dialog = e.editorContainer.querySelector('.markdown-modal');
+    const badges = [...dialog.querySelectorAll('span')]
+        .map(s => s.textContent).filter(t => /\d/.test(t));
+    window.localStorage.removeItem('mte:draft:real');
+
+    // 'a draft here' is twelve characters, 'on page' is seven
+    return badges.some(b => b === 'Borrador 12 caracteres')
+        && badges.some(b => b === 'Actual 7 caracteres');
+});
+
 check('the comparison counts both sides, and translates the counts', () => {
     window.localStorage.setItem('mte:draft:cmp2', JSON.stringify(
         { text: 'abcd', seed: 'ab', at: Date.now() }));
@@ -4521,12 +4481,12 @@ check('the comparison counts both sides, and translates the counts', () => {
     const e = makeEditor({
         toolbar: ['bold'],
         autosave: { key: 'cmp2' },
-        locale: { 'Page {n} chars': 'Pagina {n}', 'Draft {n} chars': 'Borrador {n}' },
+        locale: { 'Current {n} chars': 'Actual {n}', 'Draft {n} chars': 'Borrador {n}' },
     }, 'ab');
     const shown = openCompare(e).textContent;
     window.localStorage.removeItem('mte:draft:cmp2');
 
-    return shown.includes('Pagina 2') && shown.includes('Borrador 4');
+    return shown.includes('Actual 2') && shown.includes('Borrador 4');
 });
 
 check('Ctrl+Z puts back what Restore replaced', () => {
