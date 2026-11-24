@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Mustand taastatud",
     "Discard": "Loobu",
     "Markdown editor": "Markdowni redaktor",
     "Restore": "Taasta",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Koodiplokk",
     "Col {n}": "Vrg {n}",
     "Column": "Veerg",
-    "Compare": "Võrdle",
+    "Review": "Vaata üle",
     "Delete column": "Kustuta veerg",
     "Delete row": "Kustuta rida",
     "Draft {n} chars": "Mustand {n} märki",

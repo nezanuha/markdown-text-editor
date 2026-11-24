@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Draf dipulihkan",
     "Discard": "Buang",
     "Markdown editor": "Editor Markdown",
     "Restore": "Pulihkan",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Blok kode",
     "Col {n}": "Kol {n}",
     "Column": "Kolom",
-    "Compare": "Bandingkan",
+    "Review": "Tinjau",
     "Delete column": "Hapus kolom",
     "Delete row": "Hapus baris",
     "Draft {n} chars": "Draf {n} karakter",

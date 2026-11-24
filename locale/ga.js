@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Dréacht athchóirithe",
     "Discard": "Cuir i leataobh",
     "Markdown editor": "Eagarthóir Markdown",
     "Restore": "Athchóirigh",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Bloc cóid",
     "Col {n}": "Col {n}",
     "Column": "Colún",
-    "Compare": "Cuir i gcomparáid",
+    "Review": "Athbhreithnigh",
     "Delete column": "Scrios an colún",
     "Delete row": "Scrios an ró",
     "Draft {n} chars": "Dréacht {n} carachtar",

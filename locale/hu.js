@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Vázlat visszaállítva",
     "Discard": "Elvetés",
     "Markdown editor": "Markdown-szerkesztő",
     "Restore": "Visszaállítás",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Kódblokk",
     "Col {n}": "Oszl {n}",
     "Column": "Oszlop",
-    "Compare": "Összehasonlítás",
+    "Review": "Áttekintés",
     "Delete column": "Oszlop törlése",
     "Delete row": "Sor törlése",
     "Draft {n} chars": "Vázlat {n} karakter",

@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Osnutek obnovljen",
     "Discard": "Zavrzi",
     "Markdown editor": "Urejevalnik Markdown",
     "Restore": "Obnovi",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Blok kode",
     "Col {n}": "Stolp {n}",
     "Column": "Stolpec",
-    "Compare": "Primerjaj",
+    "Review": "Preglej",
     "Delete column": "Izbriši stolpec",
     "Delete row": "Izbriši vrstico",
     "Draft {n} chars": "Osnutek {n} znakov",

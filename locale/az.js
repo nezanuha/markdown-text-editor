@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Qaralama bərpa edildi",
     "Discard": "Ləğv et",
     "Markdown editor": "Markdown redaktoru",
     "Restore": "Bərpa et",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Kod bloku",
     "Col {n}": "Sütun {n}",
     "Column": "Sütun",
-    "Compare": "Müqayisə et",
+    "Review": "Nəzərdən keçir",
     "Delete column": "Sütunu sil",
     "Delete row": "Sətri sil",
     "Draft {n} chars": "Qaralama {n} simvol",

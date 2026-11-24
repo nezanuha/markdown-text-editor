@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "வரைவு மீட்டெடுக்கப்பட்டது",
     "Discard": "நிராகரி",
     "Markdown editor": "மார்க்டௌன் திருத்தி",
     "Restore": "மீட்டமை",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "குறியீட்டுத் தொகுதி",
     "Col {n}": "நிரல் {n}",
     "Column": "நிரல்",
-    "Compare": "ஒப்பிடு",
+    "Review": "சரிபார்",
     "Delete column": "நிரலை நீக்கு",
     "Delete row": "வரிசையை நீக்கு",
     "Draft {n} chars": "வரைவு {n} எழுத்துகள்",

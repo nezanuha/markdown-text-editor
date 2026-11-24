@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Đã khôi phục bản nháp",
     "Discard": "Bỏ qua",
     "Markdown editor": "Trình soạn thảo Markdown",
     "Restore": "Khôi phục",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Khối mã",
     "Col {n}": "Cột {n}",
     "Column": "Cột",
-    "Compare": "So sánh",
+    "Review": "Xem lại",
     "Delete column": "Xóa cột",
     "Delete row": "Xóa hàng",
     "Draft {n} chars": "Bản nháp {n} ký tự",

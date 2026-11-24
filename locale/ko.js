@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "임시 저장본을 복원했습니다",
     "Discard": "삭제",
     "Markdown editor": "마크다운 편집기",
     "Restore": "복원",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "코드 블록",
     "Col {n}": "열 {n}",
     "Column": "열",
-    "Compare": "비교",
+    "Review": "검토",
     "Delete column": "열 삭제",
     "Delete row": "행 삭제",
     "Draft {n} chars": "임시 저장 {n}자",

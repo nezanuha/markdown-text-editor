@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "L-abbozz ġie rkuprat",
     "Discard": "Warrab",
     "Markdown editor": "Editur Markdown",
     "Restore": "Irrestawra",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Blokk ta' kodiċi",
     "Col {n}": "Kol {n}",
     "Column": "Kolonna",
-    "Compare": "Qabbel",
+    "Review": "Irrevedi",
     "Delete column": "Ħassar il-kolonna",
     "Delete row": "Ħassar ir-ringiela",
     "Draft {n} chars": "Abbozz {n} karattri",

@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "مسودہ بحال کر دیا گیا",
     "Discard": "رد کریں",
     "Markdown editor": "مارک ڈاؤن ایڈیٹر",
     "Restore": "بحال کریں",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "کوڈ بلاک",
     "Col {n}": "کالم {n}",
     "Column": "کالم",
-    "Compare": "موازنہ",
+    "Review": "جائزہ لیں",
     "Delete column": "کالم حذف کریں",
     "Delete row": "قطار حذف کریں",
     "Draft {n} chars": "مسودہ {n} حروف",

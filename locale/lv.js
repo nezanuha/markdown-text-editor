@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Melnraksts atjaunots",
     "Discard": "Atmest",
     "Markdown editor": "Markdown redaktors",
     "Restore": "Atjaunot",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Koda bloks",
     "Col {n}": "Kol {n}",
     "Column": "Kolonna",
-    "Compare": "Salīdzināt",
+    "Review": "Pārskatīt",
     "Delete column": "Dzēst kolonnu",
     "Delete row": "Dzēst rindu",
     "Draft {n} chars": "Melnraksts {n} rakstzīmes",

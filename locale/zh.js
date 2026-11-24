@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "草稿已恢复",
     "Discard": "放弃",
     "Markdown editor": "Markdown 编辑器",
     "Restore": "恢复",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "代码块",
     "Col {n}": "列 {n}",
     "Column": "列",
-    "Compare": "对比",
+    "Review": "查看",
     "Delete column": "删除列",
     "Delete row": "删除行",
     "Draft {n} chars": "草稿 {n} 字符",

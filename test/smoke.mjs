@@ -3954,7 +3954,7 @@ const barBtn = (editor, text) => [...(barOf(editor)?.querySelectorAll('button') 
 // Restore and Discard live in the dialog now, not in the strip: both are
 // irreversible, and the strip appears while you are reading something else.
 const answerDraft = (editor, which) => {
-    barBtn(editor, 'Compare').click();
+    barBtn(editor, 'Review').click();
     editor.editorContainer.querySelector('.markdown-modal .compare-' + which).click();
 };
 
@@ -4002,7 +4002,7 @@ check('a stored draft is offered, never restored on its own', () => {
     return e.usertextarea.value === 'what the server sent'
         && barOf(e) !== null
         && barOf(e).querySelectorAll('button').length === 1
-        && barBtn(e, 'Compare') !== undefined;
+        && barBtn(e, 'Review') !== undefined;
 });
 
 check('Restore puts the draft in and clears the store', () => {
@@ -4014,8 +4014,9 @@ check('Restore puts the draft in and clears the store', () => {
     // Keeping it stored would offer it again next time against text that
     // already holds it.
     return e.usertextarea.value === 'the draft'
-        && barOf(e) === null
-        && store.keys().length === 0;
+        && store.keys().length === 0
+        // the strip stays, saying what happened and offering the way back
+        && barOf(e).textContent.includes('Draft restored');
 });
 
 check('Discard leaves the text alone and clears the store', () => {
@@ -4024,6 +4025,7 @@ check('Discard leaves the text alone and clears the store', () => {
     const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k5' } }, 'server text');
     answerDraft(e, 'discard');
 
+    // Discard leaves nothing to say
     return e.usertextarea.value === 'server text'
         && barOf(e) === null
         && store.keys().length === 0;
@@ -4054,10 +4056,45 @@ check('the exact time is a hover away, and in the dialog', () => {
     const exact = new Date(at).toLocaleString();
     const titled = [...barOf(e).querySelectorAll('span')].some(s => s.title === exact);
 
-    barBtn(e, 'Compare').click();
+    barBtn(e, 'Review').click();
     const dialog = e.editorContainer.querySelector('.markdown-modal');
 
     return titled && dialog.textContent.includes(exact);
+});
+
+check('an accidental restore can be taken back from the strip', () => {
+    store.reset();
+    store.data.set('mte:draft:oops', JSON.stringify(
+        { text: 'the draft', seed: '', at: Date.now() }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'oops' } }, 'server text');
+
+    barBtn(e, 'Review').click();
+    e.editorContainer.querySelector('.markdown-modal .compare-restore').click();
+
+    // Restoring is undoable, but a capability nobody is told about is not a
+    // safety net: the way back has to be in front of the person who just
+    // pressed the wrong thing.
+    const offered = barOf(e).textContent.includes('Draft restored');
+    barBtn(e, 'Undo').click();
+
+    return offered && e.usertextarea.value === 'server text' && barOf(e) === null;
+});
+
+check('the restored strip goes when the next keystroke arrives', () => {
+    store.reset();
+    store.data.set('mte:draft:typed', JSON.stringify(
+        { text: 'the draft', seed: '', at: Date.now() }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'typed' } }, 'server text');
+
+    barBtn(e, 'Review').click();
+    e.editorContainer.querySelector('.markdown-modal .compare-restore').click();
+    const shown = barOf(e) !== null;
+
+    e.usertextarea.value += '!';
+    e.usertextarea.dispatchEvent(new window.Event('input'));
+
+    // by then the answer has been given
+    return shown && barOf(e) === null;
 });
 
 check('a draft taken against older text says the document has moved on', () => {
@@ -4328,7 +4365,7 @@ check('lineDiff never counts one line from both ends', async () => {
 });
 
 const compareButton = (e) => [...e.editorContainer.querySelectorAll('.autosave-bar button')]
-    .find(b => b.textContent === 'Compare');
+    .find(b => b.textContent === 'Review');
 
 const openCompare = (e) => {
     compareButton(e).click();
@@ -4440,7 +4477,7 @@ check('a translation cannot break out of the dialog markup', () => {
     const e = makeEditor({
         toolbar: ['bold'],
         autosave: { key: 'esc2' },
-        locale: { Compare: '" onfocus="steal()' },
+        locale: { Review: '" onfocus="steal()' },
     }, 'theirs');
     // the button carries the translation, so it is found by position here
     const buttons = [...e.editorContainer.querySelectorAll('.autosave-bar button')];

@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Concept hersteld",
     "Discard": "Verwerpen",
     "Markdown editor": "Markdown-editor",
     "Restore": "Herstellen",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Codeblok",
     "Col {n}": "Kol {n}",
     "Column": "Kolom",
-    "Compare": "Vergelijken",
+    "Review": "Bekijken",
     "Delete column": "Kolom verwijderen",
     "Delete row": "Rij verwijderen",
     "Draft {n} chars": "Concept {n} tekens",

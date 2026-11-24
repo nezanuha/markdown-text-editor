@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "تمت استعادة المسودة",
     "Discard": "تجاهل",
     "Markdown editor": "محرر ماركداون",
     "Restore": "استعادة",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "كتلة كود",
     "Col {n}": "عمود {n}",
     "Column": "عمود",
-    "Compare": "مقارنة",
+    "Review": "مراجعة",
     "Delete column": "حذف العمود",
     "Delete row": "حذف الصف",
     "Draft {n} chars": "المسودة {n} حرف",

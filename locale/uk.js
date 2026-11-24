@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Чернетку відновлено",
     "Discard": "Відхилити",
     "Markdown editor": "Редактор Markdown",
     "Restore": "Відновити",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Блок коду",
     "Col {n}": "Стовп {n}",
     "Column": "Стовпець",
-    "Compare": "Порівняти",
+    "Review": "Переглянути",
     "Delete column": "Видалити стовпець",
     "Delete row": "Видалити рядок",
     "Draft {n} chars": "Чернетка {n} символів",

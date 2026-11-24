@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "پیش‌نویس بازگردانی شد",
     "Discard": "نادیده گرفتن",
     "Markdown editor": "ویرایشگر مارک‌داون",
     "Restore": "بازیابی",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "بلوک کد",
     "Col {n}": "ستون {n}",
     "Column": "ستون",
-    "Compare": "مقایسه",
+    "Review": "بازبینی",
     "Delete column": "حذف ستون",
     "Delete row": "حذف سطر",
     "Draft {n} chars": "پیش‌نویس {n} نویسه",

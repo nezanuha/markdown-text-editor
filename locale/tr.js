@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Taslak geri yüklendi",
     "Discard": "Yoksay",
     "Markdown editor": "Markdown düzenleyici",
     "Restore": "Geri yükle",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Kod bloğu",
     "Col {n}": "Süt {n}",
     "Column": "Sütun",
-    "Compare": "Karşılaştır",
+    "Review": "İncele",
     "Delete column": "Sütunu sil",
     "Delete row": "Satırı sil",
     "Draft {n} chars": "Taslak {n} karakter",

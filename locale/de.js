@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Entwurf wiederhergestellt",
     "Discard": "Verwerfen",
     "Markdown editor": "Markdown-Editor",
     "Restore": "Wiederherstellen",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Codeblock",
     "Col {n}": "Sp {n}",
     "Column": "Spalte",
-    "Compare": "Vergleichen",
+    "Review": "Prüfen",
     "Delete column": "Spalte löschen",
     "Delete row": "Zeile löschen",
     "Draft {n} chars": "Entwurf {n} Zeichen",

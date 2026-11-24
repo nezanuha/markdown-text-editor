@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Luonnos palautettu",
     "Discard": "Hylkää",
     "Markdown editor": "Markdown-editori",
     "Restore": "Palauta",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Koodilohko",
     "Col {n}": "Sar {n}",
     "Column": "Sarake",
-    "Compare": "Vertaa",
+    "Review": "Tarkista",
     "Delete column": "Poista sarake",
     "Delete row": "Poista rivi",
     "Draft {n} chars": "Luonnos {n} merkkiä",

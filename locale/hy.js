@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Սևագիրը վերականգնվեց",
     "Discard": "Հրաժարվել",
     "Markdown editor": "Markdown խմբագրիչ",
     "Restore": "Վերականգնել",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Կոդի բլոկ",
     "Col {n}": "Սյ {n}",
     "Column": "Սյունակ",
-    "Compare": "Համեմատել",
+    "Review": "Վերանայել",
     "Delete column": "Ջնջել սյունակը",
     "Delete row": "Ջնջել տողը",
     "Draft {n} chars": "Սևագիր {n} նշան",

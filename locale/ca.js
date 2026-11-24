@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Esborrany restaurat",
     "Discard": "Descarta",
     "Markdown editor": "Editor de Markdown",
     "Restore": "Restaura",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Bloc de codi",
     "Col {n}": "Col {n}",
     "Column": "Columna",
-    "Compare": "Compara",
+    "Review": "Revisa",
     "Delete column": "Elimina la columna",
     "Delete row": "Elimina la fila",
     "Draft {n} chars": "Esborrany {n} caràcters",

@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Kladde gendannet",
     "Discard": "Kassér",
     "Markdown editor": "Markdown-editor",
     "Restore": "Gendan",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Kodeblok",
     "Col {n}": "Kol {n}",
     "Column": "Kolonne",
-    "Compare": "Sammenlign",
+    "Review": "Gennemse",
     "Delete column": "Slet kolonne",
     "Delete row": "Slet række",
     "Draft {n} chars": "Kladde {n} tegn",

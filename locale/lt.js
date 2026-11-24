@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Juodraštis atkurtas",
     "Discard": "Atmesti",
     "Markdown editor": "Markdown redaktorius",
     "Restore": "Atkurti",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Kodo blokas",
     "Col {n}": "Stlp {n}",
     "Column": "Stulpelis",
-    "Compare": "Palyginti",
+    "Review": "Peržiūrėti",
     "Delete column": "Ištrinti stulpelį",
     "Delete row": "Ištrinti eilutę",
     "Draft {n} chars": "Juodraštis {n} simbolių",

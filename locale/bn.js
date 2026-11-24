@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "খসড়া পুনরুদ্ধার করা হয়েছে",
     "Discard": "বাতিল করুন",
     "Markdown editor": "মার্কডাউন সম্পাদক",
     "Restore": "পুনরুদ্ধার করুন",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "কোড ব্লক",
     "Col {n}": "কলাম {n}",
     "Column": "কলাম",
-    "Compare": "তুলনা করুন",
+    "Review": "পর্যালোচনা",
     "Delete column": "কলাম মুছুন",
     "Delete row": "সারি মুছুন",
     "Draft {n} chars": "খসড়া {n} অক্ষর",

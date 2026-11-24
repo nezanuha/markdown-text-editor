@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "డ్రాఫ్ట్ పునరుద్ధరించబడింది",
     "Discard": "విస్మరించు",
     "Markdown editor": "మార్క్‌డౌన్ ఎడిటర్",
     "Restore": "పునరుద్ధరించు",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "కోడ్ బ్లాక్",
     "Col {n}": "నిలువు {n}",
     "Column": "నిలువు వరుస",
-    "Compare": "పోల్చండి",
+    "Review": "సమీక్షించండి",
     "Delete column": "నిలువు వరుసను తొలగించు",
     "Delete row": "అడ్డు వరుసను తొలగించు",
     "Draft {n} chars": "డ్రాఫ్ట్ {n} అక్షరాలు",

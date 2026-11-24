@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Utkast gjenopprettet",
     "Discard": "Forkast",
     "Markdown editor": "Markdown-redigerer",
     "Restore": "Gjenopprett",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Kodeblokk",
     "Col {n}": "Kol {n}",
     "Column": "Kolonne",
-    "Compare": "Sammenlign",
+    "Review": "Se gjennom",
     "Delete column": "Slett kolonne",
     "Delete row": "Slett rad",
     "Draft {n} chars": "Utkast {n} tegn",

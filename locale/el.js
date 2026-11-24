@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Το πρόχειρο επαναφέρθηκε",
     "Discard": "Απόρριψη",
     "Markdown editor": "Επεξεργαστής Markdown",
     "Restore": "Επαναφορά",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Μπλοκ κώδικα",
     "Col {n}": "Στ {n}",
     "Column": "Στήλη",
-    "Compare": "Σύγκριση",
+    "Review": "Έλεγχος",
     "Delete column": "Διαγραφή στήλης",
     "Delete row": "Διαγραφή γραμμής",
     "Draft {n} chars": "Πρόχειρο {n} χαρακτήρες",

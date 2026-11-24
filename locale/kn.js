@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "ಕರಡು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ",
     "Discard": "ತಿರಸ್ಕರಿಸು",
     "Markdown editor": "ಮಾರ್ಕ್‌ಡೌನ್ ಸಂಪಾದಕ",
     "Restore": "ಮರುಸ್ಥಾಪಿಸು",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "ಕೋಡ್ ಬ್ಲಾಕ್",
     "Col {n}": "ಕಾಲಂ {n}",
     "Column": "ಕಾಲಮ್",
-    "Compare": "ಹೋಲಿಸಿ",
+    "Review": "ಪರಿಶೀಲಿಸಿ",
     "Delete column": "ಕಾಲಮ್ ಅಳಿಸು",
     "Delete row": "ಸಾಲು ಅಳಿಸು",
     "Draft {n} chars": "ಕರಡು {n} ಅಕ್ಷರಗಳು",

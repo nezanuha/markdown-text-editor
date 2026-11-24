@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Koncept obnovený",
     "Discard": "Zahodiť",
     "Markdown editor": "Editor Markdownu",
     "Restore": "Obnoviť",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Blok kódu",
     "Col {n}": "Stĺ {n}",
     "Column": "Stĺpec",
-    "Compare": "Porovnať",
+    "Review": "Skontrolovať",
     "Delete column": "Odstrániť stĺpec",
     "Delete row": "Odstrániť riadok",
     "Draft {n} chars": "Koncept {n} znakov",

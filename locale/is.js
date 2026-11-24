@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Uppkast endurheimt",
     "Discard": "Henda",
     "Markdown editor": "Markdown-ritill",
     "Restore": "Endurheimta",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Kóðablokk",
     "Col {n}": "Dálkur {n}",
     "Column": "Dálkur",
-    "Compare": "Bera saman",
+    "Review": "Yfirfara",
     "Delete column": "Eyða dálki",
     "Delete row": "Eyða röð",
     "Draft {n} chars": "Uppkast {n} stafir",

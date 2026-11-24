@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "הטיוטה שוחזרה",
     "Discard": "התעלם",
     "Markdown editor": "עורך Markdown",
     "Restore": "שחזר",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "בלוק קוד",
     "Col {n}": "טור {n}",
     "Column": "עמודה",
-    "Compare": "השוואה",
+    "Review": "בדיקה",
     "Delete column": "מחק עמודה",
     "Delete row": "מחק שורה",
     "Draft {n} chars": "טיוטה {n} תווים",

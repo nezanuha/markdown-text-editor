@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Skica u rikthye",
     "Discard": "Hidhe",
     "Markdown editor": "Redaktues Markdown",
     "Restore": "Rikthe",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Bllok kodi",
     "Col {n}": "Kol {n}",
     "Column": "Kolonë",
-    "Compare": "Krahaso",
+    "Review": "Shqyrto",
     "Delete column": "Fshi kolonën",
     "Delete row": "Fshi rreshtin",
     "Draft {n} chars": "Skica {n} karaktere",

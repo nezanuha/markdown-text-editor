@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "下書きを復元しました",
     "Discard": "破棄",
     "Markdown editor": "Markdown エディター",
     "Restore": "復元",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "コードブロック",
     "Col {n}": "列 {n}",
     "Column": "列",
-    "Compare": "比較",
+    "Review": "確認",
     "Delete column": "列を削除",
     "Delete row": "行を削除",
     "Draft {n} chars": "下書き {n} 文字",

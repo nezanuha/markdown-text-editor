@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "ड्राफ़्ट पुनर्स्थापित किया गया",
     "Discard": "खारिज करें",
     "Markdown editor": "मार्कडाउन संपादक",
     "Restore": "पुनर्स्थापित करें",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "कोड ब्लॉक",
     "Col {n}": "स्तंभ {n}",
     "Column": "स्तंभ",
-    "Compare": "तुलना करें",
+    "Review": "समीक्षा करें",
     "Delete column": "स्तंभ हटाएँ",
     "Delete row": "पंक्ति हटाएँ",
     "Draft {n} chars": "ड्राफ़्ट {n} वर्ण",

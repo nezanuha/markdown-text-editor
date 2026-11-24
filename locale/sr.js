@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Нацрт је враћен",
     "Discard": "Одбаци",
     "Markdown editor": "Markdown уређивач",
     "Restore": "Врати",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Блок кода",
     "Col {n}": "Кол {n}",
     "Column": "Колона",
-    "Compare": "Упореди",
+    "Review": "Прегледај",
     "Delete column": "Избриши колону",
     "Delete row": "Избриши ред",
     "Draft {n} chars": "Нацрт {n} знакова",

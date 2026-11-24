@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Rasimu imerejeshwa",
     "Discard": "Tupa",
     "Markdown editor": "Kihariri cha Markdown",
     "Restore": "Rejesha",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Kizuizi cha msimbo",
     "Col {n}": "Safu {n}",
     "Column": "Safu",
-    "Compare": "Linganisha",
+    "Review": "Kagua",
     "Delete column": "Ondoa safu",
     "Delete row": "Ondoa mstari",
     "Draft {n} chars": "Rasimu herufi {n}",

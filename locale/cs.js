@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Koncept obnoven",
     "Discard": "Zahodit",
     "Markdown editor": "Editor Markdownu",
     "Restore": "Obnovit",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Blok kódu",
     "Col {n}": "Sl {n}",
     "Column": "Sloupec",
-    "Compare": "Porovnat",
+    "Review": "Zkontrolovat",
     "Delete column": "Odstranit sloupec",
     "Delete row": "Odstranit řádek",
     "Draft {n} chars": "Koncept {n} znaků",

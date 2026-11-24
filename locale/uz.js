@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Qoralama tiklandi",
     "Discard": "Bekor qilish",
     "Markdown editor": "Markdown muharriri",
     "Restore": "Tiklash",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Kod bloki",
     "Col {n}": "Ust {n}",
     "Column": "Ustun",
-    "Compare": "Taqqoslash",
+    "Review": "Ko'rib chiqish",
     "Delete column": "Ustunni o'chirish",
     "Delete row": "Qatorni o'chirish",
     "Draft {n} chars": "Qoralama {n} belgi",

@@ -342,7 +342,7 @@ export default class Autosave {
         // The strip costs nothing to ignore, so the quick path is to leave it
         // alone, not to answer it fast.
         actions.append(
-            button(this.editor.label('Compare'),
+            button(this.editor.label('Review'),
                 (event) => this._openComparison(event, saved), accent),
         );
 
@@ -377,7 +377,7 @@ export default class Autosave {
         const body = `
             <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
                 <div>
-                    <div class="fj:font-medium">${escapeHtml(this.editor.label('Compare'))}</div>
+                    <div class="fj:font-medium">${escapeHtml(this.editor.label('Review'))}</div>
                     <div class="fj:text-xs fj:opacity-70">${escapeHtml(this.editor.label('Unsaved draft'))} &middot; ${escapeHtml(new Date(saved.at).toLocaleString())}</div>
                 </div>
                 <button type="button" class="modal-close-btn fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="${escapeHtml(this.editor.label('Close'))}">
@@ -394,7 +394,7 @@ export default class Autosave {
                 <button type="button" class="compare-restore fj:me-btn fj:me-btn-sm fj:me-btn-primary">${escapeHtml(this.editor.label('Restore'))}</button>
             </div>`;
 
-        const dialog = modal(event, 'fj:max-w-3xl', body, this.editor.label('Compare'));
+        const dialog = modal(event, 'fj:max-w-3xl', body, this.editor.label('Review'));
         this._fillDiff(dialog.querySelector('.autosave-diff'), saved.text);
 
         dialog.querySelector('.modal-close-btn')
@@ -458,6 +458,52 @@ export default class Autosave {
         skipped(tail - CONTEXT);
     }
 
+    /**
+     * Says the draft went in, and offers the way back out.
+     *
+     * Restoring is undoable -- the editor records it as one step -- but a
+     * capability nobody is told about is not a safety net. Someone who meant
+     * to press Discard, or who restored and then read it properly, needs the
+     * way back in front of them rather than in the documentation.
+     *
+     * It goes when it is used or when the next keystroke arrives, since by
+     * then the answer has been given.
+     */
+    _showRestored() {
+        const bar = document.createElement('div');
+        bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft fj:me-alert-success'
+            + ' fj:me-alert-sm fj:w-full fj:rounded-none'
+            + ' fj:me-alert-vertical fj:sm:me-alert-horizontal'
+            + ' fj:border-base-soft fj:border-0 fj:border-b';
+        bar.setAttribute('role', 'status');
+
+        const label = document.createElement('span');
+        label.className = 'fj:grow';
+        label.textContent = this.editor.label('Draft restored');
+
+        const undo = document.createElement('button');
+        undo.type = 'button';
+        undo.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-success';
+        // Already a key, from the toolbar button that does the same thing.
+        undo.textContent = this.editor.label('Undo');
+        undo.addEventListener('click', () => {
+            this.editor.undoRedoManager?.undo();
+            this._hide();
+        });
+
+        bar.append(label, undo);
+        this.bar = bar;
+
+        const container = this.editor.editorContainer;
+        container.insertBefore(bar, container.firstChild);
+
+        const dismiss = () => {
+            this.textarea.removeEventListener('input', dismiss);
+            this._hide();
+        };
+        this.textarea.addEventListener('input', dismiss);
+    }
+
     restore(saved) {
         this.textarea.value = saved.text;
         this.textarea.focus();
@@ -473,6 +519,7 @@ export default class Autosave {
         // The draft is on screen now, so keeping it stored would offer it
         // again on the next load against text that already holds it.
         this.clear();
+        this._showRestored();
     }
 
     _hide() {

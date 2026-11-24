@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Ciornă restaurată",
     "Discard": "Renunță",
     "Markdown editor": "Editor Markdown",
     "Restore": "Restaurează",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Bloc de cod",
     "Col {n}": "Col {n}",
     "Column": "Coloană",
-    "Compare": "Compară",
+    "Review": "Examinează",
     "Delete column": "Șterge coloana",
     "Delete row": "Șterge rândul",
     "Draft {n} chars": "Ciornă {n} caractere",

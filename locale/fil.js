@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "Naibalik ang draft",
     "Discard": "Itapon",
     "Markdown editor": "Markdown editor",
     "Restore": "Ibalik",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "Code block",
     "Col {n}": "Hanay {n}",
     "Column": "Kolum",
-    "Compare": "Ihambing",
+    "Review": "Suriin",
     "Delete column": "Alisin ang kolum",
     "Delete row": "Alisin ang hanay",
     "Draft {n} chars": "Draft {n} karakter",

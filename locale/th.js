@@ -7,6 +7,7 @@
 export const reviewed = false;
 
 export default {
+    "Draft restored": "กู้คืนฉบับร่างแล้ว",
     "Discard": "ละทิ้ง",
     "Markdown editor": "ตัวแก้ไข Markdown",
     "Restore": "กู้คืน",
@@ -31,7 +32,7 @@ export default {
     "Code Block": "บล็อกโค้ด",
     "Col {n}": "คอลัมน์ {n}",
     "Column": "คอลัมน์",
-    "Compare": "เปรียบเทียบ",
+    "Review": "ตรวจสอบ",
     "Delete column": "ลบคอลัมน์",
     "Delete row": "ลบแถว",
     "Draft {n} chars": "ฉบับร่าง {n} ตัวอักษร",
