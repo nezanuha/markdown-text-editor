@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Patrón no válido",
     "Blockquote": "Cita",
     "Bold": "Negrita",
+    "Changes": "Cambios",
     "Check list": "Lista de tareas",
     "Close": "Cerrar",
     "Close preview": "Cerrar vista previa",

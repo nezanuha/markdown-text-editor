@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Неверный шаблон",
     "Blockquote": "Цитата",
     "Bold": "Полужирный",
+    "Changes": "Изменения",
     "Check list": "Список задач",
     "Close": "Закрыть",
     "Close preview": "Закрыть предпросмотр",

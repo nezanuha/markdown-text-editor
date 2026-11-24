@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Maling pattern",
     "Blockquote": "Sipi",
     "Bold": "Makapal",
+    "Changes": "Mga pagbabago",
     "Check list": "Checklist",
     "Close": "Isara",
     "Close preview": "Isara ang preview",

@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "الگوی نامعتبر",
     "Blockquote": "نقل‌قول",
     "Bold": "درشت",
+    "Changes": "تغییرات",
     "Check list": "فهرست وارسی",
     "Close": "بستن",
     "Close preview": "بستن پیش‌نمایش",

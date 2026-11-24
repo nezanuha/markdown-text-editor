@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "نمط غير صالح",
     "Blockquote": "اقتباس",
     "Bold": "عريض",
+    "Changes": "التغييرات",
     "Check list": "قائمة مهام",
     "Close": "إغلاق",
     "Close preview": "إغلاق المعاينة",

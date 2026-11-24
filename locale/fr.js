@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Motif non valide",
     "Blockquote": "Citation",
     "Bold": "Gras",
+    "Changes": "Modifications",
     "Check list": "Liste de tâches",
     "Close": "Fermer",
     "Close preview": "Fermer l'aperçu",

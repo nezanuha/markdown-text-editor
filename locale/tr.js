@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Geçersiz desen",
     "Blockquote": "Alıntı",
     "Bold": "Kalın",
+    "Changes": "Değişiklikler",
     "Check list": "Görev listesi",
     "Close": "Kapat",
     "Close preview": "Önizlemeyi kapat",

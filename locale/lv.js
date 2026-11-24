@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Nederīgs šablons",
     "Blockquote": "Citāts",
     "Bold": "Treknraksts",
+    "Changes": "Izmaiņas",
     "Check list": "Kontrolsaraksts",
     "Close": "Aizvērt",
     "Close preview": "Aizvērt priekšskatījumu",

@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "ಅಮಾನ್ಯ ಮಾದರಿ",
     "Blockquote": "ಉದ್ಧರಣೆ",
     "Bold": "ದಪ್ಪ",
+    "Changes": "ಬದಲಾವಣೆಗಳು",
     "Check list": "ಪರಿಶೀಲನಾ ಪಟ್ಟಿ",
     "Close": "ಮುಚ್ಚು",
     "Close preview": "ಮುನ್ನೋಟ ಮುಚ್ಚು",

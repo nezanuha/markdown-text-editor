@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "غلط پیٹرن",
     "Blockquote": "اقتباس",
     "Bold": "جلی",
+    "Changes": "تبدیلیاں",
     "Check list": "چیک لسٹ",
     "Close": "بند کریں",
     "Close preview": "پیش منظر بند کریں",

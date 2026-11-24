@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Muundo batili",
     "Blockquote": "Nukuu",
     "Bold": "Nene",
+    "Changes": "Mabadiliko",
     "Check list": "Orodha ya kukagua",
     "Close": "Funga",
     "Close preview": "Funga hakiki",

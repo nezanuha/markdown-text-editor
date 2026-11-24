@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Neispravan uzorak",
     "Blockquote": "Citat",
     "Bold": "Podebljano",
+    "Changes": "Izmjene",
     "Check list": "Popis zadataka",
     "Close": "Zatvori",
     "Close preview": "Zatvori pretpregled",

@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "תבנית שגויה",
     "Blockquote": "ציטוט",
     "Bold": "מודגש",
+    "Changes": "שינויים",
     "Check list": "רשימת משימות",
     "Close": "סגור",
     "Close preview": "סגור תצוגה מקדימה",

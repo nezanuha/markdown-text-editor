@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Ógilt mynstur",
     "Blockquote": "Tilvitnun",
     "Bold": "Feitletrað",
+    "Changes": "Breytingar",
     "Check list": "Gátlisti",
     "Close": "Loka",
     "Close preview": "Loka forskoðun",

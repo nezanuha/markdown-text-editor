@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "樣式無效",
     "Blockquote": "引用",
     "Bold": "粗體",
+    "Changes": "變更",
     "Check list": "待辦清單",
     "Close": "關閉",
     "Close preview": "關閉預覽",

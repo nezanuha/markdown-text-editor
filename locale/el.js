@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Μη έγκυρο μοτίβο",
     "Blockquote": "Παράθεση",
     "Bold": "Έντονα",
+    "Changes": "Αλλαγές",
     "Check list": "Λίστα ελέγχου",
     "Close": "Κλείσιμο",
     "Close preview": "Κλείσιμο προεπισκόπησης",

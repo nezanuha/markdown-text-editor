@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Pola tidak sah",
     "Blockquote": "Petikan",
     "Bold": "Tebal",
+    "Changes": "Perubahan",
     "Check list": "Senarai semak",
     "Close": "Tutup",
     "Close preview": "Tutup pratonton",

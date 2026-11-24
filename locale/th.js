@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "รูปแบบไม่ถูกต้อง",
     "Blockquote": "คำพูดอ้างอิง",
     "Bold": "ตัวหนา",
+    "Changes": "การเปลี่ยนแปลง",
     "Check list": "รายการตรวจสอบ",
     "Close": "ปิด",
     "Close preview": "ปิดตัวอย่าง",

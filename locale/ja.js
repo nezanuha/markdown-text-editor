@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "無効なパターン",
     "Blockquote": "引用",
     "Bold": "太字",
+    "Changes": "変更点",
     "Check list": "チェックリスト",
     "Close": "閉じる",
     "Close preview": "プレビューを閉じる",

@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Ongeldig patroon",
     "Blockquote": "Citaat",
     "Bold": "Vet",
+    "Changes": "Wijzigingen",
     "Check list": "Takenlijst",
     "Close": "Sluiten",
     "Close preview": "Voorbeeld sluiten",

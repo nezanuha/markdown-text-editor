@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Neteisingas šablonas",
     "Blockquote": "Citata",
     "Bold": "Pusjuodis",
+    "Changes": "Pakeitimai",
     "Check list": "Užduočių sąrašas",
     "Close": "Uždaryti",
     "Close preview": "Uždaryti peržiūrą",

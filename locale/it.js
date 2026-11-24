@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Schema non valido",
     "Blockquote": "Citazione",
     "Bold": "Grassetto",
+    "Changes": "Modifiche",
     "Check list": "Elenco di controllo",
     "Close": "Chiudi",
     "Close preview": "Chiudi anteprima",

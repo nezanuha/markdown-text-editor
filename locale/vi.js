@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Mẫu không hợp lệ",
     "Blockquote": "Trích dẫn",
     "Bold": "Đậm",
+    "Changes": "Thay đổi",
     "Check list": "Danh sách kiểm",
     "Close": "Đóng",
     "Close preview": "Đóng xem trước",

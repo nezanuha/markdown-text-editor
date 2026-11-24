@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Vigane muster",
     "Blockquote": "Tsitaat",
     "Bold": "Paks",
+    "Changes": "Muudatused",
     "Check list": "Kontrollnimekiri",
     "Close": "Sulge",
     "Close preview": "Sulge eelvaade",

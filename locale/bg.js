@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Невалиден шаблон",
     "Blockquote": "Цитат",
     "Bold": "Получер",
+    "Changes": "Промени",
     "Check list": "Списък със задачи",
     "Close": "Затвори",
     "Close preview": "Затвори прегледа",

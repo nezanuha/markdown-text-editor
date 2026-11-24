@@ -26,6 +26,7 @@ export default {
     "Bad pattern": "Bad pattern",
     "Blockquote": "Blockquote",
     "Bold": "Bold",
+    "Changes": "Changes",
     "Check list": "Check list",
     "Close": "Close",
     "Close preview": "Close preview",

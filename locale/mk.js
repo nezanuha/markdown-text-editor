@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Неважечки образец",
     "Blockquote": "Цитат",
     "Bold": "Задебелено",
+    "Changes": "Промени",
     "Check list": "Список со задачи",
     "Close": "Затвори",
     "Close preview": "Затвори преглед",

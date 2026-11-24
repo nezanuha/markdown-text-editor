@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "잘못된 패턴",
     "Blockquote": "인용",
     "Bold": "굵게",
+    "Changes": "변경 내용",
     "Check list": "체크리스트",
     "Close": "닫기",
     "Close preview": "미리보기 닫기",

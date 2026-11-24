@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Érvénytelen minta",
     "Blockquote": "Idézet",
     "Bold": "Félkövér",
+    "Changes": "Változások",
     "Check list": "Feladatlista",
     "Close": "Bezárás",
     "Close preview": "Előnézet bezárása",

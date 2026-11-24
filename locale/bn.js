@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "ভুল প্যাটার্ন",
     "Blockquote": "উদ্ধৃতি",
     "Bold": "বোল্ড",
+    "Changes": "পরিবর্তন",
     "Check list": "চেকলিস্ট",
     "Close": "বন্ধ করুন",
     "Close preview": "প্রিভিউ বন্ধ করুন",

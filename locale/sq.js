@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Model i pavlefshëm",
     "Blockquote": "Citim",
     "Bold": "Trash",
+    "Changes": "Ndryshimet",
     "Check list": "Listë kontrolli",
     "Close": "Mbyll",
     "Close preview": "Mbyll pamjen paraprake",

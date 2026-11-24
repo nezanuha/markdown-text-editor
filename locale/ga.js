@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Patrún neamhbhailí",
     "Blockquote": "Athfhriotal",
     "Bold": "Trom",
+    "Changes": "Athruithe",
     "Check list": "Seicliosta",
     "Close": "Dún",
     "Close preview": "Dún an réamhamharc",

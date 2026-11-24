@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Patró no vàlid",
     "Blockquote": "Cita",
     "Bold": "Negreta",
+    "Changes": "Canvis",
     "Check list": "Llista de tasques",
     "Close": "Tanca",
     "Close preview": "Tanca la previsualització",

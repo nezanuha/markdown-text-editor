@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Mudell invalidu",
     "Blockquote": "Kwotazzjoni",
     "Bold": "Grassett",
+    "Changes": "Tibdiliet",
     "Check list": "Lista ta' kontroll",
     "Close": "Agħlaq",
     "Close preview": "Agħlaq il-previżjoni",

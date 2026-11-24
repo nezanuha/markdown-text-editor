@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Noto'g'ri namuna",
     "Blockquote": "Iqtibos",
     "Bold": "Qalin",
+    "Changes": "O'zgarishlar",
     "Check list": "Tekshiruv ro'yxati",
     "Close": "Yopish",
     "Close preview": "Ko'rib chiqishni yopish",

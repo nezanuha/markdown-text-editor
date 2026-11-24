@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Ungültiges Muster",
     "Blockquote": "Zitat",
     "Bold": "Fett",
+    "Changes": "Änderungen",
     "Check list": "Aufgabenliste",
     "Close": "Schließen",
     "Close preview": "Vorschau schließen",

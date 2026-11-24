@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Սխալ կաղապար",
     "Blockquote": "Մեջբերում",
     "Bold": "Թավ",
+    "Changes": "Փոփոխություններ",
     "Check list": "Ստուգացանկ",
     "Close": "Փակել",
     "Close preview": "Փակել նախադիտումը",

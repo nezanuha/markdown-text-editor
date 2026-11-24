@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Ogiltigt mönster",
     "Blockquote": "Citat",
     "Bold": "Fet",
+    "Changes": "Ändringar",
     "Check list": "Checklista",
     "Close": "Stäng",
     "Close preview": "Stäng förhandsgranskning",

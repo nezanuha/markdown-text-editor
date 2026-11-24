@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "தவறான வடிவம்",
     "Blockquote": "மேற்கோள்",
     "Bold": "தடிமன்",
+    "Changes": "மாற்றங்கள்",
     "Check list": "சரிபார்ப்புப் பட்டியல்",
     "Close": "மூடு",
     "Close preview": "முன்னோட்டத்தை மூடு",

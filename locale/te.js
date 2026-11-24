@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "చెల్లని నమూనా",
     "Blockquote": "ఉల్లేఖనం",
     "Bold": "మందం",
+    "Changes": "మార్పులు",
     "Check list": "తనిఖీ జాబితా",
     "Close": "మూసివేయి",
     "Close preview": "పరిదృశ్యం మూసివేయి",

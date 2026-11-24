@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Model nevalid",
     "Blockquote": "Citat",
     "Bold": "Aldin",
+    "Changes": "Modificări",
     "Check list": "Listă de verificare",
     "Close": "Închide",
     "Close preview": "Închide previzualizarea",

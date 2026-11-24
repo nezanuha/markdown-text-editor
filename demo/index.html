@@ -171,6 +171,10 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
                 ]},
                 { label: 'Invoice No', value: '{{invoice.number}}' }, // no sample, stays raw
             ],
+            // On here as well as in its own section below, because this is the
+            // box people try things in: pasting a long document into it and
+            // reloading is how anyone finds out whether drafts work.
+            autosave: true,
             // /api/upload is mocked by a dev-only plugin in vite.config.js,
             // with a 1.2s delay so the "Uploading..." placeholder is visible.
             // Top level since 2.0: the dialog, paste and drop all read it.

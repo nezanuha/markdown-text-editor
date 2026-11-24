@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Pola tidak valid",
     "Blockquote": "Kutipan",
     "Bold": "Tebal",
+    "Changes": "Perubahan",
     "Check list": "Daftar tugas",
     "Close": "Tutup",
     "Close preview": "Tutup pratinjau",

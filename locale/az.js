@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Yanlış şablon",
     "Blockquote": "Sitat",
     "Bold": "Qalın",
+    "Changes": "Dəyişikliklər",
     "Check list": "Yoxlama siyahısı",
     "Close": "Bağla",
     "Close preview": "Önizləməni bağla",

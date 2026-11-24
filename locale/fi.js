@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Virheellinen kuvio",
     "Blockquote": "Lainaus",
     "Bold": "Lihavoitu",
+    "Changes": "Muutokset",
     "Check list": "Tehtävälista",
     "Close": "Sulje",
     "Close preview": "Sulje esikatselu",

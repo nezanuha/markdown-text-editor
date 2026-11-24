@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Neplatný vzor",
     "Blockquote": "Citace",
     "Bold": "Tučné",
+    "Changes": "Změny",
     "Check list": "Seznam úkolů",
     "Close": "Zavřít",
     "Close preview": "Zavřít náhled",

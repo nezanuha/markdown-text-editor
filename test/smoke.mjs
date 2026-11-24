@@ -4331,6 +4331,51 @@ check('the diff marks what goes and what comes, with context either side', () =>
         && rows.includes('  two') && rows.includes('  four');
 });
 
+check('the dialog offers the draft rendered as well as the difference', () => {
+    const draft = '## Why Shopify' + NEWLINE + NEWLINE + 'We built a business.';
+    window.localStorage.setItem('mte:draft:tabs', JSON.stringify(
+        { text: draft, seed: 'theirs', at: Date.now() }));
+
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'tabs' } }, 'theirs');
+    const dialog = openCompare(e);
+    const [diff, preview] = ['.autosave-diff', '.autosave-preview']
+        .map(s => dialog.querySelector(s));
+    const tabs = [...dialog.querySelectorAll('.compare-tab')];
+
+    // the difference is what you land on: it answers what would be lost
+    const landed = !diff.classList.contains('fj:hidden')
+        && preview.classList.contains('fj:hidden')
+        && tabs[0].getAttribute('aria-selected') === 'true';
+
+    tabs[1].click();
+    const switched = diff.classList.contains('fj:hidden')
+        && !preview.classList.contains('fj:hidden')
+        && tabs[1].getAttribute('aria-selected') === 'true'
+        && tabs[1].classList.contains('fj:me-tab-active')
+        && !tabs[0].classList.contains('fj:me-tab-active');
+
+    window.localStorage.removeItem('mte:draft:tabs');
+    // rendered through the editor's own renderer, so the markdown is gone
+    return landed && switched && preview.textContent.includes('Why Shopify')
+        && !preview.textContent.includes('##');
+});
+
+check('the preview of a draft goes through the configured sanitiser', () => {
+    window.localStorage.setItem('mte:draft:san', JSON.stringify(
+        { text: '<img src=x onerror=alert(1)>', seed: 'theirs', at: Date.now() }));
+
+    const e = makeEditor({
+        toolbar: ['bold'],
+        autosave: { key: 'san' },
+        sanitizer: () => '<em>cleaned</em>',
+    }, 'theirs');
+    const preview = openCompare(e).querySelector('.autosave-preview');
+    window.localStorage.removeItem('mte:draft:san');
+
+    // the host's own sanitiser, the same one the preview pane runs
+    return preview.innerHTML === '<em>cleaned</em>';
+});
+
 check('Restore and Discard are in the dialog, next to the evidence', () => {
     const page = 'theirs';
     window.localStorage.setItem('mte:draft:act', JSON.stringify(

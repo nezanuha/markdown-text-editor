@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Nieprawidłowy wzorzec",
     "Blockquote": "Cytat",
     "Bold": "Pogrubienie",
+    "Changes": "Zmiany",
     "Check list": "Lista zadań",
     "Close": "Zamknij",
     "Close preview": "Zamknij podgląd",

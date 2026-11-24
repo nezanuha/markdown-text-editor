@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Ugyldig mønster",
     "Blockquote": "Sitat",
     "Bold": "Fet",
+    "Changes": "Endringer",
     "Check list": "Sjekkliste",
     "Close": "Lukk",
     "Close preview": "Lukk forhåndsvisning",

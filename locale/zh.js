@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "模式无效",
     "Blockquote": "引用",
     "Bold": "粗体",
+    "Changes": "更改",
     "Check list": "任务列表",
     "Close": "关闭",
     "Close preview": "关闭预览",

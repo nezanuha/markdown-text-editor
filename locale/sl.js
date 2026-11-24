@@ -24,6 +24,7 @@ export default {
     "Bad pattern": "Neveljaven vzorec",
     "Blockquote": "Citat",
     "Bold": "Krepko",
+    "Changes": "Spremembe",
     "Check list": "Kontrolni seznam",
     "Close": "Zapri",
     "Close preview": "Zapri predogled",
