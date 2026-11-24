@@ -4154,6 +4154,61 @@ check('a refused write says so instead of failing quietly', () => {
     return said.length === 1 && said[0].includes('not being kept');
 });
 
+// --- the split the preview opens -------------------------------------------
+//
+// Written before the layout half of PreviewTool was pulled out for the draft
+// comparison to share. Nothing covered any of it, so a refactor could have
+// broken the preview in a way no test would have mentioned.
+
+const splitState = (e) => {
+    const pane = e.previewContent.parentNode;
+    const wrap = e.markdownEditorDiv.querySelector('.textarea-wrapper');
+    return {
+        fullscreen: e.editorContainer.classList.contains('is-fullscreen'),
+        twoColumns: e.markdownEditorDiv.classList.contains('fj:md:grid-cols-2'),
+        paneShown: !pane.classList.contains('fj:hidden'),
+        paneMinH: pane.classList.contains('fj:min-h-0'),
+        textareaFull: wrap.querySelector('textarea').classList.contains('fj:h-full!'),
+        bodyLocked: document.body.classList.contains('fj:overflow-hidden'),
+    };
+};
+
+check('opening the preview puts the editor in a two-column fullscreen', () => {
+    const e = makeEditor({ toolbar: ['bold', 'preview'] }, 'text');
+    const before = splitState(e);
+    e.previewTool.applySyntax();
+    const after = splitState(e);
+    e.previewTool.applySyntax();
+
+    return Object.values(before).every(v => v === false)
+        && Object.values(after).every(v => v === true);
+});
+
+check('closing the preview undoes every part of it', () => {
+    const e = makeEditor({ toolbar: ['bold', 'preview'] }, 'text');
+    e.previewTool.applySyntax();
+    e.previewTool.applySyntax();
+    const after = splitState(e);
+    return Object.values(after).every(v => v === false);
+});
+
+check('Escape closes the preview', () => {
+    const e = makeEditor({ toolbar: ['bold', 'preview'] }, 'text');
+    e.previewTool.applySyntax();
+    document.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape' }));
+    return splitState(e).twoColumns === false;
+});
+
+check('the other toolbar buttons are reachable again afterwards', () => {
+    const e = makeEditor({ toolbar: ['bold', 'preview'] }, 'text');
+    const bold = e.editorContainer.querySelector('.bold-btn');
+    e.previewTool.applySyntax();
+    const dimmed = bold.classList.contains('fj:opacity-25');
+    e.previewTool.applySyntax();
+    return dimmed && !bold.classList.contains('fj:opacity-25')
+        && !bold.hasAttribute('aria-disabled');
+});
+
 // --- the draft comparison ---------------------------------------------------
 //
 // Restore used to be the only way to see what a draft held, so looking and
@@ -4181,31 +4236,107 @@ check('lineDiff never counts one line from both ends', async () => {
     return d.removed.length + d.added.length === 1;
 });
 
-check('Compare shows what Restore would change, without restoring it', () => {
+const compareButton = (e) => [...e.editorContainer.querySelectorAll('.autosave-bar button')]
+    .find(b => b.textContent === 'Compare');
+
+const openCompare = (e) => {
+    compareButton(e).click();
+    return e.editorContainer.querySelector('.markdown-modal');
+};
+
+check('Compare opens a dialog and leaves the editor where it was', () => {
     const page = 'kept' + NEWLINE + 'theirs';
-    const draft = 'kept' + NEWLINE + 'mine';
     window.localStorage.setItem('mte:draft:cmp', JSON.stringify(
-        { text: draft, seed: page, at: Date.now() }));
+        { text: 'kept' + NEWLINE + 'mine', seed: page, at: Date.now() }));
 
-    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'cmp' } }, page);
-    const panel = e.editorContainer.querySelector('.autosave-compare');
-    const button = [...e.editorContainer.querySelectorAll('.autosave-bar button')]
-        .find(b => b.textContent === 'Compare');
+    const e = makeEditor({ toolbar: ['bold', 'preview'], autosave: { key: 'cmp' } }, page);
+    const dialog = openCompare(e);
 
-    const hiddenAtFirst = panel.hidden;
-    button.click();
-
-    const [left, right] = panel.children;
     window.localStorage.removeItem('mte:draft:cmp');
 
-    // one column per version, so a line needs no +/- to say which side it is
-    return hiddenAtFirst && !panel.hidden
-        && left.textContent.includes('theirs') && !left.textContent.includes('mine')
-        && right.textContent.includes('mine') && !right.textContent.includes('theirs')
-        // the line both versions share is in neither column
-        && !panel.textContent.includes('kept')
-        // looking is not committing
+    // a decision, not a mode: nothing about the editor's layout moves
+    return dialog !== null
+        && !e.editorContainer.classList.contains('is-fullscreen')
+        && !e.markdownEditorDiv.classList.contains('fj:md:grid-cols-2')
+        && !document.body.classList.contains('fj:overflow-hidden')
         && e.usertextarea.value === page;
+});
+
+check('the diff marks what goes and what comes, with context either side', () => {
+    const page = ['one', 'two', 'theirs', 'four', 'five'].join(NEWLINE);
+    const draft = ['one', 'two', 'mine', 'four', 'five'].join(NEWLINE);
+    window.localStorage.setItem('mte:draft:diff', JSON.stringify(
+        { text: draft, seed: page, at: Date.now() }));
+
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'diff' } }, page);
+    const rows = [...openCompare(e).querySelectorAll('.autosave-diff div')]
+        .map(r => r.textContent);
+
+    window.localStorage.removeItem('mte:draft:diff');
+
+    return rows.includes('- theirs') && rows.includes('+ mine')
+        // the lines around it say where in the document this happened
+        && rows.includes('  two') && rows.includes('  four');
+});
+
+check('Restore and Discard are in the dialog, next to the evidence', () => {
+    const page = 'theirs';
+    window.localStorage.setItem('mte:draft:act', JSON.stringify(
+        { text: 'mine', seed: page, at: Date.now() }));
+
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'act' } }, page);
+    const dialog = openCompare(e);
+    dialog.querySelector('.compare-restore').click();
+
+    const restored = e.usertextarea.value;
+    e.undoRedoManager.undo();
+    window.localStorage.removeItem('mte:draft:act');
+
+    return restored === 'mine' && e.usertextarea.value === page;
+});
+
+check('Discard from the dialog takes the strip with it', () => {
+    window.localStorage.setItem('mte:draft:disc', JSON.stringify(
+        { text: 'mine', seed: 'theirs', at: Date.now() }));
+
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'disc' } }, 'theirs');
+    openCompare(e).querySelector('.compare-discard').click();
+
+    const gone = window.localStorage.getItem('mte:draft:disc') === null
+        && e.editorContainer.querySelector('.autosave-bar') === null;
+    window.localStorage.removeItem('mte:draft:disc');
+    return gone && e.usertextarea.value === 'theirs';
+});
+
+check('the document is written as text, never as markup', () => {
+    const payload = '<img src=x onerror=alert(1)>';
+    window.localStorage.setItem('mte:draft:xss', JSON.stringify(
+        { text: payload, seed: 'before', at: Date.now() }));
+
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'xss' } }, 'before');
+    const dialog = openCompare(e);
+    window.localStorage.removeItem('mte:draft:xss');
+
+    return dialog.textContent.includes(payload) && dialog.querySelector('img') === null;
+});
+
+check('a translation cannot break out of the dialog markup', () => {
+    window.localStorage.setItem('mte:draft:esc2', JSON.stringify(
+        { text: 'mine', seed: 'theirs', at: Date.now() }));
+
+    const e = makeEditor({
+        toolbar: ['bold'],
+        autosave: { key: 'esc2' },
+        locale: { Compare: '" onfocus="steal()' },
+    }, 'theirs');
+    // the button carries the translation, so it is found by position here
+    const buttons = [...e.editorContainer.querySelectorAll('.autosave-bar button')];
+    buttons[0].click();
+    const dialog = e.editorContainer.querySelector('.markdown-modal');
+    window.localStorage.removeItem('mte:draft:esc2');
+
+    return dialog.getAttribute('onfocus') === null
+        && dialog.textContent.includes('" onfocus="steal()');
 });
 
 check('the comparison counts both sides, and translates the counts', () => {
@@ -4217,22 +4348,10 @@ check('the comparison counts both sides, and translates the counts', () => {
         autosave: { key: 'cmp2' },
         locale: { 'Page {n} chars': 'Pagina {n}', 'Draft {n} chars': 'Borrador {n}' },
     }, 'ab');
-    const shown = e.editorContainer.querySelector('.autosave-compare').textContent;
+    const shown = openCompare(e).textContent;
     window.localStorage.removeItem('mte:draft:cmp2');
 
     return shown.includes('Pagina 2') && shown.includes('Borrador 4');
-});
-
-check('the document is written as text, never as markup', () => {
-    const payload = '<img src=x onerror=alert(1)>';
-    window.localStorage.setItem('mte:draft:cmp3', JSON.stringify(
-        { text: payload, seed: 'before', at: Date.now() }));
-
-    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'cmp3' } }, 'before');
-    const panel = e.editorContainer.querySelector('.autosave-compare');
-    window.localStorage.removeItem('mte:draft:cmp3');
-
-    return panel.textContent.includes(payload) && panel.querySelector('img') === null;
 });
 
 check('Ctrl+Z puts back what Restore replaced', () => {

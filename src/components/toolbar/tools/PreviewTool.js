@@ -105,37 +105,12 @@ class PreviewTool extends Tool {
 
         this.preview = true;
 
-        const textareaWrapper = editorDiv.querySelector(".textarea-wrapper");
+        // The layout belongs to the editor, which the draft comparison opens
+        // the same way. Only the button is this tool's to put back.
+        this.editor.closeSplit(previewWrapper);
 
-        editorDiv.parentNode.classList.remove('is-fullscreen');
-
-        editorDiv.classList.remove('fj:md:grid-cols-2');
-        previewWrapper.classList.add('fj:hidden');
-        textareaWrapper.classList.remove("fj:hidden", "fj:md:grid");
-
-        textareaWrapper.querySelector("textarea").classList.remove("fj:h-full!");
-
-        if(textareaWrapper.querySelector(".display-layer")){
-            textareaWrapper.querySelector(".display-layer").classList.remove("fj:h-full!");
-        }
-
-        previewWrapper.classList.remove('fj:min-h-0');
-
-        document.querySelector("body").classList.remove('fj:overflow-hidden');
-
-        document.removeEventListener('keydown', this._escHandler);
-
-        this.editor._autoGrow();
-
-        this.editor.editorContainer.querySelectorAll('.markdown-btn').forEach(button => {
-            if (!button.classList.contains('preview-btn')) {
-                button.classList.remove('fj:pointer-events-none', 'fj:md:pointer-events-auto', 'fj:opacity-25', 'fj:md:opacity-100');
-                button.removeAttribute('aria-disabled');
-            } else {
-                button.classList.remove('fj:me-btn-active');
-                button.setAttribute('aria-pressed', 'false');
-            }
-        });
+        this._btn?.classList.remove('fj:me-btn-active');
+        this._btn?.setAttribute('aria-pressed', 'false');
 
         this._setIcon(ICON_SPLIT);
         // Whatever it said at the start, shortcut suffix and all.
@@ -147,45 +122,15 @@ class PreviewTool extends Tool {
 
         this.preview = false;
 
-        const textareaWrapper = editorDiv.querySelector(".textarea-wrapper");
-
-        editorDiv.parentNode.classList.add('is-fullscreen');
-
-        editorDiv.classList.add('fj:md:grid-cols-2');
-        previewWrapper.classList.remove('fj:hidden');
-        textareaWrapper.classList.add("fj:hidden", "fj:md:grid");
-
-        // Clear inline height set by _autoGrow. An inline style would beat
-        // the height in the .is-fullscreen rule.
-        this.editor.editorContainer.style.height = '';
-
-        textareaWrapper.querySelector("textarea").classList.add("fj:h-full!");
-
-        if(textareaWrapper.querySelector(".display-layer")){
-            textareaWrapper.querySelector(".display-layer").classList.add("fj:h-full!");
-        }
-
-        previewWrapper.classList.add('fj:min-h-0');
-
-        document.querySelector("body").classList.add('fj:overflow-hidden');
-
-        this._escHandler = (e) => {
-            if (e.key === 'Escape') this.applySyntax();
-        };
-        document.addEventListener('keydown', this._escHandler);
-
-        this.editor.render();
-
-        const isMobile = window.matchMedia('(max-width: 767px)').matches;
-        this.editor.editorContainer.querySelectorAll('.markdown-btn').forEach(button => {
-            if (!button.classList.contains('preview-btn')) {
-                button.classList.add('fj:pointer-events-none', 'fj:md:pointer-events-auto', 'fj:opacity-25', 'fj:md:opacity-100');
-                button.setAttribute('aria-disabled', isMobile ? 'true' : 'false');
-            } else {
-                button.classList.add('fj:me-btn-active');
-                button.setAttribute('aria-pressed', 'true');
-            }
+        // The preview button keeps working while the split is open, since it
+        // is what closes it again.
+        this.editor.openSplit(previewWrapper, {
+            onEscape: () => this.applySyntax(),
+            active: 'preview-btn',
         });
+
+        this._btn?.classList.add('fj:me-btn-active');
+        this._btn?.setAttribute('aria-pressed', 'true');
 
         this._setIcon(ICON_FULL);
         // Escape rather than F11: F11 was on the tooltip in the other state,
@@ -195,9 +140,10 @@ class PreviewTool extends Tool {
     }
 
     destroy() {
+        // Left open, the body is still locked and the editor still holds a
+        // document-level key handler.
         if (!this.preview) {
-            document.removeEventListener('keydown', this._escHandler);
-            document.querySelector('body')?.classList.remove('fj:overflow-hidden');
+            this.editor.closeSplit(this.editor.previewContent.parentNode);
         }
     }
 }

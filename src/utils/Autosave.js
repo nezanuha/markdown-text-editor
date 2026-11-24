@@ -1,4 +1,6 @@
 import { lineDiff } from './lineDiff.js';
+import { modal } from '../components/modal.js';
+import { escapeHtml } from './escapeHtml.js';
 
 /**
  * Keeps a copy of what is being written, and offers it back after a crash.
@@ -306,12 +308,9 @@ export default class Autosave {
         // that is the worst possible pairing: the warning says the choice
         // costs something without saying what, and pressing the button to
         // find out is what pays.
-        const panel = this._comparison(saved);
-
         actions.append(
-            button(this.editor.label('Compare'), () => {
-                panel.hidden = !panel.hidden;
-            }, 'fj:me-btn-ghost'),
+            button(this.editor.label('Compare'),
+                (event) => this._openComparison(event, saved), 'fj:me-btn-ghost'),
             button(this.editor.label('Restore'), () => this.restore(saved), accent),
             button(this.editor.label('Discard'), () => this.clear(), 'fj:me-btn-ghost'),
         );
@@ -321,80 +320,107 @@ export default class Autosave {
         this.bar = bar;
         const container = this.editor.editorContainer;
         container.insertBefore(bar, container.firstChild);
-        container.insertBefore(panel, bar.nextSibling);
-        this.panel = panel;
     }
 
     /**
-     * What Restore would change, hidden until asked for.
+     * The comparison, in a dialog.
      *
-     * Two columns, the page on one side and the draft on the other, which is
-     * the arrangement the question wants: "is this mine" is answered by
-     * reading one version against the other, not by reading a merged list of
-     * plus and minus signs.
+     * Not a pane beside the editor, which is what this was first. Side by side
+     * only helps if the lines correspond, and half the width reflows prose
+     * differently on each side, so the arrangement destroys the alignment that
+     * was the reason for it. It also changed the editor's mode to answer a
+     * question, left a live textarea next to a decision, and showed one pane at
+     * a time on a phone, which is not a comparison.
      *
-     * Not the preview pane, though it is the same shape. That pane renders one
-     * document's markdown into HTML through the host's renderer and sanitiser,
-     * and this needs two documents' plain text lined up -- nothing of it is
-     * reusable but the idea of a split. Rendering would also be wrong here:
-     * the question is about the text, and `**mine**` and `**theirs**` look
-     * alike once they are both just bold.
-     *
-     * Stacked below the small breakpoint, where two columns of prose are two
-     * columns of single words.
+     * A dialog instead, because this is a decision with two outcomes rather
+     * than a way of editing. Restore and Discard belong next to the evidence,
+     * the editor behind it does not move, and `modal` already has the native
+     * `<dialog>`, the focus trap, Escape and the theme.
      */
-    _comparison(saved) {
-        const panel = document.createElement('div');
-        panel.hidden = true;
-        panel.className = 'autosave-compare fj:bg-base-soft fj:text-xs'
-            + ' fj:border-base-soft fj:border-0 fj:border-b'
-            + ' fj:grid fj:sm:grid-cols-2 fj:gap-x-4'
-            + ' fj:max-h-48 fj:overflow-y-auto';
+    _openComparison(event, saved) {
+        const draftSize = escapeHtml(this.editor.label('Draft {n} chars')
+            .replace('{n}', saved.text.length.toLocaleString()));
+        const pageSize = escapeHtml(this.editor.label('Page {n} chars')
+            .replace('{n}', this.textarea.value.length.toLocaleString()));
 
-        const { removed, added } = lineDiff(this.textarea.value, saved.text);
+        const body = `
+            <div class="fj:flex fj:justify-between fj:items-center fj:gap-3">
+                <div class="fj:font-medium">${escapeHtml(this.editor.label('Compare'))}</div>
+                <button type="button" class="modal-close-btn fj:me-btn fj:me-btn-ghost fj:me-btn-xs fj:me-btn-circle" aria-label="${escapeHtml(this.editor.label('Close'))}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <div class="fj:mt-1 fj:flex fj:gap-3 fj:text-xs fj:opacity-70">
+                <span>${draftSize}</span><span>${pageSize}</span>
+            </div>
+            <div class="autosave-diff fj:mt-3 fj:text-xs fj:font-mono fj:whitespace-pre-wrap fj:break-words fj:max-h-80 fj:overflow-y-auto"></div>
+            <div class="fj:mt-4 fj:flex fj:justify-end fj:gap-2">
+                <button type="button" class="compare-discard fj:me-btn fj:me-btn-sm fj:me-btn-ghost">${escapeHtml(this.editor.label('Discard'))}</button>
+                <button type="button" class="compare-restore fj:me-btn fj:me-btn-sm">${escapeHtml(this.editor.label('Restore'))}</button>
+            </div>`;
 
-        // Written out in full, both of them, for the reason the button text
-        // below is: locale-extract reads the source for label calls whose
-        // argument is a literal, so a string reaching it through a helper is
-        // missing from the template and from every translation.
-        const pageHeading = this.editor.label('Page {n} chars')
-            .replace('{n}', this.textarea.value.length.toLocaleString());
-        const draftHeading = this.editor.label('Draft {n} chars')
-            .replace('{n}', saved.text.length.toLocaleString());
+        const dialog = modal(event, 'fj:max-w-3xl', body, this.editor.label('Compare'));
+        this._fillDiff(dialog.querySelector('.autosave-diff'), saved.text);
+
+        dialog.querySelector('.modal-close-btn')
+            .addEventListener('click', () => dialog.close());
+        dialog.querySelector('.compare-restore').addEventListener('click', () => {
+            dialog.close();
+            this.restore(saved);
+        });
+        dialog.querySelector('.compare-discard').addEventListener('click', () => {
+            dialog.close();
+            this.clear();
+        });
+
+        return dialog;
+    }
+
+    /**
+     * A unified diff: what the draft takes out, what it puts in, and a few
+     * lines either side to say where in the document it happened.
+     *
+     * Unified rather than two columns, for the reason the dialog is not a
+     * pane: a column of wrapped prose does not line up with the column beside
+     * it. Read top to bottom there is no alignment to break, which also means
+     * it works at any width and on a phone.
+     */
+    _fillDiff(host, draft) {
+        const CONTEXT = 3;
+        const page = this.textarea.value;
+        const { head, tail, removed, added } = lineDiff(page, draft);
+        const pageLines = page.split('\n');
 
         // textContent, never innerHTML: these lines are the document, and the
-        // document is exactly the text this editor must never let style itself
-        // into elements.
-        const column = (heading, lines, tone) => {
-            const side = document.createElement('div');
-            side.className = 'fj:px-3 fj:py-2 fj:min-w-0';
-
-            const title = document.createElement('div');
-            title.className = 'fj:opacity-70 fj:mb-1';
-            title.textContent = heading;
-            side.append(title);
-
-            for (const line of lines) {
-                const row = document.createElement('div');
-                row.className = tone + ' fj:whitespace-pre-wrap fj:break-words';
-                // A blank line still has to take up a line, or the two sides
-                // stop lining up where one of them deleted an empty one.
-                row.textContent = line === '' ? '\u00a0' : line;
-                side.append(row);
-            }
-            return side;
+        // document is what this editor must never let style itself into
+        // elements.
+        const row = (prefix, line, tone) => {
+            const el = document.createElement('div');
+            el.className = tone;
+            el.textContent = prefix + (line === '' ? '\u00a0' : line);
+            host.append(el);
+        };
+        const skipped = (n) => {
+            if (n <= 0) return;
+            const el = document.createElement('div');
+            el.className = 'fj:opacity-40 fj:select-none';
+            el.textContent = '...';
+            host.append(el);
         };
 
-        panel.append(
-            column(pageHeading, removed, 'fj:text-error'),
-            // The border only reads as a divider once the columns are side by
-            // side; stacked, it would be a rule across the middle of nothing.
-            column(draftHeading, added, 'fj:text-success'),
-        );
-        panel.children[1].classList.add('fj:sm:border-base-soft',
-            'fj:sm:border-0', 'fj:sm:border-s');
+        skipped(head - CONTEXT);
+        for (const line of pageLines.slice(Math.max(0, head - CONTEXT), head)) {
+            row('  ', line, 'fj:opacity-60');
+        }
 
-        return panel;
+        for (const line of removed) row('- ', line, 'fj:text-error');
+        for (const line of added) row('+ ', line, 'fj:text-success');
+
+        const after = pageLines.length - tail;
+        for (const line of pageLines.slice(after, after + CONTEXT)) {
+            row('  ', line, 'fj:opacity-60');
+        }
+        skipped(tail - CONTEXT);
     }
 
     restore(saved) {
@@ -417,7 +443,8 @@ export default class Autosave {
     _hide() {
         this.bar?.remove();
         this.bar = null;
-        this.panel?.remove();
-        this.panel = null;
+        // The dialog belongs to the wrapper and closes with it, and `modal`
+        // takes it out of the document on close, so there is nothing of it
+        // left to tidy here.
     }
 }

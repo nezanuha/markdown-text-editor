@@ -903,6 +903,103 @@ class MarkdownEditor {
         }
     }
 
+    /**
+     * Opens `pane` beside the editor, full height, both filling the window.
+     *
+     * This was the first half of PreviewTool.enablePreview, which is where it
+     * had to come out of: the draft comparison wants the same arrangement, and
+     * the alternative was a second copy of nine class changes, an Escape
+     * handler and the inline-height clearing -- with no test on any of it to
+     * notice when the two drifted.
+     *
+     * What stays with the caller is the button: which one looks pressed, what
+     * its icon is, what its tooltip says. That is the tool's business, not the
+     * layout's, which is why this takes a pane and not a tool.
+     */
+    openSplit(pane, { onEscape, active } = {}) {
+        const layout = this.markdownEditorDiv;
+        const wrap = layout.querySelector('.textarea-wrapper');
+
+        this.editorContainer.classList.add('is-fullscreen');
+        layout.classList.add('fj:md:grid-cols-2');
+
+        pane.classList.remove('fj:hidden');
+        pane.classList.add('fj:min-h-0');
+
+        // Below the medium breakpoint there is room for one of the two, and
+        // the pane is the one that was asked for.
+        wrap.classList.add('fj:hidden', 'fj:md:grid');
+
+        // Clear the inline height _autoGrow wrote. An inline style would beat
+        // the height in the .is-fullscreen rule.
+        this.editorContainer.style.height = '';
+        wrap.querySelector('textarea')?.classList.add('fj:h-full!');
+        wrap.querySelector('.display-layer')?.classList.add('fj:h-full!');
+
+        document.body.classList.add('fj:overflow-hidden');
+
+        if (onEscape) {
+            this._splitEscape = (event) => {
+                if (event.key === 'Escape') onEscape();
+            };
+            document.addEventListener('keydown', this._splitEscape);
+        }
+
+        this._dimToolbar(true, active);
+        this.render();
+    }
+
+    /** Puts back everything openSplit changed. */
+    closeSplit(pane) {
+        const layout = this.markdownEditorDiv;
+        const wrap = layout.querySelector('.textarea-wrapper');
+
+        this.editorContainer.classList.remove('is-fullscreen');
+        layout.classList.remove('fj:md:grid-cols-2');
+
+        pane.classList.add('fj:hidden');
+        pane.classList.remove('fj:min-h-0');
+
+        wrap.classList.remove('fj:hidden', 'fj:md:grid');
+        wrap.querySelector('textarea')?.classList.remove('fj:h-full!');
+        wrap.querySelector('.display-layer')?.classList.remove('fj:h-full!');
+
+        document.body.classList.remove('fj:overflow-hidden');
+
+        if (this._splitEscape) {
+            document.removeEventListener('keydown', this._splitEscape);
+            this._splitEscape = null;
+        }
+
+        this._dimToolbar(false);
+        this._autoGrow();
+    }
+
+    /**
+     * On a phone the split shows one pane at a time, so the toolbar is acting
+     * on a textarea that is not on screen. Dimmed and inert there, left alone
+     * above the breakpoint where both are visible.
+     *
+     * `aria-disabled` rather than `disabled`, so the buttons stay in the tab
+     * order and a screen reader can still find the toolbar it was reading.
+     */
+    _dimToolbar(on, active) {
+        const dimmed = ['fj:pointer-events-none', 'fj:md:pointer-events-auto',
+            'fj:opacity-25', 'fj:md:opacity-100'];
+        const isMobile = window.matchMedia('(max-width: 767px)').matches;
+
+        this.editorContainer.querySelectorAll('.markdown-btn').forEach((button) => {
+            if (active && button.classList.contains(active)) return;
+            if (on) {
+                button.classList.add(...dimmed);
+                button.setAttribute('aria-disabled', isMobile ? 'true' : 'false');
+            } else {
+                button.classList.remove(...dimmed);
+                button.removeAttribute('aria-disabled');
+            }
+        });
+    }
+
     _autoGrow() {
         if (this.editorContainer.classList.contains('is-fullscreen')) return;
 
