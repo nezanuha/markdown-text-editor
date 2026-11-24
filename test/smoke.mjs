@@ -4077,6 +4077,83 @@ check('a draft identical to what is on screen is not offered', () => {
     return barOf(e) === null;
 });
 
+// --- what the draft costs to store ------------------------------------------
+//
+// The stored record used to carry a full copy of the text the page loaded
+// with, so editing a long document wrote it twice on every save. localStorage
+// holds about 5MB per origin and counts UTF-16, so the ceiling arrived at half
+// the length anyone would guess, the write threw, and the throw was swallowed:
+// a large paste simply was not there after a reload.
+
+check('a draft stores one copy of the document, not two', () => {
+    const doc = 'x'.repeat(20000);
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'size', debounce: 0 } }, doc);
+    e.usertextarea.value = doc + 'y';
+    e.autosave.save();
+
+    const raw = window.localStorage.getItem('mte:draft:size');
+    window.localStorage.removeItem('mte:draft:size');
+
+    // the seed is a fingerprint, so the record is the text plus a little
+    return raw.length < doc.length * 1.2;
+});
+
+check('the fingerprint still tells a changed page from an unchanged one', () => {
+    const page = 'theirs';
+    window.localStorage.setItem('mte:draft:fp', JSON.stringify(
+        { text: 'mine', seedHash: '6:' + 'nope', at: Date.now() }));
+
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'fp' } }, page);
+    const warned = e.editorContainer.querySelector('.autosave-bar')
+        .textContent.includes('The document has changed since then');
+    window.localStorage.removeItem('mte:draft:fp');
+    return warned;
+});
+
+check('a draft written against the same text does not claim otherwise', () => {
+    const page = 'unchanged';
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'fp2', debounce: 0 } }, page);
+    e.usertextarea.value = page + ' plus a draft';
+    e.autosave.save();
+    e.destroy();
+
+    const again = makeEditor({ toolbar: ['bold'], autosave: { key: 'fp2' } }, page);
+    const text = again.editorContainer.querySelector('.autosave-bar').textContent;
+    window.localStorage.removeItem('mte:draft:fp2');
+    return !text.includes('The document has changed since then');
+});
+
+check('a draft from before the fingerprint existed is still read', () => {
+    const page = 'theirs';
+    // the shape written by 2.0.0-beta.5 and earlier: a full copy of the seed
+    window.localStorage.setItem('mte:draft:old', JSON.stringify(
+        { text: 'mine', seed: 'something else entirely', at: Date.now() }));
+
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'old' } }, page);
+    const bar = e.editorContainer.querySelector('.autosave-bar');
+    window.localStorage.removeItem('mte:draft:old');
+    return bar !== null && bar.textContent.includes('The document has changed since then');
+});
+
+check('a refused write says so instead of failing quietly', () => {
+    const real = window.localStorage.setItem;
+    window.localStorage.setItem = () => { throw new Error('QuotaExceededError'); };
+
+    const said = [];
+    const quiet = console.error;
+    console.error = (...args) => said.push(args.join(' '));
+
+    const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'quota', debounce: 0 } }, 'a');
+    e.usertextarea.value = 'a draft that cannot be stored';
+    e.autosave.save();
+    e.autosave.save();   // twice: the message is once per editor, not per save
+
+    console.error = quiet;
+    window.localStorage.setItem = real;
+
+    return said.length === 1 && said[0].includes('not being kept');
+});
+
 // --- the draft comparison ---------------------------------------------------
 //
 // Restore used to be the only way to see what a draft held, so looking and
@@ -4118,11 +4195,15 @@ check('Compare shows what Restore would change, without restoring it', () => {
     const hiddenAtFirst = panel.hidden;
     button.click();
 
-    const shown = panel.textContent;
+    const [left, right] = panel.children;
     window.localStorage.removeItem('mte:draft:cmp');
 
+    // one column per version, so a line needs no +/- to say which side it is
     return hiddenAtFirst && !panel.hidden
-        && shown.includes('- theirs') && shown.includes('+ mine')
+        && left.textContent.includes('theirs') && !left.textContent.includes('mine')
+        && right.textContent.includes('mine') && !right.textContent.includes('theirs')
+        // the line both versions share is in neither column
+        && !panel.textContent.includes('kept')
         // looking is not committing
         && e.usertextarea.value === page;
 });

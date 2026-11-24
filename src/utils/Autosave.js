@@ -28,6 +28,29 @@ const PREFIX = 'mte:draft:';
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
 /**
+ * The seed is only ever compared, never read back, so storing a copy of it
+ * stored the document twice.
+ *
+ * That is what made a large paste vanish. localStorage holds about 5MB per
+ * origin, shared with everything else the application keeps there, and in
+ * UTF-16 a million characters is two of those megabytes. Editing a long
+ * document wrote the new text and the old text on every save, so the ceiling
+ * arrived at half the length anyone would guess, the write threw, and the
+ * throw was swallowed.
+ *
+ * Length and a 32-bit hash. Two different documents collide only if they
+ * match on both, which for telling "has the page changed underneath this
+ * draft" is far past enough.
+ */
+function fingerprint(text) {
+    let hash = 5381;
+    for (let i = 0; i < text.length; i++) {
+        hash = (((hash << 5) + hash) ^ text.charCodeAt(i)) | 0;
+    }
+    return text.length + ':' + (hash >>> 0).toString(36);
+}
+
+/**
  * Storage is allowed to refuse. Private browsing modes throw on access
  * rather than returning null, and a full quota throws on write. Nothing here
  * is important enough to interrupt someone's typing over.
@@ -130,7 +153,24 @@ export default class Autosave {
         const text = this.textarea.value;
         // Back to where it started means there is nothing unsaved to keep.
         if (text === this.seed) return this.clear();
-        storage.set(this.key, { text, seed: this.seed, at: Date.now() });
+
+        const kept = storage.set(this.key, {
+            text,
+            seedHash: fingerprint(this.seed),
+            at: Date.now(),
+        });
+
+        // Storage is allowed to refuse, and a refusal used to be swallowed:
+        // the draft silently stopped being kept and the only way to find out
+        // was to lose something and reload. Once per editor, because the next
+        // keystroke would say it again.
+        if (!kept && !this._warnedAboutStorage) {
+            this._warnedAboutStorage = true;
+            console.error('[MarkdownEditor] autosave could not write the draft, so it is '
+                + 'not being kept. localStorage holds about 5MB per origin and this '
+                + 'document is ' + text.length.toLocaleString() + ' characters; private '
+                + 'browsing modes refuse it outright.');
+        }
     }
 
     clear() {
@@ -166,9 +206,14 @@ export default class Autosave {
         // costs something, which is the difference between an informed
         // decision and a surprised one.
         //
-        // Drafts written before this field existed have no seed. Unknown is
-        // not the same as changed, so they are left alone.
-        const stale = typeof saved.seed === 'string' && saved.seed !== this.seed;
+        // Three shapes to read. `seedHash` is what is written now; `seed` is
+        // the full copy written before that, kept working so a draft does not
+        // go stale-looking across an upgrade; and a draft from before either
+        // field has neither. Unknown is not the same as changed, so the last
+        // of those is left alone rather than called stale.
+        const stale = typeof saved.seedHash === 'string'
+            ? saved.seedHash !== fingerprint(this.seed)
+            : (typeof saved.seed === 'string' && saved.seed !== this.seed);
 
         // frutjam's alert, rather than a row of utilities that imitates one:
         // it is the component for exactly this, and it takes the theme's
@@ -283,49 +328,71 @@ export default class Autosave {
     /**
      * What Restore would change, hidden until asked for.
      *
-     * Lines rather than characters: a character diff of two paragraphs is a
-     * confetti of fragments, and the question here is "is this mine", which a
-     * reader answers from whole lines. Both lengths are shown as well, since a
-     * draft that is two thousand characters shorter is usually the answer on
-     * its own.
+     * Two columns, the page on one side and the draft on the other, which is
+     * the arrangement the question wants: "is this mine" is answered by
+     * reading one version against the other, not by reading a merged list of
+     * plus and minus signs.
+     *
+     * Not the preview pane, though it is the same shape. That pane renders one
+     * document's markdown into HTML through the host's renderer and sanitiser,
+     * and this needs two documents' plain text lined up -- nothing of it is
+     * reusable but the idea of a split. Rendering would also be wrong here:
+     * the question is about the text, and `**mine**` and `**theirs**` look
+     * alike once they are both just bold.
+     *
+     * Stacked below the small breakpoint, where two columns of prose are two
+     * columns of single words.
      */
     _comparison(saved) {
         const panel = document.createElement('div');
         panel.hidden = true;
         panel.className = 'autosave-compare fj:bg-base-soft fj:text-xs'
-            + ' fj:border-base-soft fj:border-0 fj:border-b fj:px-3 fj:py-2'
-            + ' fj:max-h-40 fj:overflow-y-auto';
+            + ' fj:border-base-soft fj:border-0 fj:border-b'
+            + ' fj:grid fj:sm:grid-cols-2 fj:gap-x-4'
+            + ' fj:max-h-48 fj:overflow-y-auto';
 
-        const sizes = document.createElement('div');
-        sizes.className = 'fj:flex fj:gap-3 fj:opacity-70 fj:mb-1';
+        const { removed, added } = lineDiff(this.textarea.value, saved.text);
+
         // Written out in full, both of them, for the reason the button text
         // below is: locale-extract reads the source for label calls whose
         // argument is a literal, so a string reaching it through a helper is
         // missing from the template and from every translation.
-        const onPage = document.createElement('span');
-        onPage.textContent = this.editor.label('Page {n} chars')
+        const pageHeading = this.editor.label('Page {n} chars')
             .replace('{n}', this.textarea.value.length.toLocaleString());
-        const inDraft = document.createElement('span');
-        inDraft.textContent = this.editor.label('Draft {n} chars')
+        const draftHeading = this.editor.label('Draft {n} chars')
             .replace('{n}', saved.text.length.toLocaleString());
-        sizes.append(onPage, inDraft);
-        panel.append(sizes);
-
-        const { removed, added } = lineDiff(this.textarea.value, saved.text);
 
         // textContent, never innerHTML: these lines are the document, and the
         // document is exactly the text this editor must never let style itself
         // into elements.
-        const lines = (list, prefix, tone) => {
-            for (const text of list) {
+        const column = (heading, lines, tone) => {
+            const side = document.createElement('div');
+            side.className = 'fj:px-3 fj:py-2 fj:min-w-0';
+
+            const title = document.createElement('div');
+            title.className = 'fj:opacity-70 fj:mb-1';
+            title.textContent = heading;
+            side.append(title);
+
+            for (const line of lines) {
                 const row = document.createElement('div');
-                row.className = tone + ' fj:whitespace-pre-wrap fj:break-all';
-                row.textContent = prefix + text;
-                panel.append(row);
+                row.className = tone + ' fj:whitespace-pre-wrap fj:break-words';
+                // A blank line still has to take up a line, or the two sides
+                // stop lining up where one of them deleted an empty one.
+                row.textContent = line === '' ? '\u00a0' : line;
+                side.append(row);
             }
+            return side;
         };
-        lines(removed, '- ', 'fj:text-error');
-        lines(added, '+ ', 'fj:text-success');
+
+        panel.append(
+            column(pageHeading, removed, 'fj:text-error'),
+            // The border only reads as a divider once the columns are side by
+            // side; stacked, it would be a rule across the middle of nothing.
+            column(draftHeading, added, 'fj:text-success'),
+        );
+        panel.children[1].classList.add('fj:sm:border-base-soft',
+            'fj:sm:border-0', 'fj:sm:border-s');
 
         return panel;
     }
