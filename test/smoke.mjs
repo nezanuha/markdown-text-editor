@@ -4339,38 +4339,46 @@ check('the diff marks what goes and what comes, with context either side', () =>
         && rows.includes('  two') && rows.includes('  four');
 });
 
-check('the dialog offers the draft rendered as well as the difference', () => {
+check('the dialog asks what kind of answer, then which document', () => {
     const draft = '## Why Shopify' + NEWLINE + NEWLINE + 'We built a business.';
     window.localStorage.setItem('mte:draft:tabs', JSON.stringify(
         { text: draft, seed: 'theirs', at: Date.now() }));
 
     const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'tabs' } }, 'theirs');
     const dialog = openCompare(e);
-    const tabs = [...dialog.querySelectorAll('.compare-tab')];
-    const views = [...dialog.querySelectorAll('.autosave-view')];
-    const shown = () => views.filter(v => !v.classList.contains('fj:hidden'))
-        .map(v => v.dataset.view);
 
-    // three questions, one tab each, and no scrolling past one to reach
-    // another: the two rendered versions were stacked under a single tab
-    const landed = shown().join() === 'diff'
-        && tabs.length === 3 && tabs[0].getAttribute('aria-selected') === 'true';
+    const shown = (sel, attr) => [...dialog.querySelectorAll(sel)]
+        .filter(v => !v.classList.contains('fj:hidden'))
+        .map(v => v.dataset[attr]).join();
+
+    const tabs = [...dialog.querySelectorAll('.compare-tab')];
+    const subs = [...dialog.querySelectorAll('.compare-sub')];
+
+    // the outer pair names a kind of view, the inner pair a document. Flat,
+    // the row read "Changes, Draft 2,340 chars, Page 1,980 chars", which is
+    // one label naming a view and two that look like statistics.
+    const landed = tabs.length === 2 && subs.length === 2
+        && shown('.autosave-view', 'view') === 'diff'
+        && shown('.autosave-sub', 'sub') === 'draft';
 
     tabs[1].click();
-    const onDraft = shown().join() === 'draft'
+    const onPreview = shown('.autosave-view', 'view') === 'preview'
         && tabs[1].classList.contains('fj:me-tab-active')
         && !tabs[0].classList.contains('fj:me-tab-active');
 
-    tabs[2].click();
-    const onNow = shown().join() === 'now';
+    subs[1].click();
+    const onNow = shown('.autosave-sub', 'sub') === 'now'
+        && subs[1].getAttribute('aria-selected') === 'true'
+        // the outer choice is untouched by the inner one
+        && shown('.autosave-view', 'view') === 'preview';
 
     const draftText = dialog.querySelector('.preview-draft').textContent;
     const nowText = dialog.querySelector('.preview-now').textContent;
     window.localStorage.removeItem('mte:draft:tabs');
 
-    // the tabs carry the lengths, so both are visible without opening either
-    return landed && onDraft && onNow
-        && tabs[1].textContent.includes('chars') && tabs[2].textContent.includes('chars')
+    return landed && onPreview && onNow
+        // the counts label the inner pair, which is why this needs no new keys
+        && subs[0].textContent.includes('chars') && subs[1].textContent.includes('chars')
         && draftText.includes('Why Shopify') && !draftText.includes('##')
         && nowText.includes('theirs') && !nowText.includes('Why Shopify');
 });

@@ -356,12 +356,19 @@ export default class Autosave {
             </div>
             <div class="fj:me-tabs fj:me-tabs-underline fj:me-tabs-sm fj:mt-3" role="tablist">
                 <button type="button" role="tab" aria-selected="true" class="compare-tab fj:me-tab fj:me-tab-active" data-view="diff">${escapeHtml(this.editor.label('Changes'))}</button>
-                <button type="button" role="tab" aria-selected="false" class="compare-tab fj:me-tab" data-view="draft">${draftSize}</button>
-                <button type="button" role="tab" aria-selected="false" class="compare-tab fj:me-tab" data-view="now">${pageSize}</button>
+                <button type="button" role="tab" aria-selected="false" class="compare-tab fj:me-tab" data-view="preview">${escapeHtml(this.editor.label('Preview'))}</button>
             </div>
+
             <div class="autosave-view autosave-diff fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:text-xs fj:font-mono fj:whitespace-pre-wrap fj:break-words fj:max-h-80 fj:overflow-y-auto" role="tabpanel" data-view="diff"></div>
-            <div class="autosave-view preview-draft fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:hidden fj:max-h-80 fj:overflow-y-auto ${PROSE_CLASSES}" role="tabpanel" data-view="draft"></div>
-            <div class="autosave-view preview-now fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:hidden fj:max-h-80 fj:overflow-y-auto ${PROSE_CLASSES}" role="tabpanel" data-view="now"></div>
+
+            <div class="autosave-view fj:mt-2 fj:hidden" role="tabpanel" data-view="preview">
+                <div class="fj:me-tabs fj:me-tabs-box fj:me-tabs-xs" role="tablist">
+                    <button type="button" role="tab" aria-selected="true" class="compare-sub fj:me-tab fj:me-tab-active" data-sub="draft">${draftSize}</button>
+                    <button type="button" role="tab" aria-selected="false" class="compare-sub fj:me-tab" data-sub="now">${pageSize}</button>
+                </div>
+                <div class="autosave-sub preview-draft fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:max-h-80 fj:overflow-y-auto ${PROSE_CLASSES}" role="tabpanel" data-sub="draft"></div>
+                <div class="autosave-sub preview-now fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:hidden fj:max-h-80 fj:overflow-y-auto ${PROSE_CLASSES}" role="tabpanel" data-sub="now"></div>
+            </div>
             <div class="fj:mt-4 fj:flex fj:justify-end fj:gap-2">
                 <button type="button" class="compare-discard fj:me-btn fj:me-btn-sm fj:me-btn-ghost">${escapeHtml(this.editor.label('Discard'))}</button>
                 <button type="button" class="compare-restore fj:me-btn fj:me-btn-sm fj:me-btn-primary">${escapeHtml(this.editor.label('Restore'))}</button>
@@ -370,14 +377,15 @@ export default class Autosave {
         const dialog = modal(event, 'fj:max-w-3xl', body, this.editor.label('Compare'));
         this._fillDiff(dialog.querySelector('.autosave-diff'), saved.text);
 
-        // One tab per question, flat. The two rendered versions were stacked
-        // under a single Preview tab, which meant scrolling the whole of the
-        // current document to reach the draft underneath it -- on anything
-        // longer than a screen, the draft was effectively hidden. Three tabs
-        // cost one click each and no scrolling past anything.
+        // Two levels, because one level could not say both things. Flat, the
+        // row read "Changes, Draft 2,340 chars, Page 1,980 chars": one label
+        // naming a kind of view and two that look like statistics, with
+        // nothing to say the last two were rendered at all.
         //
-        // The tabs carry the two lengths rather than the word Preview twice,
-        // so the sizes are visible without opening either one.
+        // The outer pair says what kind of answer you want; the inner pair,
+        // which only exists under Preview, says which document. The counts
+        // read as labels there because their parent has already said what they
+        // are, which is also why this needs no new strings.
         //
         // innerHTML, with renderMarkdown either side of it: that is the host's
         // own renderer and the host's own sanitiser, the same pair the preview
@@ -387,20 +395,28 @@ export default class Autosave {
         dialog.querySelector('.preview-now').innerHTML =
             this.editor.renderMarkdown(this.textarea.value);
 
-        const tabs = [...dialog.querySelectorAll('.compare-tab')];
-        const views = [...dialog.querySelectorAll('.autosave-view')];
-        tabs.forEach((tab) => {
-            tab.addEventListener('click', () => {
-                tabs.forEach((other) => {
-                    const on = other === tab;
-                    other.classList.toggle('fj:me-tab-active', on);
-                    other.setAttribute('aria-selected', String(on));
-                });
-                views.forEach((view) => {
-                    view.classList.toggle('fj:hidden', view.dataset.view !== tab.dataset.view);
+        // One handler for both rows: a tab marks itself active and shows the
+        // panel whose matching attribute agrees with it.
+        const wire = (tabSelector, panelSelector, attribute) => {
+            const tabs = [...dialog.querySelectorAll(tabSelector)];
+            const panels = [...dialog.querySelectorAll(panelSelector)];
+            tabs.forEach((tab) => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach((other) => {
+                        const on = other === tab;
+                        other.classList.toggle('fj:me-tab-active', on);
+                        other.setAttribute('aria-selected', String(on));
+                    });
+                    panels.forEach((panel) => {
+                        panel.classList.toggle('fj:hidden',
+                            panel.dataset[attribute] !== tab.dataset[attribute]);
+                    });
                 });
             });
-        });
+        };
+
+        wire('.compare-tab', '.autosave-view', 'view');
+        wire('.compare-sub', '.autosave-sub', 'sub');
 
         dialog.querySelector('.modal-close-btn')
             .addEventListener('click', () => dialog.close());
