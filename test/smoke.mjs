@@ -3951,6 +3951,12 @@ const typed = (editor, text) => {
 const barOf = (editor) => editor.editorContainer.querySelector('.autosave-bar');
 const barBtn = (editor, text) => [...(barOf(editor)?.querySelectorAll('button') ?? [])]
     .find(b => b.textContent === text);
+// Restore and Discard live in the dialog now, not in the strip: both are
+// irreversible, and the strip appears while you are reading something else.
+const answerDraft = (editor, which) => {
+    barBtn(editor, 'Compare').click();
+    editor.editorContainer.querySelector('.markdown-modal .compare-' + which).click();
+};
 
 check('autosave is off unless asked for', () => {
     store.reset();
@@ -3991,17 +3997,19 @@ check('a stored draft is offered, never restored on its own', () => {
 
     // Restoring here would put an old draft over newer text from the server
     // and say nothing about it.
+    // One button, and it opens the dialog. Neither answer is a thing to do
+    // without looking, and the strip costs nothing to ignore.
     return e.usertextarea.value === 'what the server sent'
         && barOf(e) !== null
-        && barBtn(e, 'Restore') !== undefined
-        && barBtn(e, 'Discard') !== undefined;
+        && barOf(e).querySelectorAll('button').length === 1
+        && barBtn(e, 'Compare') !== undefined;
 });
 
 check('Restore puts the draft in and clears the store', () => {
     store.reset();
     store.data.set('mte:draft:k4', JSON.stringify({ text: 'the draft', seed: '', at: Date.now() }));
     const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k4' } }, 'server text');
-    barBtn(e, 'Restore').click();
+    answerDraft(e, 'restore');
 
     // Keeping it stored would offer it again next time against text that
     // already holds it.
@@ -4014,7 +4022,7 @@ check('Discard leaves the text alone and clears the store', () => {
     store.reset();
     store.data.set('mte:draft:k5', JSON.stringify({ text: 'the draft', seed: '', at: Date.now() }));
     const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k5' } }, 'server text');
-    barBtn(e, 'Discard').click();
+    answerDraft(e, 'discard');
 
     return e.usertextarea.value === 'server text'
         && barOf(e) === null
@@ -4338,30 +4346,33 @@ check('the dialog offers the draft rendered as well as the difference', () => {
 
     const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'tabs' } }, 'theirs');
     const dialog = openCompare(e);
-    const [diff, preview] = ['.autosave-diff', '.autosave-preview']
-        .map(s => dialog.querySelector(s));
     const tabs = [...dialog.querySelectorAll('.compare-tab')];
+    const views = [...dialog.querySelectorAll('.autosave-view')];
+    const shown = () => views.filter(v => !v.classList.contains('fj:hidden'))
+        .map(v => v.dataset.view);
 
-    // the difference is what you land on: it answers what would be lost
-    const landed = !diff.classList.contains('fj:hidden')
-        && preview.classList.contains('fj:hidden')
-        && tabs[0].getAttribute('aria-selected') === 'true';
+    // three questions, one tab each, and no scrolling past one to reach
+    // another: the two rendered versions were stacked under a single tab
+    const landed = shown().join() === 'diff'
+        && tabs.length === 3 && tabs[0].getAttribute('aria-selected') === 'true';
 
     tabs[1].click();
-    const switched = diff.classList.contains('fj:hidden')
-        && !preview.classList.contains('fj:hidden')
-        && tabs[1].getAttribute('aria-selected') === 'true'
+    const onDraft = shown().join() === 'draft'
         && tabs[1].classList.contains('fj:me-tab-active')
         && !tabs[0].classList.contains('fj:me-tab-active');
 
-    const shownNow = preview.querySelector('.preview-now').textContent;
-    const shownDraft = preview.querySelector('.preview-draft').textContent;
+    tabs[2].click();
+    const onNow = shown().join() === 'now';
+
+    const draftText = dialog.querySelector('.preview-draft').textContent;
+    const nowText = dialog.querySelector('.preview-now').textContent;
     window.localStorage.removeItem('mte:draft:tabs');
 
-    // both sides rendered, so the markdown is gone from each
-    return landed && switched
-        && shownNow.includes('theirs') && !shownNow.includes('Why Shopify')
-        && shownDraft.includes('Why Shopify') && !shownDraft.includes('##');
+    // the tabs carry the lengths, so both are visible without opening either
+    return landed && onDraft && onNow
+        && tabs[1].textContent.includes('chars') && tabs[2].textContent.includes('chars')
+        && draftText.includes('Why Shopify') && !draftText.includes('##')
+        && nowText.includes('theirs') && !nowText.includes('Why Shopify');
 });
 
 check('the dialog renders markdown in the preview pane\'s own typography', () => {
@@ -4396,12 +4407,12 @@ check('the preview of a draft goes through the configured sanitiser', () => {
         autosave: { key: 'san' },
         sanitizer: () => '<em>cleaned</em>',
     }, 'theirs');
-    const preview = openCompare(e).querySelector('.autosave-preview');
+    const dialog = openCompare(e);
     window.localStorage.removeItem('mte:draft:san');
 
-    // both halves: the host's own sanitiser, the same one the preview pane runs
-    return preview.querySelector('.preview-now').innerHTML === '<em>cleaned</em>'
-        && preview.querySelector('.preview-draft').innerHTML === '<em>cleaned</em>';
+    // both views: the host's own sanitiser, the same one the preview pane runs
+    return dialog.querySelector('.preview-now').innerHTML === '<em>cleaned</em>'
+        && dialog.querySelector('.preview-draft').innerHTML === '<em>cleaned</em>';
 });
 
 check('Restore and Discard are in the dialog, next to the evidence', () => {
@@ -4485,9 +4496,7 @@ check('Ctrl+Z puts back what Restore replaced', () => {
         { text: 'mine, from Monday', seed: page, at: Date.now() }));
 
     const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'cmp4' } }, page);
-    const restore = [...e.editorContainer.querySelectorAll('.autosave-bar button')]
-        .find(b => b.textContent === 'Restore');
-    restore.click();
+    answerDraft(e, 'restore');
 
     const afterRestore = e.usertextarea.value;
     e.undoRedoManager.undo();

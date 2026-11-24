@@ -305,16 +305,18 @@ export default class Autosave {
         // Discard stays a ghost. It is the other answer, not the lesser one,
         // and two filled buttons would be the editor insisting that one of
         // them is right when it cannot know.
-        // Restore used to be the only way to find out what the draft held,
-        // which made looking and committing the same action. On a stale draft
-        // that is the worst possible pairing: the warning says the choice
-        // costs something without saying what, and pressing the button to
-        // find out is what pays.
+        // One button, and it opens the dialog. Restore and Discard were here
+        // too, which put both irreversible answers one unconsidered click
+        // away in a strip that appears while you are reading something else.
+        // Restoring overwrites the document; discarding deletes the only copy
+        // of the draft. Neither is a thing to do without looking, and looking
+        // is what the dialog is.
+        //
+        // The strip costs nothing to ignore, so the quick path is to leave it
+        // alone, not to answer it fast.
         actions.append(
             button(this.editor.label('Compare'),
-                (event) => this._openComparison(event, saved), 'fj:me-btn-ghost'),
-            button(this.editor.label('Restore'), () => this.restore(saved), accent),
-            button(this.editor.label('Discard'), () => this.clear(), 'fj:me-btn-ghost'),
+                (event) => this._openComparison(event, saved), accent),
         );
 
         bar.append(label, when, actions);
@@ -352,25 +354,14 @@ export default class Autosave {
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <div class="fj:mt-2 fj:flex fj:gap-2">
-                <span class="fj:me-badge fj:me-badge-soft fj:me-badge-success fj:me-badge-sm">${draftSize}</span>
-                <span class="fj:me-badge fj:me-badge-soft fj:me-badge-sm">${pageSize}</span>
-            </div>
             <div class="fj:me-tabs fj:me-tabs-underline fj:me-tabs-sm fj:mt-3" role="tablist">
                 <button type="button" role="tab" aria-selected="true" class="compare-tab fj:me-tab fj:me-tab-active" data-view="diff">${escapeHtml(this.editor.label('Changes'))}</button>
-                <button type="button" role="tab" aria-selected="false" class="compare-tab fj:me-tab" data-view="preview">${escapeHtml(this.editor.label('Preview'))}</button>
+                <button type="button" role="tab" aria-selected="false" class="compare-tab fj:me-tab" data-view="draft">${draftSize}</button>
+                <button type="button" role="tab" aria-selected="false" class="compare-tab fj:me-tab" data-view="now">${pageSize}</button>
             </div>
-            <div class="autosave-diff fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:text-xs fj:font-mono fj:whitespace-pre-wrap fj:break-words fj:max-h-80 fj:overflow-y-auto" role="tabpanel"></div>
-            <div class="autosave-preview fj:mt-2 fj:hidden fj:max-h-80 fj:overflow-y-auto" role="tabpanel">
-                <div>
-                    <span class="fj:me-badge fj:me-badge-soft fj:me-badge-sm">${pageSize}</span>
-                    <div class="preview-now fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-1 fj:p-2 ${PROSE_CLASSES}"></div>
-                </div>
-                <div class="fj:mt-3">
-                    <span class="fj:me-badge fj:me-badge-soft fj:me-badge-success fj:me-badge-sm">${draftSize}</span>
-                    <div class="preview-draft fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-1 fj:p-2 ${PROSE_CLASSES}"></div>
-                </div>
-            </div>
+            <div class="autosave-view autosave-diff fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:text-xs fj:font-mono fj:whitespace-pre-wrap fj:break-words fj:max-h-80 fj:overflow-y-auto" role="tabpanel" data-view="diff"></div>
+            <div class="autosave-view preview-draft fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:hidden fj:max-h-80 fj:overflow-y-auto ${PROSE_CLASSES}" role="tabpanel" data-view="draft"></div>
+            <div class="autosave-view preview-now fj:me-surface fj:me-surface-outline fj:me-surface-rounded fj:mt-2 fj:p-2 fj:hidden fj:max-h-80 fj:overflow-y-auto ${PROSE_CLASSES}" role="tabpanel" data-view="now"></div>
             <div class="fj:mt-4 fj:flex fj:justify-end fj:gap-2">
                 <button type="button" class="compare-discard fj:me-btn fj:me-btn-sm fj:me-btn-ghost">${escapeHtml(this.editor.label('Discard'))}</button>
                 <button type="button" class="compare-restore fj:me-btn fj:me-btn-sm fj:me-btn-primary">${escapeHtml(this.editor.label('Restore'))}</button>
@@ -379,36 +370,35 @@ export default class Autosave {
         const dialog = modal(event, 'fj:max-w-3xl', body, this.editor.label('Compare'));
         this._fillDiff(dialog.querySelector('.autosave-diff'), saved.text);
 
-        // What the two versions look like, rather than what is different about
-        // them. The diff answers "what would I lose" and stays the view you
-        // land on; this answers "is this the version I meant", which for a
-        // document of headings and tables the markdown source answers badly.
+        // One tab per question, flat. The two rendered versions were stacked
+        // under a single Preview tab, which meant scrolling the whole of the
+        // current document to reach the draft underneath it -- on anything
+        // longer than a screen, the draft was effectively hidden. Three tabs
+        // cost one click each and no scrolling past anything.
         //
-        // Stacked, each at the dialog's full width, rather than in two columns.
-        // Columns would reflow the prose differently in each one, and these are
-        // read in turn rather than line against line, so the height costs
-        // nothing and the width is worth having.
+        // The tabs carry the two lengths rather than the word Preview twice,
+        // so the sizes are visible without opening either one.
         //
         // innerHTML, with renderMarkdown either side of it: that is the host's
         // own renderer and the host's own sanitiser, the same pair the preview
         // pane runs, so nothing here decides what is safe.
-        const preview = dialog.querySelector('.autosave-preview');
-        preview.querySelector('.preview-now').innerHTML =
-            this.editor.renderMarkdown(this.textarea.value);
-        preview.querySelector('.preview-draft').innerHTML =
+        dialog.querySelector('.preview-draft').innerHTML =
             this.editor.renderMarkdown(saved.text);
+        dialog.querySelector('.preview-now').innerHTML =
+            this.editor.renderMarkdown(this.textarea.value);
 
-        const diff = dialog.querySelector('.autosave-diff');
-        dialog.querySelectorAll('.compare-tab').forEach((tab) => {
+        const tabs = [...dialog.querySelectorAll('.compare-tab')];
+        const views = [...dialog.querySelectorAll('.autosave-view')];
+        tabs.forEach((tab) => {
             tab.addEventListener('click', () => {
-                const wanted = tab.dataset.view;
-                dialog.querySelectorAll('.compare-tab').forEach((other) => {
+                tabs.forEach((other) => {
                     const on = other === tab;
                     other.classList.toggle('fj:me-tab-active', on);
                     other.setAttribute('aria-selected', String(on));
                 });
-                diff.classList.toggle('fj:hidden', wanted !== 'diff');
-                preview.classList.toggle('fj:hidden', wanted !== 'preview');
+                views.forEach((view) => {
+                    view.classList.toggle('fj:hidden', view.dataset.view !== tab.dataset.view);
+                });
             });
         });
 
