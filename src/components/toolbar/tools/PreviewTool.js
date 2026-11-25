@@ -41,7 +41,13 @@ class PreviewTool extends Tool {
     constructor(editor) {
         // No markdown syntax for preview toggle, so we call the parent constructor with empty values
         super(editor, 'Preview');
-        this.preview = true;
+        // Closed, and named for what it is.
+        //
+        // This was `preview`, true for closed, beside `editor.preview`, which
+        // is true when the preview is on the toolbar at all. Two fields of the
+        // same name on two objects, one of them meaning the opposite of what
+        // it says, and `if (this.editor.preview && this.preview)` to read.
+        this._closed = true;
         this.button = this.createButton(ICON_SPLIT);
         this._btn = this.button.querySelector('button');
         if (this._btn) this._btn.setAttribute('aria-pressed', 'false');
@@ -93,7 +99,7 @@ class PreviewTool extends Tool {
         this._freezeName();
 
         // Toggle the preview's visibility by switching between 'block' and 'hidden' classes
-        if (this.editor.preview && this.preview) {
+        if (this.editor.preview && this._closed) {
             this.enablePreview(previewWrapper, editorDiv);
         } else {
             this.disablePreview(previewWrapper, editorDiv);
@@ -137,10 +143,16 @@ class PreviewTool extends Tool {
         });
     }
 
+    /** Whether the rendered pane is on screen. Read by the editor, which
+     *  skips rendering into it while it is not. */
+    get isOpen() {
+        return !this._closed;
+    }
+
     // Method to hide the preview (disable it)
     disablePreview(previewWrapper, editorDiv) {
 
-        this.preview = true;
+        this._closed = true;
 
         this._layout(previewWrapper, editorDiv, false);
 
@@ -158,7 +170,7 @@ class PreviewTool extends Tool {
     // Method to show the preview (enable it)
     enablePreview(previewWrapper, editorDiv) {
 
-        this.preview = false;
+        this._closed = false;
 
         // Clear the inline height _autoGrow wrote, before the layout goes on:
         // an inline style would beat the height in the .is-fullscreen rule.
@@ -186,7 +198,7 @@ class PreviewTool extends Tool {
     destroy() {
         // Left open, the body stays locked and a document-level key handler
         // outlives the editor that added it.
-        if (!this.preview) {
+        if (this.isOpen) {
             document.removeEventListener('keydown', this._escHandler);
             document.body.classList.remove('fj:overflow-hidden');
         }

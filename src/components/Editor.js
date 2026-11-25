@@ -431,7 +431,7 @@ class MarkdownEditor {
         this.markdownEditorDiv.appendChild(textareaContainer);
     }
 
-    
+
 
     addPreviewWrapper() {
         const previewInstance = new Preview(this.markdownEditorDiv, text => this.label(text));
@@ -492,8 +492,23 @@ class MarkdownEditor {
         this._widthObserver.observe(this.usertextarea);
     }
 
+    /**
+     * The preview, 150ms after you stop typing -- and only when it is on
+     * screen.
+     *
+     * `this.preview` means the preview is on the toolbar, which it is by
+     * default, so this used to parse and sanitise the whole document after
+     * every burst of typing and write the result into a pane wearing
+     * `fj:hidden`. 68ms of marked and DOMPurify on a 22kB document, 162ms on
+     * 68kB, thrown away, on every editor that had never had its preview
+     * opened.
+     *
+     * Opening it renders from scratch -- `enablePreview` calls `render()` --
+     * so there is nothing to catch up on.
+     */
     debouncedPreview() {
         if (!this.preview) return;
+        if (this.previewTool && !this.previewTool.isOpen) return;
         clearTimeout(this.previewTimer);
         this.previewTimer = setTimeout(() => {
             // Replacing the markup resets the preview to the top, so remember
@@ -694,20 +709,20 @@ class MarkdownEditor {
             this.options.toolbar ||
             [
                 // History/System (Usually far left)
-                'undo', 
+                'undo',
                 'redo',
-                
+
                 // Block Structure
-                'heading', 
-                'blockquote', 
-                
+                'heading',
+                'blockquote',
+
                 // Lists & Indentation
-                'ul', 
-                'ol', 
-                'checklist', 
-                'outdent', 
-                'indent', 
-                
+                'ul',
+                'ol',
+                'checklist',
+                'outdent',
+                'indent',
+
                 // Inline Formatting
                 'bold',
                 'italic',
@@ -722,7 +737,7 @@ class MarkdownEditor {
                 // Rich Media/Links
                 'link',
                 'image',
-                
+
                 // View/Preview (Usually far right)
                 'preview'
             ]
