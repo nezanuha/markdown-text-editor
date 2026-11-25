@@ -58,13 +58,20 @@ console.error = (...args) => {
     else realError(...args);
 };
 
-// The old fileInput form is exercised by a dozen tests below, and it notes
-// once per page what replaced it. Collect that the same way.
+// The deprecated forms are exercised by a dozen tests below, and each says so
+// once. Collect both brackets the same way: `info` for a form that was renamed
+// and keeps working, `warn` for one with a removal date on it.
 const notes = [];
+const warnings = [];
 const realInfo = console.info;
 console.info = (...args) => {
     if (String(args[0]).includes('[MarkdownEditor]')) notes.push(args[0]);
     else realInfo(...args);
+};
+const realWarn = console.warn;
+console.warn = (...args) => {
+    if (String(args[0]).includes('[MarkdownEditor]')) warnings.push(args[0]);
+    else realWarn(...args);
 };
 
 let passed = 0;
@@ -2823,16 +2830,18 @@ await checkAsync('upload wins over the old toolbar form', async () => {
 // From 2.0.0 the CSS is a file the host has to load, so forgetting it leaves a
 // working but unstyled editor. These guard the only signal the user gets.
 
-check('the old fileInput form says what replaced it', () => {
-    const about = notes.filter(note => note.includes('image.fileInput'));
-    return about.length === 1 && about[0].includes('upload');
+check('the old fileInput form says what replaced it, and when it goes', () => {
+    const about = warnings.filter(note => note.includes('image.fileInput'));
+    return about.length === 1
+        && about[0].includes('upload')
+        && about[0].includes('3.0');
 });
 
 check('it says so once per page, not once per editor', () => {
-    const before = notes.length;
+    const before = notes.length + warnings.length;
     makeEditor({ toolbar: UPLOAD_BAR }, '');
     makeEditor({ toolbar: UPLOAD_BAR }, '');
-    return notes.length === before;
+    return notes.length + warnings.length === before;
 });
 
 check('a missing stylesheet is reported', () =>
@@ -5462,6 +5471,62 @@ check('the outdent button puts it back', () => {
 
 check('outdent on a line with no indent leaves it alone', () =>
     pressWith('outdent-btn', 'line', 2, 2) === 'line');
+
+// --- the deprecation notices ------------------------------------------------
+//
+// Every option that moved in 2.0 says so once, because a deprecation period
+// only starts when people are told. Keyed by the form rather than by the page:
+// twelve editors on one old name is one notice, but two different old names on
+// one page are two, whichever editor is built first.
+//
+// Collected rather than captured per test, since the dedup is module-level and
+// the forms below are used by tests further up the file.
+
+check('each renamed option is mentioned exactly once', () => {
+    const counts = ['labels is now locale', 'label writes an aria-label',
+        'variables belongs at the top level']
+        .map(text => notes.filter(note => note.includes(text)).length);
+    // Every one of these forms is used somewhere in this file.
+    return JSON.stringify(counts) === JSON.stringify([1, 1, 1]);
+});
+
+check('a renamed option names what to use instead', () => {
+    const about = notes.find(note => note.includes('labels is now locale'));
+    return about.includes('locale') && about.includes('keeps working');
+});
+
+check('a rename promises no removal, since none is planned', () => {
+    const renames = notes.filter(note => note.includes('keeps working'));
+    return renames.length === 3 && renames.every(note => !note.includes('3.0'));
+});
+
+check('the one with a date on it is a warning, not an aside', () => {
+    // console.warn, and the only deprecation that says a version: it is the
+    // only one that costs you a feature while you keep it.
+    return warnings.filter(note => note.includes('3.0')).length === 1
+        && notes.every(note => !note.includes('image.fileInput'));
+});
+
+check('a config using none of them says nothing at all', () => {
+    const said = [];
+    const info = console.info, warn = console.warn;
+    console.info = (...args) => said.push(args[0]);
+    console.warn = (...args) => said.push(args[0]);
+    try {
+        makeEditor({ toolbar: ['bold', 'preview'], locale: { Bold: 'Fett' } });
+    } finally {
+        console.info = info;
+        console.warn = warn;
+    }
+    return said.length === 0;
+});
+
+check('the deprecated form still does what it always did', () => {
+    // The point of saying it in the console rather than in the behaviour.
+    const e = makeEditor({ toolbar: ['bold'], labels: { Bold: 'Fett' } });
+    // startsWith: ShortcutManager appends ' (Ctrl+B)' to the tooltip.
+    return tooltip(e, '.bold-btn').startsWith('Fett');
+});
 
 // --- report -----------------------------------------------------------------
 

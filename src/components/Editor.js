@@ -19,6 +19,7 @@ import VariableComplete from '../utils/VariableComplete.js';
 import Autosave from '../utils/Autosave.js';
 import { applyVariableSamples } from '../utils/variables.js';
 import { escapeHtml } from '../utils/escapeHtml.js';
+import { noteDeprecations } from '../utils/deprecations.js';
 
 // Own instance rather than marked.setOptions(), which would mutate the shared
 // singleton and silently change behaviour for a host app that also uses marked.
@@ -69,6 +70,9 @@ class MarkdownEditor {
     constructor(selector, options = {}) {
         this.usertextarea = typeof selector === 'string' ? document.querySelector(selector) : selector;
         this.options = options;
+        // First, so that a note about an old form comes before whatever that
+        // form then does. Once per page, however many editors are on it.
+        noteDeprecations(options);
         this.mode = options.mode || 'plain';
         this.preview = (this.options.toolbar) ? this.options.toolbar.includes('preview') : true;
         // One option per feature, named after the feature: `false` turns it

@@ -199,34 +199,6 @@ function post(file, alt, config) {
     });
 }
 
-// Once per page rather than once per editor: a page carrying twelve editors on
-// the old form has one thing to change, not twelve things to read.
-let fileInputNoted = false;
-
-/**
- * The 1.x form still works, and code that works should not be scolded on every
- * page load -- `labels` and the toolbar's `variables` entry say nothing, for
- * exactly that reason.
- *
- * This one gets a note anyway, because unlike those two it leaves something
- * undiscoverable. Uploading from a paste or a drop without the image button is
- * what `upload` added, and it is what people still on `fileInput` turn up
- * asking for (#40). Silence is what made them ask.
- *
- * `info`, not `warn` or `error`: nothing is broken.
- */
-function noteFileInput(overridden) {
-    if (fileInputNoted) return;
-    fileInputNoted = true;
-
-    console.info(overridden
-        ? '[MarkdownEditor] image.fileInput is ignored, since upload is set and wins.\n'
-            + '  Drop fileInput from the toolbar entry to say so.'
-        : '[MarkdownEditor] image.fileInput still works, but upload replaces it:\n'
-            + "  new MarkdownEditor(el, { upload: '/api/upload' })\n"
-            + '  Pasting and dropping then upload with or without the image button.');
-}
-
 /**
  * Reads `upload` in any of its three forms, or the pre-2.0 toolbar form, and
  * returns the one shape the rest of the editor uses. `null` when no endpoint is
@@ -237,8 +209,9 @@ function noteFileInput(overridden) {
  * other string in the interface.
  */
 export function resolveUpload(options = {}, label = text => text) {
+    // The note about this form living on borrowed time is in
+    // deprecations.js, with the others, so the page says it once.
     const legacy = legacyFromToolbar(options.toolbar);
-    if (legacy) noteFileInput(!!options.upload);
 
     const config = options.upload ?? legacy;
     if (!config) return null;
