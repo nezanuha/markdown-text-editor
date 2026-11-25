@@ -4064,6 +4064,21 @@ check('the exact time is a hover away, and in the dialog', () => {
     return titled && dialog.textContent.includes(exact);
 });
 
+check('notices have a region of their own, above the toolbar', () => {
+    store.reset();
+    store.data.set('mte:draft:region', JSON.stringify(
+        { text: 'the draft', seed: '', at: Date.now() }));
+    const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'region' } }, 'server text');
+
+    const regions = [...e.editorContainer.children].map(c => c.className.split(' ')[0]);
+
+    // A named slot, so a host styles where notices appear rather than which
+    // feature put one there, and a second notice has somewhere to go.
+    return regions[0] === 'editor-notices'
+        && e.notices.contains(barOf(e))
+        && regions.indexOf('editor-notices') < regions.indexOf('editor-layout');
+});
+
 check('closing the strip keeps the draft for next time', () => {
     store.reset();
     store.data.set('mte:draft:shut', JSON.stringify(

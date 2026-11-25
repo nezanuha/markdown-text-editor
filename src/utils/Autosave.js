@@ -397,8 +397,7 @@ export default class Autosave {
         bar.append(message, actions);
 
         this.bar = bar;
-        const container = this.editor.editorContainer;
-        container.insertBefore(bar, container.firstChild);
+        this.editor.notices.append(bar);
     }
 
     /**
@@ -569,8 +568,7 @@ export default class Autosave {
         bar.append(label, actions);
         this.bar = bar;
 
-        const container = this.editor.editorContainer;
-        container.insertBefore(bar, container.firstChild);
+        this.editor.notices.append(bar);
 
         // Held on the instance and taken off in _hide, because it used to be
         // neither: the listener outlived the strip it was added for, and the

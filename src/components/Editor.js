@@ -349,6 +349,28 @@ class MarkdownEditor {
 
         this.markdownEditorDiv = document.createElement('div');
         this.markdownEditorDiv.className = `editor-layout fj:relative fj:grid fj:grid-cols-1 fj:flex-1 fj:min-h-0`;
+        // The editor's regions have names -- toolbar, layout, preview, footer
+        // -- and this is the one that was missing: where anything addressed to
+        // the reader goes, above the toolbar and inside the wrapper. The draft
+        // strip today, whatever else later.
+        //
+        // Not "status bar", which is already what the footer is called, in its
+        // own docs heading and twice in the declarations.
+        //
+        // A named slot rather than each notice finding its own way in. The
+        // draft strip used to insert itself before the wrapper's first child,
+        // which was only correct while nothing else wanted to be first, and it
+        // left a host styling the strip reaching for `.autosave-bar` -- tying
+        // their CSS to which feature put the notice there rather than to the
+        // place notices appear.
+        //
+        // Empty it has no height, so an editor with nothing to say looks the
+        // same as it did. More than one notice stacks, in the order they
+        // arrived.
+        this.notices = document.createElement('div');
+        this.notices.className = 'editor-notices';
+        this.editorContainer.appendChild(this.notices);
+
         this.editorContainer.appendChild(this.markdownEditorDiv);
 
         this.addTextareaWrapper();
