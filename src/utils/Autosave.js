@@ -280,17 +280,16 @@ export default class Autosave {
         // and this sits flush against the top corners of the editor, so
         // rounded-none and a rule along the bottom instead.
         const bar = document.createElement('div');
-        bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft'
-            // The only colour change left, and the only one carrying
-            // anything: restoring a draft written against text somebody else
-            // has since changed costs them their work. Everywhere else the
-            // strip is the same blue, because everywhere else it is just
-            // telling you something.
-            //
-            // Not the sole signal either way -- the note beside it says so in
-            // words, which is what a reader who cannot see the difference
-            // needs.
-            + (stale ? ' fj:me-alert-warning' : ' fj:me-alert-info')
+        // One colour, in every state. There were four at one point and then
+        // two, and what settled it is that the words were carrying the
+        // meaning the whole time: "The document has changed since then" says
+        // what the amber was saying, to everyone, including the readers a
+        // colour never reaches.
+        //
+        // Neutral rather than info, because it is furniture. It gets its
+        // visibility from appearing unasked at the top of the editor, not
+        // from being bright.
+        bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft fj:me-alert-neutral'
             + ' fj:me-alert-sm fj:w-full fj:rounded-none'
             // A row at every width. It used to stack below 40rem, back when
             // the strip carried three buttons and a row left the message
@@ -528,12 +527,8 @@ export default class Autosave {
      */
     _showUndoable(message, onUndo) {
         const bar = document.createElement('div');
-        // The same colour the offer wears. There were four of these at one
-        // point -- info, warning, success, neutral -- which is a lot of
-        // vocabulary for one strip, and three of them were saying the same
-        // thing in different paint: here is what happened. The text says which
-        // one it was.
-        bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft fj:me-alert-info'
+        // The same colour the offer wears, which is now the only one.
+        bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft fj:me-alert-neutral'
             + ' fj:me-alert-sm fj:w-full fj:rounded-none fj:me-alert-horizontal'
             + ' fj:border-base-soft fj:border-0 fj:border-b';
         bar.setAttribute('role', 'status');

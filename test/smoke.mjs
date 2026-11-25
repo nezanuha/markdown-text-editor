@@ -4127,10 +4127,8 @@ check('an accidental discard can be taken back too', () => {
 
     // Discard has no document change to reverse, so what it undoes is the
     // deletion: nothing else can give the draft back.
-    // The same colour as every other state but the stale one. Four shades
-    // for one strip said less than the words did.
     const said = barOf(e).textContent.includes('Draft discarded')
-        && barOf(e).className.includes('fj:me-alert-info');
+        && barOf(e).className.includes('fj:me-alert-neutral');
     barBtn(e, 'Undo').click();
 
     return said && store.keys().length === 1
@@ -4234,13 +4232,12 @@ check('a draft taken against older text says the document has moved on', () => {
         'some text here and more and more');
 
     const bar = barOf(e);
-    return bar !== null
-        && bar.textContent.includes('changed since')
-        && bar.className.includes('me-alert-warning')
-        && !bar.className.includes('me-alert-info');
+    // In words, not in a colour: the strip is one colour whatever the state,
+    // and a reader who cannot see the difference needs telling either way.
+    return bar !== null && bar.textContent.includes('changed since');
 });
 
-check('only the stale case changes the strip colour', () => {
+check('the strip is one colour, and the words carry the state', () => {
     store.reset();
     const at = Date.now();
     store.data.set('mte:draft:hue', JSON.stringify({ text: 'd', seed: 'same', at }));
@@ -4250,11 +4247,10 @@ check('only the stale case changes the strip colour', () => {
     store.data.set('mte:draft:hue2', JSON.stringify({ text: 'd', seed: 'was', at }));
     const stale = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'hue2' } }, 'is now');
 
-    // Warning is the one colour carrying anything: restoring over text
-    // somebody else changed costs them their work. Everything else is blue,
-    // and the words do the rest.
-    return barOf(fresh).className.includes('fj:me-alert-info')
-        && barOf(stale).className.includes('fj:me-alert-warning')
+    // One colour whatever the state. The words carry the meaning, which is
+    // also the only way it reaches a reader a colour does not.
+    return barOf(fresh).className.includes('fj:me-alert-neutral')
+        && barOf(stale).className.includes('fj:me-alert-neutral')
         && barOf(stale).textContent.includes('The document has changed since then');
 });
 
@@ -4268,9 +4264,9 @@ check('a draft taken against the same text does not cry wolf', () => {
     const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k12' } }, 'what the server sent');
 
     const bar = barOf(e);
-    return bar !== null
-        && !bar.textContent.includes('changed since')
-        && bar.className.includes('me-alert-info');
+    // Offered, with nothing said about the page having moved on, because it
+    // has not.
+    return bar !== null && !bar.textContent.includes('changed since');
 });
 
 check('a draft with no seed recorded is not called stale', () => {
