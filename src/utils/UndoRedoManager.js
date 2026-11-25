@@ -1,4 +1,39 @@
-import { diffChars } from 'diff';
+/**
+ * What changed between two versions of the document, as one span.
+ *
+ * This was `diffChars` from the `diff` package, a character-level Myers diff
+ * of the whole document on every save point. It cost what that costs: 249ms
+ * for a 2,000-character paste into a 50,000-character document, 1.4 seconds
+ * for 5,000 into 100,000 -- on the main thread, while someone was typing.
+ *
+ * Nothing needed that resolution. The two users of a step reassemble the whole
+ * old value or the whole new one, never the parts between, so trimming the
+ * common prefix and the common suffix gives the same two strings back from one
+ * replacement: where it starts, what was there, what is there now. Two scans
+ * and no allocation beyond the changed text.
+ *
+ * A step that happens to cover two separate edits collapses into the span that
+ * contains both. The values on either side are identical either way, which is
+ * all undo and redo put back.
+ */
+function patchBetween(from, to) {
+    const max = Math.min(from.length, to.length);
+
+    let start = 0;
+    while (start < max && from[start] === to[start]) start++;
+
+    // The suffix may not reach back past the prefix, or a change like
+    // "aa" -> "aaa" counts the same characters twice.
+    let tail = 0;
+    while (tail < max - start
+        && from[from.length - 1 - tail] === to[to.length - 1 - tail]) tail++;
+
+    return {
+        at: start,
+        removed: from.slice(start, from.length - tail),
+        added: to.slice(start, to.length - tail),
+    };
+}
 
 export default class UndoRedoManager {
     constructor(editor) {
@@ -6,7 +41,7 @@ export default class UndoRedoManager {
         this.textarea = editor.usertextarea;
         this.undoStack = [];
         this.redoStack = [];
-        
+
         // Internal tracking
         this.lastValue = this.textarea.value;
         this.lastSelection = {
@@ -86,8 +121,8 @@ export default class UndoRedoManager {
         if (modifier && isZ && !isShift) {
             e.preventDefault();
             this.undo();
-        } 
-        
+        }
+
         // 4. REDO: (Cmd+Shift+Z, Ctrl+Shift+Z, or Ctrl+Y)
         else if (modifier && ( (isShift && isZ) || (!e.metaKey && isY) )) {
             e.preventDefault();
@@ -99,7 +134,7 @@ export default class UndoRedoManager {
         clearTimeout(this._debounceTimer);
         const value = this.textarea.value;
         const lastChar = value[this.textarea.selectionStart - 1];
-        
+
         if (lastChar && /[\s.,;:!?()\[\]{}'"`~]/.test(lastChar)) {
             this._saveState();
         } else {
@@ -109,24 +144,22 @@ export default class UndoRedoManager {
 
     _saveState() {
         const newValue = this.textarea.value || '';
-    
+
         // 1. If nothing changed, exit immediately to save CPU
         if (newValue === this.lastValue) return;
 
         // 2. Clear any pending debounced timers so we don't save twice
         clearTimeout(this._debounceTimer);
 
-        const diff = diffChars(this.lastValue, newValue);
-        
         this.undoStack.push({
-            diff,
+            patch: patchBetween(this.lastValue, newValue),
             selection: { ...this.lastSelection }
         });
 
         // --- Performance Optimization: Max Depth ---
         // If the stack exceeds the limit, remove the oldest entry (bottom of stack)
         if (this.undoStack.length > this.maxStackSize) {
-            this.undoStack.shift(); 
+            this.undoStack.shift();
         }
 
         this.lastValue = newValue;
@@ -152,13 +185,13 @@ export default class UndoRedoManager {
         if (this.undoStack.length === 0) return;
 
         const lastStep = this.undoStack.pop();
-        const prevValue = this._revertDiff(this.lastValue, lastStep.diff);
+        const prevValue = this._revert(this.lastValue, lastStep.patch);
 
         this.redoStack.push({
-            diff: lastStep.diff,
-            selection: { 
-                selectionStart: this.textarea.selectionStart, 
-                selectionEnd: this.textarea.selectionEnd 
+            patch: lastStep.patch,
+            selection: {
+                selectionStart: this.textarea.selectionStart,
+                selectionEnd: this.textarea.selectionEnd
             }
         });
 
@@ -169,26 +202,28 @@ export default class UndoRedoManager {
         if (this.redoStack.length === 0) return;
 
         const redoStep = this.redoStack.pop();
-        const newValue = this._applyDiff(this.lastValue, redoStep.diff);
+        const newValue = this._apply(this.lastValue, redoStep.patch);
 
         this.undoStack.push({
-            diff: redoStep.diff,
+            patch: redoStep.patch,
             selection: { ...this.lastSelection }
         });
 
         this._restoreState(newValue, redoStep.selection);
     }
 
-    _applyDiff(oldValue, diff) {
-        let newValue = '';
-        diff.forEach(part => { if (!part.removed) newValue += part.value; });
-        return newValue;
+    /** Forward: the value as it was after the change. */
+    _apply(value, patch) {
+        return value.slice(0, patch.at)
+            + patch.added
+            + value.slice(patch.at + patch.removed.length);
     }
 
-    _revertDiff(currentValue, diff) {
-        let oldValue = '';
-        diff.forEach(part => { if (!part.added) oldValue += part.value; });
-        return oldValue;
+    /** Back: the value as it was before it. */
+    _revert(value, patch) {
+        return value.slice(0, patch.at)
+            + patch.removed
+            + value.slice(patch.at + patch.added.length);
     }
 
     _restoreState(value, selection) {
@@ -196,7 +231,7 @@ export default class UndoRedoManager {
         this.textarea.setSelectionRange(selection.selectionStart, selection.selectionEnd);
         this.lastValue = value;
         this.lastSelection = { ...selection };
-        
+
         if (this.editor.render) this.editor.render();
         this.editor.notifyChange();
         this.textarea.focus();
