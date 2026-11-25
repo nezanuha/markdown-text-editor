@@ -4127,11 +4127,10 @@ check('an accidental discard can be taken back too', () => {
 
     // Discard has no document change to reverse, so what it undoes is the
     // deletion: nothing else can give the draft back.
-    // Neutral, not the success green the restore strip takes: nothing good
-    // happened, something was deleted.
+    // The same colour as every other state but the stale one. Four shades
+    // for one strip said less than the words did.
     const said = barOf(e).textContent.includes('Draft discarded')
-        && barOf(e).className.includes('fj:me-alert-neutral')
-        && !barOf(e).className.includes('fj:me-alert-success');
+        && barOf(e).className.includes('fj:me-alert-info');
     barBtn(e, 'Undo').click();
 
     return said && store.keys().length === 1
@@ -4239,6 +4238,24 @@ check('a draft taken against older text says the document has moved on', () => {
         && bar.textContent.includes('changed since')
         && bar.className.includes('me-alert-warning')
         && !bar.className.includes('me-alert-info');
+});
+
+check('only the stale case changes the strip colour', () => {
+    store.reset();
+    const at = Date.now();
+    store.data.set('mte:draft:hue', JSON.stringify({ text: 'd', seed: 'same', at }));
+    const fresh = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'hue' } }, 'same');
+
+    store.reset();
+    store.data.set('mte:draft:hue2', JSON.stringify({ text: 'd', seed: 'was', at }));
+    const stale = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'hue2' } }, 'is now');
+
+    // Warning is the one colour carrying anything: restoring over text
+    // somebody else changed costs them their work. Everything else is blue,
+    // and the words do the rest.
+    return barOf(fresh).className.includes('fj:me-alert-info')
+        && barOf(stale).className.includes('fj:me-alert-warning')
+        && barOf(stale).textContent.includes('The document has changed since then');
 });
 
 check('a draft taken against the same text does not cry wolf', () => {

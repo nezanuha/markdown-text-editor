@@ -281,6 +281,15 @@ export default class Autosave {
         // rounded-none and a rule along the bottom instead.
         const bar = document.createElement('div');
         bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft'
+            // The only colour change left, and the only one carrying
+            // anything: restoring a draft written against text somebody else
+            // has since changed costs them their work. Everywhere else the
+            // strip is the same blue, because everywhere else it is just
+            // telling you something.
+            //
+            // Not the sole signal either way -- the note beside it says so in
+            // words, which is what a reader who cannot see the difference
+            // needs.
             + (stale ? ' fj:me-alert-warning' : ' fj:me-alert-info')
             + ' fj:me-alert-sm fj:w-full fj:rounded-none'
             // A row at every width. It used to stack below 40rem, back when
@@ -517,17 +526,14 @@ export default class Autosave {
      * It goes when it is used or when the next keystroke arrives, since by
      * then the answer has been given.
      */
-    _showUndoable(message, variant, onUndo) {
+    _showUndoable(message, onUndo) {
         const bar = document.createElement('div');
-        // The colour follows what happened, not the fact that something did.
-        // Restoring got work back, which is a success; discarding deleted
-        // something, which is an acknowledgement at most. Green on "Draft
-        // discarded" reads as congratulations for throwing writing away.
-        //
-        // Both class names written out in full, because Tailwind finds classes
-        // by reading the source and a name assembled at runtime is never
-        // emitted.
-        bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft ' + variant
+        // The same colour the offer wears. There were four of these at one
+        // point -- info, warning, success, neutral -- which is a lot of
+        // vocabulary for one strip, and three of them were saying the same
+        // thing in different paint: here is what happened. The text says which
+        // one it was.
+        bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft fj:me-alert-info'
             + ' fj:me-alert-sm fj:w-full fj:rounded-none fj:me-alert-horizontal'
             + ' fj:border-base-soft fj:border-0 fj:border-b';
         bar.setAttribute('role', 'status');
@@ -593,7 +599,7 @@ export default class Autosave {
         // The draft is on screen now, so keeping it stored would offer it
         // again on the next load against text that already holds it.
         this.clear();
-        this._showUndoable(this.editor.label('Draft restored'), 'fj:me-alert-success', () => {
+        this._showUndoable(this.editor.label('Draft restored'), () => {
             this.editor.undoRedoManager?.undo();
             // Restoring deleted it, since it was on screen. Undoing says that
             // was not wanted, so leaving it deleted would mean one accidental
@@ -611,7 +617,7 @@ export default class Autosave {
      */
     discard(saved) {
         this.clear();
-        this._showUndoable(this.editor.label('Draft discarded'), 'fj:me-alert-neutral',
+        this._showUndoable(this.editor.label('Draft discarded'),
             () => storage.set(this.key, saved));
     }
 
