@@ -963,15 +963,23 @@ class MarkdownEditor {
         textarea.style.height = ''; // restore — h-full class takes over
 
         const maxHeight = this.options.maxHeight ?? 500;
-        this._pinnedAt = contentHeight >= maxHeight ? length : undefined;
         const height = Math.min(contentHeight, maxHeight) + this._toolbarH + this._footerH + 1;
 
-        // The first call comes from the constructor, before the toolbar and
-        // footer have been measured, so this is NaN. Leave _autoHeight unset
-        // rather than recording a height the browser will refuse: a mismatch
-        // on the next call would read as the reader having resized it, and
-        // auto-grow would switch itself off for good.
+        // The first call comes from render(), inside createEditor(), before the
+        // toolbar and footer have been measured, so this is NaN. Leave
+        // _autoHeight unset rather than recording a height the browser will
+        // refuse: a mismatch on the next call would read as the reader having
+        // resized it, and auto-grow would switch itself off for good.
         if (!Number.isFinite(height)) return;
+
+        // After the guard, not before it. Pinning on that first call recorded
+        // a decision from a measurement that was then thrown away: the content
+        // was over maxHeight, so _pinnedAt took the current length, and the
+        // next call -- the real one, with the toolbar measured -- saw a length
+        // no greater than the pin and returned without setting anything. The
+        // editor opened at its minimum however long the document was, and
+        // stayed there until a resize cleared the pin.
+        this._pinnedAt = contentHeight >= maxHeight ? length : undefined;
 
         this._autoHeight = height + 'px';
         this.editorContainer.style.height = this._autoHeight;

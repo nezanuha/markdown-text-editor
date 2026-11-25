@@ -4421,6 +4421,56 @@ check('a refused write says so instead of failing quietly', () => {
     return said.length === 1 && said[0].includes('not being kept');
 });
 
+// --- opening at the height of the content ---------------------------------
+//
+// happy-dom lays nothing out, so scrollHeight is 0 here and every document
+// looks short. That is why nothing caught this: the pin only misfires on
+// content taller than maxHeight, which this environment cannot produce by
+// itself. Stubbed, both halves are reachable.
+
+const withLayout = (contentHeight, run) => {
+    const ta = Object.getPrototypeOf(document.createElement('textarea'));
+    const el = window.HTMLElement.prototype;
+    const scroll = Object.getOwnPropertyDescriptor(ta, 'scrollHeight');
+    const offset = Object.getOwnPropertyDescriptor(el, 'offsetHeight');
+    Object.defineProperty(ta, 'scrollHeight',
+        { configurable: true, get() { return contentHeight; } });
+    Object.defineProperty(el, 'offsetHeight',
+        { configurable: true, get() { return 40; } });
+    try {
+        return run();
+    } finally {
+        if (scroll) Object.defineProperty(ta, 'scrollHeight', scroll);
+        else delete ta.scrollHeight;
+        if (offset) Object.defineProperty(el, 'offsetHeight', offset);
+        else delete el.offsetHeight;
+    }
+};
+
+check('a document taller than maxHeight opens at maxHeight', () =>
+    withLayout(900, () => {
+        const e = makeEditor({ toolbar: ['bold'] }, 'x'.repeat(542));
+        // 500 capped + 40 toolbar + 40 footer + 1
+        return e.editorContainer.style.height === '581px';
+    }));
+
+check('a short document opens at the height of its content', () =>
+    withLayout(120, () => {
+        const e = makeEditor({ toolbar: ['bold'] }, 'two lines');
+        return e.editorContainer.style.height === '201px';
+    }));
+
+check('the pin is not taken from a measurement that was discarded', () =>
+    withLayout(900, () => {
+        const e = makeEditor({ toolbar: ['bold'] }, 'x'.repeat(542));
+        // The first _autoGrow runs from render() inside createEditor(), before
+        // the toolbar and footer are measured, so its height is NaN and it
+        // returns. It used to record the pin anyway, and the next call -- the
+        // real one -- saw a length no greater than the pin and returned
+        // without setting anything.
+        return e._pinnedAt === 542 && e.editorContainer.style.height !== '';
+    }));
+
 // --- the split the preview opens -------------------------------------------
 //
 // Written before the layout half of PreviewTool was pulled out for the draft
