@@ -9,13 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Editing tables**: Click inside one, or press `Alt+T`, and a small bar appears beside it. Add or delete the column or row you're in, align it, tidy the pipes. Tab moves between cells. The toolbar button opens a size grid instead of the old fixed three-column table. `tableBar: false` turns the bar off
+- **Editing tables**: Click in a table, or press `Alt+T`, and a bar appears beside it: add or delete the row or column you are in, align it, tidy the pipes. Tab moves between cells, and the toolbar button opens a size grid
 
   ```javascript
-  new MarkdownEditor('#editor', { tableBar: false });   // the bar beside a table, on by default
+  new MarkdownEditor('#editor', { tableBar: false });   // the bar, on by default
   ```
 
-- **Draft recovery**: `autosave: true` keeps a copy of what you are writing in the browser. If the tab dies, the next load offers it back with the time it was taken, and you choose whether to restore it. It never restores on its own, because the text on the page may be newer. Off by default
+- **Draft recovery**: `autosave: true` keeps a copy of what you are writing in the browser and offers it back after a crash. It never restores on its own, because the text on the page may be newer. Off by default
 
   ```javascript
   new MarkdownEditor('#editor', { autosave: true });
@@ -26,7 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   });
   ```
 
-- **Variables moved out of the toolbar**: `variables: [...]` at the top level, with `'variables'` in `toolbar` for the dropdown. They were configured inside the toolbar array, which made the editor dig the list out of it before the toolbar existed, because the preview needs the `sample` values and the completion needs to know what opens the menu. Neither is a button's business. The object form, `variables: { items, complete }`, holds the list and the one setting it has, so `complete: false` is how you turn the typed trigger off. The toolbar form still works
+- **A draft shows what it would change before you take it**: **Review** on the strip opens a dialog with the difference, line by line, and Restore and Discard live in there rather than on the strip. Both can be undone
+
+- **Variables at the top level**: `variables: [...]` rather than inside the toolbar array, since the list is data the preview and the completion both read. `variables` in `toolbar` still draws the dropdown, and the old form still works
 
   ```javascript
   new MarkdownEditor('#editor', {
@@ -38,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   });
   ```
 
-- **Variables complete as you type**: Start typing a placeholder and the list appears under the caret, narrowing as you keep typing. Arrows move, Enter or Tab inserts, Escape closes. What you type to open it is whatever your own values start with, so `{{today}}`, `{{ today }}` and `<< today >>` each complete from their own opening. The toolbar dropdown is still there. `variables: { items: [...], complete: false }` turns this off
+- **Variables complete as you type**: Start typing a placeholder and the list appears under the caret, narrowing as you go. Arrows move, Enter or Tab inserts, Escape closes. Whatever your own values start with is the trigger, so `{{`, `<<` and anything else all work
 
   ```javascript
   new MarkdownEditor('#editor', {
@@ -49,18 +51,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   });
   ```
 
-- **One place to say where uploads go**: `upload: '/api/upload'` at the top level, used by the toolbar's image dialog, by pasting and by dropping alike. It was `{ image: { fileInput: { uploadUrl } } }` inside the toolbar, which meant paste and drop could not upload without the image button, and left the editor digging an endpoint out of the toolbar array before the toolbar existed. An endpoint is not a button. The old form still works.
+- **One place to say where uploads go**: `upload` at the top level, used by the image dialog, by pasting and by dropping alike. It was `{ image: { fileInput: { uploadUrl } } }` inside the toolbar, which is why paste and drop could not upload without the image button. The old form still works
 
-  What moving it out makes possible:
-
-    - `headers`, for a CSRF token. It could only go in the body before, so Django's `X-CSRFToken` and Laravel's `X-CSRF-TOKEN` were both out of reach
-    - a plain `{ url }` or `{ path }` answer, read alongside the `{ success, image_path }` of 1.8. An endpoint storing PDFs should not have to call its answer `image_path`, and `response` reads anything neither shape fits, instead of you writing an adapter endpoint to rename two keys
-    - `accept` and `maxSize`, enforced on all three routes in. The file picker enforced `accept` and pasting did not, so the rule you wrote was not the rule you got
-    - files past images: a video arrives as a `<video>`, audio as an `<audio>`, anything else as a link. `insert` overrides that where a renderer downstream will not take HTML
-    - `onProgress`, so a 50 MB upload can say how far along it is
-    - uploading with no image button on the toolbar at all
-
-  A type outside `accept` is ignored, as a dropped PDF always was; a file over `maxSize` is refused and says so, in the editor's own language, with the MIME type and the byte count left to the console. `field`, `paste` and `drop` cover the rest, and passing a function instead of an object hands you the request, for a presigned URL or an upload library
+  What it adds: `headers` for a CSRF token, `response` for an endpoint with its
+  own answer shape, `accept` and `maxSize` enforced on all three ways in, files
+  past images (video, audio, anything else as a link), `onProgress`, and uploading
+  with no image button on the toolbar at all
 
   ```javascript
   new MarkdownEditor('#editor', { upload: '/api/upload' });
@@ -69,16 +65,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   new MarkdownEditor('#editor', {
       upload: {
           url: '/api/upload',
-          headers: { 'X-CSRFToken': token },          // CSRF where the framework wants it
-          response: body => body.data.url,            // your endpoint's own shape
+          headers: { 'X-CSRFToken': token },
+          response: body => body.data.url,            // your endpoint, your shape
           accept: ['image/*', 'video/mp4'],           // defaults to ['image/*']
           maxSize: 5 * 1024 * 1024,
           onProgress: (file, loaded, total) => setProgress(loaded / total),
           drop: false,
-
-          // only where the default is wrong: an image is already ![alt](url),
-          // a video a <video>, audio an <audio>, anything else a link
-          insert: (file, url) => `<a href="${url}" download>${file.name}</a>`,
       },
   });
 
@@ -86,21 +78,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   new MarkdownEditor('#editor', { upload: async file => (await store.put(file)).url });
   ```
 
-- **See what a draft would change before taking it**: A **Compare** button on the recovery strip opens a dialog holding the difference: the lines the draft would take out, the lines it would put in, and a few either side to say where in the document it happened. Restore and Discard are in the dialog and only there: the strip has one button. Both answers are irreversible, one overwrites the document and the other deletes the only copy of the draft, and neither is a thing to do from a bar that appeared while you were reading something else. Ignoring the strip costs nothing, which is the quick path. A dialog because this is a decision with two outcomes, not a way of editing: the editor behind it does not move, which a side-by-side pane could not manage. Halving the editor's width reflows prose differently on each side, so columns stop corresponding, which is the only reason to put them in columns. Looking used to mean pressing Restore, which is also what committed to it: the warning said the choice cost something without saying what, and finding out was what paid. The diff is computed by trimming the matching lines off both ends, which needs no dependency and is exact for a draft that rewrote one stretch
-
-- **Pasting formatted text keeps the formatting**: Copy from a web page or a word processor and the headings, links, lists, code and tables arrive as markdown instead of a wall of plain text. The HTML goes through the same sanitiser as the preview. `pasteHtml: false` turns it off
+- **Pasting formatted text keeps the formatting**: Copy from a web page or a word processor and the headings, links, lists, code and tables arrive as markdown. The HTML goes through the same sanitiser as the preview
 
   ```javascript
   new MarkdownEditor('#editor', { pasteHtml: false });
   ```
 
-- **Find and replace, rebuilt**: Every match is highlighted at once. `AB` keeps the case of what you replace, `[ ]` searches only your selection, and the shortcuts are VS Code's. The panel works by keyboard and screen reader alone. `find: false` turns it off and gives `Ctrl+F` back to the browser
+- **Find and replace, rebuilt**: Every match is highlighted at once, `AB` keeps the case of what you replace, `[ ]` searches your selection only, and the shortcuts are the ones VS Code uses. It works by keyboard and screen reader alone
 
   ```javascript
   new MarkdownEditor('#editor', { find: false });   // gives Ctrl+F back to the browser
   ```
 
-- **A maths button**: Wraps the selection in `$...$`, or `$$...$$` across several lines. `Alt+M` does the same, and pressing it again takes the delimiters off. The editor doesn't render TeX itself, so pass a `renderer` that does. If nothing rendered, the console says so
+- **A maths button**: Wraps the selection in `$...$`, or `$$...$$` across several lines; `Alt+M` does the same and takes it off again. The editor does not render TeX, so pass a `renderer` that does -- it says so in the console if nothing did
 
   ```javascript
   import markdownIt from 'markdown-it';
@@ -113,7 +103,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   });
   ```
 
-- **Fifty-six languages included**: Import the one you want from `markdown-text-editor/locale/` and pass it as `locale`. Only that language reaches your bundle. None of them have been checked by a native speaker yet. Each file says so, and corrections are welcome
+- **Fifty-six languages included**: Import the one you want and only that one reaches your bundle. None have been checked by a native speaker yet; each file says so, and corrections are welcome
 
   ```javascript
   import es from 'markdown-text-editor/locale/es';
@@ -121,16 +111,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   new MarkdownEditor('#editor', { locale: es });
   ```
 
-- **A list of every translatable string**: `markdown-text-editor/locale/template.js` lists every string the editor can translate, English on both sides. Copy it, translate the values, pass the result
+- **A list of every translatable string**: `markdown-text-editor/locale/template.js` holds all 78 of them, English on both sides. Copy it, translate the values, pass the result
 
   ```javascript
-  // your own, for a language not in the box or wording that is not ours
   new MarkdownEditor('#editor', {
       locale: { 'Bold': 'Fett', 'Upload failed': 'Hochladen fehlgeschlagen' },
   });
   ```
 
-- **Choose which heading levels the dropdown offers**: `{ heading: { levels: [2, 3, 4] } }` in the toolbar array. Most CMS body fields want this, since H1 belongs to the page and not the content. `Ctrl+1` to `Ctrl+3` follow the same list. Defaults to all six
+- **Choose which heading levels the dropdown offers**: Most CMS body fields want this, since H1 belongs to the page rather than the content. `Ctrl+1` to `Ctrl+3` follow the same list. Defaults to all six
 
   ```javascript
   new MarkdownEditor('#editor', {
@@ -140,60 +129,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Breaking: the stylesheet is now a separate file**: Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css` with a bundler. This is the breaking change. An existing setup keeps working, but it renders unstyled until you add that line, and the editor says so in the console. It also lets the editor run under a strict Content Security Policy, which refused the old injected `<style>` tag whatever nonce it carried ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))
-- **`labels` is now `locale`**: Same translations under a better name, since plenty of the keys are messages and counts rather than labels. The option covers the find panel, the footer and the preview pane too, which were stuck in English before
-- **marked and DOMPurify are peer dependencies**: Your bundler resolves them, dedupes them against its own copy, and you can patch either one without waiting for a release here. That matters most for DOMPurify, which is what stands between a document and whoever reads it. The `<script src>` build still carries both, because it has nothing to resolve with. The ESM build drops from 218 kB to 124 kB
-- **marked can reach you without a release here**: Its range was `~18.1.2`, which let patches through and held minors back. It's `^18.2.0` now. What marked turns markdown into is pinned by 35 cases, so a version that changes your preview fails the build instead of turning up in it
-- **Tables in the preview are drawn as a grid**: A border around the table and a rule down every column. Before there was a line under the heads, one between the rows, and nothing else
-- **Uploads go out over `XMLHttpRequest` rather than `fetch`**: `fetch` raises no events for a `FormData` body, so there was no way to report progress on an upload of any size. The request is otherwise unchanged: the same multipart body, the same same-origin credentials, the same status check, the same errors. Tests of your own that stub `fetch` to catch an upload want `XMLHttpRequest` now
-- **The preview button shows when the preview is open**: The icon fills in and the tooltip turns into `Close preview (Esc)`. Escape always closed it, but nothing said so
+- **Breaking: the stylesheet is a separate file**. Link `dist/markdown-text-editor.css`, or import `markdown-text-editor/style.css`. This is the one thing you have to change: without it the editor renders unstyled and says so in the console. It is also what lets the editor run under a strict Content Security Policy, which refused the old injected `<style>` tag whatever nonce it carried ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42), [#44](https://github.com/nezanuha/markdown-text-editor/discussions/44))
+- **`labels` is now `locale`**: the same translations under a better name, and it reaches the find panel, the footer and the preview pane, which were stuck in English
+- **marked and DOMPurify are no longer bundled into the package builds**: they stay ordinary dependencies, so npm still installs them for you, but your bundler resolves them, dedupes them against its own copy, and can patch either without waiting for a release here. That matters most for DOMPurify. The `<script src>` build still carries both, having nothing to resolve with. ESM: 218 kB to 138 kB
+- **marked can reach you without a release here**: its range was `~18.1.2`, which held minor versions back. It is `^18.2.0` now, and 35 cases pin what it turns markdown into
+- **Tables in the preview are drawn as a grid**: a border around the table and a rule down every column
+- **Uploads go out over `XMLHttpRequest` rather than `fetch`**, which raises no progress events for a `FormData` body. Same request otherwise; a test that stubs `fetch` to catch an upload wants `XMLHttpRequest` now
+- **The preview button shows when the preview is open**: the icon fills in and the tooltip becomes `Close preview (Esc)`
+- **The standalone build says what is inside it**: it carries marked and DOMPurify, and now opens with a comment naming both and their licences. `THIRD-PARTY-NOTICES.md` ships in the package with the full texts
 
 ### Deprecated
 
-Each of these still works. Nothing has to change today.
-
 - **`labels`**, renamed to `locale`
-- **`label`**, in favour of `aria-label` or a `<label for>` on the textarea. Both are native, apply before this script runs, survive it not loading, and are what the editor looks for first; the option only wrote the attribute for you
-- **`{ image: { fileInput: { uploadUrl } } }`** in the toolbar, in favour of the top-level `upload`. It is the one deprecation that costs you something to keep: paste and drop cannot upload without the image button on the toolbar
+- **`label`**, in favour of `aria-label` or a `<label for>` on the textarea. Both are native, apply before this script runs, and are what the editor looks for first
+- **`{ image: { fileInput: { uploadUrl } } }`** in the toolbar, in favour of the top-level `upload`. The one deprecation that costs you something to keep: paste and drop cannot upload without the image button
 - **`{ variables: [...] }`** in the toolbar, in favour of the top-level `variables`
 
 ### Removed
 
-- **`dist/markdown-text-editor.umd.js`**. The UMD build is `dist/markdown-text-editor.cjs` now. Only reaching past the package for that filename is affected; `import` and `require` are not
+- **`dist/markdown-text-editor.umd.js`**. The UMD build is `dist/markdown-text-editor.cjs` now. Only a path reaching past the package for that filename is affected; `import` and `require` are not
 
 ### Fixed
 
-- **`require()` returned an empty object**: The package is ESM, so Node read the build meant for `require` as ESM too, and its CommonJS branch never ran. That file is `dist/markdown-text-editor.cjs` instead. `import` was fine throughout
-- **Odd input could take the whole editor down**: A `toolbar` that wasn't an array, a stray `null` among the tools, a `renderer` that threw. Any of them left you with no editor at all. They complain in the console and carry on
-- **`destroy()` left a key handler on your textarea**: Tab and bracket handling could never be taken off again. An app that builds and tears down editors left one behind every time, still answering Tab, still holding the dead editor in memory
-- **The editor opened at its minimum height, whatever was in it**: A document taller than `maxHeight` showed about five lines until something made it recalculate, usually the first keystroke. The keystroke optimisation below remembers that a document already past `maxHeight` cannot get shorter by growing, and it recorded that from the first measurement -- which happens before the toolbar and footer have been measured, so its result is discarded. The decision outlived the measurement it came from, and the next pass, the one that would have set the height, saw the note and returned. 1.9.x sized correctly on load
-- **Typing slowed down as a document grew**: The editor measured its own height on every keystroke, and measuring makes the browser lay out the whole document first. Now it only measures when the text gets shorter or the editor changes width. At 150,000 characters that took a keystroke from about 220ms to about 5ms
-- **Hybrid mode highlighted the whole document on every keystroke**: Every pass ran over every line, so long documents got slower as they grew. A line that hasn't changed keeps the markup it already had. Markdown inside a fenced block is left alone too, where `**this**` used to come out bold in the middle of your code
-- **The syntax markers in hybrid mode were too faint to read**: The dimmed `**`, backticks and brackets sat at 2.49:1 against the light theme's background. Even an interface part is asked for 3:1. They read at 4.54:1 now
-- **Typing a closing bracket left a second one behind**: `[` gives you `[]`. Type the `]` yourself and you got `[text]]`, so every link written by hand came out wrong. Same for `)`, `}` and `>`. The cursor steps over the half that's already there
-- **The toolbar can be crossed by keyboard**: Arrow keys move along it, Home and End jump to either end, and the whole bar is one tab stop. It used to be nineteen. Every button also announces its shortcut with its name, so Bold reads as "Bold (Ctrl+B)"
-- **The find panel sat in the wrong place**: It stays over the text you're editing. In a right-to-left language it also sat on the right, covering the start of every line. It's pinned to the end of the line instead, so it mirrors with the text
-- **The editor is now the same size on any page**: On a page without Tailwind it came out 2px taller than you asked for, and the find box 17px wider. `minHeight: 200` means 200 wherever you drop it in
-- **Column alignment did nothing in the preview**: `:---`, `:---:` and `---:` lined the column up everywhere the markdown was published. The preview drew every column to the left
-- **Replace could change the wrong text**: If you edited the document after searching, Replace overwrote the wrong spot and missed the match
-- **Selecting a single backtick and pressing Code deleted it**: It was read as an already-wrapped empty span and emptied
-- **The editor announced itself in English in every language**: A Spanish editor read "Negrita (Ctrl+B)" on every button while the field those buttons act on was still called "Markdown editor". That name is the first thing a screen reader reads. It goes through the translator now, in all fifty-six locales. Only the fallback is the editor's to set: a textarea that already carries a `<label>`, an `aria-label` or an `aria-labelledby` is left alone, which is also how you name the field yourself
-- **TypeScript rejected `footer: true`**: Declared as `false | FooterOptions`, so the one value that means "the status bar, with its defaults" was a compile error, although the editor has always accepted it. The type test checked the shape of things like `Variable` without ever naming the options themselves, which is how it went unnoticed; it names every one now
-- **The link and image dialogs had English accessible names**: The link and image dialogs took their heading from the translator and their accessible name from a literal, so a Spanish reader saw "Enlace" and a screen reader said "Link". The divider between uploading a file and typing a URL was a hardcoded `OR` in all fifty-six locales as well; it is a translated string now, which is the one new key this release adds beyond the upload messages
-- **A translation could break out of the attribute it landed in**: The dialogs escape the URL and alt text they prefill from the document, which is what 1.9.5 fixed, but not the placeholder and `aria-label` text they take from `locale`. The bundled locales are vetted files, so this reached nobody; a host loading translations from a database or from contributors is a different matter. Everything interpolated into that markup is escaped now, and both call sites have a regression test using the payload from that advisory, since the helper had one, the places that call it did not
-- **A textarea whose `id` held a quote took the editor down**: Looking for an existing `<label for>` built a selector out of the id, and `label[for="a"b"]` is a `SyntaxError` thrown from the constructor, so a field that was merely named oddly got no editor at all. The labels are walked instead of selected, which cannot throw
-- **An upload failure arrived as a browser `alert()`**: Unstyled, ignoring the theme, blocking the page, and putting the message somewhere the file input is not. It appears in the dialog itself now, in a `role="alert"` region that a screen reader announces without focus leaving the field
-- **`modal()` failed on an unexpected event**: It finds the editor from the event it is handed, so a custom tool passing anything else got a message about null rather than about what to pass. It says what to pass
-- **The image dialog's upload error was never translated**: `Upload failed.` was the one string on the upload path that never went through the translator, in a dialog where every other word did. It comes from the locale files now, in all fifty-six
-- **The preview's fullscreen layout had no test at all**: Nothing covered the two-column grid, the body scroll lock, the Escape handler or the height classes, so any change to that code was unguarded. Four tests now, and the classes it adds and takes away are one list rather than two, so the halves cannot drift apart
-- **A pasted document was not kept as a draft**: Autosave listened for the `input` event, and no write the editor makes itself raises one. Everything going through `insertText` changed the document without telling it: every toolbar button, formatted text pasted and converted to markdown, find and replace, the table editor, a task list ticked in the preview. Paste a long document, reload, and it was gone; type one character first and the whole thing was there, which is a strange thing to have to know. It hangs off the editor's own change notification now, which is the one place that already knew
-- **A large draft was silently not kept**: The stored record carried a full copy of the text the page loaded with, alongside the draft itself, so editing a long document wrote it twice on every save. `localStorage` holds about 5MB per origin and counts UTF-16, which put the ceiling at half the length anyone would guess; past it the write threw, the throw was caught and discarded, and the draft was simply absent after a reload. The copy is a fingerprint now, since it was only ever compared and never read back, and a refused write says so in the console instead of failing quietly
-- **The recovery strip spent itself on a timestamp**: It read "Unsaved draft, 11/24/2026, 10:38:13 AM", precise to the second in a notice nobody is reading closely. It says "2 hours ago" now, worded by `Intl.RelativeTimeFormat` so it is right in every language without a string of ours to translate. The exact time is the hover title, and it is in the dialog beside the heading, where you are actually deciding something
-- **Nothing said a restore could be taken back**: It can -- the editor records it as one undo step -- but a safety net nobody is told about is not one. It reads "Unsaved draft 5h ago" on one line, at any width, with the button at the far end of the strip. Both strips close, and closing the offer means "not now": the draft stays stored and is offered again next load, since discarding is the other thing and it is behind the dialog where it can say what it is deleting. Both answers leave the strip behind, saying what happened and offering **Undo**, and it goes when you use it or when the next keystroke arrives. Undo puts the draft back in storage either way -- after a restore it reverses the document change as well -- so neither accidental click destroys anything: the strip returns and you are where you were before it. Discard needed this more than restore did, since nothing else could give a discarded draft back. The button that opens the dialog is **Review** rather than Compare, since comparing is what the dialog shows and deciding is what it is for
-- **Restoring a draft could not be undone**: `Ctrl+Z` did nothing afterwards, because assigning `textarea.value` raises no input event and the undo history is built from those. Restoring also clears the stored draft, so on a draft written against text somebody else had since changed, pressing Restore to see what it held put their work off the screen with no way back to it except reloading the page, which nothing said. The replacement is one undo step now
-
-- **The completion menu was misplaced in RTL**: Two hundred pixels outside it, because the menu was placed from the inline edge while the caret measurement reports physical pixels. It is also clamped to the editor now, which a caret near the end of a long line needed in either direction
-
+- **`require()` returned an empty object**: the package is ESM, so Node read the build meant for `require` as ESM too. That file is `dist/markdown-text-editor.cjs` instead
+- **Odd input could take the whole editor down**: a `toolbar` that was not an array, a stray `null` among the tools, a `renderer` that threw. They complain in the console and carry on
+- **`destroy()` left a key handler on your textarea**: Tab and bracket handling could never be taken off, so an app that built and tore down editors left one behind every time, still holding the dead editor in memory
+- **Typing slowed down as a document grew**: the editor measured its own height on every keystroke, and measuring makes the browser lay out the document first. At 150,000 characters that took a keystroke from about 220ms to about 5ms
+- **Hybrid mode re-highlighted the whole document on every keystroke**: only the lines that changed are redrawn now, and markdown inside a code fence is left alone, where `**this**` used to come out bold in the middle of your code
+- **The preview was rendered while nobody could see it**: every pause in typing parsed and sanitised the whole document into a hidden pane, on every editor with `preview` on its toolbar, opened or not. 68ms of work per pause on a 22kB document, thrown away. It renders when it is open
+- **Undo got slower the longer the document was**: a step was recorded as a character-by-character diff of the whole document, which took 1.4 seconds for a 5,000-character paste into 100,000 characters. A step is one span now -- where the change starts, what was there, what is there instead -- and the same edit takes 0.4ms
+- **The syntax markers in hybrid mode were too faint to read**: the dimmed `**`, backticks and brackets sat at 2.49:1 against the light background, where even an interface part is asked for 3:1. They read at 4.54:1 now
+- **Typing a closing bracket left a second one behind**: `[` gives you `[]`, and typing the `]` yourself gave `[text]]`, so every link written by hand came out wrong. Same for `)`, `}` and `>`
+- **Selecting a single backtick and pressing Code deleted it**: it was read as an already-wrapped empty span and emptied
+- **Column alignment did nothing in the preview**: `:---`, `:---:` and `---:` lined the column up everywhere else the markdown was published, and the preview drew every column to the left
+- **Replace could change the wrong text**: editing the document after searching left Replace overwriting the wrong spot
+- **The find panel sat in the wrong place**: it stays over the text you are editing, and in a right-to-left language it sat on the right, covering the start of every line. It is pinned to the end of the line, so it mirrors with the text
+- **The preview button was pinned to the wrong side in right-to-left languages**: it sticks to the end of the toolbar as the bar scrolls, but it was pinned with `right`, so it sat over undo with its divider on the outside
+- **The toolbar can be crossed by keyboard**: arrow keys move along it, following the text direction, Home and End jump to either end, and the whole bar is one tab stop where it used to be nineteen. Every button also announces its shortcut with its name, so Bold reads as "Bold (Ctrl+B)"
+- **The editor is the same size on any page**: on a page without Tailwind it came out 2px taller than you asked for, and the find box 17px wider
+- **The editor announced itself in English in every language**: a Spanish editor read "Negrita (Ctrl+B)" on every button while the field those buttons act on was still called "Markdown editor", which is the first thing a screen reader reads. It goes through the translator now. A textarea that already carries a `<label>`, an `aria-label` or an `aria-labelledby` is left alone, which is also how you name the field yourself
+- **The link and image dialogs had English accessible names**: they took their heading from the translator and their accessible name from a literal, so a screen reader said "Link" to a Spanish reader. The `OR` between uploading a file and typing a URL was hardcoded as well
+- **The image dialog's upload error was never translated**: `Upload failed.` was the one string on that path that skipped the translator, in a dialog where every other word went through it
+- **A translation could break out of the attribute it landed in**: 1.9.5 escaped the URL and alt text taken from the document, but not the placeholder and `aria-label` text taken from `locale`. The bundled locales are vetted files, so this reached nobody, but translations loaded from a database are a different matter. Everything interpolated into that markup is escaped now
+- **A textarea whose `id` held a quote took the editor down**: looking for an existing `<label for>` built a selector out of the id, and `label[for="a"b"]` is a `SyntaxError` thrown from the constructor. The labels are walked instead of selected
+- **An upload failure arrived as a browser `alert()`**: unstyled, blocking, and nowhere near the file input. It appears in the dialog now, in a `role="alert"` region a screen reader announces without focus leaving the field
+- **`modal()` failed on an unexpected event**: it finds the editor from the event it is handed, so a custom tool passing anything else got a message about null rather than about what to pass
+- **TypeScript rejected `footer: true`**: declared as `false | FooterOptions`, so the one value meaning "the status bar, with its defaults" was a compile error although the editor has always accepted it
+- **Motion is dropped for anyone who asked their system to drop it**: `prefers-reduced-motion` was not answered anywhere in the editor. Nothing that moves in it carries meaning the end state does not
 ## [1.9.5] - 2026-11-12
 
 ### Security
@@ -660,8 +642,6 @@ Each of these still works. Nothing has to change today.
 ### Added
 
 - Initial release
-
----
 
 [Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.5...HEAD
 [1.9.5]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.4...v1.9.5

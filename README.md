@@ -46,7 +46,7 @@ Most JavaScript markdown editors (EasyMDE, SimpleMDE, CodeMirror-based editors) 
 | Swap the markdown parser | ✅ | ❌ |
 | Keyboard shortcuts | ✅ | Partial |
 | Dark mode / theming | ✅ | Limited |
-| Bundle size, gzipped | 66 KB (JS + CSS) | 107 KB (JS + CSS) |
+| Bundle size, gzipped | 72 KB (JS + CSS) via `<script>`, 49 KB with a bundler | 107 KB (JS + CSS) |
 
 ## 🚀 Quick Start
 
@@ -126,7 +126,7 @@ That is the whole breaking change. `labels` was renamed to `locale` and still wo
 - 🔍 **Find & Replace** — Built-in panel (`Ctrl+F` / `Ctrl+H`) with live match counter, next/prev navigation, case-sensitive toggle, and replace all
 - ⌨️ **Keyboard Shortcuts** — `Ctrl+B`, `Ctrl+I`, `Ctrl+K`, `Ctrl+Z`, `Ctrl+1`–`Ctrl+3` for headings, and more
 - 📝 **Smart List Continuation** — GitHub-style: press `Enter` inside a list and the bullet/number continues automatically
-- 🔄 **Undo / Redo** — Full diff-based history with exact cursor restoration. Works with `Ctrl+Z`, `Ctrl+Y`, `Ctrl+Shift+Z`
+- 🔄 **Undo / Redo** — History of what changed rather than copies of the document, with exact cursor restoration, and no cost that grows with the length of the file. Works with `Ctrl+Z`, `Ctrl+Y`, `Ctrl+Shift+Z`
 - ♿ **Accessible by Default** — `role="toolbar"`, `aria-pressed`, `aria-disabled`, `disabled`, screen-reader-friendly SVGs, and correct focus restoration on modal close
 - 🛡️ **XSS Safe** — Preview output sanitized via [DOMPurify](https://github.com/cure53/DOMPurify) before rendering, including the output of a custom renderer
 - 🛡️ **CSP Compatible** — No inline event handlers, no `eval`, and no injected `<style>` element. The stylesheet is a real file you link, so a strict policy needs no `'unsafe-inline'` exception for either `script-src` or `style-src` ([#42](https://github.com/nezanuha/markdown-text-editor/issues/42))
@@ -139,7 +139,7 @@ That is the whole breaking change. `labels` was renamed to `locale` and still wo
 - 🟦 **TypeScript Ready** — Definitions ship with the package. Options, toolbar entries and variable shapes are all checked, so a mistyped tool name is a compile error rather than a silently missing button
 - 🖥️ **SSR Safe** — Importing it on the server doesn't throw, so Next.js, Remix and Nuxt need no `dynamic(..., { ssr: false })` wrapper. The `<textarea>` is in the server HTML with its content, and the editor enhances it after hydration, so there's no markup mismatch and nothing pops in
 - 📦 **Universal Module Support** — ESM, CommonJS, UMD, and IIFE. Works with Vite, webpack, Rollup, or directly via `<script src>` CDN — no configuration needed
-- 🚀 **High Performance** — ~51KB gzipped JS plus ~15KB gzipped CSS, cached separately. Debounced preview, cached layout calculations, conflict-free Tab/Enter handling
+- 🚀 **High Performance** — ~57KB gzipped JS plus ~16KB gzipped CSS, cached separately, or ~34KB of JS with a bundler, where marked and DOMPurify are yours to dedupe. The preview is debounced and skipped entirely while it is closed, the hybrid highlighter redraws only the lines that changed, layout is measured only when it can have moved, and Tab/Enter handling is conflict-free
 
 ## 🛠 Developer Workflow
 
