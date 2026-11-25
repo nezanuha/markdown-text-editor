@@ -4075,9 +4075,15 @@ check('closing the strip keeps the draft for next time', () => {
 
     // "not now", not "no". Discarding is the other thing, and it is behind
     // the dialog where it can say what it is deleting.
-    return barOf(e) === null
+    const closed = barOf(e) === null
         && e.usertextarea.value === 'server text'
         && store.data.has('mte:draft:shut');
+
+    // so the next load offers it again. Unsaved work that stopped asking
+    // after one dismissal would go quiet and then expire.
+    e.destroy();
+    const again = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'shut' } }, 'server text');
+    return closed && barOf(again)?.textContent.includes('Unsaved draft') === true;
 });
 
 check('the strip after an answer can be closed as well', () => {
