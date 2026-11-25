@@ -74,7 +74,7 @@ class LinkTool extends Tool {
             }
         });
     }
-    
+
 }
 
 export default LinkTool;

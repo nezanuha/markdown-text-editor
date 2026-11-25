@@ -78,18 +78,18 @@ export default class IndentManager {
             e.preventDefault();
             const selectedText = value.substring(selectionStart, selectionEnd);
             const newValue = value.substring(0, selectionStart) + open + selectedText + close + value.substring(selectionEnd);
-            
+
             textarea.value = newValue;
             textarea.setSelectionRange(selectionStart + 1, selectionEnd + 1);
             this._triggerUpdate();
-        } 
-        
+        }
+
         // 3. Standard Pair Insertion
         else {
             e.preventDefault();
             const before = value.substring(0, selectionStart);
             const after = value.substring(selectionEnd);
-            
+
             textarea.value = before + open + close + after;
             textarea.setSelectionRange(selectionStart + 1, selectionStart + 1);
             this._triggerUpdate();
@@ -110,7 +110,7 @@ export default class IndentManager {
                 e.preventDefault();
                 const before = value.substring(0, selectionStart - 1);
                 const after = value.substring(selectionStart + 1);
-                
+
                 textarea.value = before + after;
                 textarea.setSelectionRange(selectionStart - 1, selectionStart - 1);
                 this._triggerUpdate();
@@ -133,14 +133,14 @@ export default class IndentManager {
         // EXTRA: If user hits Enter between { and }, add an extra indent level
         const charBefore = value[selectionStart - 1];
         const charAfter = value[selectionStart];
-        
+
         if (charBefore === '{' && charAfter === '}') {
             e.preventDefault();
             const tab = '\t'; // or '    '
             const insertion = '\n' + indent + tab + '\n' + indent;
-            
+
             textarea.value = value.substring(0, selectionStart) + insertion + value.substring(selectionStart);
-            
+
             // Put cursor on the middle (indented) line
             const newPos = selectionStart + indent.length + tab.length + 1;
             textarea.setSelectionRange(newPos, newPos);
@@ -194,7 +194,7 @@ export default class IndentManager {
 
         const targetText = value.substring(startPos, endPos);
         const lines = targetText.split('\n');
-        
+
         let removedFromFirst = 0;
         let totalRemoved = 0;
 

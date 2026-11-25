@@ -55,7 +55,7 @@ Hi {{customer.name}} ({{customer.email}}), invoice {{invoice.number}} is dated {
         </textarea>
         <button type="button" class="get-markdown btn-primary btn-sm self-end">Get Markdown</button>
     </form>
-    
+
     <div class="border-t mt-5 space-y-3">
         <strong class="font-medium text-zinc-800 mt-3 block">Output</strong>
         <div class="output"></div>
@@ -201,11 +201,6 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
             // with a 1.2s delay so the "Uploading..." placeholder is visible.
             // Top level since 2.0: the dialog, paste and drop all read it.
             upload: '/api/upload',
-            // indent: {
-            //     useTabs: false, // ❌ no tabs — use spaces
-            //     tabSize: 2,     // number of spaces per indent
-            //     autoClosingPairs: true
-            // },
             onChange: (value) => {
                 console.log('onChange fired:', value.slice(0, 50));
             },
@@ -213,7 +208,7 @@ Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
 
             // Now 'MarkdownEditor' is a constructor thanks to library.export: 'default'
             document.querySelectorAll(".editor").forEach(element => {
-                const editor = new MarkdownEditor(element, options); 
+                const editor = new MarkdownEditor(element, options);
             });
 
             // The image tool is there, but nowhere to upload to
