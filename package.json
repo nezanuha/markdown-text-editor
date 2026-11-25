@@ -32,7 +32,8 @@
     "types/",
     "locale/",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "THIRD-PARTY-NOTICES.md"
   ],
   "repository": {
     "type": "git",
@@ -40,7 +41,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && vite build --mode standalone",
+    "build": "vite build && vite build --mode standalone && npm run notices",
+    "notices": "node scripts/third-party-notices.mjs",
     "preview": "vite preview",
     "prepublishOnly": "npm run build",
     "locale:extract": "node scripts/locale-extract.mjs",
@@ -95,7 +97,6 @@
     "@tailwindcss/postcss": "^4.3.5",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.5",
-    "diff": "^9.0.0",
     "frutjam": "^2.4.2",
     "happy-dom": "^21.0.4",
     "postcss": "^8.5.33",

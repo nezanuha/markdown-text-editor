@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import tailwindcss from '@tailwindcss/vite';
 
 const SCOPE = '.markdown-editor-wrapper';
@@ -120,6 +121,30 @@ function mockUploadEndpoint() {
 const RUNTIME_DEPS = ['marked', 'dompurify'];
 
 /**
+ * Attribution for the standalone build, which is the only one that carries
+ * those two inside it.
+ *
+ * MIT and Apache-2.0 both ask that the copyright notice travel with a
+ * redistribution, and a minified file with every comment stripped was not
+ * carrying one. Versions are read at build time rather than typed here, so a
+ * bump cannot leave this naming a release nobody ships; the full texts go in
+ * THIRD-PARTY-NOTICES.md, which `npm run build` writes beside it.
+ */
+const version = (name) => JSON.parse(
+    readFileSync(new URL(`./node_modules/${name}/package.json`, import.meta.url), 'utf8'),
+).version;
+
+const BUNDLED_NOTICE = `/*!
+ * markdown-text-editor | MIT | https://github.com/nezanuha/markdown-text-editor
+ *
+ * This build includes:
+ *   marked ${version('marked')} | MIT | Copyright (c) 2018+, MarkedJS; (c) 2011-2018, Christopher Jeffrey
+ *   dompurify ${version('dompurify')} | (MPL-2.0 OR Apache-2.0) | Copyright (c) Cure53 and contributors
+ *
+ * Full licence texts: THIRD-PARTY-NOTICES.md in the npm package.
+ */`;
+
+/**
  * Two builds, because the two kinds of user need opposite things.
  *
  * `vite build` makes the package builds, es and cjs, and leaves the runtime
@@ -136,6 +161,39 @@ const RUNTIME_DEPS = ['marked', 'dompurify'];
  *
  * Together, from `npm run build`. Either alone leaves dist/ half written.
  */
+/**
+ * Puts the notice at the top of the standalone build, once the minifier has
+ * finished with it.
+ *
+ * Rollup's own `banner` is written before minification, and vite's esbuild
+ * pass then strips every comment in the chunk, including that one -- and
+ * `esbuild.legalComments` is not read for the minify step, so there is no
+ * option to turn that off. This runs after the file is on disk, which is the
+ * one place nothing comes along afterwards.
+ *
+ * The sourcemap is corrected rather than left wrong: a map's `mappings` is one
+ * group per generated line, separated by semicolons, so prefixing as many
+ * semicolons as the banner has lines moves every mapping down with the code.
+ */
+function standaloneNotice(notice) {
+    const file = 'dist/markdown-text-editor.min.js';
+    const lines = notice.split('\n').length;   // the banner, plus its newline
+
+    return {
+        name: 'standalone-notice',
+        apply: 'build',
+        closeBundle() {
+            if (!existsSync(file)) return;
+            writeFileSync(file, notice + '\n' + readFileSync(file, 'utf8'));
+
+            if (!existsSync(file + '.map')) return;
+            const map = JSON.parse(readFileSync(file + '.map', 'utf8'));
+            map.mappings = ';'.repeat(lines) + map.mappings;
+            writeFileSync(file + '.map', JSON.stringify(map));
+        },
+    };
+}
+
 export default defineConfig(({ mode }) => {
     const standalone = mode === 'standalone';
 
@@ -143,6 +201,7 @@ export default defineConfig(({ mode }) => {
         plugins: [
             tailwindcss(),
             mockUploadEndpoint(),
+            ...(standalone ? [standaloneNotice(BUNDLED_NOTICE)] : []),
         ],
         css: {
             postcss: {
