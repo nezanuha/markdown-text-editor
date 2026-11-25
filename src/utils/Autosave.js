@@ -30,21 +30,6 @@ const PREFIX = 'mte:draft:';
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
 /**
- * The seed is only ever compared, never read back, so storing a copy of it
- * stored the document twice.
- *
- * That is what made a large paste vanish. localStorage holds about 5MB per
- * origin, shared with everything else the application keeps there, and in
- * UTF-16 a million characters is two of those megabytes. Editing a long
- * document wrote the new text and the old text on every save, so the ceiling
- * arrived at half the length anyone would guess, the write threw, and the
- * throw was swallowed.
- *
- * Length and a 32-bit hash. Two different documents collide only if they
- * match on both, which for telling "has the page changed underneath this
- * draft" is far past enough.
- */
-/**
  * How long ago, in words, localised by the browser rather than by this
  * library: `Intl.RelativeTimeFormat` knows every language the editor ships and
  * several it does not, and getting "2 hours ago" wrong in fifty-six locales is
@@ -99,6 +84,24 @@ function closeButton(label, onClose) {
     return button;
 }
 
+/**
+ * What the document looked like when the draft was taken, small enough to
+ * store beside it.
+ *
+ * The seed is only ever compared, never read back, so storing a copy of it
+ * stored the document twice.
+ *
+ * That is what made a large paste vanish. localStorage holds about 5MB per
+ * origin, shared with everything else the application keeps there, and in
+ * UTF-16 a million characters is two of those megabytes. Editing a long
+ * document wrote the new text and the old text on every save, so the ceiling
+ * arrived at half the length anyone would guess, the write threw, and the
+ * throw was swallowed.
+ *
+ * Length and a 32-bit hash. Two different documents collide only if they
+ * match on both, which for telling "has the page changed underneath this
+ * draft" is far past enough.
+ */
 function fingerprint(text) {
     let hash = 5381;
     for (let i = 0; i < text.length; i++) {
@@ -535,9 +538,10 @@ export default class Autosave {
 
         const undo = document.createElement('button');
         undo.type = 'button';
-        // Ghost, so one button serves both strips without this file knowing
-        // which colour each is standing on.
-        undo.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-ghost';
+        // The same button Review is. Both strips are the same strip in the
+        // same place, and the one thing on each that is not a close is the
+        // one thing to press.
+        undo.className = 'fj:me-btn fj:me-btn-xs fj:me-btn-neutral';
         // Already a key, from the toolbar button that does the same thing.
         undo.textContent = this.editor.label('Undo');
         undo.addEventListener('click', () => {

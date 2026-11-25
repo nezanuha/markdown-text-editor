@@ -20,6 +20,8 @@
  * into the document, so a PDF becomes a link rather than being discarded.
  */
 
+import { escapeHtml } from './escapeHtml.js';
+
 // What the server has been sent since 1.8. Renaming either would change the
 // request for everyone who never asked, so `image_file` stays the default and
 // `field` overrides it.
@@ -61,15 +63,6 @@ function defaultResponse(body) {
     return { path, alt: body.alt || body.image_alt || '' };
 }
 
-/** A URL on its way into an HTML attribute, where a stray quote ends it. */
-function attribute(value) {
-    return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-}
-
 /**
  * What goes into the document once the upload lands.
  *
@@ -89,8 +82,8 @@ function defaultInsert(file, url, alt) {
     const type = file?.type || '';
 
     if (type.startsWith('image/')) return `![${alt || ''}](${url})`;
-    if (type.startsWith('video/')) return `<video src="${attribute(url)}" controls></video>`;
-    if (type.startsWith('audio/')) return `<audio src="${attribute(url)}" controls></audio>`;
+    if (type.startsWith('video/')) return `<video src="${escapeHtml(url)}" controls></video>`;
+    if (type.startsWith('audio/')) return `<audio src="${escapeHtml(url)}" controls></audio>`;
 
     return `[${alt || file?.name || url}](${url})`;
 }

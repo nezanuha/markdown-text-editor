@@ -160,3 +160,25 @@
     border-radius: 0px;
     z-index: var(--mte-fullscreen-z-index, 10000);
 }
+
+/*
+ * Someone who has asked the system not to animate things has asked this too.
+ *
+ * Everything in here that moves is decoration -- the table bar sliding its
+ * caret round, a button easing its background -- and none of it tells the
+ * reader anything the end state does not. The transitions come from the
+ * component classes rather than from this file, so they are turned off here
+ * where every one of them is in scope at once.
+ *
+ * Not `transition: none`: a zeroed duration ends on the final value and fires
+ * transitionend, so nothing waiting on that event is left waiting.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .markdown-editor-wrapper,
+    .markdown-editor-wrapper * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+    }
+}
