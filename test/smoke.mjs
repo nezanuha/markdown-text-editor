@@ -4127,8 +4127,7 @@ check('an accidental discard can be taken back too', () => {
 
     // Discard has no document change to reverse, so what it undoes is the
     // deletion: nothing else can give the draft back.
-    const said = barOf(e).textContent.includes('Draft discarded')
-        && barOf(e).className.includes('fj:me-alert-neutral');
+    const said = barOf(e).textContent.includes('Draft discarded');
     barBtn(e, 'Undo').click();
 
     return said && store.keys().length === 1
@@ -4247,10 +4246,13 @@ check('the strip is one colour, and the words carry the state', () => {
     store.data.set('mte:draft:hue2', JSON.stringify({ text: 'd', seed: 'was', at }));
     const stale = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'hue2' } }, 'is now');
 
-    // One colour whatever the state. The words carry the meaning, which is
-    // also the only way it reaches a reader a colour does not.
-    return barOf(fresh).className.includes('fj:me-alert-neutral')
-        && barOf(stale).className.includes('fj:me-alert-neutral')
+    // The same strip whatever the state, down to the class list: the words
+    // carry the meaning, which is also the only way it reaches a reader a
+    // colour does not. Compared rather than named, so this keeps holding
+    // if the classes change.
+    return barOf(fresh).className === barOf(stale).className
+        && !barOf(fresh).className.includes('alert-warning')
+        && !barOf(fresh).className.includes('alert-info')
         && barOf(stale).textContent.includes('The document has changed since then');
 });
 

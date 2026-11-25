@@ -286,9 +286,9 @@ export default class Autosave {
         // what the amber was saying, to everyone, including the readers a
         // colour never reaches.
         //
-        // Neutral rather than info, because it is furniture. It gets its
-        // visibility from appearing unasked at the top of the editor, not
-        // from being bright.
+        // No colour variant at all. It is furniture, and it gets its
+        // visibility from appearing unasked at the top of the editor rather
+        // than from being painted.
         // The component as it comes, plus the three things this position
         // asks for: full width, square where it meets the editor's corners,
         // and a row at every width.
@@ -298,7 +298,7 @@ export default class Autosave {
         // wide. With one button there is room, and the wrapping that is
         // left belongs inside the message rather than between the message
         // and the way to answer it.
-        bar.className = 'autosave-bar fj:me-alert fj:me-alert-neutral fj:me-alert-sm'
+        bar.className = 'autosave-bar fj:me-alert fj:me-alert-sm'
             + ' fj:w-full fj:rounded-none fj:me-alert-horizontal';
         bar.setAttribute('role', 'status');
 
@@ -531,7 +531,7 @@ export default class Autosave {
         const bar = document.createElement('div');
         // The offer's own classes: the same strip in the same place saying
         // a different thing.
-        bar.className = 'autosave-bar fj:me-alert fj:me-alert-neutral fj:me-alert-sm'
+        bar.className = 'autosave-bar fj:me-alert fj:me-alert-sm'
             + ' fj:w-full fj:rounded-none fj:me-alert-horizontal';
         bar.setAttribute('role', 'status');
 
