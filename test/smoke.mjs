@@ -10,6 +10,19 @@
  *
  * DOMPurify also drops block elements (p, pre, blockquote) under happy-dom's
  * parser, though inline ones survive. Assert on <em> or <strong>, not <pre>.
+ *
+ * That goes further than it looks, and it is worth knowing before trusting a
+ * green run here on anything security-shaped: **this environment cannot vouch
+ * for the sanitiser.** Attributes get through that a browser strips.
+ * `renderMarkdown('[x](javascript:alert(1))')` comes back with the href intact,
+ * while DOMPurify handed the same anchor on its own, in this same process,
+ * removes it -- the difference is the <p> marked wraps it in, which happy-dom's
+ * parser puts somewhere DOMPurify does not walk.
+ *
+ * So the tests below pin the shape of the pipeline: that a sanitiser runs, that
+ * it runs last, that a custom one is honoured, that a thrown renderer cannot
+ * take the editor down. Whether DOMPurify's defaults actually hold against a
+ * payload is DOMPurify's own test suite's business, in a real DOM.
  */
 import { Window } from 'happy-dom';
 import { readFileSync } from 'node:fs';
@@ -3911,6 +3924,213 @@ check('a converter that throws still pastes', () => {
     return prevented === false;
 });
 
+// --- the rest of the HTML it can be handed ----------------------------------
+//
+// The converter was the least covered file in the project at 46%: the paste
+// tests above exercise the paths people hit daily and left the rest of the
+// table, the fences and the odd corners of it unread. These go at the
+// conversion directly rather than through a paste event, since the clipboard
+// is not what is under test here.
+
+// The conversion is not exported from the bundle, so it is reached the way the
+// editor reaches it: a paste, with the sanitiser out of the way.
+const htmlToMd = (editor, html) => {
+    paste(editor, { html, text: '' });
+    return editor.usertextarea.value;
+};
+
+const converted = (html) => {
+    const e = makeEditor({ toolbar: ['bold'], sanitizer: (h) => h });
+    return htmlToMd(e, html);
+};
+
+check('a table keeps its head and its shape', () => {
+    const N = String.fromCharCode(10);
+    const out = converted('<table><thead><tr><th>A</th><th>B</th></tr></thead>'
+        + '<tbody><tr><td>1</td><td>2</td></tr></tbody></table>');
+    return out === '| A | B |' + N + '| --- | --- |' + N + '| 1 | 2 |';
+});
+
+check('a table with no th gets an empty head rather than losing a row', () => {
+    const N = String.fromCharCode(10);
+    const out = converted('<table><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table>');
+    return out === '|  |  |' + N + '| --- | --- |' + N + '| 1 | 2 |' + N + '| 3 | 4 |';
+});
+
+check('a short row is padded out to the width of the table', () => {
+    const out = converted('<table><tr><th>A</th><th>B</th><th>C</th></tr>'
+        + '<tr><td>1</td></tr></table>');
+    return out.includes('| 1 |  |  |');
+});
+
+check('a pipe inside a cell does not end the cell', () => {
+    const out = converted('<table><tr><th>A</th></tr><tr><td>a | b</td></tr></table>');
+    return out.includes('| a \\| b |') && out.split(String.fromCharCode(10))[2] === '| a \\| b |';
+});
+
+check('a newline inside a cell does not end the row', () => {
+    const out = converted('<table><tr><th>A</th></tr><tr><td>one<br>two</td></tr></table>');
+    return out.split(String.fromCharCode(10)).length === 3 && out.includes('one two');
+});
+
+check('an empty table is dropped, not written as bars', () => {
+    return converted('<table></table>') === '';
+});
+
+check('a code block keeps its language', () => {
+    const N = String.fromCharCode(10);
+    const out = converted('<pre><code class="language-python">print(1)</code></pre>');
+    return out === '```python' + N + 'print(1)' + N + '```';
+});
+
+check('the other spelling of the language class is read too', () => {
+    const out = converted('<pre class="lang-rust"><code>fn main() {}</code></pre>');
+    return out.startsWith('```rust');
+});
+
+check('a code block holding a fence gets a longer one', () => {
+    const N = String.fromCharCode(10);
+    const out = converted('<pre><code>```' + N + 'inside' + N + '```</code></pre>');
+    return out.startsWith('````') && out.endsWith('````');
+});
+
+check('code is not escaped the way prose is', () => {
+    const out = converted('<p>Run <code>a * b</code> and <code>c_d</code>.</p>');
+    return out.includes('`a * b`') && out.includes('`c_d`');
+});
+
+check('inline code holding a backtick gets a longer fence and padding', () => {
+    const out = converted('<p><code>a ` b</code></p>');
+    return out === '``a ` b``';
+});
+
+check('inline code that starts with a backtick is padded', () => {
+    const out = converted('<p><code>`x`</code></p>');
+    return out === '`` `x` ``';
+});
+
+check('a link whose text is its own address comes out bare', () => {
+    return converted('<a href="https://example.com">https://example.com</a>')
+        === '<https://example.com>';
+});
+
+check('a link title is kept, with its quotes escaped', () => {
+    const out = converted('<a href="/a" title=\'the "good" one\'>x</a>');
+    return out === '[x](/a "the \\"good\\" one")';
+});
+
+check('a link with no href falls back to its text', () => {
+    return converted('<a>just words</a>') === 'just words';
+});
+
+check('an image keeps alt and title, and brackets cannot break the alt', () => {
+    const out = converted('<img src="/a.png" alt="a [b] c" title="t">');
+    return out === '![a b c](/a.png "t")';
+});
+
+check('an image with no src is dropped', () => {
+    return converted('<img alt="nothing">') === '';
+});
+
+check('a blockquote of two paragraphs keeps one blank line between them', () => {
+    const N = String.fromCharCode(10);
+    const out = converted('<blockquote><p>one</p><p>two</p></blockquote>');
+    return out === '> one' + N + '>' + N + '> two';
+});
+
+check('an empty blockquote is dropped', () => {
+    return converted('<blockquote>   </blockquote>') === '';
+});
+
+check('an ordered list starting at a number keeps counting from it', () => {
+    const N = String.fromCharCode(10);
+    const out = converted('<ol start="5"><li>five</li><li>six</li></ol>');
+    return out === '5. five' + N + '6. six';
+});
+
+check('a numbered list indents its continuation under the text', () => {
+    const N = String.fromCharCode(10);
+    const out = converted('<ol><li>one<ul><li>inner</li></ul></li></ol>');
+    return out === '1. one' + N + '   - inner';
+});
+
+check('an empty list item is dropped rather than left as a bare marker', () => {
+    const out = converted('<ul><li>one</li><li></li><li>two</li></ul>');
+    return out === '- one' + String.fromCharCode(10) + '- two';
+});
+
+check('a rule becomes a rule', () => {
+    const N = String.fromCharCode(10);
+    return converted('<p>a</p><hr><p>b</p>') === 'a' + N + N + '---' + N + N + 'b';
+});
+
+check('a line break inside a paragraph is kept as one', () => {
+    const N = String.fromCharCode(10);
+    // Two trailing spaces: the markdown for a break inside a paragraph.
+    return converted('<p>one<br><strong>two</strong></p>') === 'one  ' + N + '**two**';
+});
+
+check('strikethrough has three spellings and all of them work', () => {
+    const out = converted('<p><del>a</del> <s>b</s> <strike>c</strike></p>');
+    return out === '~~a~~ ~~b~~ ~~c~~';
+});
+
+check('a trailing space inside bold is moved outside the markers', () => {
+    // "** bold **" renders literally, and dropping the space would join two
+    // words together instead.
+    const out = converted('<p>a <strong>bold </strong>word</p>');
+    return out === 'a **bold** word';
+});
+
+check('an element with nothing but spaces in it is left alone', () => {
+    return converted('<p>a<strong> </strong>b</p>') === 'a b';
+});
+
+check('script and style content does not come through', () => {
+    const out = converted('<p><strong>before</strong></p><script>alert(1)</script>'
+        + '<style>p{color:red}</style><noscript>nope</noscript><p>after</p>');
+    return !out.includes('alert') && !out.includes('color:red') && !out.includes('nope')
+        && out.includes('**before**') && out.includes('after');
+});
+
+check('a tag it has never heard of falls back to the text inside it', () => {
+    return converted('<marquee>moving <strong>text</strong></marquee>') === 'moving **text**';
+});
+
+check('every heading level is converted', () => {
+    const out = converted('<h1>1</h1><h2>2</h2><h3>3</h3><h4>4</h4><h5>5</h5><h6>6</h6>');
+    const N = String.fromCharCode(10);
+    return out.split(N + N).join('|') === '# 1|## 2|### 3|#### 4|##### 5|###### 6';
+});
+
+check('the blocks div, section, article and main are all paragraphs', () => {
+    const N = String.fromCharCode(10);
+    const out = converted('<div><strong>a</strong></div><section>b</section>'
+        + '<article>c</article><main>d</main>');
+    return out === ['**a**', 'b', 'c', 'd'].join(N + N);
+});
+
+check('whitespace between two blocks is layout, not content', () => {
+    const N = String.fromCharCode(10);
+    const html = '<p><strong>a</strong></p>' + N + '   ' + N + '<p>b</p>';
+    return converted(html) === '**a**' + N + N + 'b';
+});
+
+check('html that converts to plain prose is left to the browser', () => {
+    // The whole point of the rich path is the formatting. Where there is
+    // none to keep, the plain text the clipboard also carries is the same
+    // thing, and the browser inserts it with the undo behaviour it owns.
+    const e = makeEditor({ toolbar: FULL_BAR, sanitizer: (h) => h }, '');
+    const event = paste(e, { html: '<p>plain prose only</p>', text: 'plain prose only' });
+    return event.defaultPrevented === false && e.usertextarea.value === '';
+});
+
+check('runs of blank lines are collapsed to one', () => {
+    const N = String.fromCharCode(10);
+    const out = converted('<p>a</p><div><p>b</p></div>');
+    return !out.includes(N + N + N);
+});
+
 // --- draft recovery ---------------------------------------------------------
 
 // The textarea is this editor's only source of truth, which is the point of
@@ -4526,6 +4746,215 @@ check('the other toolbar buttons are reachable again afterwards', () => {
         && !bold.hasAttribute('aria-disabled');
 });
 
+// --- the audit fixes --------------------------------------------------------
+//
+// One block, because they were found together: a pass over the whole project
+// looking for the things a passing suite does not prove.
+
+// `preview` is not in the toolbar's mapping -- it is built after the loop so it
+// is always last -- and the unknown-tool warning did not know that, so every
+// editor ever built said it had skipped the button it had just added.
+check('nothing warns about the default toolbar', () => {
+    const said = [];
+    const realWarn = console.warn;
+    console.warn = (...args) => said.push(String(args[0]));
+    try {
+        makeEditor();
+    } finally {
+        console.warn = realWarn;
+    }
+    return said.length === 0;
+});
+
+check('a real typo in a tool name still warns', () => {
+    const said = [];
+    const realWarn = console.warn;
+    console.warn = (...args) => said.push(String(args[0]));
+    try {
+        makeEditor({ toolbar: ['bold', 'previwe', 'preview'] });
+    } finally {
+        console.warn = realWarn;
+    }
+    return said.length === 1 && said[0].includes('"previwe"');
+});
+
+check('preview is still the last button when it is asked for first', () => {
+    const e = makeEditor({ toolbar: ['preview', 'bold', 'italic'] });
+    const buttons = [...e.editorContainer.querySelectorAll('.markdown-btn')];
+    return buttons.at(-1).classList.contains('preview-btn');
+});
+
+// The preview used to be parsed and sanitised into a pane wearing fj:hidden,
+// 150ms after every burst of typing, on every editor that had one on the
+// toolbar -- which is every editor, by default. typeInto is declared with
+// the completion tests above.
+
+check('typing does not render a preview nobody can see', () => {
+    const e = makeEditor({ toolbar: ['bold', 'preview'] }, 'before');
+    e.previewContent.innerHTML = '<p>untouched</p>';
+    typeInto(e, '# after');
+    return new Promise(resolve => setTimeout(
+        () => resolve(e.previewContent.innerHTML === '<p>untouched</p>'), 250));
+});
+
+check('typing does render it while it is open', () => {
+    const e = makeEditor({ toolbar: ['bold', 'preview'] }, 'before');
+    e.previewTool.applySyntax();
+    typeInto(e, 'after the open');
+    return new Promise(resolve => setTimeout(() => {
+        const rendered = e.previewContent.innerHTML.includes('after the open');
+        e.previewTool.applySyntax();
+        resolve(rendered);
+    }, 250));
+});
+
+check('opening it shows what was typed while it was shut', () => {
+    const e = makeEditor({ toolbar: ['bold', 'preview'] }, 'before');
+    typeInto(e, 'typed while shut');
+    e.previewTool.applySyntax();
+    const shown = e.previewContent.innerHTML.includes('typed while shut');
+    e.previewTool.applySyntax();
+    return shown;
+});
+
+check('the pane reports whether it is open, in the affirmative', () => {
+    const e = makeEditor({ toolbar: ['bold', 'preview'] }, 'text');
+    const shut = e.previewTool.isOpen;
+    e.previewTool.applySyntax();
+    const open = e.previewTool.isOpen;
+    e.previewTool.applySyntax();
+    return shut === false && open === true && e.previewTool.isOpen === false;
+});
+
+// The toolbar's end button is pinned with logical properties, so it follows the
+// text direction. Pinned with `right` it went to the far side of the scrollport
+// in RTL and sat over undo. happy-dom has no layout, so this guards the classes.
+check('the preview button is pinned logically, not to the right', () => {
+    const e = makeEditor({ toolbar: ['bold', 'preview'] });
+    const wrapper = e.editorContainer.querySelector('.preview-btn').parentNode;
+    return wrapper.className.includes('fj:-end-2')
+        && wrapper.className.includes('fj:border-s')
+        && !wrapper.className.includes('fj:-right-2')
+        && !wrapper.className.includes('fj:border-l');
+});
+
+// Arrow keys follow what the reader sees. In RTL the first tool is the
+// rightmost one, so ArrowRight has to mean the previous button.
+const arrowFrom = (e, from, key) => {
+    const buttons = [...e.editorContainer.querySelectorAll('.markdown-btn')];
+    buttons[from].dispatchEvent(new window.KeyboardEvent('keydown',
+        { key, bubbles: true, cancelable: true }));
+    return buttons.indexOf(document.activeElement);
+};
+
+check('ArrowRight moves along the toolbar in LTR', () => {
+    const e = makeEditor({ toolbar: ['bold', 'italic', 'ul'] });
+    return arrowFrom(e, 0, 'ArrowRight') === 1;
+});
+
+check('ArrowRight moves back along it in RTL', () => {
+    const e = makeEditor({ toolbar: ['bold', 'italic', 'ul'] });
+    e.editorContainer.setAttribute('dir', 'rtl');
+    // happy-dom resolves no cascade, so direction has to be set where
+    // getComputedStyle will read it back.
+    e.toolbarInstance.toolbar.style.direction = 'rtl';
+    return arrowFrom(e, 1, 'ArrowRight') === 0
+        && arrowFrom(e, 1, 'ArrowLeft') === 2;
+});
+
+check('Home and End do not swap with the direction', () => {
+    const e = makeEditor({ toolbar: ['bold', 'italic', 'ul'] });
+    e.toolbarInstance.toolbar.style.direction = 'rtl';
+    const buttons = [...e.editorContainer.querySelectorAll('.markdown-btn')];
+    return arrowFrom(e, 1, 'Home') === 0
+        && arrowFrom(e, 1, 'End') === buttons.length - 1;
+});
+
+// Undo stores one span -- where the change starts, what was there, what is
+// there now -- instead of a character-level diff of the whole document, which
+// cost 1.4 seconds for a 5,000-character paste into 100,000 characters.
+check('undo puts back a replacement', () => {
+    const e = makeEditor({ toolbar: ['bold'] }, 'the quick brown fox');
+    e.usertextarea.value = 'the slow brown fox';
+    e.undoRedoManager.record();
+    e.undoRedoManager.undo();
+    return e.usertextarea.value === 'the quick brown fox';
+});
+
+check('redo puts it back again', () => {
+    const e = makeEditor({ toolbar: ['bold'] }, 'the quick brown fox');
+    e.usertextarea.value = 'the slow brown fox';
+    e.undoRedoManager.record();
+    e.undoRedoManager.undo();
+    e.undoRedoManager.redo();
+    return e.usertextarea.value === 'the slow brown fox';
+});
+
+check('a change that repeats what is around it is still exact', () => {
+    // "aa" -> "aaa": the prefix and the suffix both want the same character,
+    // and counting it twice loses one on the way back.
+    const tricky = [
+        ['aa', 'aaa'], ['aaa', 'aa'], ['', 'x'], ['x', ''],
+        ['one two', 'one  two'], ['\n\n', '\n'], ['abc', 'abc'],
+        ['**bold**', 'bold'], ['a b c', 'a c'],
+    ];
+    const e = makeEditor({ toolbar: ['bold'] }, '');
+    for (const [from, to] of tricky) {
+        if (from === to) continue;
+        e.usertextarea.value = from;
+        e.undoRedoManager.record();
+        e.usertextarea.value = to;
+        e.undoRedoManager.record();
+        e.undoRedoManager.undo();
+        if (e.usertextarea.value !== from) return `undo of ${JSON.stringify([from, to])} gave ${JSON.stringify(e.usertextarea.value)}`;
+        e.undoRedoManager.redo();
+        if (e.usertextarea.value !== to) return `redo of ${JSON.stringify([from, to])} gave ${JSON.stringify(e.usertextarea.value)}`;
+    }
+    return true;
+});
+
+check('several steps unwind in order', () => {
+    const e = makeEditor({ toolbar: ['bold'] }, 'one');
+    const steps = ['one two', 'one two three', 'one two three four'];
+    for (const step of steps) {
+        e.usertextarea.value = step;
+        e.undoRedoManager.record();
+    }
+    const seen = [];
+    for (let i = 0; i < 3; i++) {
+        e.undoRedoManager.undo();
+        seen.push(e.usertextarea.value);
+    }
+    return JSON.stringify(seen) === JSON.stringify(['one two three', 'one two', 'one']);
+});
+
+check('a long document is patched without walking it character by character', () => {
+    const e = makeEditor({ toolbar: ['bold'] }, '');
+    const doc = 'word '.repeat(40000);                 // 200,000 characters
+    e.usertextarea.value = doc;
+    e.undoRedoManager.record();
+    e.usertextarea.value = doc.slice(0, 100000) + 'x'.repeat(5000) + doc.slice(100000);
+
+    const started = Date.now();
+    e.undoRedoManager.record();
+    const spent = Date.now() - started;
+
+    e.undoRedoManager.undo();
+    // Generous on purpose: the point is the order of magnitude. diffChars took
+    // well over a second on this shape, and anything near that is a stall.
+    return e.usertextarea.value === doc && spent < 200;
+});
+
+// The editor imports one escaper, not three. upload.js had a second copy of it,
+// one character short.
+check('a hostile url cannot break out of a video tag', () => {
+    const e = makeEditor({ toolbar: ['bold'], upload: { url: '/u', accept: ['video/mp4'] } });
+    const file = { type: 'video/mp4', name: 'clip.mp4', size: 10 };
+    const written = e.upload.insert(file, '/f/c.mp4" onerror="alert(1)', '');
+    return !written.includes('onerror="alert')
+        && written.includes('&quot; onerror=&quot;');
+});
+
 // --- the draft comparison ---------------------------------------------------
 //
 // Restore used to be the only way to see what a draft held, so looking and
@@ -4769,6 +5198,13 @@ check('storage that refuses does not break typing', () => {
         removeItem() { throw new Error('denied'); },
     });
 
+    // The refusal is reported once per editor, and this test is the one that
+    // provokes it on purpose, so it owns the message rather than leaving it in
+    // the output of a passing suite.
+    const quiet = console.error;
+    const said = [];
+    console.error = (...args) => said.push(args.join(' '));
+
     try {
         // Private browsing throws on access rather than returning null, and a
         // full quota throws on write. Neither is worth interrupting someone
@@ -4776,8 +5212,11 @@ check('storage that refuses does not break typing', () => {
         const e = makeEditor({ toolbar: FULL_BAR, autosave: { key: 'k9', debounce: 0 } }, 'start');
         typed(e, 'start and more');
         e.autosave.save();
-        return e.usertextarea.value === 'start and more' && barOf(e) === null;
+        return e.usertextarea.value === 'start and more'
+            && barOf(e) === null
+            && said.length === 1 && said[0].includes('not being kept');
     } finally {
+        console.error = quiet;
         put(real);
     }
 });
@@ -4841,6 +5280,188 @@ check('two editors on a page keep separate drafts', () => {
     // is what tells two editors on one page apart.
     return store.keys().length === 2;
 });
+// --- every branch of the one-marker tools ----------------------------------
+//
+// These were the least covered files left, at 57-74%, and the gap was always
+// the same two branches: pressing the button again to take the marker off, and
+// pressing it with nothing selected. Both are everyday use. One table, three
+// paths each, so a new tool of this shape has somewhere obvious to go.
+
+const MARKER_TOOLS = [
+    { tool: 'unordered-list-btn', marker: '- ',     applied: '- word',     placeholder: '- Unordered list' },
+    { tool: 'ordered-list-btn',   marker: '1. ',    applied: '1. word',    placeholder: '1. Ordered list' },
+    { tool: 'check-list-btn',     marker: '- [x] ', applied: '- [x] word', placeholder: '- [x] Check list' },
+    { tool: 'blockquote-btn',     marker: '>',      applied: '>word',      placeholder: '>Blockquote text' },
+];
+
+// FULL_BAR is most of the default toolbar but not all of it, so the tool
+// under test comes last: a strikethrough test asks for a bar with one on it.
+const pressWith = (cls, value, from, to, toolbar = FULL_BAR) => {
+    const e = makeEditor({ toolbar }, value);
+    e.usertextarea.setSelectionRange(from, to);
+    e.editorContainer.querySelector('.' + cls).click();
+    return e.usertextarea.value;
+};
+
+for (const { tool, marker, applied, placeholder } of MARKER_TOOLS) {
+    const name = tool.replace('-btn', '').replace(/-/g, ' ');
+
+    check(name + ': marks the selection', () =>
+        pressWith(tool, 'word', 0, 4) === applied);
+
+    check(name + ': writes a placeholder when nothing is selected', () =>
+        pressWith(tool, '', 0, 0) === placeholder);
+
+    check(name + ': pressed again over the whole thing, takes it off', () =>
+        pressWith(tool, applied, 0, applied.length) === 'word');
+
+    check(name + ': pressed again over just the text, takes it off too', () =>
+        // The selection someone actually has after the first press: the text,
+        // with the marker sitting in front of it.
+        pressWith(tool, applied, marker.length, applied.length) === 'word');
+}
+
+check('code block: fences the selection and selects the inside', () => {
+    const N = String.fromCharCode(10);
+    const e = makeEditor({ toolbar: FULL_BAR }, 'word');
+    e.usertextarea.setSelectionRange(0, 4);
+    e.editorContainer.querySelector('.code-block-btn').click();
+    return e.usertextarea.value === '```' + N + 'word' + N + '```'
+        && e.usertextarea.value.slice(e.usertextarea.selectionStart,
+            e.usertextarea.selectionEnd) === 'word';
+});
+
+check('code block: writes a placeholder when nothing is selected', () => {
+    const N = String.fromCharCode(10);
+    return pressWith('code-block-btn', '', 0, 0) === '```' + N + 'code' + N + '```';
+});
+
+check('code block: pressed again over the whole fence, unwraps it', () => {
+    const N = String.fromCharCode(10);
+    const fenced = '```' + N + 'word' + N + '```';
+    return pressWith('code-block-btn', fenced, 0, fenced.length) === 'word';
+});
+
+check('code block: a language on the fence is dropped with it', () => {
+    const N = String.fromCharCode(10);
+    const fenced = '```js' + N + 'word' + N + '```';
+    return pressWith('code-block-btn', fenced, 0, fenced.length) === 'word';
+});
+
+check('code block: three backticks alone are not a fence to unwrap', () => {
+    // Shorter than an empty fence, so there is nothing inside to keep.
+    const N = String.fromCharCode(10);
+    return pressWith('code-block-btn', '```', 0, 3)
+        === '```' + N + '```' + N + '```';
+});
+
+check('horizontal rule: on an empty line it needs no blank line above', () => {
+    const N = String.fromCharCode(10);
+    return pressWith('horizontal-rule-btn', '', 0, 0) === '---' + N;
+});
+
+check('horizontal rule: mid-line it opens a block of its own', () => {
+    const N = String.fromCharCode(10);
+    return pressWith('horizontal-rule-btn', 'abc', 3, 3) === 'abc' + N + N + '---' + N;
+});
+
+check('horizontal rule: after a newline it does not add another', () => {
+    const N = String.fromCharCode(10);
+    const out = pressWith('horizontal-rule-btn', 'abc' + N, 4, 4);
+    return out === 'abc' + N + '---' + N;
+});
+
+// --- bold and italic, all five branches each --------------------------------
+//
+// Each of them reads the text around the selection as well as the selection
+// itself, so there are five ways in and the suite covered two. The ones it
+// missed are the ones that happen after a first press: the markers are there,
+// and the selection is either over them or inside them.
+
+
+check('bold: marks a selection', () => pressWith('bold-btn', 'word', 0, 4) === '**word**');
+
+check('bold: writes a placeholder when nothing is selected', () =>
+    pressWith('bold-btn', '', 0, 0) === '**Bold text**');
+
+check('bold: the markers selected with the text come off', () =>
+    pressWith('bold-btn', '**word**', 0, 8) === 'word');
+
+check('bold: the markers either side of the selection come off', () =>
+    pressWith('bold-btn', '**word**', 2, 6) === 'word');
+
+check('bold: over bold-and-italic, it leaves the italic behind', () =>
+    pressWith('bold-btn', '***word***', 0, 10) === '*word*');
+
+check('bold: inside bold-and-italic, it leaves the italic behind', () =>
+    pressWith('bold-btn', '***word***', 3, 7) === '*word*');
+
+check('bold: three markers are not read as two', () =>
+    // `value[selectionStart - 3] !== '*'` is what tells these apart, and
+    // without it the inner pair came off and left one star on each side.
+    pressWith('bold-btn', '***word***', 3, 7) !== '*word**');
+
+check('italic: marks a selection', () => pressWith('italic-btn', 'word', 0, 4) === '*word*');
+
+check('italic: writes a placeholder when nothing is selected', () =>
+    pressWith('italic-btn', '', 0, 0) === '*Italic text*');
+
+check('italic: the markers selected with the text come off', () =>
+    pressWith('italic-btn', '*word*', 0, 6) === 'word');
+
+check('italic: the markers either side of the selection come off', () =>
+    pressWith('italic-btn', '*word*', 1, 5) === 'word');
+
+check('italic: over bold-and-italic, it leaves the bold behind', () =>
+    pressWith('italic-btn', '***word***', 0, 10) === '**word**');
+
+check('italic: inside bold-and-italic, it leaves the bold behind', () =>
+    pressWith('italic-btn', '***word***', 3, 7) === '**word**');
+
+check('italic: a bold selection is not read as italic', () =>
+    // Starts and ends with a star, and is not italic. Without the
+    // `!startsWith('**')` guard this took one star off each end.
+    pressWith('italic-btn', '**word**', 0, 8) === '***word***');
+
+check('italic: inside bold, it adds italic rather than taking bold off', () =>
+    pressWith('italic-btn', '**word**', 2, 6) === '**' + '*word*' + '**');
+
+// --- strikethrough, and the two indent buttons ------------------------------
+
+const STRIKE_BAR = [...BASE_BAR, 'strikethrough'];
+
+check('strikethrough: marks a selection', () =>
+    pressWith('strikethrough-btn', 'word', 0, 4, STRIKE_BAR) === '~~word~~');
+
+check('strikethrough: writes a placeholder when nothing is selected', () =>
+    pressWith('strikethrough-btn', '', 0, 0, STRIKE_BAR) === '~~Strikethrough text~~');
+
+check('strikethrough: the markers selected with the text come off', () =>
+    pressWith('strikethrough-btn', '~~word~~', 0, 8, STRIKE_BAR) === 'word');
+
+check('strikethrough: the markers either side of the selection come off', () =>
+    pressWith('strikethrough-btn', '~~word~~', 2, 6, STRIKE_BAR) === 'word');
+
+check('strikethrough: a trailing space in the selection stays outside', () =>
+    // trimSelection() runs first, so the space is not swallowed into the
+    // markers where it would stop them rendering.
+    pressWith('strikethrough-btn', 'one two', 0, 4, STRIKE_BAR) === '~~one~~ two');
+
+check('the indent button indents the line the caret is on', () => {
+    const out = pressWith('indent-btn', 'line', 2, 2);
+    return out === '    line' || out === String.fromCharCode(9) + 'line';
+});
+
+check('the outdent button puts it back', () => {
+    const indented = pressWith('indent-btn', 'line', 2, 2);
+    const e = makeEditor({ toolbar: FULL_BAR }, indented);
+    e.usertextarea.setSelectionRange(indented.length, indented.length);
+    e.editorContainer.querySelector('.outdent-btn').click();
+    return e.usertextarea.value === 'line';
+});
+
+check('outdent on a line with no indent leaves it alone', () =>
+    pressWith('outdent-btn', 'line', 2, 2) === 'line');
 
 // --- report -----------------------------------------------------------------
 
