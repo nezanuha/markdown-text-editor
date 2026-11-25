@@ -7,7 +7,10 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
 <body class="p-4 lg:p-12">
-<nav class="mb-6 text-sm"><a href="/demo/renderer.html" class="underline underline-offset-2">renderer / sanitizer demo &rarr;</a></nav>
+<nav class="mb-6 text-sm flex gap-4">
+    <a href="/demo/renderer.html" class="underline underline-offset-2">renderer / sanitizer demo &rarr;</a>
+    <a href="/demo/1x/" class="underline underline-offset-2">the same page on 1.9.5 &rarr;</a>
+</nav>
     <form method="post" class="flex flex-col gap-4">
         <textarea class="editor h-48" rows="5" placeholder="Enter your text" id="notes">
 # Markdown Editor
