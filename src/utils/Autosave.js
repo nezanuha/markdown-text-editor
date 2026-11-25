@@ -373,16 +373,10 @@ export default class Autosave {
         // rather than at the end of the strip.
         const actions = document.createElement('div');
         actions.className = 'fj:flex fj:items-center fj:gap-1 fj:justify-self-end';
-        // Restore takes the strip's own colour, so the two belong together.
-        // A button left on the base palette lands on a tinted alert as a
-        // grey block from another room; this is the same hue, filled, which
-        // reads as part of the notice rather than something dropped on it.
-        //
-        // Both class names are written out in full on purpose. Tailwind
-        // finds classes by reading the source, so a name assembled at
-        // runtime -- 'fj:me-btn-' + state -- is never emitted, and the
-        // button silently loses its colour instead of failing.
-        const accent = stale ? 'fj:me-btn-warning' : 'fj:me-btn-info';
+        // The strip has no variant, so neither has the button standing on
+        // it. It used to take the alert's hue, back when the alert had one
+        // and changed it with the state; matching nothing is now the way to
+        // match the strip.
 
         // Discard stays a ghost. It is the other answer, not the lesser one,
         // and two filled buttons would be the editor insisting that one of
@@ -398,7 +392,7 @@ export default class Autosave {
         // alone, not to answer it fast.
         actions.append(
             button(this.editor.label('Review'),
-                (event) => this._openComparison(event, saved), accent),
+                (event) => this._openComparison(event, saved), 'fj:me-btn-neutral'),
             closeButton(this.editor.label('Close'), () => this._hide()),
         );
 
