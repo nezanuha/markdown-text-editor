@@ -289,15 +289,17 @@ export default class Autosave {
         // Neutral rather than info, because it is furniture. It gets its
         // visibility from appearing unasked at the top of the editor, not
         // from being bright.
-        bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft fj:me-alert-neutral'
-            + ' fj:me-alert-sm fj:w-full fj:rounded-none'
-            // A row at every width. It used to stack below 40rem, back when
-            // the strip carried three buttons and a row left the message
-            // about seventy pixels wide. With one button there is room, and
-            // the wrapping that is left belongs inside the message rather
-            // than between the message and the way to answer it.
-            + ' fj:me-alert-horizontal'
-            + ' fj:border-base-soft fj:border-0 fj:border-b';
+        // The component as it comes, plus the three things this position
+        // asks for: full width, square where it meets the editor's corners,
+        // and a row at every width.
+        //
+        // The row used to stack below 40rem, back when the strip carried
+        // three buttons and a row left the message about seventy pixels
+        // wide. With one button there is room, and the wrapping that is
+        // left belongs inside the message rather than between the message
+        // and the way to answer it.
+        bar.className = 'autosave-bar fj:me-alert fj:me-alert-neutral fj:me-alert-sm'
+            + ' fj:w-full fj:rounded-none fj:me-alert-horizontal';
         bar.setAttribute('role', 'status');
 
         // One line: "Unsaved draft  5h ago". It fits on a phone now that the
@@ -527,10 +529,10 @@ export default class Autosave {
      */
     _showUndoable(message, onUndo) {
         const bar = document.createElement('div');
-        // The same colour the offer wears, which is now the only one.
-        bar.className = 'autosave-bar fj:me-alert fj:me-alert-soft fj:me-alert-neutral'
-            + ' fj:me-alert-sm fj:w-full fj:rounded-none fj:me-alert-horizontal'
-            + ' fj:border-base-soft fj:border-0 fj:border-b';
+        // The offer's own classes: the same strip in the same place saying
+        // a different thing.
+        bar.className = 'autosave-bar fj:me-alert fj:me-alert-neutral fj:me-alert-sm'
+            + ' fj:w-full fj:rounded-none fj:me-alert-horizontal';
         bar.setAttribute('role', 'status');
 
         const label = document.createElement('span');
