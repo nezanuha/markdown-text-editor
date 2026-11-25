@@ -29,7 +29,12 @@ class Preview {
      */
     constructor(container, label = text => text) {
         this.previewContainer = document.createElement('div');
-        this.previewContainer.className = 'preview-wrapper fj:p-2 fj:hidden fj:me-surface fj:me-surface-outline fj:border-base-soft fj:border-0 fj:border-l';
+        // `border-s`, not `border-l`: the rule belongs between the two halves
+        // of the split, and the halves swap sides with the text direction --
+        // grid columns flow right to left under dir="rtl", so the pane that is
+        // on the right in English is on the left in Arabic, and a left border
+        // would be drawn down the outside of the window.
+        this.previewContainer.className = 'preview-wrapper fj:p-2 fj:hidden fj:me-surface fj:me-surface-outline fj:border-base-soft fj:border-0 fj:border-s';
         this.previewContainer.setAttribute('role', 'region');
         // The region a screen reader announces when it reaches the preview.
         // 'Preview' is already a key, since the toolbar button uses it.

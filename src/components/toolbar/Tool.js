@@ -109,13 +109,23 @@ class Tool {
         btn.className = `markdown-btn ${btnClass} fj:me-btn fj:me-btn-xs fj:me-btn-square fj:me-btn-ghost`;
         btn.addEventListener('click', (event) => this.applySyntax(event));  // Default to 'both', can change in child
 
-        if(btnClass == 'preview-btn') {
+        if (btnClass == 'preview-btn') {
+            // Stuck to the end of the bar as it scrolls, with a rule between
+            // it and the tools it follows.
+            //
+            // Logical, not `-right-2` and `border-l`. The toolbar is a flex
+            // row, so under dir="rtl" it lays out from the right and this
+            // button is the leftmost thing in it -- pinned with `right` it
+            // went to the far side of the scrollport and sat over undo, and
+            // the rule was drawn down its outer edge instead of between. The
+            // find panel had the same bug for the same reason.
             const btnWrapper = document.createElement('div');
-            btnWrapper.className = 'fj:me-surface fj:me-surface-outline fj:border-base-soft fj:border-0 fj:border-l fj:sticky fj:-right-2 fj:px-1.5';
+            btnWrapper.className = 'fj:me-surface fj:me-surface-outline fj:border-base-soft fj:border-0 fj:border-s fj:sticky fj:-end-2 fj:px-1.5';
             btnWrapper.appendChild(btn);
             return btnWrapper;
         }
-        
+
+
         return btn;
     }
 }

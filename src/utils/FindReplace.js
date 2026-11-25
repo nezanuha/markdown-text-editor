@@ -875,6 +875,13 @@ export default class FindReplace {
         const here = all ? this._currentIndex : 0;
 
         const layer = document.createElement('div');
+        // `left-0` on purpose, and the one place in here that stays physical:
+        // the boxes below are positioned with `style.left` from
+        // measureOffsets, which measures against the wrapper's own rectangle
+        // and so reports physical pixels in either direction. The layer has to
+        // start from the same edge those offsets are counted from. Turning
+        // this into `start-0` would move the origin in RTL and leave every
+        // highlight the width of the editor away from its text.
         layer.className = 'find-replace-marks fj:absolute fj:top-0 fj:left-0 fj:pointer-events-none fj:z-2';
 
         boxes.forEach((box, i) => {
