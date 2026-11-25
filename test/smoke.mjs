@@ -5543,6 +5543,44 @@ check('the deprecated form still does what it always did', () => {
     return tooltip(e, '.bold-btn').startsWith('Fett');
 });
 
+// --- the stylesheet cannot reach outside the editor -------------------------
+//
+// The claim is that the editor styles nothing it did not create. The utilities
+// carry the fj: prefix and the components carry me-, so the risk was always
+// the hand-written rules: `.display-layer`, `.editor-textarea` and
+// `.textarea-wrapper` are ordinary class names, and a page using one of its
+// own was getting the editor's rules applied to it.
+
+const shippedCss = readFileSync(new URL('../dist/markdown-text-editor.css', import.meta.url), 'utf8');
+
+check('no rule on an editor class is left unanchored', () => {
+    const own = ['display-layer', 'editor-textarea', 'textarea-wrapper', 'faux-bold',
+        'autosave-bar', 'editor-footer', 'editor-notices', 'preview-wrapper',
+        'find-replace-panel', 'markdown-btn'];
+    const loose = [];
+    for (const name of own) {
+        const rules = shippedCss.match(new RegExp('[^{}]*\.' + name + '[^{}]*\{', 'g')) ?? [];
+        for (const rule of rules) {
+            if (!rule.includes('markdown-editor-wrapper')) loose.push(rule.trim());
+        }
+    }
+    return loose.length === 0 ? true : loose.slice(0, 3).join(' | ');
+});
+
+check('the editor adds no bare element rules to the page', () => {
+    // A rule on `p`, `table` or `button` with nothing in front of it would
+    // restyle the host's whole document. Checked against real element names,
+    // because a keyframe step reads like a selector to a regex: `to {` is not
+    // an element, and `0%` is not either.
+    const elements = ['html', 'body', 'div', 'span', 'p', 'a', 'img', 'ul', 'ol',
+        'li', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'h1', 'h2', 'h3', 'h4',
+        'h5', 'h6', 'pre', 'code', 'blockquote', 'hr', 'form', 'label', 'input',
+        'textarea', 'select', 'button', 'svg', 'dialog'];
+    const loose = elements.filter(tag =>
+        new RegExp('[{}]' + tag + '[,{]').test(shippedCss));
+    return loose.length === 0 ? true : 'unscoped: ' + loose.join(', ');
+});
+
 // --- report -----------------------------------------------------------------
 
 await Promise.all(pending);

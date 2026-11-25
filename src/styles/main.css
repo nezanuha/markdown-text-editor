@@ -53,36 +53,46 @@
   textarea: gutter is always stable (no layout shift when scrollbar appears)
   displayLayer: same stable gutter, but scrollbar is made invisible
 */
-.textarea-wrapper:has(.display-layer) .editor-textarea {
+/*
+ * Anchored to .markdown-editor-wrapper, like everything else in here,
+ * including the rules on elements the editor creates itself.
+ *
+ * `.display-layer`, `.editor-textarea` and `.textarea-wrapper` are ordinary
+ * class names, and a page that happened to use one of them was getting these
+ * rules too. The utilities carry the fj: prefix and the components carry me-,
+ * so this file was the only part of the stylesheet that could reach outside
+ * the editor.
+ */
+.markdown-editor-wrapper .textarea-wrapper:has(.display-layer) .editor-textarea {
     scrollbar-gutter: stable;
 }
 
-.display-layer {
+.markdown-editor-wrapper .display-layer {
     scrollbar-gutter: stable;
     scrollbar-color: transparent transparent; /* Firefox */
 }
-.display-layer::-webkit-scrollbar {
+.markdown-editor-wrapper .display-layer::-webkit-scrollbar {
     background: transparent; /* Chrome/Safari: preserve gutter width, hide visually */
 }
-.display-layer::-webkit-scrollbar-track {
+.markdown-editor-wrapper .display-layer::-webkit-scrollbar-track {
     background: transparent;
 }
-.display-layer::-webkit-scrollbar-thumb {
+.markdown-editor-wrapper .display-layer::-webkit-scrollbar-thumb {
     background: transparent;
     border-color: transparent;
 }
 
-.display-layer .faux-bold {
+.markdown-editor-wrapper .display-layer .faux-bold {
     text-shadow: 0 0 0.5px currentColor, 0 0 0.5px currentColor;
 }
 
-.editor-textarea {
+.markdown-editor-wrapper .editor-textarea {
     font: inherit;
     box-sizing: border-box;
     scrollbar-gutter: stable;
 }
 
-.textarea-wrapper:has(.display-layer) .editor-textarea::selection {
+.markdown-editor-wrapper .textarea-wrapper:has(.display-layer) .editor-textarea::selection {
     background: color-mix(in oklch, var(--color-primary), transparent 80%);
     color: transparent;
     caret-color: var(--color-primary);
