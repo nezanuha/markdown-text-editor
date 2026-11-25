@@ -98,7 +98,14 @@ class Toolbar {
 
             // An entry nothing recognises is skipped rather than silently
             // dropped, so a typo in a tool name is findable.
-            if (!ToolClass && tool !== undefined && tool !== null) {
+            //
+            // `preview` is recognised and is not in the mapping: it is built
+            // after this loop so it is always the last button, whatever order
+            // it was asked for in. Without this it was the one false positive
+            // the warning had, and it fired on every editor ever built,
+            // including one configured with nothing at all, saying a button
+            // had been skipped while that button sat in the bar.
+            if (!ToolClass && tool !== 'preview' && tool !== undefined && tool !== null) {
                 console.warn('[MarkdownEditor] toolbar: no tool matches '
                     + JSON.stringify(typeof tool === 'object' ? Object.keys(tool)[0] : tool)
                     + ', skipping it.');
@@ -171,9 +178,18 @@ class Toolbar {
             const i = items.indexOf(e.target);
             if (i === -1) return;
 
+            // The arrows follow what the reader sees, not the order of the
+            // array, so they swap with the text direction. ARIA's toolbar
+            // pattern is written in terms of the visual ring, and in Arabic or
+            // Hebrew the first tool is the rightmost one: ArrowRight there
+            // means the previous button. Read from the element rather than the
+            // document, since one editor can be flipped on its own.
+            const rtl = window.getComputedStyle(this.toolbar).direction === 'rtl';
+            const forward = rtl ? -1 : 1;
+
             const to = {
-                ArrowRight: i + 1,
-                ArrowLeft: i - 1,
+                ArrowRight: i + forward,
+                ArrowLeft: i - forward,
                 Home: 0,
                 End: items.length - 1,
             }[e.key];
