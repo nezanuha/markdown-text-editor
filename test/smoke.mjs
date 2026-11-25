@@ -4633,6 +4633,77 @@ check('a draft from before the fingerprint existed is still read', () => {
     return bar !== null && bar.textContent.includes('The document has changed since then');
 });
 
+check('a refused write is not attempted again at the same length', () => {
+    // The message is once per editor; the work was not. Every pause in typing
+    // ran JSON.stringify over the whole document and a setItem that could only
+    // fail -- about 6ms at five million characters, forever.
+    const real = window.localStorage.setItem;
+    let attempts = 0;
+    window.localStorage.setItem = () => { attempts++; throw new Error('QuotaExceededError'); };
+
+    const quiet = console.error;
+    console.error = () => {};
+
+    try {
+        const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'retry', debounce: 0 } }, 'a');
+        e.usertextarea.value = 'a draft that cannot be stored';
+        e.autosave.save();
+        e.autosave.save();
+        e.autosave.save();
+        return attempts === 1;
+    } finally {
+        console.error = quiet;
+        window.localStorage.setItem = real;
+    }
+});
+
+check('a document that gets shorter is worth another try', () => {
+    // The guard is the length, not a flag: at or above what was refused,
+    // do not ask again; below it, the ceiling may have moved, so ask. That
+    // way deleting text brings autosave back, and a flag would have left it
+    // off for the rest of the session.
+    const real = window.localStorage.setItem;
+    let attempts = 0;
+    window.localStorage.setItem = (...args) => {
+        attempts++;
+        if (String(args[1]).length > 200) throw new Error('QuotaExceededError');
+        return real.apply(window.localStorage, args);
+    };
+
+    const quiet = console.error;
+    console.error = () => {};
+
+    try {
+        const e = makeEditor({ toolbar: ['bold'], autosave: { key: 'shrink', debounce: 0 } }, 'a');
+
+        e.usertextarea.value = 'x'.repeat(400);
+        e.autosave.save();                     // asked, refused
+        const afterFirst = attempts;
+
+        e.usertextarea.value = 'x'.repeat(390);
+        e.autosave.save();                     // shorter, so asked again, refused
+        const afterShorter = attempts;
+
+        e.usertextarea.value = 'x'.repeat(420);
+        e.autosave.save();                     // longer than the refusal, not asked
+        const afterLonger = attempts;
+
+        e.usertextarea.value = 'short again';
+        e.autosave.save();                     // asked, and kept this time
+        const kept = window.localStorage.getItem('mte:draft:shrink');
+        window.localStorage.removeItem('mte:draft:shrink');
+
+        return afterFirst === 1
+            && afterShorter === 2
+            && afterLonger === 2
+            && attempts === 3
+            && JSON.parse(kept).text === 'short again';
+    } finally {
+        console.error = quiet;
+        window.localStorage.setItem = real;
+    }
+});
+
 check('a refused write says so instead of failing quietly', () => {
     const real = window.localStorage.setItem;
     window.localStorage.setItem = () => { throw new Error('QuotaExceededError'); };

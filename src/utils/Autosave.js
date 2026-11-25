@@ -215,17 +215,34 @@ export default class Autosave {
         // Back to where it started means there is nothing unsaved to keep.
         if (text === this.seed) return this.clear();
 
+        // A document that was refused at this length will be refused again, so
+        // stop asking. The cost is not the refusal, it is what comes before
+        // it: JSON.stringify over the whole document, which is about 6ms at
+        // five million characters, once per pause in the typing, for the rest
+        // of the session. The ceiling only moves when the text gets shorter --
+        // deleting half a document makes it worth another try -- so the length
+        // is the right thing to remember, the way the editor's own height does
+        // it with `_pinnedAt`.
+        if (this._refusedAt !== undefined && text.length >= this._refusedAt) return;
+
         const kept = storage.set(this.key, {
             text,
             seedHash: fingerprint(this.seed),
             at: Date.now(),
         });
 
+        if (kept) {
+            this._refusedAt = undefined;
+            return;
+        }
+
+        this._refusedAt = text.length;
+
         // Storage is allowed to refuse, and a refusal used to be swallowed:
         // the draft silently stopped being kept and the only way to find out
         // was to lose something and reload. Once per editor, because the next
         // keystroke would say it again.
-        if (!kept && !this._warnedAboutStorage) {
+        if (!this._warnedAboutStorage) {
             this._warnedAboutStorage = true;
             console.error('[MarkdownEditor] autosave could not write the draft, so it is '
                 + 'not being kept. localStorage holds about 5MB per origin and this '

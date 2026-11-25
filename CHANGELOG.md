@@ -175,6 +175,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **An upload failure arrived as a browser `alert()`**: unstyled, blocking, and nowhere near the file input. It appears in the dialog now, in a `role="alert"` region a screen reader announces without focus leaving the field
 - **`modal()` failed on an unexpected event**: it finds the editor from the event it is handed, so a custom tool passing anything else got a message about null rather than about what to pass
 - **TypeScript rejected `footer: true`**: declared as `false | FooterOptions`, so the one value meaning "the status bar, with its defaults" was a compile error although the editor has always accepted it
+- **A draft too big to store was retried for the rest of the session**: the message saying it could not be kept came once, but the attempt behind it did not stop -- every pause in typing ran a JSON copy of the whole document into a write that could only fail, about 6ms of it at five million characters. It gives up at the length that was refused, and tries again if the document gets shorter
 - **Motion is dropped for anyone who asked their system to drop it**: `prefers-reduced-motion` was not answered anywhere in the editor. Nothing that moves in it carries meaning the end state does not
 ## [1.9.5] - 2026-11-12
 
