@@ -2830,11 +2830,11 @@ await checkAsync('upload wins over the old toolbar form', async () => {
 // From 2.0.0 the CSS is a file the host has to load, so forgetting it leaves a
 // working but unstyled editor. These guard the only signal the user gets.
 
-check('the old fileInput form says what replaced it, and when it goes', () => {
+check('the old fileInput form says what replaced it, and that it is going', () => {
     const about = warnings.filter(note => note.includes('image.fileInput'));
     return about.length === 1
         && about[0].includes('upload')
-        && about[0].includes('3.0');
+        && about[0].includes('will be removed');
 });
 
 check('it says so once per page, not once per editor', () => {
@@ -5497,13 +5497,17 @@ check('a renamed option names what to use instead', () => {
 
 check('a rename promises no removal, since none is planned', () => {
     const renames = notes.filter(note => note.includes('keeps working'));
-    return renames.length === 3 && renames.every(note => !note.includes('3.0'));
+    return renames.length === 3
+        && renames.every(note => !note.includes('removed'));
 });
 
-check('the one with a date on it is a warning, not an aside', () => {
-    // console.warn, and the only deprecation that says a version: it is the
-    // only one that costs you a feature while you keep it.
-    return warnings.filter(note => note.includes('3.0')).length === 1
+check('the one that is going is a warning, not an aside', () => {
+    // console.warn, and the only one that says it will be removed: it is the
+    // only one that costs you a feature while you keep it. No version is
+    // named, because none is planned.
+    const going = warnings.filter(note => note.includes('will be removed'));
+    return going.length === 1
+        && going.every(note => !/[0-9]+\.[0-9]+/.test(note))
         && notes.every(note => !note.includes('image.fileInput'));
 });
 

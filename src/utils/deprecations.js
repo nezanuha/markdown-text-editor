@@ -2,7 +2,7 @@
  * The options that moved in 2.0, each said once.
  *
  * Every one of them still works, and this file exists so that nobody finds
- * that out in 3.0 instead. A deprecation period only begins when people are
+ * that out the day it stops. A deprecation period only begins when people are
  * told: removing something that never warned is not a deprecation, it is a
  * surprise with a long fuse.
  *
@@ -26,10 +26,15 @@
  *              it keeps working, and no version is promised. Worth saying
  *              only because your config should match the documentation.
  *
- *   `warn`  -- going in 3.0, and costing you something today. `fileInput` is
- *              the only one: it cannot upload from a paste or a drop, which
- *              is what people on it turn up asking for (#40), and it is the
- *              only one of the four carrying real weight in here.
+ *   `warn`  -- going, and costing you something today. `fileInput` is the
+ *              only one: it cannot upload from a paste or a drop, which is
+ *              what people on it turn up asking for (#40), and it is the only
+ *              one of the four carrying real weight in here.
+ *
+ *              "A future major version", not a number. There is no 3.0 plan,
+ *              and a version named before it is planned is a promise that
+ *              gets broken -- which is the same way a console stops being
+ *              read as warning about everything and removing nothing.
  *
  * Neither bracket is a sign of breakage, so neither is an `error`.
  */
@@ -79,14 +84,15 @@ export function noteDeprecations(options = {}) {
             + KEEPS_WORKING);
     }
 
-    // The toolbar form of uploading, which is the one with a date on it.
+    // The toolbar form of uploading, which is the one that is going.
     const fileInput = entryFor(options.toolbar, 'image')?.image?.fileInput;
     if (!fileInput?.uploadUrl) return;
 
     once('fileInput', 'warn', options.upload !== undefined
         ? 'image.fileInput is ignored, since upload is set and wins. Drop fileInput '
-            + 'from the toolbar entry to say so: it will be removed in 3.0.'
-        : 'image.fileInput still works and will be removed in 3.0. Use the top-level '
-            + "upload instead:\n  new MarkdownEditor(el, { upload: '/api/upload' })\n"
+            + 'from the toolbar entry to say so: it goes in a future major version.'
+        : 'image.fileInput still works, and is the one of these that will be removed, '
+            + 'in a future major version. Use the top-level upload instead:'
+            + "\n  new MarkdownEditor(el, { upload: '/api/upload' })\n"
             + '  Pasting and dropping then upload too, with or without the image button.');
 }

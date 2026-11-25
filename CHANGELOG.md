@@ -140,10 +140,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
-- Each of the four says so once in the console, the first time the editor sees it, naming what to use instead. Only `fileInput` carries a version: it is planned for removal in 3.0, because it is the one that costs you something to keep. The other three keep working, and no removal is planned
 - **`labels`**, renamed to `locale`
 - **`label`**, in favour of `aria-label` or a `<label for>` on the textarea. Both are native, apply before this script runs, and are what the editor looks for first
-- **`{ image: { fileInput: { uploadUrl } } }`** in the toolbar, in favour of the top-level `upload`. The one deprecation that costs you something to keep: paste and drop cannot upload without the image button
+- **`{ image: { fileInput: { uploadUrl } } }`** in the toolbar, in favour of the top-level `upload`. The one of these that will be removed, in a future major version: it is also the one that costs you something to keep, since paste and drop cannot upload without the image button
 - **`{ variables: [...] }`** in the toolbar, in favour of the top-level `variables`
 
 ### Removed
