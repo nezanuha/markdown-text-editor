@@ -2834,7 +2834,9 @@ check('the old fileInput form says what replaced it, and that it is going', () =
     const about = warnings.filter(note => note.includes('image.fileInput'));
     return about.length === 1
         && about[0].includes('upload')
-        && about[0].includes('will be removed');
+        && about[0].includes('will be removed')
+        // one sentence and an example line, not an essay
+        && about[0].split('. ').length <= 4;
 });
 
 check('it says so once per page, not once per editor', () => {
@@ -5483,20 +5485,21 @@ check('outdent on a line with no indent leaves it alone', () =>
 // the forms below are used by tests further up the file.
 
 check('each renamed option is mentioned exactly once', () => {
-    const counts = ['labels is now locale', 'label writes an aria-label',
-        'variables belongs at the top level']
+    const counts = ['labels is now locale', 'label is an aria-label',
+        'variables moved from the toolbar array']
         .map(text => notes.filter(note => note.includes(text)).length);
     // Every one of these forms is used somewhere in this file.
     return JSON.stringify(counts) === JSON.stringify([1, 1, 1]);
 });
 
-check('a renamed option names what to use instead', () => {
+check('a renamed option names what to use instead, and where to read', () => {
     const about = notes.find(note => note.includes('labels is now locale'));
-    return about.includes('locale') && about.includes('keeps working');
+    return about.includes('Both work')
+        && about.includes('frutjam.com/plugins/markdown-editor#upgrading-from-1x');
 });
 
 check('a rename promises no removal, since none is planned', () => {
-    const renames = notes.filter(note => note.includes('keeps working'));
+    const renames = notes.filter(note => note.includes('Both work'));
     return renames.length === 3
         && renames.every(note => !note.includes('removed'));
 });
@@ -5509,6 +5512,14 @@ check('the one that is going is a warning, not an aside', () => {
     return going.length === 1
         && going.every(note => !/[0-9]+\.[0-9]+/.test(note))
         && notes.every(note => !note.includes('image.fileInput'));
+});
+
+check('every notice is short enough to read in the console', () => {
+    // The ones that need more than a sentence point at the docs instead.
+    const longest = [...notes, ...warnings]
+        .map(note => note.split(String.fromCharCode(10))[0].length)
+        .reduce((a, b) => Math.max(a, b), 0);
+    return longest <= 100;
 });
 
 check('a config using none of them says nothing at all', () => {

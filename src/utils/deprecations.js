@@ -1,50 +1,30 @@
 /**
- * The options that moved in 2.0, each said once.
+ * Says once, in the console, that an option has moved.
  *
- * Every one of them still works, and this file exists so that nobody finds
- * that out the day it stops. A deprecation period only begins when people are
- * told: removing something that never warned is not a deprecation, it is a
- * surprise with a long fuse.
+ * Three decisions are in here rather than obvious from the code:
  *
- * Three rules, in the order they matter.
+ * Keyed by the form, not by the page. Twelve editors on one old name is one
+ * notice; two different old names on one page are two, whichever editor
+ * happens to be built first.
  *
- * **Once per form, not once per editor.** A page carrying twelve editors on
- * the old name has one thing to change, not twelve things to read -- but a
- * page using two different old names needs to hear about both, whichever
- * editor happens to be built first. So the key is the form, and `said` is
- * module-level.
+ * `info` for a rename, `warn` for the one that is going. Warning about
+ * everything and then removing nothing is how a console stops being read.
  *
- * **One line each, naming the replacement.** "Deprecated" on its own is a
- * complaint; what someone needs is the name to type instead.
- *
- * **Say what you mean about removal.** This is the part most libraries get
- * wrong: they warn "will be removed" about everything, nothing is removed for
- * years, and people learn to ignore the console. So there are two brackets
- * here and they read differently.
- *
- *   `info`  -- renamed. The old name is one line of code to keep reading, so
- *              it keeps working, and no version is promised. Worth saying
- *              only because your config should match the documentation.
- *
- *   `warn`  -- going, and costing you something today. `fileInput` is the
- *              only one: it cannot upload from a paste or a drop, which is
- *              what people on it turn up asking for (#40), and it is the only
- *              one of the four carrying real weight in here.
- *
- *              "A future major version", not a number. There is no 3.0 plan,
- *              and a version named before it is planned is a promise that
- *              gets broken -- which is the same way a console stops being
- *              read as warning about everything and removing nothing.
- *
- * Neither bracket is a sign of breakage, so neither is an `error`.
+ * No version named. There is no next major planned, and a date given before
+ * it is planned is a date that slips.
  */
+
+const DOCS = 'https://frutjam.com/plugins/markdown-editor#upgrading-from-1x';
 
 const said = new Set();
 
-function once(key, level, message) {
+// Anything after the message goes on an indented line of its own: the link is
+// longer than the sentence it belongs to, and a console line that has to be
+// scrolled sideways does not get read.
+function once(key, level, message, ...rest) {
     if (said.has(key)) return;
     said.add(key);
-    console[level]('[MarkdownEditor] ' + message);
+    console[level](['[MarkdownEditor] ' + message, ...rest].join('\n  '));
 }
 
 /** The toolbar entry for a tool, if the array holds one in object form. */
@@ -53,46 +33,36 @@ function entryFor(toolbar, name) {
         .find(tool => tool && typeof tool === 'object' && tool[name] !== undefined);
 }
 
-const KEEPS_WORKING = ' The old form keeps working.';
-
-/**
- * Reads the options for anything written against 1.x and says so.
- *
- * Called from the constructor before anything else reads the options, so that
- * the note about a form comes before whatever that form goes on to do.
- */
+/** Called from the constructor, before anything else reads the options. */
 export function noteDeprecations(options = {}) {
     if (options.labels !== undefined) {
         once('labels', 'info', options.locale !== undefined
-            ? 'labels and locale are both set, and locale wins. labels was the name '
-                + 'before 2.0.'
-            : 'labels is now locale -- the same object, a better name for strings that '
-                + 'are not all labels.' + KEEPS_WORKING);
+            ? 'labels and locale are both set, and locale wins.'
+            : 'labels is now locale. Both work.', DOCS);
     }
 
     if (options.label !== undefined) {
         once('label', 'info',
-            'label writes an aria-label on the textarea, which you can write yourself, '
-            + 'along with a <label for>. Either is native, applies before this script '
-            + 'runs, and is what the editor looks for first.' + KEEPS_WORKING);
+            'label is an aria-label you can set on the textarea yourself. Both work.', DOCS);
     }
 
     if (entryFor(options.toolbar, 'variables')) {
         once('variables', 'info',
-            'variables belongs at the top level now, not in the toolbar array: the list '
-            + 'is data, read by the preview and the completion as well as the dropdown.'
-            + KEEPS_WORKING);
+            'variables moved from the toolbar array to the top level. Both work.', DOCS);
     }
 
-    // The toolbar form of uploading, which is the one that is going.
     const fileInput = entryFor(options.toolbar, 'image')?.image?.fileInput;
     if (!fileInput?.uploadUrl) return;
 
-    once('fileInput', 'warn', options.upload !== undefined
-        ? 'image.fileInput is ignored, since upload is set and wins. Drop fileInput '
-            + 'from the toolbar entry to say so: it goes in a future major version.'
-        : 'image.fileInput still works, and is the one of these that will be removed, '
-            + 'in a future major version. Use the top-level upload instead:'
-            + "\n  new MarkdownEditor(el, { upload: '/api/upload' })\n"
-            + '  Pasting and dropping then upload too, with or without the image button.');
+    if (options.upload !== undefined) {
+        once('fileInput', 'warn',
+            'image.fileInput is ignored, because upload is set. Remove it from the toolbar entry.');
+        return;
+    }
+
+    once('fileInput', 'warn',
+        'image.fileInput still works, and will be removed in a future major version.',
+        'upload replaces it, and uploads on a paste or a drop as well:',
+        "new MarkdownEditor(el, { upload: '/api/upload' })",
+        DOCS);
 }
