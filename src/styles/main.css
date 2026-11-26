@@ -16,6 +16,14 @@
   polyfill resolves correctly inside the editor.
 */
 .markdown-editor-wrapper {
+    /*
+      Read once after the editor mounts. The stylesheet is a separate file from
+      2.0.0, so a missing <link> or import produces an unstyled editor with no
+      error. This lets the editor notice and say so, rather than leaving you to
+      work it out from the appearance.
+    */
+    --mte-css: 1;
+
     --lightningcss-light: initial;
     --lightningcss-dark: ;
     resize: vertical;
@@ -45,39 +53,66 @@
   textarea: gutter is always stable (no layout shift when scrollbar appears)
   displayLayer: same stable gutter, but scrollbar is made invisible
 */
-.textarea-wrapper:has(.display-layer) .editor-textarea {
+/*
+ * Anchored to .markdown-editor-wrapper, like everything else in here,
+ * including the rules on elements the editor creates itself.
+ *
+ * `.display-layer`, `.editor-textarea` and `.textarea-wrapper` are ordinary
+ * class names, and a page that happened to use one of them was getting these
+ * rules too. The utilities carry the fj: prefix and the components carry me-,
+ * so this file was the only part of the stylesheet that could reach outside
+ * the editor.
+ */
+.markdown-editor-wrapper .textarea-wrapper:has(.display-layer) .editor-textarea {
     scrollbar-gutter: stable;
 }
 
-.display-layer {
+.markdown-editor-wrapper .display-layer {
     scrollbar-gutter: stable;
     scrollbar-color: transparent transparent; /* Firefox */
 }
-.display-layer::-webkit-scrollbar {
+.markdown-editor-wrapper .display-layer::-webkit-scrollbar {
     background: transparent; /* Chrome/Safari: preserve gutter width, hide visually */
 }
-.display-layer::-webkit-scrollbar-track {
+.markdown-editor-wrapper .display-layer::-webkit-scrollbar-track {
     background: transparent;
 }
-.display-layer::-webkit-scrollbar-thumb {
+.markdown-editor-wrapper .display-layer::-webkit-scrollbar-thumb {
     background: transparent;
     border-color: transparent;
 }
 
-.display-layer .faux-bold {
+.markdown-editor-wrapper .display-layer .faux-bold {
     text-shadow: 0 0 0.5px currentColor, 0 0 0.5px currentColor;
 }
 
-.editor-textarea {
+.markdown-editor-wrapper .editor-textarea {
     font: inherit;
     box-sizing: border-box;
     scrollbar-gutter: stable;
 }
 
-.textarea-wrapper:has(.display-layer) .editor-textarea::selection {
+.markdown-editor-wrapper .textarea-wrapper:has(.display-layer) .editor-textarea::selection {
     background: color-mix(in oklch, var(--color-primary), transparent 80%);
     color: transparent;
     caret-color: var(--color-primary);
+}
+
+/*
+ * Every utility in the build is written for border-box, and so is the sizing
+ * done from JavaScript: the wrapper carries a 1px border and is given a pixel
+ * height directly, so under content-box each editor comes out 2px taller than
+ * asked and `minHeight: 200` quietly becomes 202.
+ *
+ * Tailwind's preflight sets this globally, so on a Tailwind page it was always
+ * true. Scope it to the editor so a plain page renders the same, rather than
+ * leaving the box model to whatever the host happens to load.
+ */
+.markdown-editor-wrapper,
+.markdown-editor-wrapper *,
+.markdown-editor-wrapper *::before,
+.markdown-editor-wrapper *::after {
+    box-sizing: border-box;
 }
 
 /*
@@ -102,6 +137,30 @@
     display: none;
 }
 
+/*
+ * A column's alignment is written into the markdown as `:---`, `:---:` or
+ * `---:`, and the renderer turns that into `align="center"` on every cell of
+ * the column. That is a presentational attribute, and the cascade ranks those
+ * below every author declaration, so the typography plugin's
+ * `:where(th,td) { text-align: start }` beat it and the preview drew all three
+ * alignments the same. The alignment was in the document and in the HTML; only
+ * the paint was wrong.
+ *
+ * One class, one attribute and one element outranks a lone class, so this needs
+ * no !important and does not depend on source order. It also outranks frutjam's
+ * table component, which sets `text-align: start` the same way, so the preview
+ * can move onto that component without the bug coming back.
+ */
+.markdown-editor-wrapper :is(th, td)[align="left"] {
+    text-align: left;
+}
+.markdown-editor-wrapper :is(th, td)[align="center"] {
+    text-align: center;
+}
+.markdown-editor-wrapper :is(th, td)[align="right"] {
+    text-align: right;
+}
+
 .markdown-editor-wrapper.is-fullscreen {
     position: fixed;
     top: 0;
@@ -110,4 +169,26 @@
     resize: none;
     border-radius: 0px;
     z-index: var(--mte-fullscreen-z-index, 10000);
+}
+
+/*
+ * Someone who has asked the system not to animate things has asked this too.
+ *
+ * Everything in here that moves is decoration -- the table bar sliding its
+ * caret round, a button easing its background -- and none of it tells the
+ * reader anything the end state does not. The transitions come from the
+ * component classes rather than from this file, so they are turned off here
+ * where every one of them is in scope at once.
+ *
+ * Not `transition: none`: a zeroed duration ends on the final value and fires
+ * transitionend, so nothing waiting on that event is left waiting.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .markdown-editor-wrapper,
+    .markdown-editor-wrapper * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+    }
 }

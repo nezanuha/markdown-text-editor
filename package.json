@@ -1,9 +1,9 @@
 {
   "name": "markdown-text-editor",
-  "version": "1.9.5",
+  "version": "2.0.0",
   "type": "module",
   "description": "A markdown editor that enhances your textarea instead of replacing it, so form submission, validation and required fields keep working. WYSIWYG hybrid mode, live preview, find and replace, RTL, TypeScript types. Works with any backend.",
-  "main": "./dist/markdown-text-editor.umd.js",
+  "main": "./dist/markdown-text-editor.cjs",
   "module": "./dist/markdown-text-editor.es.js",
   "browser": "./dist/markdown-text-editor.min.js",
   "unpkg": "./dist/markdown-text-editor.min.js",
@@ -12,15 +12,28 @@
     ".": {
       "types": "./types/index.d.ts",
       "import": "./dist/markdown-text-editor.es.js",
-      "require": "./dist/markdown-text-editor.umd.js",
-      "default": "./dist/markdown-text-editor.umd.js"
-    }
+      "require": "./dist/markdown-text-editor.cjs",
+      "default": "./dist/markdown-text-editor.cjs"
+    },
+    "./style.css": "./dist/markdown-text-editor.css",
+    "./locale/*.js": {
+      "types": "./locale/locale.d.ts",
+      "default": "./locale/*.js"
+    },
+    "./locale/*": {
+      "types": "./locale/locale.d.ts",
+      "default": "./locale/*.js"
+    },
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
   },
   "files": [
     "dist/",
     "types/",
+    "locale/",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "THIRD-PARTY-NOTICES.md"
   ],
   "repository": {
     "type": "git",
@@ -28,12 +41,15 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && vite build --mode standalone && npm run notices",
+    "notices": "node scripts/third-party-notices.mjs",
     "preview": "vite preview",
     "prepublishOnly": "npm run build",
+    "locale:extract": "node scripts/locale-extract.mjs",
+    "locale:check": "node scripts/locale-check.mjs",
     "version": "node scripts/check-changelog.mjs",
     "postversion": "git push origin HEAD --follow-tags",
-    "test": "node test/smoke.mjs",
+    "test": "node test/smoke.mjs && node scripts/locale-check.mjs && node scripts/package-check.mjs",
     "typecheck": "tsc --noEmit --strict --lib es2020,dom --moduleResolution bundler --module esnext test/types.test.ts"
   },
   "publishConfig": {
@@ -74,21 +90,22 @@
     "url": "https://github.com/nezanuha/markdown-text-editor/issues"
   },
   "dependencies": {
-    "dompurify": "^3.4.17",
-    "marked": "~18.0.14"
+    "dompurify": "^3.5.0",
+    "marked": "^18.3.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.3",
+    "@tailwindcss/postcss": "^4.3.5",
     "@tailwindcss/typography": "^0.5.20",
-    "@tailwindcss/vite": "^4.3.3",
-    "diff": "^9.0.0",
-    "frutjam": "^2.2.6",
-    "happy-dom": "^20.14.5",
-    "postcss": "^8.5.28",
-    "tailwindcss": "^4.3.3",
+    "@tailwindcss/vite": "^4.3.5",
+    "frutjam": "^2.4.3",
+    "happy-dom": "^21.0.4",
+    "postcss": "^8.5.33",
+    "tailwindcss": "^4.3.5",
     "typescript": "^7.0.2",
-    "vite": "^8.3.1",
-    "vite-plugin-css-injected-by-js": "^5.0.2"
+    "vite": "^8.4.0"
   },
-  "types": "./types/index.d.ts"
+  "types": "./types/index.d.ts",
+  "overrides": {
+    "postcss-selector-parser": "^7.1.7"
+  }
 }

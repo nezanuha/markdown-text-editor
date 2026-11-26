@@ -9,59 +9,228 @@ import Footer from './Footer.js';
 import UndoRedoManager from '../utils/UndoRedoManager.js';
 import IndentManager from '../utils/IndentManager.js';
 import ListManager from '../utils/ListManager.js';
+import TableKeys from '../utils/TableKeys.js';
+import TablePopover from './TablePopover.js';
 import ShortcutManager from '../utils/ShortcutManager.js';
 import FindReplace from '../utils/FindReplace.js';
 import PasteManager from '../utils/PasteManager.js';
+import { resolveUpload } from '../utils/upload.js';
+import VariableComplete from '../utils/VariableComplete.js';
+import Autosave from '../utils/Autosave.js';
 import { applyVariableSamples } from '../utils/variables.js';
+import { escapeHtml } from '../utils/escapeHtml.js';
+import { noteDeprecations } from '../utils/deprecations.js';
 
 // Own instance rather than marked.setOptions(), which would mutate the shared
 // singleton and silently change behaviour for a host app that also uses marked.
 const defaultRenderer = new Marked({ breaks: true });
 
+const TEX_CHAR = /[\\^_{]/;
+
+// A line that opens or closes a fenced code block: indent, then three
+// backticks. Anchored, so `text ``` more` is prose with backticks in it and
+// not a fence, which is how the pattern this replaced behaved too.
+const FENCE_EDGE = /^\s*```/;
+
+/**
+ * Block maths, or inline maths carrying a TeX character. Used on the markdown
+ * and again on the rendered HTML, so the warning only fires when the syntax
+ * came through unrendered.
+ *
+ * Walks the dollar signs rather than matching a pattern. The pattern this
+ * replaces, `\$[^$\n]*[\\^_{][^$\n]*\$`, had a greedy quantifier either side of
+ * the TeX character and a closing `\$` that could fail, so a long line with an
+ * opening dollar and no closing one backtracked quadratically: 119ms at 16k
+ * characters, on a path that runs on every render until it warns once. This is
+ * linear, since the spans it reads are adjacent and it never retries one.
+ *
+ * Pairs are taken overlapping, which is what the old pattern did by trying
+ * every start position: in `$a$b_c$` the maths is the second pair, not the
+ * first.
+ */
+function hasMaths(text) {
+    if (text.includes('$$')) return true;
+
+    let from = 0;
+    for (;;) {
+        const open = text.indexOf('$', from);
+        if (open === -1) return false;
+        const close = text.indexOf('$', open + 1);
+        if (close === -1) return false;
+
+        const inner = text.slice(open + 1, close);
+        // Inline maths is one line, and has to carry a TeX character so that
+        // prices stay prose: "$5 to $10" is not maths, "$x^2$" is.
+        if (!inner.includes('\n') && TEX_CHAR.test(inner)) return true;
+        from = open + 1;
+    }
+}
+
 class MarkdownEditor {
     constructor(selector, options = {}) {
         this.usertextarea = typeof selector === 'string' ? document.querySelector(selector) : selector;
         this.options = options;
+        // First, so that a note about an old form comes before whatever that
+        // form then does. Once per page, however many editors are on it.
+        noteDeprecations(options);
         this.mode = options.mode || 'plain';
         this.preview = (this.options.toolbar) ? this.options.toolbar.includes('preview') : true;
+        // One option per feature, named after the feature: `false` turns it
+        // off, an object configures it. Keeping them at the top level rather
+        // than under a group means a new feature never raises the question of
+        // which side of the group it belongs on.
         this.footerOptions = this._parseFooterOptions(options.footer);
-        this.variables = this._parseVariables(options.toolbar);
-        this.imageUpload = this._parseImageUpload(options.toolbar);
+        // Top level since 2.0: the list is data, read by the preview and the
+        // typed completion as well as the dropdown. The toolbar form is still
+        // read for anything written against 1.7.
+        const variables = this._parseVariableOptions(options);
+        this.variables = variables.items;
+        this.upload = resolveUpload(options, text => this.label(text));
         this.previewTimer = null;
         this.init();
         this.undoRedoManager = new UndoRedoManager(this);
+        // Before the indent and list managers, which own Tab and Enter: this
+        // one takes those keys only when the caret is inside a table.
+        this.tableKeys = new TableKeys(this);
         this.listManager = new ListManager(this);
         this.indentManager = new IndentManager(this);
         this.shortcutManager = new ShortcutManager(this);
-        this.findReplace = new FindReplace(this);
+        // `find: false` leaves Ctrl+F to the browser. Nothing else reaches for
+        // the panel, so not building it is enough to turn it off.
+        if (options.find !== false) this.findReplace = new FindReplace(this);
         this.pasteManager = new PasteManager(this);
+        // Off unless asked for: it writes what is being typed to a disk
+        // this library does not own.
+        if (options.autosave) {
+            this.autosave = new Autosave(this,
+                typeof options.autosave === 'object' ? options.autosave : {});
+        }
+        // Only worth attaching when there is something to complete.
+        if (variables.complete && this.variables.length) {
+            this.variableComplete = new VariableComplete(this);
+        }
+        // Omitted, the bar follows the toolbar: it is only worth offering
+        // where tables are. `true` asks for it anyway, for content that
+        // already holds tables on a toolbar without the button; `false`
+        // never builds it, for anyone who would rather edit the pipes by hand.
+        const tableBar = options.tableBar
+            ?? !!this.editorContainer.querySelector('.table-btn');
+        if (tableBar) this.tablePopover = new TablePopover(this);
+        this._warnIfStylesheetMissing();
+        this._warnIfLocaleIsACode();
+        this._warnIfOptionRenamed();
+    }
+
+    /**
+     * `locale` takes the strings themselves, not a language code, because the
+     * editor ships no locale loader and bundling every language would cost every
+     * user the size of all of them. Passing a code reads as reasonable and would
+     * otherwise do nothing at all, since indexing a string by a key is undefined
+     * and the lookup falls back to English.
+     */
+    _warnIfLocaleIsACode() {
+        const code = this.options.locale;
+        if (typeof code !== 'string') return;
+
+        console.error(
+            `[MarkdownEditor] locale: '${code}' has no effect. It takes the strings, not a code:\n` +
+            `  import ${/^[a-z]{2}$/i.test(code) ? code : 'strings'} from 'markdown-text-editor/locale/${code}.js'\n` +
+            `  new MarkdownEditor(el, { locale: ${/^[a-z]{2}$/i.test(code) ? code : 'strings'} })`
+        );
+    }
+
+    /**
+     * Both of these only ever existed in a 2.0.0 beta, so they are renamed
+     * rather than aliased the way `labels` is: a beta is not a contract. They
+     * were public long enough to reach the docs, though, and silently ignoring
+     * one would read as the feature being broken rather than moved.
+     */
+    _warnIfOptionRenamed() {
+        if (this.options.tablePopover !== undefined) {
+            console.error(
+                `[MarkdownEditor] tablePopover is now tableBar:\n` +
+                `  new MarkdownEditor(el, { tableBar: ${this.options.tablePopover} })`
+            );
+        }
+
+        if (this.options.variableComplete !== undefined) {
+            console.error(
+                `[MarkdownEditor] variableComplete moved in with the list it belongs to:\n` +
+                `  new MarkdownEditor(el, { variables: { items: [...], `
+                + `complete: ${this.options.variableComplete} } })`
+            );
+        }
+    }
+
+    /**
+     * The stylesheet is a separate file, so forgetting it leaves a working but
+     * unstyled editor with nothing in the console to explain why. main.css sets
+     * --mte-css on the wrapper; if it does not resolve, the stylesheet never
+     * loaded. Warn once per page rather than once per editor.
+     */
+    _warnIfStylesheetMissing() {
+        if (MarkdownEditor._cssWarned) return;
+        // A detached or hidden container cannot be measured, so take no view
+        if (!this.editorContainer?.isConnected) return;
+
+        if (getComputedStyle(this.editorContainer).getPropertyValue('--mte-css').trim()) return;
+
+        MarkdownEditor._cssWarned = true;
+        console.error(
+            '[MarkdownEditor] Stylesheet not loaded, so the editor will look unstyled.\n' +
+            "  Bundlers:  import 'markdown-text-editor/style.css'\n" +
+            '  Browsers:  <link rel="stylesheet" href=".../dist/markdown-text-editor.css">'
+        );
     }
 
     /**
      * Returns the translation for a UI string, or the string itself when none is
      * configured. Keyed by the English text, the way gettext is, so a tool does
      * not need to know anything about translation.
+     *
+     * `labels` was the name before 2.0.0 and still works.
      */
     label(text) {
-        return this.options.labels?.[text] ?? text;
+        const strings = this.options.locale ?? this.options.labels;
+        return strings?.[text] ?? text;
     }
 
     /**
-     * Upload settings live in the toolbar as { image: { fileInput: {...} } }, but
-     * paste and drop need them before the toolbar exists. Read them up front, and
-     * only when an upload endpoint is actually configured.
+     * `variables` in either form, falling back to the toolbar entry.
+     *
+     *   variables: [ ... ]
+     *   variables: { items: [ ... ], complete: false }
+     *
+     * One option per feature, which is why `complete` sits in here rather than
+     * at the top level as `variableComplete`. The bare array stays because the
+     * list on its own is what nearly every host wants, the same way `autosave:
+     * true` and `upload: '/url'` read.
      */
-    _parseImageUpload(toolbar) {
-        const entry = (Array.isArray(toolbar) ? toolbar : [])
-            .find(tool => tool && typeof tool === 'object' && tool.image);
-        const fileInput = entry?.image?.fileInput;
-        return fileInput?.uploadUrl ? fileInput : null;
+    _parseVariableOptions(options) {
+        const config = options.variables;
+
+        if (Array.isArray(config)) return { items: config, complete: true };
+
+        if (config && typeof config === 'object') {
+            return {
+                items: Array.isArray(config.items) ? config.items : [],
+                complete: config.complete !== false,
+            };
+        }
+
+        return { items: this._parseVariables(options.toolbar), complete: true };
     }
 
     /**
-     * Variables are configured inline in the toolbar as { variables: [...] },
-     * but the preview needs them before the toolbar exists, since createEditor()
-     * renders first. Read them from the toolbar array at construction instead.
+     * The pre-2.0 home for the variable list: inline in the toolbar, as
+     * `{ variables: [...] }`. Still read, so nothing written against 1.7
+     * breaks.
+     *
+     * That it had to exist is the argument for moving them. The preview needs
+     * the list to swap in `sample` values, and the completion needs it to know
+     * what opens the menu, and both run before the toolbar is built -- so the
+     * editor went digging through the toolbar array for data that was never a
+     * button's business. The upload endpoint left for the same reason.
      */
     _parseVariables(toolbar) {
         const entry = (Array.isArray(toolbar) ? toolbar : [])
@@ -103,11 +272,32 @@ class MarkdownEditor {
     }
 
     applyDefaultAttributes() {
-        const hasLabel = (this.usertextarea.id && document.querySelector(`label[for="${this.usertextarea.id}"]`))
+        // Walked rather than selected. An id is allowed almost any character,
+        // and one quote in `label[for="..."]` is a SyntaxError thrown from the
+        // constructor -- no editor at all, for a textarea that was merely
+        // named oddly. Reading the attribute off each label cannot throw, and
+        // this runs once.
+        const hasLabel = (this.usertextarea.id
+                && [...document.querySelectorAll('label[for]')]
+                    .some(el => el.getAttribute('for') === this.usertextarea.id))
             || this.usertextarea.getAttribute('aria-label')
             || this.usertextarea.getAttribute('aria-labelledby');
         if (!hasLabel) {
-            this.usertextarea.setAttribute('aria-label', this.options.label || 'Markdown editor');
+            // Translated like everything else. Every button in a Spanish
+            // editor announced itself in Spanish while the field they all
+            // act on announced itself as "Markdown editor", which is the one
+            // label a screen reader reads first and the one that says what
+            // the thing is.
+            //
+            // `label` has been public since before 2.0, so it keeps working.
+            // It is deprecated rather than removed: `aria-label` or a
+            // `<label>` on the textarea does the same thing natively, before
+            // this runs and whether or not the script loads, and this option
+            // only writes an attribute the page could have written. Dropping
+            // it would have taken the accessible name off any 1.x host that
+            // set it, silently, which is the worst way to lose one.
+            this.usertextarea.setAttribute('aria-label',
+                this.options.label || this.label('Markdown editor'));
             this._addedAriaLabel = true;
         }
 
@@ -163,6 +353,28 @@ class MarkdownEditor {
 
         this.markdownEditorDiv = document.createElement('div');
         this.markdownEditorDiv.className = `editor-layout fj:relative fj:grid fj:grid-cols-1 fj:flex-1 fj:min-h-0`;
+        // The editor's regions have names -- toolbar, layout, preview, footer
+        // -- and this is the one that was missing: where anything addressed to
+        // the reader goes, above the toolbar and inside the wrapper. The draft
+        // strip today, whatever else later.
+        //
+        // Not "status bar", which is already what the footer is called, in its
+        // own docs heading and twice in the declarations.
+        //
+        // A named slot rather than each notice finding its own way in. The
+        // draft strip used to insert itself before the wrapper's first child,
+        // which was only correct while nothing else wanted to be first, and it
+        // left a host styling the strip reaching for `.autosave-bar` -- tying
+        // their CSS to which feature put the notice there rather than to the
+        // place notices appear.
+        //
+        // Empty it has no height, so an editor with nothing to say looks the
+        // same as it did. More than one notice stacks, in the order they
+        // arrived.
+        this.notices = document.createElement('div');
+        this.notices.className = 'editor-notices';
+        this.editorContainer.appendChild(this.notices);
+
         this.editorContainer.appendChild(this.markdownEditorDiv);
 
         this.addTextareaWrapper();
@@ -223,10 +435,10 @@ class MarkdownEditor {
         this.markdownEditorDiv.appendChild(textareaContainer);
     }
 
-    
+
 
     addPreviewWrapper() {
-        const previewInstance = new Preview(this.markdownEditorDiv);
+        const previewInstance = new Preview(this.markdownEditorDiv, text => this.label(text));
         this.previewContent = previewInstance.getPreviewContent();
     }
 
@@ -258,10 +470,49 @@ class MarkdownEditor {
 
         this.usertextarea.addEventListener('input', this._inputHandler);
         this.usertextarea.addEventListener('scroll', this._scrollHandler);
+        this._watchWidth();
     }
 
+    /**
+     * Forgets the pinned height when the editor changes width.
+     *
+     * Width decides where the text wraps, so a narrower editor is a taller
+     * one: toggling the preview halves it, dragging the window changes it,
+     * fullscreen changes it. Height is ignored here, because _autoGrow sets
+     * the height itself and watching it would be a loop.
+     *
+     * The callback runs before paint rather than inside the keystroke, so the
+     * measurement it allows is paid once per resize instead of once per key.
+     */
+    _watchWidth() {
+        if (typeof ResizeObserver === 'undefined') return;
+
+        this._widthObserver = new ResizeObserver(entries => {
+            const width = entries[0]?.contentRect?.width;
+            if (width === undefined || width === this._lastWidth) return;
+            this._lastWidth = width;
+            this._pinnedAt = undefined;
+        });
+        this._widthObserver.observe(this.usertextarea);
+    }
+
+    /**
+     * The preview, 150ms after you stop typing -- and only when it is on
+     * screen.
+     *
+     * `this.preview` means the preview is on the toolbar, which it is by
+     * default, so this used to parse and sanitise the whole document after
+     * every burst of typing and write the result into a pane wearing
+     * `fj:hidden`. 68ms of marked and DOMPurify on a 22kB document, 162ms on
+     * 68kB, thrown away, on every editor that had never had its preview
+     * opened.
+     *
+     * Opening it renders from scratch -- `enablePreview` calls `render()` --
+     * so there is nothing to catch up on.
+     */
     debouncedPreview() {
         if (!this.preview) return;
+        if (this.previewTool && !this.previewTool.isOpen) return;
         clearTimeout(this.previewTimer);
         this.previewTimer = setTimeout(() => {
             // Replacing the markup resets the preview to the top, so remember
@@ -337,9 +588,40 @@ class MarkdownEditor {
         return new Toolbar(host, tools, { standalone: true }).toolbar;
     }
 
+    /**
+     * The sanitiser, resolved once in one place.
+     *
+     * The preview is not the only thing that needs it: HTML pasted from
+     * another application is also about to be put through a DOM, and it came
+     * from further away than the preview's own markdown did. Both go through
+     * whatever the host configured, or DOMPurify when it configured nothing.
+     */
+    sanitizeHtml(html) {
+        const sanitize = this.options.sanitizer ?? (dirty => DOMPurify.sanitize(dirty));
+        return sanitize(html);
+    }
+
     _renderMarkdown(markdown) {
-        const render   = this.options.renderer  ?? (md   => defaultRenderer.parse(md));
-        const sanitize = this.options.sanitizer ?? (html => DOMPurify.sanitize(html));
+        const configured = this.options.renderer ?? (md => defaultRenderer.parse(md));
+        const sanitize   = html => this.sanitizeHtml(html);
+
+        // A renderer that throws must not take the editor with it. Yours might
+        // have a bug, and so might the default one: marked overflows its stack
+        // on a few thousand nested blockquotes, which is a document someone can
+        // paste. The text people are writing matters more than the preview of
+        // it, so the preview degrades to escaped plain text and says why.
+        const render = (md) => {
+            try {
+                return configured(md);
+            } catch (err) {
+                if (!this._rendererWarned) {
+                    this._rendererWarned = true;
+                    console.error('[MarkdownEditor] The renderer threw, so the preview is '
+                        + 'showing plain text. The document itself is untouched.', err);
+                }
+                return '<pre>' + escapeHtml(md) + '</pre>';
+            }
+        };
 
         // Variables that declare a sample are shown as that sample in the preview.
         // Only this copy is affected; the textarea keeps the real placeholders.
@@ -352,6 +634,21 @@ class MarkdownEditor {
             && /^\s*[-*] \[[ xX]\] /m.test(source) && !/type=["']?checkbox/.test(html)) {
             this._taskListWarned = true;
             console.warn('[MarkdownEditor] Task list syntax found, but the custom renderer emitted no checkboxes. Clickable checkboxes in the preview need a task-list plugin, e.g. markdown-it-task-lists.');
+        }
+
+        // TeX is not markdown. `marked` has no idea `$` means anything, so the
+        // delimiters the maths tool writes come through as text and the reader
+        // sees `$x^2$` in the preview and assumes the editor is broken. Say so
+        // once, and stay quiet when a renderer does handle it, which is why the
+        // same test is applied to the output: if the syntax survived rendering,
+        // nothing understood it.
+        //
+        // Prices are the false positive to avoid, so inline maths has to carry
+        // a TeX character rather than merely sit between two dollar signs:
+        // "$5 to $10" is not maths, "$x^2$" is.
+        if (!this._mathWarned && hasMaths(source) && hasMaths(html)) {
+            this._mathWarned = true;
+            console.warn('[MarkdownEditor] Maths syntax found, but nothing rendered it. TeX is not part of markdown, so pass a renderer that understands it and load that renderer\'s stylesheet, e.g. renderer: md => markdownIt().use(katex).render(md)');
         }
 
         return sanitize(html);
@@ -389,7 +686,7 @@ class MarkdownEditor {
         if (!this.footerOptions) return;
         const { line, col, chars, words } = this.footerOptions;
         if (!line && !col && !chars && !words) return;
-        this.footer = new Footer(this.editorContainer, this.footerOptions);
+        this.footer = new Footer(this.editorContainer, this.footerOptions, text => this.label(text));
         this.footer.update(this.usertextarea);
 
         this._footerUpdate = () => this.footer.update(this.usertextarea);
@@ -400,25 +697,36 @@ class MarkdownEditor {
     }
 
     addToolbar() {
+        // `toolbar: 'bold'` instead of `['bold']` is an easy slip, and it used
+        // to take the whole editor down with "this.options.forEach is not a
+        // function". Say what was wrong and fall back to the default, the way
+        // a junk `levels` value does.
+        if (this.options.toolbar !== undefined && !Array.isArray(this.options.toolbar)) {
+            console.warn('[MarkdownEditor] toolbar takes an array of tools, got '
+                + (this.options.toolbar === null ? 'null' : typeof this.options.toolbar)
+                + '. Using the default toolbar.');
+            this.options = { ...this.options, toolbar: undefined };
+        }
+
         this.toolbarInstance = new Toolbar(
             this,
             this.options.toolbar ||
             [
                 // History/System (Usually far left)
-                'undo', 
+                'undo',
                 'redo',
-                
+
                 // Block Structure
-                'heading', 
-                'blockquote', 
-                
+                'heading',
+                'blockquote',
+
                 // Lists & Indentation
-                'ul', 
-                'ol', 
-                'checklist', 
-                'outdent', 
-                'indent', 
-                
+                'ul',
+                'ol',
+                'checklist',
+                'outdent',
+                'indent',
+
                 // Inline Formatting
                 'bold',
                 'italic',
@@ -433,7 +741,7 @@ class MarkdownEditor {
                 // Rich Media/Links
                 'link',
                 'image',
-                
+
                 // View/Preview (Usually far right)
                 'preview'
             ]
@@ -475,37 +783,105 @@ class MarkdownEditor {
      * Holding the existing scroll is both correct and cheaper: an edit at the
      * caret leaves the caret where the reader was already looking.
      */
-    scrollToView() {}
 
 
-    _highlight(rawValue) {
-        let out = rawValue
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-
-        out = out
-            .replace(/```(\w+)?\n([\s\S]*?)```/g,
-                '<span class="fj:opacity-30">```$1</span>\n$2<span class="fj:opacity-30">```</span>')
+    /**
+     * Highlights one line, which is all any of these patterns can see.
+     *
+     * Seven of the eight cannot match across a newline -- `.` does not, and
+     * the anchored ones are /m -- so running them per line gives the same
+     * result as running them over the whole document, and lets an edit
+     * re-highlight only the lines it touched. The exception is the single
+     * tilde, whose `[^~]+` used to reach across lines; it no longer does.
+     *
+     * The order is load-bearing and unchanged: the emphasis pass deliberately
+     * runs after bold and re-processes the asterisks bold has already wrapped.
+     */
+    _highlightLine(line) {
+        return line
             .replace(/`([^`\n]+)`/g,
-                '<span class="fj:opacity-40">`</span><span class="fj:text-accent">$1</span><span class="fj:opacity-40">`</span>')
+                '<span class="fj:opacity-60">`</span><span class="fj:text-accent">$1</span><span class="fj:opacity-60">`</span>')
             .replace(/^(#+ )(.*)$/gm,
-                '<span class="fj:text-primary"><span class="fj:opacity-40">$1</span><span class="faux-bold">$2</span></span>')
+                '<span class="fj:text-primary"><span class="fj:opacity-60">$1</span><span class="faux-bold">$2</span></span>')
             .replace(/\*\*(.*?)\*\*/g,
-                '<span class="fj:text-secondary"><span class="fj:opacity-40">**</span><span class="faux-bold">$1</span><span class="fj:opacity-40">**</span></span>')
+                '<span class="fj:text-secondary"><span class="fj:opacity-60">&#42;&#42;</span><span class="faux-bold">$1</span><span class="fj:opacity-60">&#42;&#42;</span></span>')
             .replace(/^([\s]*)([\-\*] |[\d]+\. |\[[\s xX]\] )(.*)$/gm,
                 '$1<span class="fj:text-primary">$2</span>$3')
             .replace(/(\*|_)(.*?)\1/g,
-                '<span class="fj:text-accent"><span class="fj:opacity-40">$1</span>$2<span class="fj:opacity-40">$1</span></span>')
+                '<span class="fj:text-accent"><span class="fj:opacity-60">$1</span>$2<span class="fj:opacity-60">$1</span></span>')
             .replace(/~~(.*?)~~/g,
-                '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-40">~~</span>$1<span class="fj:opacity-40">~~</span></span>')
+                '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-60">~~</span>$1<span class="fj:opacity-60">~~</span></span>')
             .replace(/(?<!~)(~)([^~]+)\1(?!~)/g,
-                '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-40">$1</span>$2<span class="fj:opacity-40">$1</span></span>')
+                '<span class="fj:line-through fj:opacity-70"><span class="fj:opacity-60">$1</span>$2<span class="fj:opacity-60">$1</span></span>')
             .replace(/(!?\[)(.*?)(\]\()(.*?)(\))/g,
-                '<span class="fj:opacity-40">$1</span><span class="fj:text-primary">$2</span><span class="fj:opacity-40">$3</span><span class="fj:underline fj:opacity-50">$4</span><span class="fj:opacity-50">$5</span>');
+                '<span class="fj:opacity-60">$1</span><span class="fj:text-primary">$2</span><span class="fj:opacity-60">$3</span><span class="fj:underline fj:opacity-50">$4</span><span class="fj:opacity-50">$5</span>');
+    }
 
-        if (rawValue.endsWith('\n')) out += ' ';
-        return out;
+    /** Escapes a line for the display layer, which is written with innerHTML. */
+    _escapeLine(line) {
+        return line
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    /**
+     * Which lines open or close a fenced block.
+     *
+     * A line of optional indent and three backticks toggles the state. Cheap
+     * enough to redo for the whole document on every keystroke -- one test per
+     * line, no capture, no replacement -- which is what makes it possible to
+     * know, before doing any real work, which lines need highlighting again.
+     *
+     * The old whole-document pattern needed a closing fence before it would
+     * style anything, so a block you were still typing stayed plain. This
+     * styles the opening fence as soon as it is there.
+     */
+    _fenceStates(lines) {
+        const states = new Array(lines.length);
+        let inside = false;
+        for (let i = 0; i < lines.length; i++) {
+            const edge = FENCE_EDGE.test(lines[i]);
+            // The edge line itself is the marker, not content.
+            states[i] = edge ? 'edge' : (inside ? 'code' : 'text');
+            if (edge) inside = !inside;
+        }
+        return states;
+    }
+
+
+    /** One line, given what the fence scan decided it is. */
+    _highlightOne(line, state) {
+        const escaped = this._escapeLine(line);
+        if (state === 'edge') {
+            return '<span class="fj:opacity-60">' + escaped + '</span>';
+        }
+        // Inside a fence the text is code, so none of the markdown passes run.
+        // They used to: the fence pattern matched first and the inline passes
+        // then swept the whole string, fenced content included, so `**x**` in
+        // a code block came out bold.
+        if (state === 'code') return escaped;
+        return this._highlightLine(escaped);
+    }
+
+    /**
+     * The whole document in one pass, which is what `renderHybrid` did before
+     * it learned to reuse the lines an edit did not touch.
+     *
+     * Kept because ten tests read it: asserting on a joined string is far
+     * clearer than reassembling the display layer's spans, and a highlighting
+     * rule is a property of a line, not of the DOM it lands in. The risk is
+     * that it drifts from the path that ships, so one test walks both and
+     * compares -- if they ever disagree, the suite says so.
+     */
+    _highlight(rawValue) {
+        const lines = rawValue.split('\n');
+        const states = this._fenceStates(lines);
+        const out = lines
+            .map((line, i) => this._highlightOne(line, states[i]))
+            .join('\n');
+
+        return rawValue.endsWith('\n') ? out + ' ' : out;
     }
 
     renderHybrid() {
@@ -515,8 +891,37 @@ class MarkdownEditor {
         if (rawValue === this._lastRaw) return;
         this._lastRaw = rawValue;
 
-        const highlighted = this._highlight(rawValue);
-        const newLines = highlighted.split('\n');
+        // Highlight only the lines that need it.
+        //
+        // The whole document used to go through every pass on every keystroke,
+        // which is where the cost was: a line of prose is cheap, a hundred
+        // thousand of them are not. A line's result depends on just two
+        // things, its text and whether it sits inside a fence, so a line whose
+        // text and fence state are both unchanged can keep the HTML it already
+        // had. Working out the fence states is one anchored test per line with
+        // no replacement, cheap enough to redo in full.
+        const sourceLines = rawValue.split('\n');
+        const states = this._fenceStates(sourceLines);
+        const lastSource = this._lastSource;
+        const lastStates = this._lastStates;
+
+        const newLines = sourceLines.map((line, i) => {
+            const reusable = lastSource
+                && lastSource[i] === line
+                && lastStates[i] === states[i]
+                && this._lastLines?.[i] !== undefined;
+            return reusable ? this._lastLines[i] : this._highlightOne(line, states[i]);
+        });
+
+        // The trailing space the old whole-document version appended, kept so
+        // a document ending in a newline still shows that last empty line.
+        if (rawValue.endsWith('\n') && newLines.length) {
+            newLines[newLines.length - 1] += ' ';
+        }
+
+        this._lastSource = sourceLines;
+        this._lastStates = states;
+
         const lastLines = this._lastLines;
 
         if (!lastLines || lastLines.length !== newLines.length) {
@@ -552,6 +957,25 @@ class MarkdownEditor {
         if (this._userResized) return;
 
         const textarea = this.usertextarea;
+        const length = textarea.value.length;
+
+        // Once the content is taller than maxHeight the container is pinned
+        // there, and typing cannot make it shorter: at a fixed width, more
+        // characters never occupy fewer lines. So while the text only grows,
+        // the answer is already known and there is nothing to measure.
+        //
+        // Worth the bookkeeping because measuring is almost the whole cost of
+        // a keystroke. Any geometry read -- scrollHeight, clientWidth, it does
+        // not matter which -- makes the browser lay out the entire document
+        // first: about 170ms at 150k characters, against 10ms for everything
+        // else put together. Checking a string's length costs nothing and
+        // touches no layout, which is the point.
+        //
+        // Width is the one thing that invalidates this, since it changes where
+        // the text wraps. That arrives through the observer below rather than
+        // by reading the width here, which would cost exactly what it saves.
+        if (this._pinnedAt !== undefined && length >= this._pinnedAt) return;
+
         // Shrink to 1px to measure natural content height (bypasses h-full)
         textarea.style.height = '1px';
         const contentHeight = textarea.scrollHeight;
@@ -560,19 +984,42 @@ class MarkdownEditor {
         const maxHeight = this.options.maxHeight ?? 500;
         const height = Math.min(contentHeight, maxHeight) + this._toolbarH + this._footerH + 1;
 
-        // The first call comes from the constructor, before the toolbar and
-        // footer have been measured, so this is NaN. Leave _autoHeight unset
-        // rather than recording a height the browser will refuse: a mismatch
-        // on the next call would read as the reader having resized it, and
-        // auto-grow would switch itself off for good.
+        // The first call comes from render(), inside createEditor(), before the
+        // toolbar and footer have been measured, so this is NaN. Leave
+        // _autoHeight unset rather than recording a height the browser will
+        // refuse: a mismatch on the next call would read as the reader having
+        // resized it, and auto-grow would switch itself off for good.
         if (!Number.isFinite(height)) return;
+
+        // After the guard, not before it. Pinning on that first call recorded
+        // a decision from a measurement that was then thrown away: the content
+        // was over maxHeight, so _pinnedAt took the current length, and the
+        // next call -- the real one, with the toolbar measured -- saw a length
+        // no greater than the pin and returned without setting anything. The
+        // editor opened at its minimum however long the document was, and
+        // stayed there until a resize cleared the pin.
+        this._pinnedAt = contentHeight >= maxHeight ? length : undefined;
 
         this._autoHeight = height + 'px';
         this.editorContainer.style.height = this._autoHeight;
     }
 
+    /**
+     * The one place that says the document changed, called by the input
+     * handler and by every path that writes the value itself: insertText and
+     * so every toolbar button, the paste manager, find and replace, the table
+     * editor, list continuation, a task list ticked in the preview.
+     *
+     * Autosave hangs off this rather than off the `input` event, which it used
+     * to, and which no programmatic write raises. Pasting a document and
+     * reloading lost it: the paste goes in through insertText, so nothing told
+     * autosave, and the draft was written only when the next keystroke
+     * happened to arrive. Typing one character afterwards saved the lot, which
+     * is a strange thing to have to know.
+     */
     notifyChange() {
         if (this.options.onChange) this.options.onChange(this.usertextarea.value);
+        this.autosave?.schedule();
     }
 
     render() {
@@ -590,9 +1037,15 @@ class MarkdownEditor {
         this.previewTool?.destroy();
         this.undoRedoManager?.destroy();
         this.listManager?.destroy();
+        this.indentManager?.destroy();
         this.pasteManager?.destroy();
+        this.variableComplete?.destroy();
+        this.autosave?.destroy();
+        this._widthObserver?.disconnect();
         // Reaches toolbar tools, including custom ones that added listeners
         this.toolbarInstance?.destroy();
+        this.tableKeys?.destroy();
+        this.tablePopover?.destroy();
 
         if (this._footerUpdate) {
             this.usertextarea.removeEventListener('input', this._footerUpdate);

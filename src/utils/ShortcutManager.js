@@ -5,6 +5,7 @@ import CodeTool from '../components/toolbar/tools/CodeTool.js';
 import LinkTool from '../components/toolbar/tools/LinkTool.js';
 import HeadingTool from '../components/toolbar/tools/HeadingTool.js';
 import ULTool from '../components/toolbar/tools/ULTool.js';
+import MathTool from '../components/toolbar/tools/MathTool.js';
 
 const DEFAULT_SHORTCUTS = [
     { key: 'b', ctrl: true,  shift: false, ToolClass: BoldTool,          label: 'Ctrl+B',       btnClass: 'bold-btn' },
@@ -12,7 +13,27 @@ const DEFAULT_SHORTCUTS = [
     { key: 'k', ctrl: true,  shift: false, ToolClass: LinkTool,          label: 'Ctrl+K',       btnClass: 'link-btn' },
     { key: '`', ctrl: true,  shift: false, ToolClass: CodeTool,          label: 'Ctrl+`',       btnClass: 'code-btn' },
     { key: 's', ctrl: true,  shift: true,  ToolClass: StrikethroughTool, label: 'Ctrl+Shift+S', btnClass: 'strikethrough-btn' },
-    { key: 'l', ctrl: true,  shift: false, ToolClass: ULTool,            label: 'Ctrl+L',       btnClass: 'ul-btn' },
+    { key: 'l', ctrl: true,  shift: false, ToolClass: ULTool,            label: 'Ctrl+L',       btnClass: 'unordered-list-btn' },
+    // Alt rather than Ctrl+Shift, which is where this editor puts its own
+    // features (Alt+T for the table bar, Alt+C and friends in the find panel).
+    // Typora uses Ctrl+Shift+M and Notion Ctrl+Shift+E, but Firefox spends both
+    // on devtools, and a page does not get to argue. Matched on `code`, because
+    // Alt composes a character on macOS and `key` would be 'µ'.
+    { code: 'KeyM', alt: true, ctrl: false, shift: false, ToolClass: MathTool, label: 'Alt+M', btnClass: 'math-btn' },
+];
+
+/**
+ * Keys these tools already answer to, owned by another manager.
+ *
+ * Undo and redo belong to UndoRedoManager, indent and outdent to
+ * IndentManager, so this one never saw them and their tooltips advertised
+ * nothing. The keys worked; there was just no way to find out.
+ */
+const BORROWED_HINTS = [
+    { btnClass: 'undo-btn',    label: 'Ctrl+Z' },
+    { btnClass: 'redo-btn',    label: 'Ctrl+Shift+Z' },
+    { btnClass: 'indent-btn',  label: 'Tab' },
+    { btnClass: 'outdent-btn', label: 'Shift+Tab' },
 ];
 
 /** Turns 'Ctrl+Shift+K' into something comparable against a keydown event. */
@@ -38,6 +59,14 @@ export default class ShortcutManager {
             .map(tool => ({ tool, combo: parseShortcut(tool.shortcut) }))
             .filter(entry => entry.combo);
 
+        // Ctrl+1/2/3 must offer the same levels the dropdown does, or the
+        // keyboard inserts a heading the toolbar says is unavailable. With no
+        // heading tool in the toolbar there is nothing to disagree with, so the
+        // shortcuts keep working on all six.
+        const headingTool = (editor.toolbarInstance?.tools ?? [])
+            .find(tool => tool instanceof HeadingTool);
+        this.headingLevels = headingTool?.levels ?? [1, 2, 3, 4, 5, 6];
+
         this._handler = this._onKeyDown.bind(this);
         this._docHandler = this._onDocKeyDown.bind(this);
         editor.usertextarea.addEventListener('keydown', this._handler);
@@ -57,8 +86,9 @@ export default class ShortcutManager {
             return;
         }
 
-        // Heading shortcuts: Ctrl+1 / Ctrl+2 / Ctrl+3
-        if (ctrl && !shift && ['1', '2', '3'].includes(e.key)) {
+        // Heading shortcuts: Ctrl+1 / Ctrl+2 / Ctrl+3, for the levels on offer
+        if (ctrl && !shift && ['1', '2', '3'].includes(e.key)
+            && this.headingLevels.includes(parseInt(e.key))) {
             e.preventDefault();
             new HeadingTool(this.editor).applyHeading(parseInt(e.key));
             return;
@@ -75,7 +105,12 @@ export default class ShortcutManager {
         }
 
         for (const shortcut of DEFAULT_SHORTCUTS) {
-            if (key === shortcut.key && ctrl === shortcut.ctrl && shift === shortcut.shift) {
+            // An entry gives either `key` or `code`: `code` for the Alt ones,
+            // where macOS composes a character and `key` is no longer the
+            // letter that was pressed.
+            const hit = shortcut.code ? e.code === shortcut.code : key === shortcut.key;
+            if (hit && ctrl === shortcut.ctrl && shift === shortcut.shift
+                && e.altKey === !!shortcut.alt) {
                 e.preventDefault();
                 new shortcut.ToolClass(this.editor).applySyntax(e);
                 return;
@@ -95,19 +130,59 @@ export default class ShortcutManager {
         }
     }
 
+    /**
+     * Writes a shortcut onto a button: into the tooltip, where a pointer
+     * finds it, and into aria-keyshortcuts, where assistive technology does.
+     *
+     * The two want different spellings. A tooltip says Ctrl, because that is
+     * what is printed on the key; aria-keyshortcuts says Control, because the
+     * attribute takes key names rather than abbreviations. It also takes a
+     * space-separated list, which is how the heading button advertises three
+     * shortcuts at once -- "Control+1 Control+2 Control+3" -- where its
+     * tooltip says the shorter Ctrl+1/2/3.
+     *
+     * A screen reader can then offer the key alongside the button's name,
+     * and a user can ask what the shortcuts on a page are and be told.
+     */
+    _hint(btn, tooltip, ariaKeys = tooltip.replace(/\bCtrl\b/g, 'Control')) {
+        if (!btn) return;
+        btn.title += ` (${tooltip})`;
+        btn.setAttribute('aria-keyshortcuts', ariaKeys);
+    }
+
     _updateTooltips() {
+        const find = (cls) => this.editor.editorContainer.querySelector(`.${cls}`);
+
         for (const { btnClass, label } of DEFAULT_SHORTCUTS) {
-            const btn = this.editor.editorContainer.querySelector(`.${btnClass}`);
-            if (btn) btn.title += ` (${label})`;
+            this._hint(find(btnClass), label);
         }
-        const headingBtn = this.editor.editorContainer.querySelector('.heading-btn');
-        if (headingBtn) headingBtn.title += ' (Ctrl+1/2/3)';
-        const previewBtn = this.editor.editorContainer.querySelector('.preview-btn');
-        if (previewBtn) previewBtn.title += ' (F11)';
+
+        const headingKeys = this.headingLevels.filter(n => n <= 3);
+        if (headingKeys.length) {
+            this._hint(find('heading-btn'), `Ctrl+${headingKeys.join('/')}`,
+                headingKeys.map(n => `Control+${n}`).join(' '));
+        }
+
+        this._hint(find('preview-btn'), 'F11');
+
+        for (const { btnClass, label } of BORROWED_HINTS) {
+            this._hint(find(btnClass), label);
+        }
 
         // Tool-declared shortcuts get the same treatment as the built-ins
         for (const { tool } of this.toolShortcuts) {
-            if (tool.button) tool.button.title += ` (${tool.shortcut})`;
+            this._hint(tool.button, tool.shortcut);
+        }
+
+        // The title is the accessible name for most tools, since the icon is
+        // aria-hidden and there is no text in the button. It works, but it is
+        // the weakest source in the naming algorithm, and the three tools that
+        // build their own buttons set aria-label instead, so the toolbar was
+        // named two different ways. Mirroring here rather than in createButton
+        // is what keeps the shortcut in the name: the hints above are appended
+        // after the button is built.
+        for (const btn of this.editor.editorContainer.querySelectorAll('.markdown-btn')) {
+            if (btn.title) btn.setAttribute('aria-label', btn.title);
         }
     }
 

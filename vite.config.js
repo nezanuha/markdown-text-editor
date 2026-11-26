@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import tailwindcss from '@tailwindcss/vite';
-import cssInjectedByJs from 'vite-plugin-css-injected-by-js';
 
 const SCOPE = '.markdown-editor-wrapper';
 const GLOBAL_SELECTORS = /^(\*|:before|:after|::backdrop)$/;
@@ -116,29 +116,128 @@ function mockUploadEndpoint() {
     };
 }
 
-export default defineConfig({
-    plugins: [
-        tailwindcss(),
-        cssInjectedByJs(),
-        mockUploadEndpoint(),
-    ],
-    css: {
-        postcss: {
-            plugins: [scopeGlobalCss()],
+// marked and DOMPurify, which the editor imports and every build has to get
+// from somewhere.
+const RUNTIME_DEPS = ['marked', 'dompurify'];
+
+/**
+ * Attribution for the standalone build, which is the only one that carries
+ * those two inside it.
+ *
+ * MIT and Apache-2.0 both ask that the copyright notice travel with a
+ * redistribution, and a minified file with every comment stripped was not
+ * carrying one. Versions are read at build time rather than typed here, so a
+ * bump cannot leave this naming a release nobody ships; the full texts go in
+ * THIRD-PARTY-NOTICES.md, which `npm run build` writes beside it.
+ */
+const version = (name) => JSON.parse(
+    readFileSync(new URL(`./node_modules/${name}/package.json`, import.meta.url), 'utf8'),
+).version;
+
+const BUNDLED_NOTICE = `/*!
+ * markdown-text-editor | MIT | https://github.com/nezanuha/markdown-text-editor
+ *
+ * This build includes:
+ *   marked ${version('marked')} | MIT | Copyright (c) 2018+, MarkedJS; (c) 2011-2018, Christopher Jeffrey
+ *   dompurify ${version('dompurify')} | (MPL-2.0 OR Apache-2.0) | Copyright (c) Cure53 and contributors
+ *
+ * Full licence texts: THIRD-PARTY-NOTICES.md in the npm package.
+ */`;
+
+/**
+ * Two builds, because the two kinds of user need opposite things.
+ *
+ * `vite build` makes the package builds, es and cjs, and leaves the runtime
+ * dependencies out of them. Whoever installs the package installs those too,
+ * so their bundler resolves them, dedupes them against its own copy, and a
+ * fix to either reaches them with `npm update` instead of waiting for a
+ * release here. That last part is the reason: DOMPurify is what stands
+ * between a document and the person reading it, and a sanitiser the user
+ * cannot patch on their own is a sanitiser that stays unpatched.
+ *
+ * `vite build --mode standalone` makes the iife build with both deps inside
+ * it, because a <script src> has nothing to resolve anything with. It writes
+ * the one file and does not empty the folder on the way in.
+ *
+ * Together, from `npm run build`. Either alone leaves dist/ half written.
+ */
+/**
+ * Puts the notice at the top of the standalone build, once the minifier has
+ * finished with it.
+ *
+ * Rollup's own `banner` is written before minification, and vite's esbuild
+ * pass then strips every comment in the chunk, including that one -- and
+ * `esbuild.legalComments` is not read for the minify step, so there is no
+ * option to turn that off. This runs after the file is on disk, which is the
+ * one place nothing comes along afterwards.
+ *
+ * The sourcemap is corrected rather than left wrong: a map's `mappings` is one
+ * group per generated line, separated by semicolons, so prefixing as many
+ * semicolons as the banner has lines moves every mapping down with the code.
+ */
+function standaloneNotice(notice) {
+    const file = 'dist/markdown-text-editor.min.js';
+    const lines = notice.split('\n').length;   // the banner, plus its newline
+
+    return {
+        name: 'standalone-notice',
+        apply: 'build',
+        closeBundle() {
+            if (!existsSync(file)) return;
+            writeFileSync(file, notice + '\n' + readFileSync(file, 'utf8'));
+
+            if (!existsSync(file + '.map')) return;
+            const map = JSON.parse(readFileSync(file + '.map', 'utf8'));
+            map.mappings = ';'.repeat(lines) + map.mappings;
+            writeFileSync(file + '.map', JSON.stringify(map));
         },
-    },
-    build: {
-        lib: {
-            entry: 'src/components/Editor.js',
-            name: 'MarkdownEditor',
-            formats: ['es', 'umd', 'iife'],
-            fileName: (format) => format === 'iife' ? 'markdown-text-editor.min.js' : `markdown-text-editor.${format}.js`,
+    };
+}
+
+export default defineConfig(({ mode }) => {
+    const standalone = mode === 'standalone';
+
+    return {
+        plugins: [
+            tailwindcss(),
+            mockUploadEndpoint(),
+            ...(standalone ? [standaloneNotice(BUNDLED_NOTICE)] : []),
+        ],
+        css: {
+            postcss: {
+                plugins: [scopeGlobalCss()],
+            },
         },
-        cssCodeSplit: false,
-        sourcemap: true,
-    },
-    server: {
-        open: '/demo/',
-        port: 3000,
-    },
+        build: {
+            emptyOutDir: !standalone,
+            lib: {
+                entry: 'src/components/Editor.js',
+                name: 'MarkdownEditor',
+                formats: standalone ? ['iife'] : ['es', 'umd'],
+                // The UMD build is the one `require()` reaches, and this package
+                // is "type": "module", so a .js file is ESM to Node: the wrapper's
+                // `typeof module !== "undefined"` test was false, nothing was
+                // assigned, and require() handed back an empty object. The .cjs
+                // extension is what tells Node to read it as CommonJS regardless.
+                fileName: (format) => ({
+                    iife: 'markdown-text-editor.min.js',
+                    umd: 'markdown-text-editor.cjs',
+                })[format] ?? `markdown-text-editor.${format}.js`,
+            },
+            rollupOptions: standalone ? {} : {
+                external: RUNTIME_DEPS,
+                output: {
+                    // UMD needs a name for each one it leaves out, or it writes
+                    // a global called `marked$1` and reads nothing at runtime.
+                    globals: { marked: 'marked', dompurify: 'DOMPurify' },
+                },
+            },
+            cssCodeSplit: false,
+            sourcemap: true,
+        },
+        server: {
+            open: '/demo/',
+            port: 3000,
+        },
+    };
 });

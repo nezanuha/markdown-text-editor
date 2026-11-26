@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Editor — a config written for 1.x</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<body class="p-4 lg:p-12">
+<nav class="mb-6 text-sm flex gap-4">
+    <a href="/demo/" class="underline underline-offset-2">&larr; the 2.0 page</a>
+    <a href="/demo/1x/" class="underline underline-offset-2">the same page on 1.9.5 &rarr;</a>
+</nav>
+
+<div class="mb-8 p-4 rounded-lg border border-amber-500/40 bg-amber-500/10 text-sm space-y-2 max-w-3xl">
+    <p><strong>Open the console.</strong> Every editor below is configured the way
+       1.x asked for, and every one of them still works. The console says what each
+       old form is called now, once per form however many editors use it.</p>
+    <p class="opacity-80">Three are <code>console.info</code>: renamed, still
+       supported, no removal planned. One is <code>console.warn</code> with a
+       version on it, because it is the one that costs you something to keep.</p>
+</div>
+
+<form method="post" class="flex flex-col gap-8 max-w-3xl">
+
+    <section class="flex flex-col gap-2">
+        <h2 class="font-semibold">1. <code>labels</code>, which is <code>locale</code> now</h2>
+        <p class="text-sm opacity-70">The tooltips are Spanish, from the old option
+           name. Hover Bold.</p>
+        <textarea class="one h-32" id="old-labels" rows="4"># labels still works
+
+Hover the toolbar: the tooltips came from `labels`.</textarea>
+    </section>
+
+    <section class="flex flex-col gap-2">
+        <h2 class="font-semibold">2. <code>label</code>, which is an <code>aria-label</code></h2>
+        <p class="text-sm opacity-70">Inspect the textarea: the option wrote the
+           attribute for you, which you can write yourself.</p>
+        <textarea class="two h-32" id="old-label" rows="4"># label still works
+
+The field is named "Release notes" to a screen reader.</textarea>
+    </section>
+
+    <section class="flex flex-col gap-2">
+        <h2 class="font-semibold">3. <code>variables</code> inside the toolbar array</h2>
+        <p class="text-sm opacity-70">The dropdown is there and the preview still
+           substitutes the samples, from the old place in the config.</p>
+        <textarea class="three h-32" id="old-variables" rows="4"># variables still work
+
+Hi {{customer.name}}, invoice {{invoice.number}}.</textarea>
+    </section>
+
+    <section class="flex flex-col gap-2">
+        <h2 class="font-semibold">4. <code>image.fileInput</code> — the one with a date on it</h2>
+        <p class="text-sm opacity-70">The image dialog still uploads to the old
+           <code>uploadUrl</code>. Now try <strong>pasting or dropping</strong> an
+           image: nothing happens, which is what the warning is about.</p>
+        <textarea class="four h-32" id="old-upload" rows="4"># image.fileInput still works
+
+Open the image dialog and pick a file. Then try dropping one here instead.</textarea>
+    </section>
+
+    <section class="flex flex-col gap-2">
+        <h2 class="font-semibold">5. A second editor on the same old forms</h2>
+        <p class="text-sm opacity-70">Says nothing. The notices are keyed to the
+           form, not to the editor, so a page carrying twelve of these has one
+           thing to read rather than twelve.</p>
+        <textarea class="five h-32" id="old-again" rows="4"># and again
+
+Same config as the first editor. The console did not repeat itself.</textarea>
+    </section>
+
+</form>
+
+<script type="module">
+    import MarkdownEditor from '/src/components/Editor.js';
+
+    const VARIABLES = [
+        { label: 'Customer Name', value: '{{customer.name}}', sample: 'Hannes' },
+        { label: 'Invoice No',    value: '{{invoice.number}}', sample: 'INV-2026-0041' },
+    ];
+
+    // 1. labels: the name for the translations before 2.0
+    new MarkdownEditor('.one', {
+        toolbar: ['bold', 'italic', 'ul', 'preview'],
+        labels: { Bold: 'Negrita', Italic: 'Cursiva', 'Unordered list': 'Lista' },
+    });
+
+    // 2. label: wrote an aria-label on the textarea for you
+    new MarkdownEditor('.two', {
+        toolbar: ['bold', 'italic', 'preview'],
+        label: 'Release notes',
+    });
+
+    // 3. variables: configured inside the toolbar array
+    new MarkdownEditor('.three', {
+        toolbar: ['bold', { variables: VARIABLES }, 'preview'],
+    });
+
+    // 4. image.fileInput: the upload endpoint, inside the image tool's entry.
+    //    /api/upload is mocked by a dev-only plugin in vite.config.js.
+    new MarkdownEditor('.four', {
+        toolbar: ['bold', { image: { fileInput: { uploadUrl: '/api/upload' } } }, 'preview'],
+    });
+
+    // 5. the same forms again, to show the notices do not repeat
+    new MarkdownEditor('.five', {
+        toolbar: ['bold', { variables: VARIABLES }, { image: { fileInput: { uploadUrl: '/api/upload' } } }, 'preview'],
+        labels: { Bold: 'Negrita' },
+        label: 'Another field',
+    });
+</script>
+</body>
+</html>

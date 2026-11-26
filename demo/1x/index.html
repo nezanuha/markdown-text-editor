@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Editor Example (1.9.5)</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<body class="p-4 lg:p-12">
+<nav class="mb-6 text-sm flex gap-4">
+    <a href="/demo/" class="underline underline-offset-2">&larr; this page on 2.0</a>
+    <a href="/demo/renderer.html" class="underline underline-offset-2">renderer / sanitizer demo &rarr;</a>
+</nav>
+
+<div class="mb-8 p-4 rounded-lg border border-amber-500/40 bg-amber-500/10 text-sm space-y-2">
+    <p><strong>This is 1.9.5</strong>, loaded from the CDN. Every textarea, every
+       option and every word below is the same as on
+       <a href="/demo/" class="underline underline-offset-2">the 2.0 page</a> &mdash;
+       only the version differs.</p>
+    <p class="opacity-80">So anything that does nothing here is something 2.0 added.
+       1.9.5 ignores options it does not know and skips toolbar entries it has no tool
+       for, with a line in the console for each. Open it: the list of complaints is the
+       changelog, demonstrated.</p>
+    <p class="opacity-80">Expect no uploads (1.9.5 wants
+       <code>{ image: { fileInput: { uploadUrl } } }</code> inside the toolbar), no
+       drafts, no variable completion, no maths button, no top-level
+       <code>variables</code>, and English where the 2.0 page is Spanish
+       (<code>locale</code> was <code>labels</code> then).</p>
+</div>
+    <form method="post" class="flex flex-col gap-4">
+        <textarea class="editor h-48" rows="5" placeholder="Enter your text" id="notes">
+# Markdown Editor
+
+## Introduction
+
+Markdown is a lightweight markup language with plain-text formatting syntax. It is often used for writing documentation and creating content for web pages.
+
+### Features of Markdown:
+- Easy to learn and use
+- Can be converted to HTML
+- Supports basic text formatting
+
+## Code Example
+
+Here's an example of a simple Python function:
+
+```python
+def greet(name):
+    return f"Hello, {name}!"
+```
+
+## Variables
+
+Hi {{customer.name}} ({{customer.email}}), invoice {{invoice.number}} is dated {{today}}.
+        </textarea>
+        <button type="button" class="get-markdown btn-primary btn-sm self-end">Get Markdown</button>
+    </form>
+
+    <div class="border-t mt-5 space-y-3">
+        <strong class="font-medium text-zinc-800 mt-3 block">Output</strong>
+        <div class="output"></div>
+    </div>
+
+    <div class="border-t mt-10 pt-5 space-y-3">
+        <strong class="font-medium mt-3 block">Dropping images with no upload endpoint</strong>
+        <p class="text-sm opacity-70">Paste or drag an image into each of these. Nothing should be inserted,
+           the console should explain why, and <b>the text below must survive</b> — without the guard the
+           browser would navigate away to the dropped file and take the draft with it. Dropping a PDF or a
+           zip should be just as harmless.</p>
+
+        <p class="text-sm font-medium mt-4">1. Image tool present, but no <code>uploadUrl</code></p>
+        <textarea class="no-endpoint h-28" rows="3">This draft must still be here after you drop an image.</textarea>
+
+        <p class="text-sm font-medium mt-4">2. No image tool in the toolbar at all</p>
+        <textarea class="no-image-tool h-28" rows="3">This draft must still be here too.</textarea>
+
+        <p class="text-sm font-medium mt-4">3. <code>upload</code>, no image button
+           &mdash; paste or drop a screenshot, it should upload</p>
+        <textarea class="upload-no-button h-28" rows="3">No image button above. Paste a screenshot anyway.</textarea>
+
+        <p class="text-sm font-medium mt-4">4. <code>drop: false</code> &mdash; pasting uploads,
+           dropping does nothing, and <b>this text must survive the drop</b></p>
+        <textarea class="paste-only h-28" rows="3">Drop an image on me. I should still be here, unchanged.</textarea>
+
+        <p class="text-sm font-medium mt-4">5. <code>accept</code> past images &mdash; drop a PDF,
+           it should come in as a link, not be thrown away</p>
+        <textarea class="any-file h-28" rows="3">Drop a PDF or a text file here.</textarea>
+
+        <p class="text-sm font-medium mt-4">6. <code>accept</code> a video &mdash; drop an mp4
+           and it becomes a <code>&lt;video&gt;</code> the preview plays, with no
+           <code>insert</code> written for it</p>
+        <textarea class="rich-media h-28" rows="3">Drop an mp4 or an mp3 here, then open the preview.</textarea>
+    </div>
+
+    <div class="border-t mt-10 pt-5 space-y-3">
+        <strong class="font-medium mt-3 block">Custom tools</strong>
+        <p class="text-sm opacity-70">Three buttons that are not built in, added without forking. The first two
+           are declared as plain objects; the third is a class, which is what you need when a tool builds its
+           own markup. Hover each one, then click with and without a selection.</p>
+        <p class="text-sm opacity-70">Things to try:</p>
+        <ul class="text-sm opacity-70 list-disc ms-5 space-y-1">
+            <li><b>Callout</b> and <b>Signature</b> are plain objects. Select a line, press Callout.</li>
+            <li><b>Highlight</b> adds a <code>shortcut</code>. Hover it to see <code>Ctrl+Shift+H</code> in the
+                tooltip, then press the shortcut with and without a selection.</li>
+            <li><b>Embed video</b> is a class, because it opens a dialog. Its caption field has a real toolbar
+                built by <code>createToolbar</code>, and the caption is rendered with
+                <code>renderMarkdown</code>.</li>
+        </ul>
+        <p class="text-sm opacity-70">The embed inserts an <code>&lt;iframe&gt;</code>, which DOMPurify strips by
+           default, so this editor also passes a <code>sanitizer</code> allowing it. Remove that option and the
+           embed vanishes from the preview — allowing iframes is the host application's decision, not the
+           editor's.</p>
+        <textarea class="custom-tools h-40" rows="5">Select this line and press the callout button.
+
+Select a word and press Ctrl+Shift+H to wrap it in ==marks==.</textarea>
+    </div>
+
+    <div class="border-t mt-10 pt-5 space-y-3">
+        <strong class="font-medium mt-3 block">Translated interface (<code>locale</code>)</strong>
+        <p class="text-sm opacity-70">Same editor, one import: <code>locale/es.js</code>. Hover a button, open
+           the link dialog, press <code>Ctrl+F</code>, or read the counts along the bottom. The CSS class
+           names are unchanged.</p>
+        <textarea class="translated h-32" rows="4">Pasa el cursor sobre los botones.</textarea>
+    </div>
+
+    <div class="border-t mt-10 pt-5 space-y-3">
+        <strong class="font-medium mt-3 block">Heading levels (<code>levels</code>)</strong>
+        <p class="text-sm opacity-70">H1 is left out, as it would be in a CMS body field where the page
+           already owns the H1. Open the dropdown: only H2, H3 and H4 are offered. Hover the button and
+           the tooltip reads <code>Ctrl+2/3</code>, not <code>Ctrl+1/2/3</code>. Press <code>Ctrl+1</code>
+           and nothing should happen; <code>Ctrl+2</code> should insert <code>##</code>.</p>
+        <textarea class="heading-levels h-28" rows="3">Put the caret on this line and try the dropdown.</textarea>
+    </div>
+
+
+    <div class="border-t mt-10 pt-5 space-y-3">
+        <strong class="font-medium mt-3 block">Paste formatted text (<code>pasteHtml</code>)</strong>
+        <p class="text-sm opacity-70">Copy a few paragraphs from any web page, with a heading, a link and a
+           list in them, and paste here. They arrive as markdown. Copying from a code block keeps the
+           fence and its language. Set <code>pasteHtml: false</code> and the same paste drops to plain
+           text, which is how it worked before.</p>
+        <textarea class="paste-html h-32" rows="4">Paste something formatted here.</textarea>
+    </div>
+
+    <div class="border-t mt-10 pt-5 space-y-3">
+        <strong class="font-medium mt-3 block">Variable completion (<code>{{</code>)</strong>
+        <p class="text-sm opacity-70">Type <code>&#123;&#123;</code> and the list opens under the cursor.
+           Keep typing to narrow it, arrow keys to move, <code>Enter</code> to insert. The toolbar has the
+           same list behind its button for the first time you meet a template.</p>
+        <textarea class="var-complete h-28" rows="3">Hi </textarea>
+    </div>
+
+    <div class="border-t mt-10 pt-5 space-y-3">
+        <strong class="font-medium mt-3 block">Draft recovery (<code>autosave</code>)</strong>
+        <p class="text-sm opacity-70">Type in either box, wait a second, then reload the page. A strip
+           appears above the toolbar offering that draft back, with the time it was taken. It never
+           restores on its own: the text on the page may be newer than the draft. Restore or Discard both
+           clear it.</p>
+        <p class="text-sm opacity-70">Two editors, two drafts. The key is built from the page address and
+           each field's own <code>id</code>, so editing one leaves the other alone. Type in both, reload,
+           and each strip offers back its own text.</p>
+        <textarea class="autosave-demo h-20" rows="2" id="autosave-summary">Summary. Type here, then reload.</textarea>
+        <textarea class="autosave-demo h-28" rows="3" id="autosave-body">Body. Type here too, then reload.</textarea>
+    </div>
+
+    <script type="module">
+        // 1.9.5 as published, from the CDN. It carries marked, DOMPurify and
+        // its own stylesheet, all of which 2.0 moved out, so this page needs
+        // nothing else loaded for it.
+        import MarkdownEditor from 'https://cdn.jsdelivr.net/npm/markdown-text-editor@1.9.5/dist/markdown-text-editor.es.js';
+        import DOMPurify from 'dompurify';
+        // One of the 56 shipped translations. Only the language you import
+        // reaches your bundle.
+        import es from '/locale/es.js';
+
+        window.addEventListener('DOMContentLoaded', () => {
+        const options = {
+            placeholder: 'Start writing...',
+            mode: 'hybrid', // default plain
+            toolbar: [
+                'heading', 'bold', 'italic', 'ul', 'ol', 'checklist', 'link', 'table', 'math',
+                'variables',
+                'image',
+                'preview'
+            ],
+            // Top level since 2.0: the preview reads the samples and the typed
+            // completion reads the openings, neither of which waits for a button
+            variables: [
+                { label: 'Today', value: '{{today}}', sample: '10 September 2026' },
+                { label: 'Customer', items: [
+                    { label: 'Name',  value: '{{customer.name}}',  sample: 'Hannes' },
+                    { label: 'Email', value: '{{customer.email}}', sample: 'hannes@example.com' },
+                ]},
+                { label: 'Invoice No', value: '{{invoice.number}}' }, // no sample, stays raw
+            ],
+            // On here as well as in its own section below, because this is the
+            // box people try things in: pasting a long document into it and
+            // reloading is how anyone finds out whether drafts work.
+            autosave: true,
+            // /api/upload is mocked by a dev-only plugin in vite.config.js,
+            // with a 1.2s delay so the "Uploading..." placeholder is visible.
+            // Top level since 2.0: the dialog, paste and drop all read it.
+            upload: '/api/upload',
+            onChange: (value) => {
+                console.log('onChange fired:', value.slice(0, 50));
+            },
+        };
+
+            // Now 'MarkdownEditor' is a constructor thanks to library.export: 'default'
+            document.querySelectorAll(".editor").forEach(element => {
+                const editor = new MarkdownEditor(element, options);
+            });
+
+            // The image tool is there, but nowhere to upload to
+            new MarkdownEditor(".no-endpoint", {
+                toolbar: ['bold', 'italic', 'image', 'preview'],
+            });
+
+            // No image tool at all
+            new MarkdownEditor(".no-image-tool", {
+                toolbar: ['bold', 'italic', 'preview'],
+            });
+
+            // What moving the endpoint out of the toolbar buys: uploading
+            // without the button, which needed a button: false flag before
+            new MarkdownEditor(".upload-no-button", {
+                toolbar: ['bold', 'italic', 'preview'],
+                upload: '/api/upload',
+            });
+
+            // Paste uploads, drop is refused -- but still swallowed, or the
+            // browser would navigate to the file and lose the text
+            new MarkdownEditor(".paste-only", {
+                toolbar: ['bold', 'italic', 'preview'],
+                upload: { url: '/api/upload', drop: false },
+            });
+
+            // accept widens it past images. A PDF arrives as a link rather
+            // than being swallowed and discarded, which is all it got before.
+            new MarkdownEditor(".any-file", {
+                toolbar: ['bold', 'italic', 'preview'],
+                upload: {
+                    url: '/api/upload',
+                    accept: ['image/*', 'application/pdf', 'text/plain'],
+                },
+            });
+
+            // Widening accept is the whole configuration. Markdown has no
+            // syntax for video, so the default writes the HTML there is --
+            // nobody accepts an mp4 hoping to get a link. insert is for the
+            // other way round, a renderer downstream that escapes HTML.
+            new MarkdownEditor(".rich-media", {
+                toolbar: ['bold', 'italic', 'preview'],
+                upload: {
+                    url: '/api/upload',
+                    accept: ['image/*', 'video/mp4', 'audio/mpeg'],
+                    onProgress: (file, loaded, total) => {
+                        console.log(`${file.name}: ${Math.round((loaded / total) * 100)}%`);
+                    },
+                },
+            });
+
+            // A class is only needed when the tool builds its own markup. This one
+            // opens the same dialog the link and image tools use.
+            class EmbedTool extends MarkdownEditor.Tool {
+                constructor(editor) {
+                    super(editor, 'Embed video');
+                    this.button = this.createButton('<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 9 5 3-5 3z"/></svg>');
+                }
+                applySyntax(event) {
+                    const dialog = MarkdownEditor.modal(event, 'fj:max-w-sm', `
+                        <div class="fj:font-medium">Embed video</div>
+                        <div class="fj:mt-4 fj:flex fj:flex-col fj:gap-y-4">
+                            <input type="url" placeholder="https://youtube.com/watch?v=..."
+                                   class="embed-url fj:me-input fj:w-full">
+                            <div>
+                                <div class="embed-caption-toolbar fj:mb-1"></div>
+                                <textarea class="embed-caption fj:me-input fj:w-full" rows="2"
+                                          placeholder="Caption, markdown allowed"></textarea>
+                            </div>
+                            <button type="button" class="embed-go fj:me-btn fj:me-btn-sm fj:self-end">Insert</button>
+                        </div>`, 'Embed');
+
+                    // The real formatting tools, bound to the caption textarea.
+                    // No hand-rolled editor object, and the locale is inherited.
+                    const caption = dialog.querySelector('.embed-caption');
+                    dialog.querySelector('.embed-caption-toolbar').appendChild(
+                        this.editor.createToolbar(caption, ['bold', 'italic', 'link'])
+                    );
+
+                    dialog.querySelector('.embed-go').addEventListener('click', () => {
+                        const url = dialog.querySelector('.embed-url').value.trim();
+                        if (url) {
+                            // renderMarkdown honours the configured renderer and sanitizer
+                            const text = caption.value.trim();
+                            const figcaption = text ? `\n<figcaption>${this.editor.renderMarkdown(text)}</figcaption>` : '';
+                            this.editor.insertText(`\n<figure>\n<iframe src="${url}" allowfullscreen></iframe>${figcaption}\n</figure>\n`);
+                        }
+                        dialog.close();
+                    });
+                }
+            }
+
+            new MarkdownEditor(".custom-tools", {
+                // DOMPurify strips <iframe> by default, so an embed would vanish from
+                // the preview. Allowing it is the host application's call, not the
+                // editor's, which is what the sanitizer option is for.
+                sanitizer: html => DOMPurify.sanitize(html, {
+                    ADD_TAGS: ['iframe'],
+                    ADD_ATTR: ['allowfullscreen', 'allow', 'frameborder'],
+                }),
+                toolbar: [
+                    'bold', 'italic',
+                    // The usual way: describe the button, no class involved
+                    { custom: {
+                        title: 'Callout',
+                        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
+                        action(editor) {
+                            const ta = editor.usertextarea;
+                            const selected = ta.value.slice(ta.selectionStart, ta.selectionEnd) || 'Something worth noting';
+                            const block = `> [!NOTE]\n> ${selected.replace(/\n/g, '\n> ')}`;
+                            editor.insertText(block, block.length, 0);
+                        },
+                    }},
+                    // A shortcut, shown in the tooltip and handled like a built-in
+                    { custom: {
+                        title: 'Highlight',
+                        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>',
+                        shortcut: 'Ctrl+Shift+H',
+                        action(editor) {
+                            const ta = editor.usertextarea;
+                            const selected = ta.value.slice(ta.selectionStart, ta.selectionEnd);
+                            if (selected) {
+                                const wrapped = `==${selected}==`;
+                                editor.insertText(wrapped, wrapped.length, 0);
+                            } else {
+                                editor.insertText('====', 2, 2);   // caret lands between the marks
+                            }
+                        },
+                    }},
+                    { custom: {
+                        title: 'Signature',
+                        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c3.5 0 4-10 7-10s3.5 10 7 10"/><path d="M3 21h18"/></svg>',
+                        action: (editor) => editor.insertText('\n\n---\nBest regards,\n'),
+                    }},
+                    EmbedTool,
+                    'preview'
+                ],
+            });
+
+            new MarkdownEditor(".translated", {
+                // Deliberately the pre-2.0 form, so the demo keeps exercising it
+                toolbar: ['heading', 'bold', 'italic', 'link',
+                    { image: { fileInput: { uploadUrl: '/api/upload' } } },
+                    'preview'
+                ],
+                // The whole interface, not a hand-written subset: tooltips,
+                // the dialogs, the find panel and the footer's counts. A
+                // partial object also works, and anything left out of it
+                // stays in English.
+                locale: es,
+                footer: { words: true },
+            });
+
+            // H1 belongs to the page in a CMS body field, so only offer H2 and below
+            new MarkdownEditor(".heading-levels", {
+                toolbar: [{ heading: { levels: [2, 3, 4] } }, 'bold', 'italic', 'preview'],
+            });
+
+
+            // Nothing to configure: formatted text pasted from anywhere
+            // becomes markdown.
+            new MarkdownEditor(".paste-html", {
+                toolbar: ['heading', 'bold', 'italic', 'link', 'table', 'preview'],
+            });
+
+            new MarkdownEditor(".var-complete", {
+                toolbar: ['bold', 'italic',
+                    { variables: [
+                        { label: 'Customer Name', value: '{{customer.name}}', sample: 'Hannes' },
+                        { label: 'Customer Email', value: '{{customer.email}}' },
+                        { label: 'Invoice No',    value: '{{invoice.number}}' },
+                        { label: 'Invoice Total', value: '{{invoice.total}}' },
+                        { label: 'Today',         value: '{{today}}' }
+                    ]},
+                    'preview'
+                ],
+            });
+
+            // Off by default everywhere else: it writes what you type to this
+            // browser's storage, which is the application's call to make.
+            // Two of them, to show the drafts stay apart. Each textarea has
+            // its own id, which is what the key is built from.
+            document.querySelectorAll(".autosave-demo").forEach((el) => {
+                new MarkdownEditor(el, {
+                    toolbar: ['bold', 'italic', 'link', 'preview'],
+                    autosave: true,
+                });
+            });
+
+            document.querySelector(".get-markdown").addEventListener("click", function(e){
+                const output = document.querySelector(".editor").value;
+                console.log(output);
+                document.querySelector(".output").innerHTML = `<pre>${output}</pre>`;
+            });
+        });
+    </script>
+</body>
+</html>

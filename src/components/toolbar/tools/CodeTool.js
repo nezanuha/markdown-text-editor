@@ -10,26 +10,10 @@ class CodeTool extends Tool {
 
     applySyntax() {
         this.trimSelection();
-        const textarea = this.editor.usertextarea;
-        const { selectionStart, selectionEnd } = textarea;
-        const value = textarea.value;
-        const selectedText = value.substring(selectionStart, selectionEnd);
-
-        // Toggle off: full `code` selected
-        if (selectedText.startsWith('`') && selectedText.endsWith('`')) {
-            this.editor.insertText(selectedText.slice(1, -1), 0, 0);
-            return;
-        }
-
-        // Toggle off: cursor is inside `code`
-        if (value[selectionStart - 1] === '`' && value[selectionEnd] === '`') {
-            textarea.setSelectionRange(selectionStart - 1, selectionEnd + 1);
-            this.editor.insertText(selectedText, 0, 0);
-            return;
-        }
-
-        const newText = `\`${selectedText || 'code'}\``;
-        this.editor.insertText(newText, 1, 1);
+        // Shared with maths rather than kept here: the length guard that comes
+        // with it also stops a lone backtick being selected and sliced away to
+        // nothing, which this did before.
+        this.toggleFence({ open: '`', placeholder: 'code' });
     }
 }
 

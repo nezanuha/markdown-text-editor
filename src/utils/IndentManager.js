@@ -11,11 +11,19 @@ export default class IndentManager {
             '"': '"',
             "'": "'"
         };
+        // The closing halves, for stepping over one that is already there.
+        // Kept as a set because the check runs on every paired keystroke.
+        this.closers = new Set(Object.values(this.pairs));
         this.init();
     }
 
     init() {
-        this.textarea.addEventListener('keydown', (e) => {
+        // Held on the instance rather than passed inline, so destroy() has
+        // something to remove. An anonymous handler could never be taken off,
+        // and the textarea outlives the editor: an app that builds and tears
+        // down editors as it navigates left one of these behind every time,
+        // each still answering Tab and each holding its dead editor alive.
+        this._onKeyDown = (e) => {
             switch (e.key) {
                 case 'Tab':
                     e.preventDefault();
@@ -29,9 +37,20 @@ export default class IndentManager {
                     this.handleBackspace(e);
                     break;
                 default:
-                    if (this.pairs[e.key]) this.handlePairs(e);
+                    // Closing characters as well as opening ones. `pairs` is
+                    // keyed by the opening half, so testing it alone never let
+                    // `)`, `]`, `}` or `>` through and the step-over below was
+                    // unreachable for them: typing the `]` of `[text]` gave
+                    // `[text]]`. Quotes happened to work, being both halves of
+                    // their own pair.
+                    if (this.pairs[e.key] || this.closers.has(e.key)) this.handlePairs(e);
             }
-        });
+        };
+        this.textarea.addEventListener('keydown', this._onKeyDown);
+    }
+
+    destroy() {
+        this.textarea.removeEventListener('keydown', this._onKeyDown);
     }
 
     handlePairs(e) {
@@ -42,8 +61,7 @@ export default class IndentManager {
         // 1. Overtyping Logic
         // If the cursor is right before the closing character and the user types it
         if (selectionStart === selectionEnd && value[selectionStart] === char) {
-            const isClosingChar = Object.values(this.pairs).includes(char);
-            if (isClosingChar) {
+            if (this.closers.has(char)) {
                 e.preventDefault();
                 const newPos = selectionStart + 1;
                 textarea.setSelectionRange(newPos, newPos);
@@ -60,18 +78,18 @@ export default class IndentManager {
             e.preventDefault();
             const selectedText = value.substring(selectionStart, selectionEnd);
             const newValue = value.substring(0, selectionStart) + open + selectedText + close + value.substring(selectionEnd);
-            
+
             textarea.value = newValue;
             textarea.setSelectionRange(selectionStart + 1, selectionEnd + 1);
             this._triggerUpdate();
-        } 
-        
+        }
+
         // 3. Standard Pair Insertion
         else {
             e.preventDefault();
             const before = value.substring(0, selectionStart);
             const after = value.substring(selectionEnd);
-            
+
             textarea.value = before + open + close + after;
             textarea.setSelectionRange(selectionStart + 1, selectionStart + 1);
             this._triggerUpdate();
@@ -92,7 +110,7 @@ export default class IndentManager {
                 e.preventDefault();
                 const before = value.substring(0, selectionStart - 1);
                 const after = value.substring(selectionStart + 1);
-                
+
                 textarea.value = before + after;
                 textarea.setSelectionRange(selectionStart - 1, selectionStart - 1);
                 this._triggerUpdate();
@@ -115,14 +133,14 @@ export default class IndentManager {
         // EXTRA: If user hits Enter between { and }, add an extra indent level
         const charBefore = value[selectionStart - 1];
         const charAfter = value[selectionStart];
-        
+
         if (charBefore === '{' && charAfter === '}') {
             e.preventDefault();
             const tab = '\t'; // or '    '
             const insertion = '\n' + indent + tab + '\n' + indent;
-            
+
             textarea.value = value.substring(0, selectionStart) + insertion + value.substring(selectionStart);
-            
+
             // Put cursor on the middle (indented) line
             const newPos = selectionStart + indent.length + tab.length + 1;
             textarea.setSelectionRange(newPos, newPos);
@@ -176,7 +194,7 @@ export default class IndentManager {
 
         const targetText = value.substring(startPos, endPos);
         const lines = targetText.split('\n');
-        
+
         let removedFromFirst = 0;
         let totalRemoved = 0;
 

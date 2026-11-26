@@ -1,0 +1,24 @@
+# Not a linter -- the house style here lives in the code and its comments, and
+# a formatter would rewrite files whose shape was chosen. This is the part no
+# one chose: whitespace nobody can see, which drifts in from whichever editor
+# saved last and shows up as noise in a diff that is supposed to be about one
+# change.
+#
+# Every editor worth using reads this file, several without a plugin.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{json,yml,yaml,md}]
+indent_size = 2
+
+# Markdown gives a hard line break with two trailing spaces, so trimming them
+# changes how the file renders.
+[*.md]
+trim_trailing_whitespace = false

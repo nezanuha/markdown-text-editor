@@ -1,0 +1,132 @@
+/**
+ * Regenerates locale/template.js, the list of every string `locale` can
+ * translate. Run it by hand before a release and check the diff:
+ *
+ *     npm run build && npm run locale:extract
+ *     git diff locale/template.js
+ *
+ * An empty diff means nothing was missed. A new key means someone added UI text
+ * and did not add it to the template, which would have left translators unable
+ * to translate a string they never knew existed.
+ *
+ * Deliberately not wired into CI. It reads dist/, so it would fail on a stale
+ * build for reasons that have nothing to do with the change under test.
+ *
+ * Two passes, because each one alone is wrong:
+ *
+ *   Reading the source finds strings on paths that never run, but cannot see
+ *   `label(name)` where the text arrives in a variable, as it does for the find
+ *   panel's icon buttons.
+ *
+ *   Running the editor catches those, but only on paths it exercises, which is
+ *   why every dialog below gets opened. Add to that list when you add a dialog.
+ */
+import { Window } from 'happy-dom';
+import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+const keys = new Set();
+
+// --- pass 1: literals in the source -----------------------------------------
+
+const PATTERNS = [
+    /\blabel\('([^']+)'\)/g,        // editor.label('Find')
+    /super\(editor, '([^']+)'\)/g,  // a tool's title becomes its tooltip
+    /_count\('([^']+)'/g,           // footer counts, e.g. '{n} words'
+];
+
+(function walk(dir) {
+    for (const entry of readdirSync(dir)) {
+        const path = join(dir, entry);
+        if (statSync(path).isDirectory()) walk(path);
+        else if (path.endsWith('.js')) {
+            const source = readFileSync(path, 'utf8');
+            for (const pattern of PATTERNS) {
+                for (const match of source.matchAll(pattern)) keys.add(match[1]);
+            }
+        }
+    }
+})('src');
+
+const fromSource = keys.size;
+
+// --- pass 2: run the editor and record what it asks for ---------------------
+
+const window = new Window({ url: 'http://localhost' });
+window.HTMLElement.prototype.showPopover ??= function () {};
+window.HTMLElement.prototype.hidePopover ??= function () {};
+
+for (const key of ['window', 'document', 'navigator', 'HTMLElement', 'Element', 'Node',
+                   'getComputedStyle', 'matchMedia', 'CustomEvent', 'Event',
+                   'MutationObserver', 'requestAnimationFrame', 'KeyboardEvent']) {
+    if (window[key] === undefined) continue;
+    Object.defineProperty(globalThis, key, { value: window[key], writable: true, configurable: true });
+}
+
+const { default: MarkdownEditor } = await import('../dist/markdown-text-editor.es.js');
+
+// label() is `this.options.locale?.[text] ?? text`, so a Proxy sees every lookup
+// and returns undefined, leaving the editor in English. No change to src/ needed.
+const recorder = new Proxy({}, {
+    get: (_, key) => { keys.add(String(key)); return undefined; },
+});
+
+const textarea = document.createElement('textarea');
+textarea.id = 'locale-extract';
+document.body.appendChild(textarea);
+
+const editor = new MarkdownEditor(textarea, {
+    toolbar: [
+        'heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'checklist',
+        'blockquote', 'code', 'codeblock', 'hr', 'table', 'link', 'image',
+        'undo', 'redo', 'indent', 'outdent',
+        { variables: [{ label: 'Example', value: '{{example}}' }] },
+        'preview',
+    ],
+    locale: recorder,
+    footer: { line: true, col: true, chars: true, words: true },
+});
+
+editor.findReplace.open();
+for (const selector of ['.link-btn', '.image-btn', '.variable-btn', '.heading-btn']) {
+    editor.editorContainer.querySelector(selector)?.click();
+}
+
+// --- write the union ---------------------------------------------------------
+
+const sorted = [...keys].sort((a, b) => a.localeCompare(b));
+
+// Both passes have blind spots, so a sharp drop means one of them stopped
+// working, most likely a renamed class breaking a click above
+if (sorted.length < fromSource) {
+    console.error(`Found ${sorted.length} keys, fewer than the ${fromSource} in the source alone. Not writing.`);
+    process.exit(1);
+}
+
+// A module rather than JSON, matching the locale files it is copied into. JSON
+// modules need an import attribute in native Node and browser ESM, so a .json
+// locale would fail in the two places bundlers are not involved.
+const body = sorted.map(k => `    ${JSON.stringify(k)}: ${JSON.stringify(k)},`).join('\n');
+
+writeFileSync('locale/template.js',
+`/**
+ * Every string the editor can translate, English on both sides.
+ *
+ * Copy this file, translate the values, leave the keys alone:
+ *
+ *     cp locale/template.js locale/fr.js
+ *
+ *     import fr from 'markdown-text-editor/locale/fr';
+ *     new MarkdownEditor('#editor', { locale: fr });
+ *
+ * Keep {n} exactly as it is, it is where the number goes. Its position can move,
+ * so "{n} mots" and "mots : {n}" are both fine.
+ *
+ * Generated by scripts/locale-extract.mjs. Do not edit by hand.
+ */
+export default {
+${body}
+};
+`);
+
+console.log(`locale/template.js written: ${sorted.length} keys (${fromSource} from source, ${sorted.length - fromSource} only seen at runtime)`);
