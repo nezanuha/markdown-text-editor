@@ -49,5 +49,9 @@ const notices = '# Third-party notices\n\n'
     + 'is redistributed.\n\n'
     + sections.join('\n');
 
-writeFileSync('THIRD-PARTY-NOTICES.md', notices);
+// CRLF, like the rest of the repo. Written with LF, the file came back
+// modified from every build -- git normalises it on the way in, so the diff
+// was empty and `git status` was dirty anyway. Checking the tree is the step
+// before a release, and it should mean something.
+writeFileSync('THIRD-PARTY-NOTICES.md', notices.replace(/\n/g, '\r\n'));
 console.log(`THIRD-PARTY-NOTICES.md written: ${BUNDLED.join(', ')}`);
