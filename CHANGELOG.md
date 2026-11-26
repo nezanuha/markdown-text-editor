@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-11-26
+
 ### Added
 
 - **Editing tables**: Click in a table, or press `Alt+T`, and a bar appears beside it: add or delete the row or column you are in, align it, tidy the pipes. Tab moves between cells, and the toolbar button opens a size grid
@@ -645,7 +647,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.5...HEAD
+[Unreleased]: https://github.com/nezanuha/markdown-text-editor/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.5...v2.0.0
 [1.9.5]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.4...v1.9.5
 [1.9.4]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.3...v1.9.4
 [1.9.3]: https://github.com/nezanuha/markdown-text-editor/compare/v1.9.2...v1.9.3

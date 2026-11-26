@@ -90,19 +90,19 @@
     "url": "https://github.com/nezanuha/markdown-text-editor/issues"
   },
   "dependencies": {
-    "dompurify": "^3.4.18",
-    "marked": "^18.2.1"
+    "dompurify": "^3.5.0",
+    "marked": "^18.3.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.5",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.5",
-    "frutjam": "^2.4.2",
+    "frutjam": "^2.4.3",
     "happy-dom": "^21.0.4",
     "postcss": "^8.5.33",
     "tailwindcss": "^4.3.5",
     "typescript": "^7.0.2",
-    "vite": "^8.3.8"
+    "vite": "^8.4.0"
   },
   "types": "./types/index.d.ts",
   "overrides": {
