@@ -111,6 +111,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   new MarkdownEditor('#editor', { locale: es });
   ```
 
+- **`editor.sanitizeHtml(html)`**: the configured `sanitizer`, or DOMPurify when you set none, for a tool holding HTML that never was markdown -- an embed, a server's answer, a clipboard payload. `renderMarkdown` is the one for markdown and ends with this. Doing it with your own copy of DOMPurify would ignore whatever the host configured, which is the point of the option
 - **A list of every translatable string**: `markdown-text-editor/locale/template.js` holds all 78 of them, English on both sides. Copy it, translate the values, pass the result
 
   ```javascript

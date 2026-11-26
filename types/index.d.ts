@@ -527,6 +527,17 @@ export default class MarkdownEditor {
     renderMarkdown(markdown: string): string;
 
     /**
+     * Puts HTML through the configured `sanitizer`, or DOMPurify when none is
+     * set. For a tool handling HTML that did not come from markdown: an embed,
+     * a server's response, a clipboard payload.
+     *
+     * `renderMarkdown` is the one to use for markdown; it ends with this. Doing
+     * it yourself with your own copy of DOMPurify would ignore whatever the
+     * host configured, which is the whole point of the option.
+     */
+    sanitizeHtml(html: string): string;
+
+    /**
      * Builds a small toolbar bound to another textarea, for a custom tool that
      * collects rich text in its own dialog. The tools are the real ones, and
      * `locale` is inherited. Returns the element; append it where you like.

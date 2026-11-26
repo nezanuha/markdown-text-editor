@@ -104,6 +104,8 @@ const container: HTMLDivElement = bySelector.editorContainer;
 const markdown: string = textarea.value;
 
 const rendered: string = bySelector.renderMarkdown('**hi**');
+// for a tool holding HTML that never was markdown: an embed, a server's answer
+const cleaned: string = bySelector.sanitizeHtml('<p onclick="x">hi</p>');
 const subToolbar: HTMLDivElement = bySelector.createToolbar(
     document.createElement('textarea'), ['bold', 'italic'],
 );
@@ -194,7 +196,7 @@ const badUpload: MarkdownEditorOptions = { upload: { headers: {} } };
 const badMaxSize: MarkdownEditorOptions = { upload: { url: '/u', maxSize: '5MB' } };
 
 export {
-    rendered, subToolbar, defaultTools,
+    rendered, cleaned, subToolbar, defaultTools,
     withCustomTool, withDeclarativeTool, noAction, translatedCustom, ShoutTool,
     translated, badLabels,
     full, minimal, noFooter, customTheme, altDisabled, altRequired,
